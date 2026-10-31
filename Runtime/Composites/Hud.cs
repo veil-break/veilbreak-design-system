@@ -83,18 +83,4 @@ public sealed class QueueList:VisualElement {
  public ScreenHeader Accent(bool on){meta.EnableInClassList(ClassName+"__meta--accent",on);return this;}
 }
 
-/// <summary>One high-score line: rank, score, depth and squad codes; the current run is framed.</summary>
-[UxmlElement] public partial class ScoreRow:VisualElement {
- public const string ClassName="vb-score";
- readonly Label rank,score,badge,detail;readonly VisualElement squad;
- public ScoreRow(){
-  AddToClassList(ClassName);VbShape.Attach(this);pickingMode=PickingMode.Ignore;rank=Ui.Text(this,"",ClassName+"__rank");
-  var t=Ui.Box(this,ClassName+"__text");var line=Ui.Box(t,ClassName+"__line");score=Ui.Text(line,"",ClassName+"__value");badge=Ui.Text(line,"THIS RUN",ClassName+"__badge");detail=Ui.Text(t,"",ClassName+"__detail");squad=Ui.Box(this,ClassName+"__squad");
- }
- public ScoreRow Bind(ScoreView s){
-  rank.text=s.rank.ToString("00");rank.EnableInClassList(ClassName+"__rank--top",s.rank<=3);score.text=Ui.Number(s.score);badge.Show(s.current);EnableInClassList(ClassName+"--current",s.current);
-  detail.text=$"Wave {s.wave} · {s.bosses} {(s.bosses==1?"boss":"bosses")}";squad.Clear();foreach(var c in s.squad)Ui.Text(VbShape.Attach(Ui.Box(squad,ClassName+"__code")),c,ClassName+"__code-text");
-  return this;
- }
-}
 }

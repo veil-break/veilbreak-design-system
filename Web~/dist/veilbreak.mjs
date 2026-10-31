@@ -416,14 +416,11 @@ const window = new Proxy({ React, ReactDOM, Veilbreak: {} }, { get: (t, k) => (k
   }
 
   function ScoreRow(p) {
-    var s = Object.assign({ rank: 0, score: 0, wave: 0, bosses: 0, squad: [], current: false }, p.view);
-    return h(Shape, { className: cx('vb-score', s.current && 'vb-score--current', p.className) },
-      L(cx('vb-score__rank', s.rank <= 3 && 'vb-score__rank--top'), pad2(s.rank)),
-      h('div', { className: 'vb-score__text' },
-        h('div', { className: 'vb-score__line' }, L('vb-score__value', num(s.score)), L('vb-score__badge', 'THIS RUN', show(s.current))),
-        L('vb-score__detail', 'Wave ' + s.wave + ' · ' + s.bosses + ' ' + (s.bosses === 1 ? 'boss' : 'bosses'))),
-      h('div', { className: 'vb-score__squad' }, s.squad.map(function (c, i) { return h(Shape, { key: i, className: 'vb-score__code' }, L('vb-score__code-text', c)); })));
+    var v = Object.assign({ rank: 0, score: 0, wave: 0, bosses: 0, squad: [], current: false }, p.view);
+    return h(ListRow, { className: cx('vb-score', v.current && 'vb-score--current', p.className), style: p.style, selected: v.current, lead: pad2(v.rank), leadClass: v.rank <= 3 && 'vb-score__rank--top',
+      title: num(v.score), value: v.current ? 'THIS RUN' : '', caption: 'Wave ' + v.wave + ' · ' + v.bosses + ' ' + (v.bosses === 1 ? 'boss' : 'bosses') + (v.squad.length ? ' · ' + v.squad.join(' ') : '') });
   }
+
 
   /* ── Operatives ───────────────────────────────────────────────────────── */
   var OPERATIVE = { id: '', name: '', code: '', role: '', roleIcon: 'striker', passive: '', passiveText: '', passiveFullText: '', kit: '#ffffff', portrait: null, hp: 0, maxHp: 1, barrier: 0, armor: 0, stability: 100, maxStability: 100, statuses: [], mode: 'auto', manualSeconds: 0, skills: [{}, { slot: 'S', kind: 'Signature' }] };
@@ -548,10 +545,10 @@ const window = new Proxy({ React, ReactDOM, Veilbreak: {} }, { get: (t, k) => (k
   /** ListRow (Progress.cs): glyph, caps title, caption, optional `bar` (ProgressBar props), trailing `value` and `action`. */
   function ListRow(p) {
     return h(Shape, Object.assign({ className: cx('vb-list-row', p.selected && 'vb-list-row--selected', p.className), style: p.style }, p.onPick ? clickable(p.onPick) : null),
-      p.icon ? h(VbIcon, { icon: p.icon, size: 20, className: 'vb-list-row__icon' }) : null,
-      h('div', { className: 'vb-list-row__text' }, L('vb-list-row__title', upper(p.title)), p.caption ? L('vb-t-caption vb-list-row__caption', p.caption) : null,
+      p.lead ? L(cx('vb-list-row__lead', p.leadClass), p.lead) : null, p.icon ? h(VbIcon, { icon: p.icon, size: 20, className: 'vb-list-row__icon' }) : null,
+      h('div', { className: 'vb-list-row__text' }, p.children, L('vb-list-row__title', upper(p.title)), p.caption ? L('vb-t-caption vb-list-row__caption', p.caption) : null,
         p.bar ? h(ProgressBar, Object.assign({ className: 'vb-list-row__bar' }, p.bar)) : null),
-      p.value ? L('vb-list-row__value', p.value) : null, p.action ? h('div', { className: 'vb-list-row__trail' }, p.action) : null);
+      p.value ? L(cx('vb-list-row__value', p.valueClass), p.value) : null, p.action ? h('div', { className: 'vb-list-row__trail' }, p.action) : null);
   }
   /** PerkCard, minimal: tier word, glyph, name, effect, its levels as a segmented ProgressBar and the value after the pick. */
   function PerkCard(p) {
@@ -587,12 +584,11 @@ const window = new Proxy({ React, ReactDOM, Veilbreak: {} }, { get: (t, k) => (k
   }
 
   function PerkRow(p) {
-    var v = perk(p.view), art = !!v.art;
-    return h(Shape, Object.assign({ className: cx('vb-perk-row', tier(v), p.selected && 'vb-perk-row--selected', p.className) }, clickable(p.onPick)),
-      h(Shape, { className: cx('vb-perk-row__thumb', 'vb-perk-art', art && 'vb-perk-art--portrait') }, Crop(v.art), h(VbIcon, { icon: v.icon, size: 20 })),
-      h('div', { className: 'vb-perk-row__text' }, h('div', { className: 'vb-perk-row__line' }, L('vb-perk-row__name', upper(v.name)), L('vb-perk-row__tag', upper(v.tag))), L('vb-perk-row__effect', v.effect)),
-      h('div', { className: 'vb-perk-row__right' }, L('vb-perk-row__value', v.now), L('vb-perk-row__stacks', stacks(v, false))));
+    var v = perk(p.view);
+    return h(ListRow, { className: cx('vb-perk-row', tier(v), p.className), style: p.style, selected: p.selected, onPick: p.onPick || function () { }, icon: v.icon, title: v.name, caption: v.tag + ' · ' + v.effect, value: v.now,
+      bar: v.max > 0 ? { segments: v.max, value: v.stack } : null });
   }
+
 
   /* ── Pages (Dialogs.cs) ───────────────────────────────────────────────── */
   /** Dialog.Sheet: a solid panel with a title and a line of body text; children are the actions. */
@@ -657,22 +653,20 @@ const window = new Proxy({ React, ReactDOM, Veilbreak: {} }, { get: (t, k) => (k
   RevealCard.tierWord = tierWord;
   /** One IF … THEN automation rule (RuleView); the toggle raises onToggle(enabled). */
   function RuleRow(p) {
-    var v = Object.assign({ index: 1, conditions: [], any: false, action: '', actionRest: '', cost: 0, enabled: true, warning: false, draft: false, note: '' }, p.view);
-    var e = useValue(!!v.enabled, p.onToggle), on = e[0], parts = [L('vb-rule__keyword', 'IF')];
-    v.conditions.forEach(function (c, i) {
-      if (i > 0) parts.push(L('vb-rule__join', v.any ? 'OR' : 'AND'));
-      parts.push(L('vb-rule__text', c.text)); if (c.value) parts.push(L('vb-rule__value', c.value)); if (c.after) parts.push(L('vb-rule__text', c.after));
+    var init = Object.assign({ index: 1, conditions: [], any: false, action: '', actionRest: '', cost: 0, enabled: true, warning: false, draft: false, note: '' }, p.view);
+    var e = R.useState(init.enabled), on = e[0], set = e[1]; R.useEffect(function () { set(init.enabled); }, [init.enabled]);
+    function toggle() { set(!on); if (p.onToggle) p.onToggle(!on); }
+    var cond = [h('div', { key: 'k', className: 'vb-l vb-rule__keyword' }, 'IF')];
+    init.conditions.forEach(function (c, i) {
+      if (i) cond.push(h('div', { key: 'j' + i, className: 'vb-l vb-rule__join' }, init.any ? 'OR' : 'AND'));
+      cond.push(h('div', { key: 't' + i, className: 'vb-l vb-rule__text' }, c.text)); if (c.value) cond.push(h('div', { key: 'v' + i, className: 'vb-l vb-rule__value' }, c.value)); if (c.after) cond.push(h('div', { key: 'a' + i, className: 'vb-l vb-rule__text' }, c.after));
     });
-    return h(Shape, { className: cx('vb-rule', !on && 'vb-rule--off', v.warning && 'vb-rule--warning', v.draft && 'vb-rule--draft', p.className), style: p.style },
-      L('vb-rule__index', String(v.index)),
-      h('div', { className: 'vb-rule__body' },
-        h.apply(null, ['div', { className: 'vb-rule__if' }].concat(parts)),
-        h('div', { className: 'vb-rule__then' }, L('vb-rule__keyword', 'THEN'), L('vb-rule__action', upper(v.action) + (v.actionRest ? ' ' + v.actionRest : '')),
-          L('vb-rule__cost', v.cost > 0 ? '−' + v.cost : '', show(v.cost > 0))),
-        L('vb-rule__note', v.note, show(!!v.note))),
-      h('div', Object.assign({ className: cx('vb-rule__toggle', on && 'vb-rule__toggle--on'), 'aria-pressed': on }, clickable(function () { e[1](!on); }), { title: on ? 'Turn rule off' : 'Turn rule on' }),
-        h('div', { className: 'vb-rule__knob' })));
+    return h(ListRow, { className: cx('vb-rule', !on && 'vb-rule--off', init.warning && 'vb-rule--warning', init.draft && 'vb-rule--draft', p.className), style: p.style, lead: String(init.index),
+      title: 'THEN ' + init.action + (init.actionRest ? ' ' + init.actionRest : ''), caption: init.note, value: init.cost > 0 ? '−' + init.cost : '', valueClass: 'vb-rule__cost',
+      action: h('div', Object.assign({ className: cx('vb-rule__toggle', on && 'vb-rule__toggle--on'), title: on ? 'Turn rule off' : 'Turn rule on', 'aria-pressed': on }, clickable(toggle)), h('div', { className: 'vb-rule__knob' })) },
+      h('div', { className: 'vb-rule__if' }, cond));
   }
+
 
   /* ── World layer (WorldElements.cs); WorldLayer itself places them over a 3D view ── */
   function WorldHealthBar(p) {

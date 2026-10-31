@@ -4,7 +4,8 @@
 
 - **ProgressBar** (`vb-progress`): one bar for every read-out, continuous or `Segments` levels with the `Next` level
   outlined; tones ally, power, enemy, neutral. `StatReadout` draws its bar with it.
-- **ListRow** (`vb-list-row`): one row primitive (glyph, title, caption, optional bar, trailing value and action).
+- **ListRow** (`vb-list-row`): one row primitive (lead, glyph, title, caption, optional bar, trailing value and action).
+  `PerkRow`, `ScoreRow` and `RuleRow` are ListRows now (rule rows keep their highlighted IF values).
 - **Minimal PerkCard**: tier word, glyph, name, effect, levels as a segmented ProgressBar, the value after the pick. The art
   band, badge, category, pips and shimmer are gone (and their USS).
 - **Minimal MerchantScreen**: one ListLayout of ListRows (rare finds, stack sales, health trades) and LEAVE MARKET.

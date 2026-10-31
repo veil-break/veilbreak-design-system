@@ -25,12 +25,12 @@ namespace Veilbreak.Gui {
  public MerchantScreen Bind(MerchantView view){Clear();var head=Ui.Box(this,"vb-merchant__head");Ui.Text(head,"NIGHT MARKET",TypeStyle.Title);new CreditsChip().Set(view.credits).Into(head);
   var list=Ui.List(this,null,"vb-merchant__scroll");
   Section(list,"Rare finds");for(int i=0;i<view.offers.Length;i++){int index=i;var o=view.offers[i];var row=Row(list,o.perk.name,o.perk.effect,o.perk.icon,o.perk);PerkArt.Tiers(row,o.perk);
-   var buy=new VbButton(o.taken?"SOLD":"BUY "+o.price,ButtonVariant.Secondary,null,null,()=>Bought?.Invoke(index)){name="buy-"+i}.Classes("vb-merchant__buy");buy.Blocked=o.taken?"Sold":view.credits<o.price?"Need "+(o.price-view.credits):o.blocked;row.Action(buy);}
+   var buy=new VbButton(o.taken?"SOLD":"BUY "+o.price,ButtonVariant.Secondary,null,null,()=>Bought?.Invoke(index)){name="buy-"+i}.Classes("vb-merchant__buy");buy.Blocked=o.taken?"Sold":view.credits<o.price?"Need "+(o.price-view.credits):o.blocked;row.WithAction(buy);}
   Section(list,"Sell stacks");if(view.stacks.Length==0)Ui.Text(list,"Nothing to sell yet.","vb-t-caption","vb-list__empty");
-  foreach(var st in view.stacks){var row=Row(list,st.perk.name,st.perk.now,st.perk.icon,st.perk);row.Action(new VbButton("+"+st.payout,ButtonVariant.Secondary,null,null,()=>PerkSold?.Invoke(st.perk.id)){name="sell-perk-"+st.perk.id}.Classes("vb-merchant__sell"));}
+  foreach(var st in view.stacks){var row=Row(list,st.perk.name,st.perk.now,st.perk.icon,st.perk);row.WithAction(new VbButton("+"+st.payout,ButtonVariant.Secondary,null,null,()=>PerkSold?.Invoke(st.perk.id)){name="sell-perk-"+st.perk.id}.Classes("vb-merchant__sell"));}
   Section(list,"Trade health · 25% max HP");
   foreach(var hp in view.health){var row=new ListRow(hp.name,hp.hp+" → "+Math.Max(0,hp.hp-hp.cost)+" HP","health").Into(list);row.Bar.Set(hp.hp/(float)Math.Max(1,hp.maxHp));
-   var sell=new VbButton("+"+hp.payout,ButtonVariant.Danger,null,null,()=>HealthSold?.Invoke(hp.actor)){name="sell-hp-"+hp.actor}.Classes("vb-merchant__sell");sell.Blocked=hp.blocked;row.Action(sell);}
+   var sell=new VbButton("+"+hp.payout,ButtonVariant.Danger,null,null,()=>HealthSold?.Invoke(hp.actor)){name="sell-hp-"+hp.actor}.Classes("vb-merchant__sell");sell.Blocked=hp.blocked;row.WithAction(sell);}
   new VbButton("LEAVE MARKET",ButtonVariant.Primary,null,"chevron",()=>Left?.Invoke()){name="leave-merchant"}.Classes("vb-merchant__leave").Into(this);return this;
  }
  static void Section(VisualElement list,string title)=>new LabelComponent(title).Classes("vb-merchant__section").Into(list);

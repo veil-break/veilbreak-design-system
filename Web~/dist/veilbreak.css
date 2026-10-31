@@ -684,6 +684,9 @@
 .vb-progress--enemy .vb-progress__fill, .vb-progress--enemy .vb-progress__cell--on { background-color: var(--enemy); }
 .vb-progress--neutral .vb-progress__fill, .vb-progress--neutral .vb-progress__cell--on { background-color: var(--text-2); }
 .vb-list-row { flex-direction: row; align-items: center; min-height: 56px; padding: 8px 10px; --vb-cut: 4; --vb-bw: 0; --vb-fill: var(--panel); }
+.vb-list-row__lead { font-family: var(--font-display); font-weight: 700; font-size: 16px; width: 28px; margin-right: 8px; color: var(--text-3); flex-shrink: 0; }
+.vb-score__rank--top { color: var(--text); }
+.vb-rule__if { flex-direction: row; flex-wrap: wrap; align-items: center; margin-bottom: 2px; }
 .vb-list-row__icon { width: 20px; height: 20px; margin-right: 10px; color: var(--text-2); }
 .vb-list-row__text { flex-grow: 1; flex-shrink: 1; min-width: 0; }
 .vb-list-row__title { font-family: var(--font-body); font-weight: 500; font-weight: 700; font-size: 12px; letter-spacing: 0.1em; }

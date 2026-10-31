@@ -63,17 +63,4 @@ static class PerkArt {
  public PerkChip Bind(PerkView p){view=p;PerkArt.Tiers(this,p);glyph.Icon=p.icon;title.text=p.name.ToUpperInvariant();count.text="×"+p.stack;count.Show(p.stack>1);tooltip=p.name+" · "+p.now;return this;}
 }
 
-/// <summary>Active-perk list row: art, name, tag, effect, value and stacks. Tap selects.</summary>
-[UxmlElement] public partial class PerkRow:VisualElement {
- public const string ClassName="vb-perk-row";
- readonly VisualElement thumb;readonly VbIcon glyph;readonly Label title,tag,effect,value,stacks;
- public event Action Picked;
- public PerkRow(){
-  AddToClassList(ClassName);VbShape.Attach(this);this.Clickable(()=>Picked?.Invoke());
-  thumb=VbShape.Attach(Ui.Box(this,ClassName+"__thumb","vb-perk-art"));glyph=new VbIcon("add",20).Into(thumb);
-  var text=Ui.Box(this,ClassName+"__text");var line=Ui.Box(text,ClassName+"__line");title=Ui.Text(line,"",ClassName+"__name");tag=Ui.Text(line,"",ClassName+"__tag");effect=Ui.Text(text,"",ClassName+"__effect");
-  var right=Ui.Box(this,ClassName+"__right");value=Ui.Text(right,"",ClassName+"__value");stacks=Ui.Text(right,"",ClassName+"__stacks");
- }
- public PerkRow Bind(PerkView p,bool selected){PerkArt.Tiers(this,p);PerkArt.Fill(thumb,glyph,p);EnableInClassList(ClassName+"--selected",selected);title.text=p.name.ToUpperInvariant();tag.text=p.tag.ToUpperInvariant();effect.text=p.effect;value.text=p.now;stacks.text=PerkArt.Stacks(p,false);return this;}
-}
 }

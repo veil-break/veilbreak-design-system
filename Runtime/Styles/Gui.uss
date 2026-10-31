@@ -812,6 +812,9 @@
 .vb-progress--neutral .vb-progress__fill, .vb-progress--neutral .vb-progress__cell--on { background-color: var(--vb-color-text-2); }
 
 .vb-list-row { flex-direction: row; align-items: center; min-height: 56px; padding: 8px 10px; --vb-cut: 4; --vb-bw: 0; --vb-fill: var(--vb-color-panel); }
+.vb-list-row__lead { -unity-font-definition: var(--vb-font-display-bold); font-size: 16px; width: 28px; margin-right: 8px; color: var(--vb-color-text-3); flex-shrink: 0; }
+.vb-score__rank--top { color: var(--vb-color-text); }
+.vb-rule__if { flex-direction: row; flex-wrap: wrap; align-items: center; margin-bottom: 2px; }
 .vb-list-row__icon { width: 20px; height: 20px; margin-right: 10px; -unity-background-image-tint-color: var(--vb-color-text-2); }
 .vb-list-row__text { flex-grow: 1; flex-shrink: 1; min-width: 0; }
 .vb-list-row__title { -unity-font-definition: var(--vb-font-body-medium); -unity-font-style: bold; font-size: 12px; letter-spacing: 10.000px; }
