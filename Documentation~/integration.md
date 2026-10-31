@@ -5,11 +5,13 @@ guide in code. The arcade (`unity/Assets/_Arcade/Runtime/ArcadeUI.cs`, `WorldRea
 
 ## 1. Install
 
-Reference the folder as a local package, for example in `Packages/manifest.json`:
+Add the package from Git in `Packages/manifest.json` (append `#<tag or commit>` to pin a version):
 
 ```json
-"com.veilbreak.gui": "file:../../packages/com.veilbreak.gui"
+"com.veilbreak.gui": "https://github.com/veil-break/veilbreak-design-system.git"
 ```
+
+or reference a checkout as a local package (`"file:../../packages/com.veilbreak.gui"`).
 
 It needs Unity 6000.3 or newer and the built-in UI Elements and Vector Graphics modules. It has no other package
 dependencies, uses no `Resources.Load` or scene objects, and never reads game types.
@@ -32,8 +34,8 @@ Your theme imports the kit first, then your sheets:
 @import url("MyGame.uss");
 ```
 
-- `VeilbreakGui.tss` imports the Unity default theme, then `Tokens.uss`, `Gui.uss`, `Layout.uss`, `World.uss` and
-  `Icons.uss`.
+- `VeilbreakGui.tss` imports the Unity default theme, then `Tokens.uss`, `Gui.uss`, `Layout.uss`, `Views.uss`,
+  `World.uss` and `Icons.uss`.
 - `VeilbreakGuiContrast.tss` is the same with the contrast colours on `:root`, for an always-high-contrast build. For a
   runtime toggle, use the `vb-contrast` root class instead.
 - Keep the kit in the **theme**. Popovers are placed on the panel root, where sheets attached to a UXML element never
@@ -180,3 +182,21 @@ what happened.
 | EditMode | `Tests/Editor`: navigation, world layer, ports, tokens, icons |
 | PlayMode | `Tests/Runtime/FitTests` renders the kit at widths 320–430 |
 | Clean consumer | The repository's `tools/verify-packages.py` copies the package and both samples into an empty project and compiles them |
+
+## Screen views
+
+The menus and run screens ship as views with plain view models: open a page, bind, handle the events.
+
+```csharp
+var menu = new MainMenuView().Into(nav.Open("menu"));
+menu.Bind(new MainMenuViewModel { best = 18240, bestWave = 12, checkpoint = cp, squad = names });
+menu.Play += Squad; menu.Settings += () => new SettingsView().Into(nav.Open("settings", MainMenu)).Bind(profile.settings);
+
+var battle = new BattleHudView().Into(root);          // HUD band, boss bar, announcer, world, cards
+var world = new WorldLayer { Project = Project }.Into(battle.World);
+battle.Pause += () => new PauseOverlayView().Into(nav.Open("pause", Resume)).Bind(pauseView);
+ConfirmDialogView.Push(nav, "END THIS RUN?", "Your run is recorded.", ("ABANDON", "remove", Abandon), ("KEEP PLAYING", "chevron"));
+```
+
+The same views exist for web apps in `Web~` (`@veilbreak/gui`), with the same names and view models.
+

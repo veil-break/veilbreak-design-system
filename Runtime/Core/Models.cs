@@ -63,4 +63,34 @@ public enum RarityTier { None, Blue, Violet, Gold }
 [Serializable] public sealed class RuleCondition { public string text="",value="",after=""; }
 
 [Serializable] public sealed class BossView { public string name=""; public float health=1,stability=1; public string detail=""; public bool shielded,interruptible; public string shieldDetail=""; }
+
+// ── view models for the screen views (Runtime/Views) ────────────────────────
+/// <summary>A run that can resume: the wave it resumes at, its score, who stands and what it carries.</summary>
+[Serializable] public sealed class CheckpointView { public long wave=1,score; public int standing=4,squadSize=4,perks; public string seed=""; }
+[Serializable] public sealed class MainMenuViewModel {
+ public string status="OFFLINE · LOCAL SCORES",subtitle="ARCADE",notice=""; public long best,bestWave;
+ /// <summary>Null when there is no run to resume; the checkpoint card only exists when there is one.</summary>
+ public CheckpointView checkpoint; public string[] squad=Array.Empty<string>(); public bool canExit=true;
+}
+[Serializable] public sealed class SquadViewModel {
+ public OperativeView[] roster=Array.Empty<OperativeView>();
+ /// <summary>Roster indices in squad order (1–4); -1 is an empty slot.</summary>
+ public int[] selected={-1,-1,-1,-1};
+ /// <summary>The roster index whose details are open, or -1.</summary>
+ public int focus=-1;
+ /// <summary>Per roster index: how to unlock a locked operative ("Pull in rifts"), or empty.</summary>
+ public string[] locked=Array.Empty<string>(); public RarityTier[] tiers=Array.Empty<RarityTier>(); public string seed="new seed";
+}
+[Serializable] public sealed class SettingsViewModel {
+ public float master=.8f,music=.55f,effects=.8f,sensitivity=.5f; public bool haptics=true,reducedMotion; public int camera,quality=1;
+ public string saved="SAVED",note="Autoplay lives in the battle HUD and starts on for every new run.";
+}
+[Serializable] public sealed class PauseViewModel { public long wave,score; public int standing,squadSize=4; public PerkView[] perks=Array.Empty<PerkView>(); public string seed="",detail=""; }
+[Serializable] public sealed class SquadHealthView { public string code=""; public int hp,maxHp=1; public float stability=1; }
+[Serializable] public sealed class PerkDraftViewModel { public long wave,bonus,score; public PerkView[] choices=Array.Empty<PerkView>(); public int pick; public SquadHealthView[] squad=Array.Empty<SquadHealthView>(); }
+[Serializable] public sealed class LedgerLine { public string label="",value=""; }
+[Serializable] public sealed class ResultsViewModel {
+ public string cause="SQUAD DOWN",distance="",simTime=""; public long score,wave,bosses; public int rank,of=20;
+ public LedgerLine[] ledger=Array.Empty<LedgerLine>(); public ContributionView[] squad=Array.Empty<ContributionView>(); public PerkView[] perks=Array.Empty<PerkView>();
+}
 }

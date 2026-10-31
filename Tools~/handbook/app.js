@@ -37,16 +37,16 @@
   }
 
   /* ── stage flags (global, remembered per viewer) ── */
-  var flags = { slim: store('slim') === '1', contrast: store('contrast') === '1', motion: store('motion') === '1' };
-  function stageClasses() { return (flags.slim ? ' hb-slim' : '') + (flags.contrast ? ' vb-contrast' : '') + (flags.motion ? ' vb-reduced-motion vb-reduced-flashes' : ''); }
+  var flags = { contrast: store('contrast') === '1', motion: store('motion') === '1' };
+  function stageClasses() { return (flags.contrast ? ' vb-contrast' : '') + (flags.motion ? ' vb-reduced-motion vb-reduced-flashes' : ''); }
   function applyFlags() {
-    ['slim', 'contrast', 'motion'].forEach(function (k) { document.getElementById('t-' + k).setAttribute('aria-pressed', flags[k] ? 'true' : 'false'); });
+    ['contrast', 'motion'].forEach(function (k) { document.getElementById('t-' + k).setAttribute('aria-pressed', flags[k] ? 'true' : 'false'); });
     document.querySelectorAll('[data-stage]').forEach(function (el) {
       el.className = el.getAttribute('data-base') + stageClasses();
       if (flags.contrast) el.setAttribute('data-theme', 'contrast'); else el.removeAttribute('data-theme');
     });
   }
-  ['slim', 'contrast', 'motion'].forEach(function (k) {
+  ['contrast', 'motion'].forEach(function (k) {
     document.getElementById('t-' + k).addEventListener('click', function () { flags[k] = !flags[k]; store(k, flags[k] ? '1' : '0'); applyFlags(); });
   });
 
@@ -81,7 +81,7 @@
   /* ── nav ── */
   function counts(list) { var c = { shipped: 0, partial: 0, proposed: 0 }; list.forEach(function (x) { c[x.status]++; }); return c; }
   function navHtml() {
-    var o = '<h3>Start</h3>' + link('overview', 'Overview') + link('setup', 'Unity setup') + link('name-map', 'Name map', D.entries.length) +
+    var o = '<h3>Start</h3>' + link('overview', 'Overview') + link('setup', 'Unity setup') + link('web', 'Web kit') + '<a href="web/demo/">Web app demo<small>↗</small></a>' + link('name-map', 'Name map', D.entries.length) +
       '<h3>Foundations</h3>' + link('tokens', 'Tokens', D.tokens.length) + link('type', 'Type') + link('e-frame', 'Frames: slim & chipped');
     D.tiers.forEach(function (t) {
       var list = D.entries.filter(function (x) { return x.tier === t.id; });
@@ -117,9 +117,9 @@
     });
     o += '<section class="tier slim"><div class="tier__n">' + D.icons.length + '</div><div class="tier__name">Assets</div><p>Stroke icons, the mark and the fonts, with their USS classes and files.</p><div class="tier__list"><a href="#icons"><i class="dot dot--shipped"></i><span>Icon pack</span></a><a href="#fonts"><i class="dot dot--shipped"></i><span>Fonts &amp; mark</span></a><a href="#tokens"><i class="dot dot--shipped"></i><span>Tokens · ' + D.tokens.length + '</span></a></div></section></div>';
     o += '<div class="legend"><span><i class="dot dot--shipped"></i>' + all.shipped + ' shipped · in the package as described</span><span><i class="dot dot--partial"></i>' + all.partial + ' partial · exists, contract incomplete</span><span><i class="dot dot--proposed"></i>' + all.proposed + ' proposed · spec only</span></div>';
-    o += '<div class="callout slim"><div><div class="eyebrow">New in the system</div><h3>Two kinds of frame</h3><p>Containers move to a <strong>slim</strong> frame: a 4-unit chamfer and no border. The chipped frame stays for what you act on or what is selected. It is pure USS on the existing <code>VbShape</code>, so no C# changes.</p><p>Switch on <strong>Slim containers</strong> in the top bar to see any screen in the handbook on the slim frame.</p><a class="go" href="#e-frame">FrameComponent →</a></div><div id="ov-preview"></div></div>';
+    o += '<div class="callout slim"><div><div class="eyebrow">New in 0.3.0 · everything shipped</div><h3>Two kinds of frame, one kit for Unity and the web</h3><p>Containers sit on the <strong>slim</strong> frame: a 4-unit chamfer and no border. The chipped frame stays for what you act on or what is selected. Text, labels, badges, tiles, cards, forms, stacks, lists, grids, the board and all thirteen screen views now ship in the package, each with a React twin in the <a class="ref" href="#web">web kit</a>.</p><p>Try them together in the <a class="ref" href="web/demo/">web app demo</a>: menu, squad, battle, pause, perks, results.</p><a class="go" href="#e-frame">FrameComponent →</a></div><div id="ov-preview"></div></div>';
     o += '<h2>From an empty scene to a running board</h2><div class="steps">' +
-      step('Reference the package', '<code>"com.veilbreak.gui": "file:../../packages/com.veilbreak.gui"</code>') +
+      step('Reference the package', '<code>"com.veilbreak.gui": "https://github.com/veil-break/veilbreak-design-system.git"</code> in <code>Packages/manifest.json</code>') +
       step('Use the panel settings', '<code>Runtime/Settings/VeilbreakPortrait.asset</code> · 390 × 844, match width, theme <code>VeilbreakGui.tss</code>') +
       step('Root and safe area', 'Class <code>vb-root</code> on the root, then <code>new SafeAreaRoot(root, settings, screenLayer)</code>; call <code>Refresh()</code> each frame.') +
       step('Bind, don\'t rebuild', 'Create components once and call <code>Bind(view)</code> every frame. They reuse their children.') + '</div>';
@@ -128,8 +128,8 @@
     var host = document.getElementById('ov-preview');
     PREVIEWS.__ov = function (render) {
       render(h('div', { style: { display: 'flex', flexDirection: 'row', gap: 10, flexWrap: 'wrap' } },
-        h(V.VbFrame, { className: 'vb-panel vb-section', style: { width: 210 } }, h('div', { className: 'vb-l vb-t-label vb-section__title' }, 'CHIPPED · TODAY'), h(V.VbSwitch, { text: 'HAPTICS', detail: 'Light pulse on accept', value: true })),
-        h(V.VbFrame, { className: 'vb-panel vb-section vb-frame--slim', style: { width: 210 } }, h('div', { className: 'vb-l vb-t-label vb-section__title' }, 'SLIM · PROPOSED'), h(V.VbSwitch, { text: 'HAPTICS', detail: 'Light pulse on accept', value: true }))));
+        h(V.VbFrame, { kind: 'chipped', className: 'vb-panel', style: { width: 210, padding: '12px 14px' } }, h('div', { className: 'vb-l vb-t-label vb-section__title' }, 'CHIPPED · ACT ON IT'), h(V.VbSwitch, { text: 'HAPTICS', detail: 'Light pulse on accept', value: true })),
+        h(V.VbFrame, { kind: 'slim', className: 'vb-panel vb-section', style: { width: 210 } }, h('div', { className: 'vb-l vb-t-label vb-section__title' }, 'SLIM · CONTAINERS'), h(V.VbSwitch, { text: 'HAPTICS', detail: 'Light pulse on accept', value: true }))));
     };
     mountPreview(host, { id: '__ov', stage: 'free', height: 150 });
     function step(t, d) { return '<div class="step slim"><b>' + t + '</b><p>' + d + '</p></div>'; }
@@ -157,7 +157,7 @@
     var cur = store('tab') || 'unity'; if (!tabs.some(function (t) { return t[0] === cur; })) cur = 'unity';
     o += '<div class="tabs" role="tablist">' + tabs.map(function (t) { return '<button class="tab" role="tab" data-tab="' + t[0] + '" aria-selected="' + (t[0] === cur) + '">' + t[1] + (t[0] === 'uss' || t[0] === 'api' ? '<sup>' + t[2] + '</sup>' : '') + '</button>'; }).join('') + '</div>';
     o += '<div class="panel" data-panel="unity"' + (cur === 'unity' ? '' : ' hidden') + '>' + codebox('C#', x.csharp, 'cs') + codebox('UXML · xmlns:vb="Veilbreak.Gui"', x.uxml, 'uxml') +
-      (x.status === 'proposed' ? '<p class="prose" style="color:var(--hb-lav-ink)">The C# above is the proposed API. Read the Proposal tab for what exists today.</p>' : '') + '</div>';
+      '' + '</div>';
     if (x.spec) o += '<div class="panel prose" data-panel="spec"' + (cur === 'spec' ? '' : ' hidden') + '>' + x.spec + '</div>';
     if (x.rules || x.doc) o += '<div class="panel prose" data-panel="guide"' + (cur === 'guide' ? '' : ' hidden') + '>' + (x.rules ? '<h4>Rules</h4>' + x.rules : '') + (x.doc ? '<h4>Reference · ' + esc(x.docTitle) + '</h4>' + x.doc : '') + '</div>';
     if (x.uss.length) o += '<div class="panel" data-panel="uss"' + (cur === 'uss' ? '' : ' hidden') + '><div class="codebox slim"><div class="codebox__head"><span>' + x.uss.length + ' rules · from the package\'s USS</span><button data-copy="' + esc(x.uss.map(function (r) { return r.sel + ' { ' + r.body + ' }'; }).join('\n')) + '">Copy all</button></div><div style="padding:6px 14px">' +
@@ -250,8 +250,12 @@
 
   function setupPage() {
     view.innerHTML = '<div class="eyebrow">Start</div><h1>Unity setup</h1><p class="lede">From <code>Documentation~/integration.md</code> in the package.</p><div class="prose">' + D.integration + '</div>' +
-      '<h2>Regenerate</h2>' + codebox('Shell', 'python3 Tools~/tokens.py          # Tokens.uss, TokensContrast.uss, VbTokens.cs, tokens.md\npython3 Tools~/icons.py           # Icons.uss from Runtime/Icons/*.svg\nTools~/web/build.sh OUT           # the design-system artifact\npython3 Tools~/handbook/build_handbook.py . OUT --arcade ../..   # this handbook', 'sh') +
-      '<h2>Slim frame · USS</h2>' + codebox('Gui.uss', D.slimUss, 'uss') + codebox('Migration of today\'s containers', D.slimMigration, 'uss');
+      '<h2>Regenerate</h2>' + codebox('Shell', 'python3 Tools~/tokens.py          # Tokens.uss, TokensContrast.uss, VbTokens.cs, tokens.md\npython3 Tools~/icons.py           # Icons.uss from Runtime/Icons/*.svg\npython3 Tools~/metas.py            # .meta files for new package files\nTools~/web/build.sh OUT           # the design-system artifact\npython3 Tools~/web/package.py     # the web kit (Web~/dist)\npython3 Tools~/handbook/build_handbook.py . docs   # this handbook, the web kit and the demo (GitHub Pages)', 'sh') +
+      '<h2>Slim frame · USS</h2>' + codebox('Gui.uss', D.slimUss, 'uss') + codebox('Layout.uss · the package\'s containers', D.slimMigration, 'uss');
+  }
+
+  function webPage() {
+    view.innerHTML = '<div class="eyebrow">Start</div><h1>Web kit</h1><p class="lede">The same components for web apps: React 18 ports with the same names, element trees, classes and view models, generated from the package. Open the <a class="ref" href="web/demo/">web app demo</a> to see the views chained into a running app.</p><div class="prose">' + D.web + '</div>';
   }
 
   /* ── search ── */
@@ -276,7 +280,7 @@
     side.querySelectorAll('a').forEach(function (a) { if (a.getAttribute('data-r') === r) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
     if (r.indexOf('e-') === 0 && E[r.slice(2)]) entry(E[r.slice(2)]);
     else if (r === 'tokens') tokensPage(); else if (r === 'type') typePage(); else if (r === 'icons') iconsPage(); else if (r === 'fonts') fontsPage();
-    else if (r === 'name-map') nameMap(); else if (r === 'setup') setupPage(); else overview();
+    else if (r === 'name-map') nameMap(); else if (r === 'setup') setupPage(); else if (r === 'web') webPage(); else overview();
     window.scrollTo(0, 0);
     var cur = side.querySelector('[aria-current]'); if (cur && cur.scrollIntoView) cur.scrollIntoView({ block: 'nearest' });
   }

@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Veilbreak Web App</title>
+<meta name="description" content="A small web app built only from @veilbreak/gui: the arcade's screens chained together.">
+<link rel="stylesheet" href="../dist/tokens.css">
+<link rel="stylesheet" href="../dist/veilbreak.css">
+<style>
+  :root { color-scheme: dark; }
+  html, body { margin: 0; min-height: 100%; background: var(--ground); color: var(--text); font-family: var(--font-body); }
+  body { display: flex; justify-content: center; align-items: flex-start; padding: 16px; box-sizing: border-box; }
+  .demo { display: flex; gap: 24px; flex-wrap: wrap; justify-content: center; align-items: flex-start; max-width: 100%; }
+  .phone { position: relative; width: 390px; max-width: calc(100vw - 32px); height: 844px; overflow: hidden; border-radius: 28px; box-shadow: 0 0 0 1px rgba(250,238,244,.12), 0 30px 80px rgba(0,0,0,.5);
+    background: radial-gradient(60% 40% at 50% 30%, rgba(240,137,159,.22) 0%, transparent 70%), linear-gradient(180deg, #3a2a4d 0%, #1d1428 55%, #0b0710 100%); }
+  .phone__root { position: absolute; left: 0; right: 0; top: 48px; bottom: 34px; display: flex; }
+  .phone__status { position: absolute; left: 0; right: 0; top: 0; height: 48px; display: flex; justify-content: space-between; align-items: center; padding: 0 28px; font: 600 13px var(--font-body); color: rgba(250,238,244,.8); }
+  .phone__world { position: absolute; inset: 0; background: repeating-linear-gradient(90deg, transparent 0 62px, rgba(143,240,207,.05) 62px 63px), radial-gradient(70% 45% at 50% 20%, var(--scene-neon) 0%, transparent 70%); }
+  .side { width: 300px; max-width: calc(100vw - 32px); font-size: 13px; line-height: 1.5; color: var(--text-2); }
+  .side h1 { font: 700 18px var(--font-display); letter-spacing: .12em; color: var(--text); margin: 8px 0; }
+  .side code { color: var(--ally-text); }
+  .side ul { padding-left: 18px; }
+  .side a { color: var(--ally-text); }
+  .modal { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end; padding: 0 12px; background: rgba(5,2,8,.45); z-index: 5; }
+  @media (max-width: 760px) { .side { order: 2; } }
+</style>
+</head>
+<body>
+<div class="demo"><div id="app" class="phone"></div>
+  <div class="side">
+    <h1>VEILBREAK WEB APP</h1>
+    <p>Every pixel in the phone is a <code>@veilbreak/gui</code> view, the React twin of the Unity package's views. The app only holds state and answers events, the same way a Unity game binds view models.</p>
+    <ul><li>Menu → Squad (pick four) → Battle</li><li>Pause (Esc or the pause square) → Settings, Abandon (confirms)</li><li>Clear a wave to draft a perk; lose everyone to see results and scores</li></ul>
+    <p><a href="../../">← Back to the handbook</a></p>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="../dist/veilbreak.js"></script>
+<script>
+(function () {
+  'use strict';
+  var V = window.Veilbreak, R = React, h = R.createElement;
+  var NAMES = ['aria', 'sol', 'aegis', 'nyra', 'rook', 'mira', 'hex', 'echo'];
+  var ROLES = ['Striker', 'Breaker', 'Protector', 'Healer', 'Disruptor', 'Support', 'Debuffer', 'Operator'];
+  var ROSTER = NAMES.map(function (k, i) {
+    return { id: k, name: k.charAt(0).toUpperCase() + k.slice(1), code: k.slice(0, 2).toUpperCase(), role: ROLES[i], roleIcon: ROLES[i].toLowerCase(), kit: 'var(--kit-' + k + ')',
+      hp: 1000, maxHp: 1000, armor: 10 + i, stability: 100, maxStability: 110, passive: 'Signal discipline', passiveText: 'Skills cost 2 less Power after a kill.',
+      skills: [{ label: 'Burst', icon: 'burst', cost: 18, slot: 'A', kind: 'Active', description: 'Short burst at the nearest enemy', cooldownSeconds: 4 },
+               { label: 'Overdrive', icon: 'beam', cost: 40, slot: 'S', kind: 'Signature', description: 'Beam that breaks shields', cooldownSeconds: 12 }] };
+  });
+  var PERKS = [
+    { id: 'sharp', name: 'Sharpened Output', category: 'Offense', tag: 'General', tier: 'general', icon: 'burst', effect: '+8% damage', stack: 0, max: 5, now: 'None', next: '+8% damage' },
+    { id: 'mesh', name: 'Barrier Mesh', category: 'Defense', tag: 'General', tier: 'general', icon: 'barrier', effect: '+60 barrier each wave', stack: 0, max: 3, now: 'None', next: '+60 barrier' },
+    { id: 'reasm', name: 'Emergency Reassembly', category: 'Defense', tag: 'Rare', tier: 'rare', icon: 'add', effect: 'Revive one fallen fighter at 35% health', stack: 0, max: 0, now: 'Revive at 35%', next: 'Revive at 35%' }];
+  function load(k, d) { try { var v = localStorage.getItem('vb-demo-' + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
+  function save(k, v) { try { localStorage.setItem('vb-demo-' + k, JSON.stringify(v)); } catch (e) { } }
+
+  function App() {
+    var s = R.useState({ page: 'menu', modal: null }), st = s[0];
+    function go(page, extra) { s[1](function (o) { return Object.assign({}, o, { page: page, modal: null }, extra); }); }
+    function modal(m) { s[1](function (o) { return Object.assign({}, o, { modal: m }); }); }
+    var sq = R.useState({ selected: [0, 1, 2, -1], focus: -1 }), squad = sq[0], setSquad = sq[1];
+    var sc = R.useState(load('scores', [])), scores = sc[0], setScores = sc[1];
+    var cfg = R.useState(load('settings', {})), settings = cfg[0], setSettings = cfg[1];
+    var rn = R.useState(null), run = rn[0], setRun = rn[1];
+    var paused = st.page !== 'battle' || !!st.modal;
+
+    // A tiny simulation: power regenerates, enemies chip away at the squad, a wave clears every ~12 s.
+    R.useEffect(function () {
+      if (!run || paused) return;
+      var t = setInterval(function () {
+        setRun(function (r) {
+          if (!r) return r;
+          var n = Object.assign({}, r, { clock: r.clock + 0.25, power: Math.min(100, r.power + 3), score: r.score + 15 });
+          n.ops = r.ops.map(function (o, i) { var hit = Math.random() < 0.18 ? Math.round(20 + Math.random() * 60) * (1 + r.wave * 0.1) : 0; return Object.assign({}, o, { hp: Math.max(0, Math.round(o.hp - hit)) }); });
+          if (n.ops.every(function (o) { return o.hp <= 0; })) { n.over = true; }
+          else if (n.clock - r.waveAt >= 12) { n.cleared = true; }
+          return n;
+        });
+      }, 250);
+      return function () { clearInterval(t); };
+    }, [!!run, paused]);
+    R.useEffect(function () {
+      if (!run) return;
+      if (run.over) finish();
+      else if (run.cleared) { setRun(Object.assign({}, run, { cleared: false })); go('perks', { pick: 0 }); }
+    }, [run && run.over, run && run.cleared]);
+    R.useEffect(function () {
+      function key(e) { if (e.key !== 'Escape') return; if (st.modal) modal(null); else if (st.page === 'battle') go('pause'); else if (st.page === 'pause') go('battle'); else if (['squad', 'settings', 'scores'].indexOf(st.page) >= 0) go(st.back || 'menu'); }
+      window.addEventListener('keydown', key); return function () { window.removeEventListener('keydown', key); };
+    });
+
+    function start() {
+      var ops = squad.selected.map(function (i) { return Object.assign({}, ROSTER[i], { mode: 'auto', statuses: [] }); });
+      setRun({ wave: 1, score: 0, power: 40, clock: 0, waveAt: 0, ops: ops, perks: [], seed: Math.random().toString(16).slice(2, 10).toUpperCase(), auto: true, speed: 1 });
+      go('battle', { modal: load('guided', false) ? null : 'guide' });
+    }
+    function finish() {
+      var entry = { score: run.score, wave: run.wave, bosses: Math.floor(run.wave / 5), squad: run.ops.map(function (o) { return o.code; }), at: Date.now() };
+      var list = scores.concat([entry]).sort(function (a, b) { return b.score - a.score || b.wave - a.wave; }).slice(0, 20);
+      setScores(list); save('scores', list); go('results', { last: entry });
+    }
+    var root;
+    if (st.page === 'menu') {
+      var best = scores[0];
+      root = h(V.MainMenuView, { view: { best: best ? best.score : 0, bestWave: best ? best.wave : 0, squad: squad.selected.filter(function (i) { return i >= 0; }).map(function (i) { return ROSTER[i].name; }),
+        checkpoint: run && !run.over ? { wave: run.wave, score: run.score, standing: run.ops.filter(function (o) { return o.hp > 0; }).length, perks: run.perks.length, seed: run.seed } : null, notice: 'Demo · scores and settings stay in this browser' },
+        onPlay: function () { go('squad'); }, onResume: function () { go('battle'); }, onScores: function () { go('scores', { back: 'menu' }); }, onSettings: function () { go('settings', { back: 'menu' }); },
+        onExit: function () { modal({ kind: 'confirm', title: 'LEAVE THE DEMO?', body: 'Your scores stay in this browser.', confirm: { label: 'LEAVE', icon: 'back' }, onConfirm: function () { location.href = '../'; } }); } });
+    } else if (st.page === 'squad') {
+      root = h(V.SquadView, { view: { roster: ROSTER, selected: squad.selected, focus: squad.focus, seed: 'new seed' },
+        onPick: function (i) { setSquad(Object.assign({}, squad, { focus: i })); }, onClose: function () { setSquad(Object.assign({}, squad, { focus: -1 })); },
+        onSlotPick: function (k) { var i = squad.selected[k]; setSquad(Object.assign({}, squad, { focus: i })); },
+        onToggle: function (i) { var sel = squad.selected.slice(), at = sel.indexOf(i); if (at >= 0) sel[at] = -1; else { var free = sel.indexOf(-1); if (free >= 0) sel[free] = i; } setSquad({ selected: sel, focus: i }); },
+        onStart: start, onBack: function () { go('menu'); } });
+    } else if (st.page === 'settings') {
+      root = h(V.SettingsView, { view: Object.assign({}, settings, { saved: 'SAVED' }), onChange: function (m) { setSettings(m); save('settings', m); }, onBack: function () { go(st.back || 'menu'); },
+        onClearScores: function () { modal({ kind: 'confirm', title: 'CLEAR LOCAL SCORES?', body: 'Every high score in this browser is removed. This cannot be undone.', confirm: { label: 'CLEAR', icon: 'remove' }, onConfirm: function () { setScores([]); save('scores', []); } }); },
+        onAccessibility: function () { modal({ kind: 'confirm', title: 'ACCESSIBILITY', body: 'High contrast, larger text and reduced flashes are root classes (vb-contrast, vb-large-text, vb-reduced-flashes).', confirm: { label: 'OK', icon: 'check', variant: 'secondary' } }); } });
+    } else if (st.page === 'battle' && run) {
+      var standing = run.ops.filter(function (o) { return o.hp > 0; }).length;
+      root = h(V.BattleHudView, { hud: { wave: run.wave, score: run.score, power: run.power, focus: 100, credits: run.wave * 30, auto: run.auto, speed: run.speed }, operatives: run.ops,
+        boss: run.wave % 5 === 0 ? { name: 'Signal Warden', health: 1 - (run.clock - run.waveAt) / 12, stability: 0.6, detail: 'wave ' + run.wave } : null,
+        announcement: run.clock - run.waveAt < 2 ? 'WAVE ' + String(run.wave).padStart(2, '0') + ' · ' + standing + ' STANDING' : '',
+        world: h('div', { className: 'phone__world' }),
+        onPause: function () { go('pause'); }, onAuto: function () { setRun(Object.assign({}, run, { auto: !run.auto })); }, onSpeed: function () { setRun(Object.assign({}, run, { speed: run.speed === 1 ? 2 : 1 })); } });
+    } else if (st.page === 'pause' && run) {
+      root = h(V.PauseOverlayView, { view: { wave: run.wave, score: run.score, standing: run.ops.filter(function (o) { return o.hp > 0; }).length, perks: run.perks, seed: run.seed, detail: 'demo rules' },
+        onResume: function () { go('battle'); }, onSettings: function () { go('settings', { back: 'pause' }); }, onPerks: function () { },
+        onAbandon: function () { modal({ kind: 'confirm', title: 'END THIS RUN?', body: 'Your current run will be recorded and its checkpoint removed.', confirm: { label: 'ABANDON', icon: 'remove', sub: 'Record the score and end the run' }, onConfirm: finish }); },
+        onExit: function () { go('menu'); } });
+    } else if (st.page === 'perks' && run) {
+      var choices = PERKS.map(function (p) { var owned = run.perks.filter(function (q) { return q.id === p.id; })[0]; return Object.assign({}, p, { stack: owned ? owned.stack : 0 }); });
+      root = h(V.PerkDraftView, { view: { wave: run.wave, bonus: run.wave * 100, score: run.score, choices: choices, pick: st.pick, squad: run.ops.map(function (o) { return { code: o.code, hp: o.hp, maxHp: o.maxHp, stability: 0.8 }; }) },
+        onPick: function (i) { go('perks', { pick: i }); },
+        onTake: function () {
+          var p = choices[st.pick], perks = run.perks.filter(function (q) { return q.id !== p.id; }).concat([Object.assign({}, p, { stack: p.stack + 1 })]);
+          var ops = p.id === 'reasm' ? run.ops.map(function (o, i, a) { return o.hp <= 0 && a.findIndex(function (x) { return x.hp <= 0; }) === i ? Object.assign({}, o, { hp: 350 }) : o; }) : run.ops;
+          setRun(Object.assign({}, run, { wave: run.wave + 1, waveAt: run.clock, score: run.score + run.wave * 100, perks: perks, ops: ops })); go('battle');
+        } });
+    } else if (st.page === 'results' && st.last) {
+      var rank = scores.indexOf(scores.filter(function (x) { return x.at === st.last.at; })[0]) + 1;
+      root = h(V.ResultsView, { view: { cause: 'SQUAD DOWN', score: st.last.score, wave: st.last.wave, bosses: st.last.bosses, rank: rank, of: Math.max(20, scores.length), ledger: [{ label: 'Time in combat', value: V.format.number(Math.round(st.last.score * 0.6)) }, { label: 'Wave clears · 100 × wave', value: V.format.number(Math.round(st.last.score * 0.4)) }],
+        squad: (run ? run.ops : []).map(function (o, i) { return { operative: o, fellWave: o.hp <= 0 ? st.last.wave : 0, damage: 12000 - i * 1500, kills: 40 - i * 5, casts: 12, power: 300, share: [0.34, 0.27, 0.21, 0.18][i] }; }), perks: run ? run.perks : [] },
+        onMenu: function () { setRun(null); go('menu'); }, onAgain: function () { setRun(null); go('squad'); } });
+    } else if (st.page === 'scores') {
+      root = h(V.HighScoresView, { ranked: scores.map(function (x, i) { return { rank: i + 1, score: x.score, wave: x.wave, bosses: x.bosses, squad: x.squad, current: st.last && x.at === st.last.at }; }), caption: 'In this browser. Ties break by wave.', onBack: function () { go(st.back || 'menu'); } });
+    } else root = h(V.MainMenuView, {});
+
+    var m = st.modal, layer = null;
+    if (m === 'guide') layer = h(V.GuideDialogView, { onReady: function () { save('guided', true); modal(null); } });
+    else if (m && m.kind === 'confirm') layer = h(V.ConfirmDialogView, { title: m.title, body: m.body, confirm: m.confirm, cancel: { label: 'CANCEL', icon: 'close' }, onConfirm: function () { modal(null); if (m.onConfirm) m.onConfirm(); }, onCancel: function () { modal(null); } });
+    var screen = st.page === 'battle' ? root : h('div', { className: 'vb-screen vb-screen--' + st.page }, h('div', { className: 'vb-page vb-page--' + st.page }, root));
+    return h(R.Fragment, null, h('div', { className: 'phone__status' }, h('span', null, '9:41'), h('span', null, 'VEILBREAK')),
+      h('div', { className: 'vb-root phone__root' + (settings.reducedMotion ? ' vb-reduced-motion' : '') }, h('div', { className: st.modal ? 'vb-covered' : '', style: { display: 'flex', flexDirection: 'column', flexGrow: 1, minHeight: 0, position: 'relative' } }, screen),
+        layer ? h('div', { className: 'modal' }, layer) : null));
+  }
+  ReactDOM.createRoot(document.getElementById('app')).render(h(App));
+})();
+</script>
+</body>
+</html>

@@ -8,17 +8,17 @@ namespace Veilbreak.Gui {
 /// </summary>
 [UxmlElement] public partial class HudTop:VisualElement {
  public const string ClassName="vb-hud";
- readonly Label waveWord,score;readonly GlitchText wave;readonly CreditsChip credits;long wantedWave=-1;public event Action WaveSlammed; readonly Label speedState; public bool ShowFocus {get=>focus.resolvedStyle.display!=DisplayStyle.None;set=>focus.Show(value);}readonly VisualElement auto,resources;readonly PowerStrip power;readonly FocusMeter focus;readonly float[] mark=new float[1];HudView view;
+ readonly Label waveWord,score;readonly GlitchText wave;readonly CreditsChip credits;long wantedWave=-1;public event Action WaveSlammed; readonly IconButtonComposite speed; public bool ShowFocus {get=>focus.resolvedStyle.display!=DisplayStyle.None;set=>focus.Show(value);}readonly IconButtonComposite auto;readonly VisualElement resources;readonly PowerStrip power;readonly FocusMeter focus;readonly float[] mark=new float[1];HudView view;
  public Popover Queue {get;}
  public event Action AutoClicked,PauseClicked,SpeedClicked;
  public event Action<QueueView> QueueCancel;
  public HudTop(){
   AddToClassList(ClassName);pickingMode=PickingMode.Ignore;var row=Ui.Box(this,ClassName+"__row");
-  var pause=VbShape.Attach(Ui.Box(row,ClassName+"__pause")).Clickable(()=>PauseClicked?.Invoke());pause.name="pause";pause.tooltip="Pause";new VbIcon("pause",20).Into(pause);
-  auto=VbShape.Attach(Ui.Box(row,ClassName+"__auto")).Clickable(()=>AutoClicked?.Invoke());auto.name="auto";new VbIcon("automation",20).Into(auto);
+  var pause=new IconButtonComposite("pause","Pause",()=>PauseClicked?.Invoke()){Quiet=true,name="pause"}.Classes(ClassName+"__pause").Into(row);
+  auto=new IconButtonComposite("automation","Autoplay",()=>AutoClicked?.Invoke()){Quiet=true,name="auto"}.Classes(ClassName+"__auto").Into(row);
   var stats=Ui.Box(row,ClassName+"__stats");var w=Ui.Box(stats,ClassName+"__stat");waveWord=Ui.Text(w,"WAVE",ClassName+"__key");wave=new GlitchText("01").Classes(ClassName+"__wave").Into(w);wave.name="wave-number";
   var s=Ui.Box(stats,ClassName+"__stat");Ui.Text(s,"SCORE",ClassName+"__key");score=Ui.Text(s,"0",ClassName+"__score");
-  var speed=VbShape.Attach(Ui.Box(row,ClassName+"__speed")).Clickable(()=>SpeedClicked?.Invoke());speed.name="speed";speed.tooltip="Toggle simulation speed";speedState=Ui.Text(speed,"1×",ClassName+"__auto-state");
+  speed=new IconButtonComposite("","Toggle simulation speed",()=>SpeedClicked?.Invoke()){Text="1×",name="speed"}.Classes(ClassName+"__speed").Into(row);speed.Q<Label>(className:IconButtonComposite.ClassName+"__text").AddToClassList(ClassName+"__auto-state");
   resources=VbShape.Attach(Ui.Box(this,ClassName+"__resources"));resources.focusable=true;resources.pickingMode=PickingMode.Position;
   var resourceRow=Ui.Box(resources,ClassName+"__resource-row");power=new PowerStrip().Into(resourceRow);credits=new CreditsChip().Into(resourceRow);focus=new FocusMeter().Into(resources);
   Queue=Popover.Attach(resources,()=>view!=null&&view.queue.Length>0?new QueueList().Bind(view.queue,view.queueTitle,view.queueHint,q=>QueueCancel?.Invoke(q)):null);
@@ -28,8 +28,8 @@ namespace Veilbreak.Gui {
   view=v;EnableInClassList(ClassName+"--boss",v.boss);waveWord.text=v.boss?"BOSS":"WAVE";
   // Numbers are formatted only when they change: the band is bound every frame.
   if(v.wave!=wantedWave){wantedWave=v.wave;long next=v.wave;if(shownWave<0){shownWave=next;wave.text=next.ToString("00");}else Glitch.Out(wave,()=>{shownWave=next;wave.text=next.ToString("00");Glitch.Slam(wave);if(!Ui.Under(this,SafeAreaRoot.ReducedMotion)){Glitch.Jitter(this);WaveSlammed?.Invoke();}});}if(v.score!=shownScore){shownScore=v.score;score.text=Ui.Compact(v.score);score.tooltip=Ui.Number(v.score);}
-  speedState.text=v.speed==1?"1×":v.speed==2?"2×":v.speed+"×";
-  auto.EnableInClassList(ClassName+"__auto--on",v.auto);auto.tooltip=v.auto?"Autoplay on · tap to disable":"Autoplay off · tap to enable";credits.Set(v.credits);
+  speed.Text=v.speed==1?"1×":v.speed==2?"2×":v.speed+"×";
+  auto.EnableInClassList(ClassName+"__auto--on",v.auto);auto.Active=v.auto;auto.tooltip=v.auto?"Autoplay on · tap to disable":"Autoplay off · tap to enable";credits.Set(v.credits);
   float[] marks=null;if(v.queue.Length>0){mark[0]=v.queue[0].cost/(float)Mathf.Max(1,v.maxPower);marks=mark;}
   power.Set(v.power,v.maxPower,v.regen,v.hint,v.previewFrom,v.previewTo,marks);focus.Set(v.focus,v.slow);
   return this;
@@ -77,7 +77,7 @@ public sealed class QueueList:VisualElement {
  [UxmlAttribute] public string Meta {get=>meta.text;set=>meta.text=value??"";}
  public ScreenHeader():this("",""){}
  public ScreenHeader(string title,string meta,string backLabel="Back"){
-  AddToClassList(ClassName);var back=VbShape.Attach(Ui.Box(this,ClassName+"__back")).Clickable(()=>Back?.Invoke());back.name="back";back.tooltip=backLabel;new VbIcon("back",20).Into(back);
+  AddToClassList(ClassName);new IconButtonComposite("back",backLabel,()=>Back?.Invoke()){name="back"}.Classes(ClassName+"__back").Into(this);
   this.title=Ui.Text(this,"",ClassName+"__title");this.meta=Ui.Text(this,"",ClassName+"__meta");Title=title;Meta=meta;
  }
  public ScreenHeader Accent(bool on){meta.EnableInClassList(ClassName+"__meta--accent",on);return this;}

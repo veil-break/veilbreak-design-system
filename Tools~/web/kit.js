@@ -5,6 +5,8 @@
   'use strict';
   var R = window.React;
   var h = R.createElement;
+  // Layout effects run in the browser only, so server rendering (Next.js and the like) is quiet; the paint happens on hydration.
+  var useIsoLayout = typeof document !== 'undefined' ? R.useLayoutEffect : R.useEffect;
 /*@@ICONS@@*/
 
   function cx() { return Array.prototype.filter.call(arguments, Boolean).join(' '); }
@@ -119,11 +121,11 @@
   }
   var ro = window.ResizeObserver ? new ResizeObserver(schedule) : null;
   function useShape(ref) {
-    R.useLayoutEffect(function () {
+    useIsoLayout(function () {
       var el = ref.current; install(); shapes.add(el); if (ro) ro.observe(el); paint(el);
       return function () { shapes.delete(el); if (ro) ro.unobserve(el); };
     }, []);
-    R.useLayoutEffect(function () { schedule(); });
+    useIsoLayout(function () { schedule(); });
   }
   /** Any element painted as a cut shape (VbShape.Attach): first child is the paint layer. */
   var Shape = R.forwardRef(function (p, fwd) {
@@ -151,7 +153,7 @@
       var obs = window.ResizeObserver && anchor.current ? new ResizeObserver(again) : null; if (obs) obs.observe(anchor.current);
       return function () { window.removeEventListener('resize', again); window.removeEventListener('scroll', again, true); if (obs) obs.disconnect(); };
     }, [open]);
-    R.useLayoutEffect(function () {
+    useIsoLayout(function () {
       if (!open || !anchor.current || !pop.current) return;
       var a = anchor.current.getBoundingClientRect(), wv = window.innerWidth, hv = window.innerHeight;
       var w = pop.current.offsetWidth, hh = pop.current.offsetHeight, gap = 6, edge = 8;
@@ -191,7 +193,7 @@
     return h('div', { className: cx('vb-mark', p.className), role: 'img', 'aria-label': 'Veilbreak', style: Object.assign({ width: w, height: Math.round(w * 259 / 513) }, p.style), dangerouslySetInnerHTML: { __html: MARK.replace('<svg ', '<svg width="100%" height="100%" ') } });
   }
 
-  function VbFrame(p) { return h(Shape, { className: p.className, style: p.style }, p.children); }
+  function VbFrame(p) { return h(Shape, { className: cx(frameClass(p.kind), p.className), style: p.style }, p.children); }
 
   function VbButton(p) {
     var variant = p.variant || 'secondary', blocked = p.blocked || '', sub = blocked || p.sub || '', icon = p.icon || '';
@@ -379,12 +381,12 @@
     var pop = usePopover(function () { return q.length ? h(QueueList, { queue: q, title: v.queueTitle, hint: v.queueHint, onCancel: p.onQueueCancel }) : null; }, 'below', false, p.queuePinned);
     return h('div', { className: cx('vb-hud', v.boss && 'vb-hud--boss', p.className), style: p.style },
       h('div', { className: 'vb-hud__row' },
-        h(Shape, Object.assign({ className: 'vb-hud__pause', title: 'Pause', 'aria-label': 'Pause' }, clickable(p.onPauseClick)), h(VbIcon, { icon: 'pause', size: 20 })),
-        h(Shape, Object.assign({ className: cx('vb-hud__auto', v.auto && 'vb-hud__auto--on'), title: v.auto ? 'Autoplay on' : 'Autoplay off', 'aria-label': 'Toggle autoplay', 'aria-pressed': !!v.auto }, clickable(p.onAutoClick)), h(VbIcon, { icon: 'automation', size: 20 })),
+        h(IconButtonComposite, { icon: 'pause', tooltip: 'Pause', quiet: true, className: 'vb-hud__pause', onClick: p.onPauseClick }),
+        h(IconButtonComposite, { icon: 'automation', tooltip: v.auto ? 'Autoplay on · tap to disable' : 'Autoplay off · tap to enable', quiet: true, active: !!v.auto, className: cx('vb-hud__auto', v.auto && 'vb-hud__auto--on'), onClick: p.onAutoClick }),
         h('div', { className: 'vb-hud__stats' },
           h('div', { className: 'vb-hud__stat' }, L('vb-hud__key', v.boss ? 'BOSS' : 'WAVE'), h(GlitchText, { key: v.wave, text: pad2(v.wave), className: 'vb-hud__wave', effect: 'slam' })),
           h('div', { className: 'vb-hud__stat' }, L('vb-hud__key', 'SCORE'), L('vb-hud__score', compact(v.score)))),
-        h(Shape, Object.assign({ className: 'vb-hud__speed', title: 'Toggle simulation speed' }, clickable(p.onSpeedClick)), L('vb-hud__auto-state', v.speed + '×'))),
+        h(IconButtonComposite, { text: v.speed + '×', tooltip: 'Toggle simulation speed', className: 'vb-hud__speed', textClass: 'vb-hud__auto-state', onClick: p.onSpeedClick })),
       h(Shape, Object.assign({ ref: pop.ref, className: cx('vb-hud__resources', pop.open && 'vb-popover-open'), tabIndex: 0 }, pop.handlers),
         h('div', { className: 'vb-hud__resource-row' }, h(PowerStrip, { value: v.power, max: v.maxPower, regen: v.regen, hint: v.hint, previewFrom: v.previewFrom, previewTo: v.previewTo, marks: q.length ? [q[0].cost / Math.max(1, v.maxPower)] : null }), h(CreditsChip, { credits: v.credits || 0 })),
         h(FocusMeter, { focus: v.focus, slow: v.slow, style: show(p.showFocus !== false) })), pop.layer);
@@ -403,7 +405,7 @@
   /* ── Screens ──────────────────────────────────────────────────────────── */
   function ScreenHeader(p) {
     return h('div', { className: cx('vb-header', p.className) },
-      h(Shape, Object.assign({ className: 'vb-header__back', title: p.backLabel || 'Back', 'aria-label': p.backLabel || 'Back' }, clickable(p.onBack)), h(VbIcon, { icon: 'back', size: 20 })),
+      h(IconButtonComposite, { icon: 'back', tooltip: p.backLabel || 'Back', className: 'vb-header__back', onClick: p.onBack }),
       L('vb-header__title', upper(p.title)),
       L(cx('vb-header__meta', p.accent && 'vb-header__meta--accent'), p.meta || ''));
   }
@@ -449,25 +451,29 @@
       h('div', { className: 'vb-operative__fallen', style: show(fallen) }, L('vb-operative__fallen-title', 'FALLEN'), L('vb-operative__fallen-hint', 'Revive via perk')));
   }
 
+  /** TileComponent (Tile.cs): picture or glyph, name, caption with its glyph, order; `state` combines in | focused, or is locked | empty. */
+  function TileComponent(p) {
+    var b = p.block || 'vb-tile', state = [].concat(p.state || []).map(kebab), has = function (k) { return state.indexOf(k) >= 0; };
+    var locked = has('locked'), empty = has('empty'), order = p.order || 0, glyph = p.glyph && !p.picture;
+    return h(Shape, Object.assign({ className: cx(b, has('in') && !locked && b + '--in', has('focused') && b + '--focused', locked && b + '--locked', empty && b + '--empty', p.tier && st(b, p.tier), p.className), style: p.style, title: p.tooltip }, clickable(p.onPick)),
+      h('div', { className: b + '__band', style: show(!empty) }, h('div', { className: b + '__portrait', style: img(p.picture) }), h('div', { className: b + '__shade' }),
+        glyph ? h(VbIcon, { icon: p.glyph, size: 32, className: b + '__glyph' }) : null, L(b + '__order', String(order), show(order > 0 && !locked))),
+      h('div', { className: b + '__kit', style: Object.assign({ backgroundColor: p.kit }, show(!empty)) }),
+      h('div', { className: b + '__body', style: show(!empty) }, L(b + '__name', upper(p.title)),
+        h('div', { className: b + '__role' }, h(VbIcon, { icon: p.captionIcon || '', size: 12 }), L(b + '__role-text', upper(p.caption)))),
+      empty ? h('div', { className: b + '__empty' }, h(VbIcon, { icon: 'add', size: 20 }), L(b + '__empty-label', upper(p.emptyLabel))) : null);
+  }
   // `tier` none | blue | violet | gold frames the tile; `locked` ("Pull in rifts") says how to get a locked operative.
   function OperativeTile(p) {
     var v = operative(p.view), slot = p.slot || 0, locked = p.locked || '', isLocked = locked.length > 0;
-    return h(Shape, Object.assign({ className: cx('vb-tile', slot > 0 && !isLocked && 'vb-tile--in', p.focused && 'vb-tile--focused', isLocked && 'vb-tile--locked', st('vb-tile', p.tier || 'none'), p.className),
-      title: v.name + ', ' + v.role + (isLocked ? ', locked: ' + locked : slot > 0 ? ', squad slot ' + slot : ', not in squad') }, clickable(p.onPick)),
-      h('div', { className: 'vb-tile__band' }, h('div', { className: 'vb-tile__portrait', style: img(v.portrait) }), h('div', { className: 'vb-tile__shade' }), L('vb-tile__order', String(slot), show(slot > 0 && !isLocked))),
-      h('div', { className: 'vb-tile__kit', style: { backgroundColor: v.kit } }),
-      h('div', { className: 'vb-tile__body' }, L('vb-tile__name', upper(v.name)),
-        h('div', { className: 'vb-tile__role' }, h(VbIcon, { icon: isLocked ? 'lock' : v.roleIcon, size: 12 }), L('vb-tile__role-text', upper(isLocked ? locked : v.role)))));
+    return h(TileComponent, { className: p.className, style: p.style, onPick: p.onPick, tier: p.tier || 'none', picture: v.portrait, kit: v.kit, title: v.name, caption: isLocked ? locked : v.role, captionIcon: isLocked ? 'lock' : v.roleIcon, order: slot,
+      state: [slot > 0 && !isLocked && 'in', p.focused && 'focused', isLocked && 'locked'].filter(Boolean),
+      tooltip: v.name + ', ' + v.role + (isLocked ? ', locked: ' + locked : slot > 0 ? ', squad slot ' + slot : ', not in squad') });
   }
 
   function SquadSlot(p) {
     var has = !!p.view, v = operative(p.view), slot = p.slot || 0;
-    return h(Shape, Object.assign({ className: cx('vb-slot', !has && 'vb-slot--empty', p.className) }, clickable(p.onPick)),
-      h('div', { className: 'vb-slot__filled', style: show(has) },
-        h('div', { className: 'vb-slot__band' }, h('div', { className: 'vb-slot__portrait', style: has ? img(v.portrait) : null }), h('div', { className: 'vb-slot__shade' }), L('vb-slot__order', String(slot))),
-        h('div', { className: 'vb-slot__kit', style: { backgroundColor: v.kit } }),
-        h('div', { className: 'vb-slot__row' }, L('vb-slot__name', upper(v.name)), L('vb-slot__code', v.code))),
-      h('div', { className: 'vb-slot__empty', style: show(!has) }, h(VbIcon, { icon: 'add', size: 20 }), L('vb-slot__empty-label', 'SLOT ' + slot)));
+    return h(TileComponent, { block: 'vb-slot', className: p.className, style: p.style, onPick: p.onPick, picture: has ? v.portrait : null, kit: v.kit, title: v.name, caption: v.code, order: has ? slot : 0, state: has ? 'in' : 'empty', emptyLabel: 'SLOT ' + slot });
   }
 
   function OperativeDetails(p) {
@@ -478,7 +484,7 @@
         h('div', { className: 'vb-details__kit', style: { backgroundColor: v.kit } }), L('vb-details__name', upper(v.name)),
         h('div', { className: 'vb-details__role' }, h(VbIcon, { icon: v.roleIcon, size: 14 }), L('vb-details__role-text', upper(v.role))),
         L(cx('vb-details__slot', inSquad && 'vb-details__slot--in'), inSquad ? 'SLOT ' + slot : 'NOT IN SQUAD'),
-        h(Shape, Object.assign({ className: 'vb-details__close', title: 'Close details', 'aria-label': 'Close details' }, clickable(p.onClose)), h(VbIcon, { icon: 'close', size: 12 }))),
+        h(IconButtonComposite, { icon: 'close', tooltip: 'Close details', size: 12, className: 'vb-details__close', onClick: p.onClose })),
       h('div', { className: 'vb-details__stats' },
         h(StatReadout, { label: 'HEALTH', value: num(v.maxHp), bar: v.maxHp / maxHp }),
         h(StatReadout, { label: 'ARMOR', value: String(v.armor), bar: v.armor / maxArmor, className: 'vb-stat--neutral' }),
@@ -590,7 +596,7 @@
   /** HoloFrame.FlickerIn: opacity .7 → .25 → .9 → 1 in 60 ms steps; a plain fade under reduced motion or flashes. */
   function HoloFrame(p) {
     var ref = R.useRef(null), t = upper(p.title || '');
-    R.useLayoutEffect(function () {
+    useIsoLayout(function () {
       var el = ref.current; if (!el || p.still) return undefined;
       var steps = calm(el, true) ? [0.25, 0.5, 0.75, 1] : [0.7, 0.25, 0.9, 1]; el.style.opacity = 0;
       var timers = steps.map(function (o, i) { return setTimeout(function () { el.style.opacity = o; }, 60 * (i + 1)); });
@@ -723,6 +729,220 @@
       h(VbButton, { title: 'LEAVE MARKET', variant: 'primary', sub: 'Keep your credits · continue to the next wave', icon: 'chevron', className: 'vb-merchant__leave', onClick: p.onLeave }));
   }
 
+  /* ── Text, label, badge, icon button, card (Text.cs, Badge.cs, IconButton.cs, Card.cs) ── */
+  /** TextComponent: one type style (display | title | label | badge | body | caption | num) and a tone (ally | enemy | power | muted). */
+  function TextComponent(p) {
+    var tone = p.tone && kebab(p.tone) !== 'default' ? 'vb-t-' + kebab(p.tone) : null;
+    return h('div', { className: cx('vb-l', 'vb-text', 'vb-t-' + kebab(p.typeStyle || 'body'), tone, p.className), style: p.style }, p.text != null ? p.text : p.children);
+  }
+  /** LabelComponent: the caps eyebrow (size label | badge); uppercases what it is given and keeps 4 under it. */
+  function LabelComponent(p) {
+    return h(TextComponent, { typeStyle: kebab(p.size) === 'badge' ? 'badge' : 'label', tone: p.tone, className: cx('vb-label', p.className), style: p.style, text: upper(p.text) });
+  }
+  /** BadgeComponent: a slim chip with a word, an optional glyph and value; tones neutral | ally | enemy | power | warn | inverted. */
+  function BadgeComponent(p) {
+    var value = p.value == null ? '' : String(p.value);
+    return h(Shape, { className: cx('vb-badge', st('vb-badge', p.tone || 'neutral'), p.className), style: p.style, title: p.tooltip },
+      p.icon ? h(VbIcon, { icon: p.icon, size: 12, className: 'vb-badge__icon' }) : null,
+      p.text ? L('vb-badge__text', upper(p.text)) : null, value ? L('vb-badge__value', value) : null, p.children);
+  }
+  /** IconButtonComposite: a 44 × 44 chipped square with one glyph (or a short state) and a tooltip; `active` and `quiet` looks. */
+  function IconButtonComposite(p) {
+    return h(Shape, Object.assign({ className: cx('vb-icon-button', p.active && 'vb-icon-button--active', p.quiet && 'vb-icon-button--quiet', p.className), style: p.style,
+      title: p.tooltip, 'aria-label': p.tooltip, 'aria-pressed': p.active == null ? undefined : !!p.active }, clickable(p.onClick)),
+      p.icon ? h(VbIcon, { icon: p.icon, size: p.size || 20, className: 'vb-icon-button__icon' }) : null,
+      p.text ? L(cx('vb-icon-button__text', p.textClass), p.text) : null);
+  }
+  /** VbFrame with a kind: slim (containers) or chipped (what you act on). */
+  function frameClass(kind) { kind = kebab(kind || ''); return kind === 'slim' ? 'vb-frame--slim' : kind === 'chipped' ? 'vb-frame--chipped' : null; }
+  /** CardComponent: slim frame, optional media band, head (title + meta), body (children), foot (actions, right-aligned). */
+  function CardComponent(p) {
+    var foot = [].concat(p.actions || []).filter(Boolean);
+    return h(Shape, { className: cx('vb-card', p.selected && 'vb-card--selected', p.className), style: p.style },
+      p.media ? h('div', { className: 'vb-card__media' }, p.media) : null,
+      p.title || p.meta ? h('div', { className: 'vb-card__head' }, h(LabelComponent, { text: p.title || '', className: 'vb-card__title' }), p.meta ? L('vb-t-badge vb-card__meta', p.meta) : null) : null,
+      h('div', { className: 'vb-card__body' }, p.children),
+      foot.length ? h('div', { className: 'vb-card__foot' }, foot) : null);
+  }
+
+  /* ── Field, form (Forms.cs) ── */
+  /** FieldComposite: a caps label, the input (children) and one help line. */
+  function FieldComposite(p) {
+    return h('div', { className: cx('vb-field', p.className), style: p.style },
+      p.label ? h(LabelComponent, { text: p.label, size: 'badge', className: 'vb-field__label' }) : null,
+      h('div', { className: 'vb-field__input' }, p.children),
+      p.help ? L('vb-t-caption vb-field__help', p.help) : null);
+  }
+  /** Ui.Section: a titled fieldset (vb-section) for FormComposite. */
+  function Fieldset(p) {
+    return h(Shape, { className: cx('vb-panel', 'vb-section', p.className), style: p.style }, h(LabelComponent, { text: p.title, className: 'vb-section__title' }), p.children);
+  }
+  /** FormComposite: fieldsets (children) in a scroll, an optional `note` { icon, text }, a `footer` of actions and a `saved` line. */
+  function FormComposite(p) {
+    var footer = [].concat(p.footer || []).filter(Boolean);
+    return h('div', { className: cx('vb-form', p.className), style: p.style },
+      p.saved && !p.headed ? L('vb-t-badge vb-form__status', p.saved) : null,
+      h('div', { className: 'vb-form__scroll vb-page__scroll', style: { overflowY: 'auto' } },
+        h('div', { className: 'vb-u-scroll-view__content-container' }, p.children,
+          p.note ? h(Shape, { className: 'vb-panel vb-panel--raised vb-form__note' }, h(VbIcon, { icon: p.note.icon || 'info', size: 16 }), L('vb-t-caption', p.note.text)) : null)),
+      footer.length ? h('div', { className: 'vb-form__footer' }, footer) : null);
+  }
+
+  /* ── Layouts (Layouts.cs) ── */
+  function StackLayout(p) { var g = p.gap <= 4 ? 4 : p.gap <= 8 || p.gap == null ? 8 : p.gap <= 12 ? 12 : 16; return h('div', { className: cx('vb-stack', 'vb-stack--' + g, p.className), style: p.style }, p.children); }
+  function ListLayout(p) {
+    var kids = R.Children.toArray(p.children);
+    return h('div', { className: cx('vb-list-scroll vb-page__scroll', p.className), style: Object.assign({ overflowY: 'auto' }, p.style) },
+      p.empty && !kids.length ? L('vb-t-caption vb-list__empty', p.empty) : null, h('div', { className: 'vb-list' }, kids));
+  }
+  function GridLayout(p) { var n = p.columns <= 2 ? 2 : p.columns >= 4 || p.columns == null ? 4 : 3; return h('div', { className: cx('vb-grid', 'vb-grid--' + n, p.wrap && 'vb-grid--wrap', p.className), style: p.style }, p.children); }
+  function BoardLayout(p) {
+    return h('div', { className: cx('vb-board', p.className), style: p.style },
+      h('div', { className: 'vb-board__top' }, p.top), h('div', { className: 'vb-board__world' }, p.world), h('div', { className: 'vb-board__bottom' }, p.bottom));
+  }
+
+  /* ── Views (Runtime/Views) ── */
+  function View(block, p, kids, headed) { return h('div', { className: cx('vb-view', block, headed && 'vb-view--headed', p.className), style: p.style }, kids); }
+  function call(fn) { return function () { if (fn) fn.apply(null, arguments); }; }
+  /** MenuActionsSectionView: checkpoint card (when there is one), PLAY, then HIGH SCORES and SETTINGS. */
+  function MenuActionsSectionView(p) {
+    var c = p.checkpoint;
+    return h('div', { className: cx('vb-menu-actions', p.className), style: p.style },
+      c ? h(CardComponent, { title: 'CHECKPOINT', meta: 'WAVE ' + pad2(c.wave), className: 'vb-menu__checkpoint', actions: h(VbButton, { title: 'RESUME', icon: 'play', onClick: call(p.onResume) }) },
+        L('vb-menu__checkpoint-line', 'Wave ' + pad2(c.wave) + ' next · ' + num(c.score)),
+        L('vb-t-caption', (c.standing == null ? 4 : c.standing) + ' of ' + (c.squadSize || 4) + ' standing · ' + (c.perks || 0) + (c.perks === 1 ? ' perk' : ' perks') + (c.seed ? ' · seed ' + c.seed : ''))) : null,
+      h(VbButton, { title: 'PLAY', variant: 'primary', sub: p.squadLine || '', icon: 'chevron', className: 'vb-menu__play', onClick: call(p.onPlay) }),
+      h('div', { className: 'vb-row vb-menu__row' }, h(VbButton, { title: 'HIGH SCORES', onClick: call(p.onScores) }), h(VbButton, { title: 'SETTINGS', icon: 'settings', onClick: call(p.onSettings) })),
+      p.notice ? L('vb-t-caption vb-menu__notice', p.notice) : null);
+  }
+  /** MainMenuView: the offline badge and best, the mark, the menu actions and EXIT. `view`: MainMenuViewModel. */
+  function MainMenuView(p) {
+    var v = Object.assign({ status: 'OFFLINE · LOCAL SCORES', subtitle: 'ARCADE', notice: '', best: 0, bestWave: 0, checkpoint: null, squad: [], canExit: true }, p.view);
+    return View('vb-menu', p, [
+      h('div', { key: 't', className: 'vb-menu__top' }, L('vb-t-badge', v.status), v.best > 0 ? h(BadgeComponent, { text: 'BEST', value: num(v.best), className: 'vb-menu__best' }, v.bestWave ? L('vb-t-badge vb-t-ally vb-menu__best-wave', 'WAVE ' + v.bestWave) : null) : null),
+      h('div', { key: 'b', className: 'vb-menu__brand' }, h(VbMark, { width: 240 }), v.subtitle ? L('vb-menu__arcade', upper(v.subtitle)) : null),
+      h('div', { key: 'g', className: 'vb-grow' }),
+      h(MenuActionsSectionView, { key: 'a', checkpoint: v.checkpoint, squadLine: v.squad.length ? 'Squad · ' + v.squad.join(' · ') : 'Choose a squad', notice: v.notice, onPlay: p.onPlay, onResume: p.onResume, onScores: p.onScores, onSettings: p.onSettings }),
+      v.canExit ? h(VbButton, { key: 'x', title: 'EXIT', variant: 'ghost', className: 'vb-menu__exit', onClick: call(p.onExit) }) : null]);
+  }
+  /** SquadView: four slots, the roster, the open details and START RUN (blocked until four). `view`: SquadViewModel. */
+  function SquadView(p) {
+    var v = Object.assign({ roster: [], selected: [-1, -1, -1, -1], focus: -1, locked: [], tiers: [], seed: 'new seed' }, p.view);
+    var picked = v.selected.filter(function (i) { return i >= 0 && i < v.roster.length; }), n = picked.length;
+    var unlocked = v.roster.filter(function (_, i) { return !v.locked[i]; }).length, open = v.focus >= 0 && v.focus < v.roster.length;
+    return View('vb-squad-view', p, [
+      h(ScreenHeader, { key: 'h', title: 'SQUAD', meta: n + ' / 4', accent: n === 4, onBack: p.onBack }),
+      h(LabelComponent, { key: 'l1', text: 'Squad · tap a slot for details', className: 'vb-page__label' }),
+      h('div', { key: 's', className: 'vb-grid4' }, [0, 1, 2, 3].map(function (i) { var r = v.selected[i]; return h(SquadSlot, { key: i, slot: i + 1, view: r >= 0 ? v.roster[r] : null, onPick: function () { call(p.onSlotPick)(i); } }); })),
+      h(LabelComponent, { key: 'l2', text: unlocked === v.roster.length ? 'Roster · all ' + v.roster.length + ' unlocked' : 'Roster · ' + unlocked + ' of ' + v.roster.length + ' unlocked', className: 'vb-page__label' }),
+      h('div', { key: 'r', className: 'vb-grid4 vb-grid4--wrap' }, v.roster.map(function (o, i) { return h(OperativeTile, { key: i, view: o, slot: v.selected.indexOf(i) + 1, focused: i === v.focus, tier: v.tiers[i], locked: v.locked[i], onPick: function () { call(p.onPick)(i); } }); })),
+      open ? h('div', { key: 'd', className: 'vb-squad-view__sheet', style: { overflowY: 'auto' } }, h(OperativeDetails, { view: v.roster[v.focus], slot: v.selected.indexOf(v.focus) + 1, squadFull: n >= 4, onClose: p.onClose, onToggle: function () { call(p.onToggle)(v.focus); } })) : null,
+      h('div', { key: 'g', className: 'vb-grow' }),
+      h(VbButton, { key: 'go', title: 'START RUN', variant: 'primary', icon: 'chevron', className: 'vb-squad-view__start', sub: n ? picked.map(function (i) { return v.roster[i].name; }).join(' · ') + (v.seed ? ' · ' + v.seed : '') : '', blocked: n < 4 ? 'Pick ' + (4 - n) + ' more' : '', onClick: call(p.onStart) })], true);
+  }
+  /** SettingsView: AUDIO, FEEL, CAMERA, QUALITY in a FormComposite; applies as it changes (`onChange(model)`). */
+  function SettingsView(p) {
+    var init = Object.assign({ master: 0.8, music: 0.55, effects: 0.8, sensitivity: 0.5, haptics: true, reducedMotion: false, camera: 0, quality: 1, saved: 'SAVED', note: 'Autoplay lives in the battle HUD and starts on for every new run.' }, p.view);
+    var s = R.useState(init), v = s[0];
+    function set(k) { return function (x) { var n = Object.assign({}, v); n[k] = x; s[1](n); if (p.onChange) p.onChange(n); }; }
+    return View('vb-settings', p, [
+      h(ScreenHeader, { key: 'h', title: 'SETTINGS', meta: v.saved, onBack: p.onBack }),
+      h(FormComposite, { key: 'f', headed: true, note: v.note ? { icon: 'automation', text: v.note } : null,
+        footer: [h(VbButton, { key: 'c', title: 'CLEAR LOCAL SCORES', variant: 'danger', onClick: call(p.onClearScores) }), h(VbButton, { key: 'a', title: 'ACCESSIBILITY', variant: 'ghost', onClick: call(p.onAccessibility) })] },
+        h(Fieldset, { key: 1, title: 'AUDIO' }, h(VbSlider, { label: 'Master', value: v.master, onChange: set('master') }), h(VbSlider, { label: 'Music', value: v.music, onChange: set('music') }), h(VbSlider, { label: 'Effects', value: v.effects, onChange: set('effects') })),
+        h(Fieldset, { key: 2, title: 'FEEL' }, h(VbSwitch, { text: 'HAPTICS', detail: 'Light pulse when an order is accepted', value: v.haptics, onChange: set('haptics') }), h(VbSwitch, { text: 'REDUCED MOTION', detail: 'No camera shake · fades replace flicker · flat panels', value: v.reducedMotion, onChange: set('reducedMotion') })),
+        h(Fieldset, { key: 3, title: 'CAMERA' }, h(VbSegmented, { items: [{ label: 'FULL', sub: 'Parallax' }, { label: 'REDUCED', sub: 'No drift' }, { label: 'OFF', sub: 'Fixed' }], selected: v.camera, onChange: set('camera') }), h(VbSlider, { label: 'Sensitivity', value: v.sensitivity, onChange: set('sensitivity') }), L('vb-t-caption', 'Pinch to zoom, twist to turn, drag empty ground to pan, double-tap to reset.')),
+        h(Fieldset, { key: 4, title: 'QUALITY' }, h(VbSegmented, { items: [{ label: 'LOW', sub: 'Stable 30 FPS' }, { label: 'STANDARD', sub: '60 FPS target' }], selected: v.quality, onChange: set('quality') }), L('vb-t-caption', 'Applies on the next wave. Telegraphs stay fully visible on both tiers.')))], true);
+  }
+  /** PauseOverlayView: PAUSED, then the sheet (stats, perks, seed line, RESUME, SETTINGS, ABANDON) and EXIT. `view`: PauseViewModel. */
+  function PauseOverlayView(p) {
+    var v = Object.assign({ wave: 1, score: 0, standing: 4, squadSize: 4, perks: [], seed: '', detail: '' }, p.view);
+    var line = [v.seed ? 'Seed ' + v.seed : '', v.detail].filter(Boolean).join(' · ');
+    return View('vb-pause', p, [
+      h('div', { key: 't', className: 'vb-pause__title' }, L('vb-t-display', 'PAUSED'), L('vb-t-caption', 'Combat, focus and world travel are frozen')),
+      h('div', { key: 'g', className: 'vb-grow' }),
+      h(Dialog, { key: 's', className: 'vb-pause__sheet' },
+        h('div', { className: 'vb-row vb-pause__stats' }, h(StatReadout, { label: 'WAVE', value: pad2(v.wave) }), h(StatReadout, { label: 'SCORE', value: num(v.score) }), h(StatReadout, { label: 'STANDING', value: String(v.standing), unit: '/' + v.squadSize })),
+        v.perks.length ? h(Shape, Object.assign({ className: 'vb-panel vb-frame--slim vb-frame--raised vb-pause__perks', title: 'Active perks' }, clickable(p.onPerks)),
+          h('div', { className: 'vb-row vb-row--between' }, h(LabelComponent, { text: 'Active perks · ' + v.perks.length }), h('div', { className: 'vb-row' }, L('vb-t-badge vb-t-ally', 'DETAILS'), h(VbIcon, { icon: 'chevron', size: 16, className: 'vb-pause__more' }))),
+          h('div', { className: 'vb-row vb-row--wrap vb-pause__chips' }, v.perks.map(function (k, i) { return h(BadgeComponent, { key: i, icon: k.icon, text: k.name + (k.stack > 1 ? ' ×' + k.stack : ''), className: 'vb-pause__chip' }); }))) : null,
+        line ? L('vb-t-caption', line) : null,
+        h(VbButton, { title: 'RESUME', variant: 'primary', sub: 'Returns to selected speed', icon: 'chevron', onClick: call(p.onResume) }),
+        h(VbButton, { title: 'SETTINGS', icon: 'settings', className: 'vb-pause__button', onClick: call(p.onSettings) }),
+        h(VbButton, { title: 'ABANDON RUN', variant: 'danger', icon: 'remove', className: 'vb-pause__button', onClick: call(p.onAbandon) })),
+      h(VbButton, { key: 'x', title: 'EXIT', variant: 'ghost', icon: 'back', className: 'vb-pause__exit', onClick: call(p.onExit) })]);
+  }
+  /** ConfirmDialogView: the question, its consequence, the destructive action and the way back. */
+  function ConfirmDialogView(p) {
+    var c = p.confirm || {}, k = p.cancel || {};
+    return h('div', { className: cx('vb-confirm', p.className), style: p.style }, h(Dialog, { title: p.title, body: p.body },
+      h(VbButton, { title: c.label || 'CONFIRM', variant: c.variant || 'danger', sub: c.sub, icon: c.icon, onClick: call(p.onConfirm) }),
+      h(VbButton, { title: k.label || 'CANCEL', icon: k.icon, onClick: call(p.onCancel) })));
+  }
+  var GUIDE_STEPS = ['Drag an operative to move.', 'Drag A or S onto the battlefield to aim; release over the cards to cancel.', 'Auto controls tactics. Tap AUTO to take over.', '2× speeds combat; aiming stays slow while focus lasts.', 'Stop enemies before they pass the rear line.'];
+  /** GuideDialogView: numbered first-run steps and READY. */
+  function GuideDialogView(p) {
+    return h('div', { className: cx('vb-guide', p.className), style: p.style }, h(Dialog, { title: p.title || 'RUN THE BOULEVARD' },
+      h(StackLayout, { gap: 8, className: 'vb-guide__steps' }, (p.steps || GUIDE_STEPS).map(function (t, i) { return h('div', { key: i, className: 'vb-row vb-guide__step' }, h(BadgeComponent, { text: String(i + 1), tone: 'ally', className: 'vb-guide__index' }), L('vb-t-body vb-guide__text', t)); })),
+      h(VbButton, { title: 'READY', variant: 'primary', icon: 'check', onClick: call(p.onReady) })));
+  }
+  /** PerkDraftView: three cards, the pick explained, the squad that carries forward and TAKE PERK. `view`: PerkDraftViewModel. */
+  function PerkDraftView(p) {
+    var v = Object.assign({ wave: 1, bonus: 0, score: 0, choices: [], pick: 0, squad: [] }, p.view), pick = v.choices[v.pick];
+    return View('vb-draft', p, [
+      h('div', { key: 's', className: 'vb-page__scroll vb-draft__scroll', style: { overflowY: 'auto' } },
+        h(LabelComponent, { text: 'Wave ' + pad2(v.wave) + ' cleared', tone: 'ally' }), L('vb-t-display', 'CHOOSE A PERK'),
+        L('vb-t-caption vb-page__caption', '+' + num(v.bonus) + ' wave bonus · score ' + num(v.score) + ' · perks last the whole run'),
+        h('div', { className: 'vb-draft__cards' }, v.choices.map(function (c, i) { return h(PerkCard, { key: i, view: c, selected: i === v.pick, onPick: function () { call(p.onPick)(i); } }); })),
+        pick ? h(PerkDetail, { className: 'vb-draft__detail', view: pick, draft: true }) : null,
+        h(Shape, { className: 'vb-panel vb-frame--slim vb-draft__squad' }, h(LabelComponent, { text: 'Carries forward · no healing between waves', size: 'badge' }),
+          h('div', { className: 'vb-grid4' }, v.squad.map(function (a, i) {
+            return h('div', { key: i, className: 'vb-draft__cell' }, h('div', { className: 'vb-row vb-row--between' }, L('vb-draft__code', a.code), L('vb-t-badge', a.hp > 0 ? Math.round(100 * a.hp / Math.max(1, a.maxHp)) + '%' : 'OUT')),
+              h(HealthBar, { hp: a.hp, max: a.maxHp, stability: a.stability == null ? 1 : a.stability }));
+          })))),
+      h(VbButton, { key: 'b', title: 'TAKE PERK', variant: 'primary', icon: 'check', sub: pick ? pick.name + ' → ' + pick.next + ' · then wave ' + pad2(v.wave + 1) + ', focus refills' : '', blocked: pick ? '' : 'Pick a perk', onClick: call(p.onTake) })]);
+  }
+  /** ResultsView: the score and its ledger, stats, the squad's contribution, the perks, MENU and RUN AGAIN. `view`: ResultsViewModel. */
+  function ResultsView(p) {
+    var v = Object.assign({ cause: 'SQUAD DOWN', score: 0, wave: 0, bosses: 0, rank: 0, of: 20, ledger: [], distance: '', simTime: '', squad: [], perks: [] }, p.view), d = (v.distance || '').split(' ');
+    return View('vb-results', p, [
+      h('div', { key: 's', className: 'vb-page__scroll vb-results__scroll', style: { overflowY: 'auto' } },
+        h(LabelComponent, { text: v.cause + ' · wave ' + v.wave, tone: 'enemy' }), L('vb-t-display', 'RUN OVER'),
+        h(Shape, { className: 'vb-panel vb-frame--slim vb-frame--solid vb-results__score' },
+          h('div', { className: 'vb-row vb-row--between' }, h('div', null, h(LabelComponent, { text: 'Score' }), L('vb-results__value', num(v.score))), v.rank > 0 ? L('vb-results__rank', '#' + v.rank + ' OF ' + v.of) : null),
+          h('div', { className: 'vb-results__ledger' }, v.ledger.map(function (l, i) { return h('div', { key: i, className: 'vb-row vb-row--between' }, L('vb-t-caption', l.label), L('vb-results__points', l.value)); })),
+          h('div', { className: 'vb-row vb-results__stats' }, h(StatReadout, { label: 'WAVES', value: String(v.wave) }), h(StatReadout, { label: 'BOSSES', value: String(v.bosses) }),
+            v.distance ? h(StatReadout, { label: 'DISTANCE', value: d[0], unit: d[1] }) : null, v.simTime ? h(StatReadout, { label: 'SIM TIME', value: v.simTime }) : null)),
+        h(LabelComponent, { text: 'Squad · hover or tap for contribution', className: 'vb-page__label' }),
+        h('div', { className: 'vb-grid4' }, v.squad.map(function (c, i) { return h(SquadResult, { key: i, view: c }); })),
+        v.perks.length ? h(LabelComponent, { text: 'Perks · ' + v.perks.length, className: 'vb-page__label' }) : null,
+        h('div', { className: 'vb-row vb-row--wrap vb-results__perks' }, v.perks.map(function (k, i) { return h(PerkChip, { key: i, view: k }); }))),
+      h('div', { key: 'r', className: 'vb-row vb-results__row' }, h(VbButton, { title: 'MENU', className: 'vb-results__menu', onClick: call(p.onMenu) }), h(VbButton, { title: 'RUN AGAIN', variant: 'primary', icon: 'chevron', className: 'vb-results__again', onClick: call(p.onAgain) }))]);
+  }
+  /** HighScoresView: up to 20 ranked runs (current framed) and older-rules runs after a label, in a ListLayout. */
+  function HighScoresView(p) {
+    var ranked = (p.ranked || []).slice(0, 20), old = p.historical || [];
+    return View('vb-scores', p, [
+      h(ScreenHeader, { key: 'h', title: 'HIGH SCORES', meta: 'TOP ' + ranked.length, onBack: p.onBack }),
+      h('div', { key: 'c', className: 'vb-l vb-t-caption vb-page__caption' }, p.caption || 'On this device. Ties break by wave, then shortest sim time.'),
+      h(ListLayout, { key: 'l', empty: 'No runs yet. Your first run lands here.' }, ranked.map(function (s, i) { return h(ScoreRow, { key: 'r' + i, view: s }); }),
+        old.length ? h(LabelComponent, { key: 'o', text: 'Older rules', className: 'vb-scores__older' }) : null,
+        old.map(function (s, i) { return h(ScoreRow, { key: 'h' + i, view: s, className: 'vb-scores__historical' }); })),
+      h('div', { key: 'f', className: 'vb-l vb-t-caption vb-page__footer' }, 'Local scores only · not an online ranking')], true);
+  }
+  function RouteChoiceView(p) { return View('vb-route-view', p, h(RouteChoice, { view: p.view, onChoose: p.onChoose })); }
+  function MerchantScreenView(p) { return View('vb-merchant-view', p, h(MerchantScreen, { view: p.view, onBuy: p.onBuy, onSellPerk: p.onSellPerk, onSellHealth: p.onSellHealth, onLeave: p.onLeave })); }
+  /** BattleHudView: BoardLayout with the HUD band, boss bar and announcer on top, `world` in the middle and four cards at the bottom. */
+  function BattleHudView(p) {
+    var ops = p.operatives || [];
+    return h(BoardLayout, { className: cx('vb-battle', p.className), style: p.style,
+      top: [h(HudTop, { key: 'h', view: p.hud, onPauseClick: p.onPause, onAutoClick: p.onAuto, onSpeedClick: p.onSpeed, onQueueCancel: p.onQueueCancel, queuePinned: p.queuePinned }),
+        p.boss ? h(BossBar, { key: 'b', view: p.boss, className: 'vb-battle__boss' }) : null,
+        h('div', { key: 'a', className: 'vb-battle__announcer vb-announcement' }, p.announcement ? h(GlitchText, { key: p.announcement, text: p.announcement }) : null)],
+      world: p.world,
+      bottom: h('div', { className: 'vb-battle__cards' }, ops.slice(0, 4).map(function (o, i) { return o ? h(OperativeCard, { key: i, view: o, className: 'vb-battle__card' }) : null; })) });
+  }
+
   var api = {
     GlitchText: GlitchText, CreditsChip: CreditsChip, RouteChoice: RouteChoice, MerchantScreen: MerchantScreen,
     VbFrame: VbFrame, VbIcon: VbIcon, VbMark: VbMark, VbButton: VbButton, StatReadout: StatReadout, StatusChip: StatusChip,
@@ -732,6 +952,10 @@
     OperativeStats: OperativeStats, SquadResult: SquadResult, PerkCard: PerkCard, PerkDetail: PerkDetail, PerkChip: PerkChip, PerkRow: PerkRow,
     Dialog: Dialog, Backdrop: Backdrop, ScanLines: ScanLines, HoloFrame: HoloFrame, HoloPlatform: HoloPlatform, RevealCard: RevealCard, RuleRow: RuleRow,
     WorldHealthBar: WorldHealthBar, CombatText: CombatText, WorldLabel: WorldLabel, WorldMarker: WorldMarker, OffscreenIndicator: OffscreenIndicator, EdgeWarning: EdgeWarning,
+    TextComponent: TextComponent, LabelComponent: LabelComponent, BadgeComponent: BadgeComponent, IconButtonComposite: IconButtonComposite, TileComponent: TileComponent, CardComponent: CardComponent,
+    FieldComposite: FieldComposite, Fieldset: Fieldset, FormComposite: FormComposite, StackLayout: StackLayout, GridLayout: GridLayout, ListLayout: ListLayout, BoardLayout: BoardLayout,
+    MainMenuView: MainMenuView, MenuActionsSectionView: MenuActionsSectionView, SquadView: SquadView, SettingsView: SettingsView, PauseOverlayView: PauseOverlayView, ConfirmDialogView: ConfirmDialogView,
+    GuideDialogView: GuideDialogView, PerkDraftView: PerkDraftView, ResultsView: ResultsView, HighScoresView: HighScoresView, RouteChoiceView: RouteChoiceView, MerchantScreenView: MerchantScreenView, BattleHudView: BattleHudView,
     VbShape: Shape, format: { compact: compact, number: num, seconds: seconds, kebab: kebab }
   };
   window.Veilbreak = Object.assign(window.Veilbreak || {}, api);

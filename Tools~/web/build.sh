@@ -9,7 +9,7 @@ W=$(cd "$(dirname "$0")" && pwd); PKG=$(cd "$W/../.." && pwd); OUT=${1:?usage: b
 KEEP="ConnectionPill ConnectionBanner CombatFeed Minimap NavBar MatchHeader ItemCell RailButton Timeline FighterPortrait Telegraph"
 rm -rf "$OUT/project" "$GEN"; mkdir -p "$GEN" "$OUT/project/components"
 S="$PKG/Runtime/Styles"
-python3 "$W/uss2css.py" "$S/Gui.uss" "$S/Layout.uss" "$S/World.uss" > "$GEN/kit.css"
+python3 "$W/uss2css.py" "$S/Gui.uss" "$S/Layout.uss" "$S/Views.uss" "$S/World.uss" > "$GEN/kit.css"
 python3 "$W/icons_js.py" "$PKG/Runtime" > "$GEN/icons.js"
 # shellcheck disable=SC2086
 python3 "$W/docs.py" "$OUT/project" "$W/legacy/index.d.ts" $KEEP

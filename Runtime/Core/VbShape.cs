@@ -93,6 +93,15 @@ public static class VbShape {
  }
 }
 
-/// <summary>A cut-corner panel for UXML: <c>&lt;Veilbreak.Gui.VbFrame class="vb-panel"/&gt;</c>.</summary>
-[UxmlElement] public partial class VbFrame:VisualElement { public VbFrame(){VbShape.Attach(this);} }
+/// <summary>The two container looks: slim (cut-xs, no edge; the default for sections, sheets, rows and cards) and chipped
+/// (cut + hairline; for what you act on or what is selected). <see cref="Custom"/> leaves the frame to its own classes.</summary>
+public enum FrameKind { Custom, Slim, Chipped }
+
+/// <summary>A cut-corner panel for UXML: <c>&lt;Veilbreak.Gui.VbFrame class="vb-panel" kind="Slim"/&gt;</c>.</summary>
+[UxmlElement] public partial class VbFrame:VisualElement {
+ FrameKind kind;
+ [UxmlAttribute] public FrameKind Kind {get=>kind;set{kind=value;EnableInClassList("vb-frame--slim",value==FrameKind.Slim);EnableInClassList("vb-frame--chipped",value==FrameKind.Chipped);}}
+ public VbFrame(){VbShape.Attach(this);}
+ public VbFrame(FrameKind kind):this(){Kind=kind;}
+}
 }
