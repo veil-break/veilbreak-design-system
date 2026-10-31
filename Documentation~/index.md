@@ -15,7 +15,7 @@ this folder.
 | [3 · HUD effects](guidelines/03-effects.md) | What each effect means, where it goes and when it turns off |
 | [4 · Motion](guidelines/04-motion.md) | The two clocks, durations, battle and menu motion, reduced motion and flashes |
 | [5 · Platforms](guidelines/05-platforms.md) | The token pipeline, UI Toolkit in place of web features, touch sizes, fonts |
-| [Web mirror](web-mirror.md) | How the design-system artifact is generated and published, and the legacy web kit |
+| [Web mirror](web-mirror.md) | The web kit (`Web~`), the GUI Handbook on GitHub Pages (`docs/`), the design-system artifact and the legacy web kit |
 
 ## Quick start
 
@@ -33,3 +33,5 @@ this folder.
 | EditMode tests | `Tests/Editor` |
 | PlayMode fit tests at widths 320–430 | `Tests/Runtime` |
 | Web mirror | `Tools~/web/build.sh OUT` |
+| Web kit and handbook | `python3 Tools~/handbook/build_handbook.py . docs` (also rebuilds `Web~/dist`) |
+| Meta files for new package files | `python3 Tools~/metas.py --check` |

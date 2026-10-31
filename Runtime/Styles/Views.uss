@@ -1,0 +1,118 @@
+/* Screen views (Runtime/Views): the main menu, squad, settings, pause, perk draft, results, high scores, route, merchant, battle
+   board and the confirm and guide dialogs. Ported from the arcade's Arcade.uss so a game only binds data. Load after Layout.uss. */
+
+/* ── every view ────────────────────────────────────────────────────────── */
+.vb-view { flex-grow: 1; flex-shrink: 1; min-height: 0; }
+/* A headed view spans the board under a page with padding; its content keeps a 12-unit gutter. */
+.vb-page > .vb-view--headed { margin-left: -16px; margin-right: -16px; }
+.vb-page--headed > .vb-view--headed { margin-left: 0; margin-right: 0; }
+.vb-view--headed > * { margin-left: 12px; margin-right: 12px; }
+.vb-view--headed > .vb-header { margin-left: 0; margin-right: 0; }
+
+/* Screen layer tints per page name (Navigator.Open). */
+.vb-screen--route, .vb-screen--merchant { background-color: rgba(5, 2, 8, 0.88); }
+.vb-screen--menu { background-color: rgba(5, 2, 8, 0.30); }
+.vb-screen--perks, .vb-screen--build, .vb-screen--revive { background-color: rgba(5, 2, 8, 0.85); }
+.vb-screen--pause, .vb-screen--confirm { background-color: rgba(5, 2, 8, 0.80); }
+
+/* ── MainMenuView, MenuActionsSectionView ─────────────────────────────── */
+.vb-menu__top { flex-direction: row; justify-content: space-between; align-items: center; margin-top: 8px; }
+.vb-menu__best { padding: 0 10px; height: 30px; }
+.vb-menu__best .vb-badge__value { -unity-font-definition: var(--vb-font-body-medium); font-size: 14px; margin-right: 8px; }
+.vb-menu__brand { position: absolute; left: 0; right: 0; top: 220px; align-items: center; }
+.vb-menu__arcade { margin-top: -6px; -unity-font-definition: var(--vb-font-display-bold); font-size: 13px; letter-spacing: 61.538px; padding-left: 8px; color: var(--vb-color-ally-text); }
+.vb-menu__exit { position: absolute; right: 16px; top: 44px; min-height: 44px; padding: 8px; }
+.vb-menu-actions { flex-shrink: 0; }
+.vb-menu__checkpoint { margin-bottom: 10px; }
+.vb-menu__checkpoint-line { -unity-font-definition: var(--vb-font-body-medium); font-size: 13px; margin: 2px 0; }
+.vb-menu__checkpoint .vb-button { width: 120px; min-width: 120px; }
+.vb-menu__play { height: 60px; min-height: 60px; margin-bottom: 10px; }
+.vb-menu__row { justify-content: flex-start; }
+.vb-menu__row > .vb-button { min-height: 48px; width: 124px; min-width: 124px; margin-right: 60px; }
+.vb-compact .vb-menu__row > .vb-button { margin-right: 12px; }
+.vb-menu__notice { margin-top: 10px; color: var(--vb-color-text-3); }
+
+/* ── SquadView ─────────────────────────────────────────────────────────── */
+.vb-squad-view > * { flex-shrink: 0; }
+.vb-squad-view > .vb-squad-view__sheet { margin-top: 10px; flex-shrink: 1; min-height: 0; }
+.vb-squad-view__sheet > .vb-details, .vb-squad-view__sheet .vb-details { width: auto; height: auto; min-height: 0; flex-shrink: 0; }
+.vb-squad-view__start { flex-shrink: 0; margin-top: 8px; }
+
+/* ── SettingsView ──────────────────────────────────────────────────────── */
+.vb-settings > .vb-form { margin-left: 12px; margin-right: 12px; }
+
+/* ── PauseOverlayView ──────────────────────────────────────────────────── */
+.vb-pause { padding-bottom: 0; }
+.vb-pause__title { align-items: center; margin-top: 110px; flex-shrink: 0; }
+.vb-pause__title > .vb-t-display { font-size: 40px; letter-spacing: 14.000px; }
+.vb-pause__sheet > #abandon { margin-bottom: 0; }
+.vb-pause__stats > .vb-stat { margin-right: 12px; }
+.vb-pause__perks { padding: 10px 12px; }
+.vb-pause__perks:hover { --vb-bw: 1; --vb-edge: rgba(29, 217, 160, 0.70); }
+.vb-pause__perks > .vb-row--between { margin-bottom: 8px; }
+.vb-pause__more { -unity-background-image-tint-color: var(--vb-color-ally-text); }
+.vb-pause__chips { max-height: 76px; overflow: hidden; }
+.vb-pause__chip { margin: 0 6px 6px 0; --vb-fill: rgb(14, 9, 20); }
+.vb-pause__button { min-height: 48px; }
+.vb-pause__exit { position: absolute; left: 10px; top: 0; min-height: 45px; --vb-fill: rgba(14, 9, 20, 0.85); --vb-fill-to: rgba(14, 9, 20, 0.85); --vb-edge: rgba(250, 238, 244, 0.35); }
+
+/* ── ConfirmDialogView, GuideDialogView ────────────────────────────────── */
+.vb-confirm, .vb-guide { flex-shrink: 0; margin-bottom: 12px; }
+.vb-guide__step { align-items: flex-start; }
+.vb-guide__index { margin-right: 10px; min-width: 22px; justify-content: center; }
+.vb-guide__text { flex-grow: 1; flex-shrink: 1; }
+
+/* ── PerkDraftView ─────────────────────────────────────────────────────── */
+.vb-draft { padding-top: 16px; }
+.vb-draft__scroll { flex-grow: 1; }
+.vb-draft__cards { flex-direction: row; justify-content: space-between; margin-top: 6px; margin-bottom: 14px; }
+.vb-draft__cards > .vb-perk-card { width: 112px; height: auto; min-height: 236px; }
+.vb-draft__cards .vb-perk-card__art, .vb-draft__cards .vb-perk-card__body { flex-shrink: 0; }
+.vb-compact .vb-draft__cards > .vb-perk-card { width: auto; flex-grow: 1; flex-basis: 0; margin: 0 3px; }
+.vb-draft__detail { margin-bottom: 12px; }
+.vb-draft__squad { padding: 9px 12px; margin-top: 12px; margin-bottom: 12px; }
+.vb-draft__squad > .vb-label { margin-bottom: 7px; }
+.vb-draft__cell { width: 23%; }
+.vb-draft__code { -unity-font-definition: var(--vb-font-display-bold); font-size: 12px; }
+
+/* ── ResultsView ───────────────────────────────────────────────────────── */
+.vb-results { padding-top: 12px; }
+.vb-results__scroll { flex-grow: 1; }
+.vb-results .vb-t-display { font-size: 40px; letter-spacing: 14.000px; }
+.vb-results__score { padding: 12px 16px; margin: 10px 0 4px 0; }
+.vb-results__score > .vb-row { margin-bottom: 3px; }
+.vb-results__value { -unity-font-definition: var(--vb-font-body-medium); font-size: 40px; }
+.vb-results__rank { padding: 4px 8px; background-color: var(--vb-color-ally); color: var(--vb-color-on-cta); -unity-font-definition: var(--vb-font-body-medium); -unity-font-style: bold; font-size: 10px; }
+.vb-results__points { -unity-font-definition: var(--vb-font-body-medium); font-size: 12px; }
+.vb-results__stats { margin-top: 8px; padding-top: 8px; border-top-width: 1px; border-top-color: var(--vb-color-line); align-items: flex-start; }
+.vb-results__stats > .vb-stat { margin-right: 10px; }
+.vb-results .vb-result { width: 23.5%; }
+.vb-results__perks > .vb-perk-chip { margin: 0 6px 6px 0; }
+.vb-results__row { flex-shrink: 0; margin-top: 8px; }
+.vb-results__menu { min-width: 94px; margin-right: 10px; }
+.vb-results__again { flex-grow: 1; }
+
+/* ── HighScoresView ────────────────────────────────────────────────────── */
+.vb-scores .vb-score { margin-left: 0; margin-right: 0; }
+.vb-scores__older { margin-top: 10px; }
+.vb-scores__historical { opacity: 0.7; }
+
+/* ── RouteChoiceView, MerchantScreenView ───────────────────────────────── */
+.vb-route-view, .vb-merchant-view { padding-top: 8px; }
+.vb-merchant-view > .vb-merchant { flex-grow: 1; }
+
+/* ── BattleHudView (on BoardLayout) ────────────────────────────────────── */
+.vb-battle__boss { margin: 6px 10px 0 10px; }
+.vb-battle__announcer { height: 26px; flex-shrink: 0; margin-top: 2px; -unity-font-definition: var(--vb-font-body-medium); -unity-font-style: bold; font-size: 11px; letter-spacing: 3.000px; }
+.vb-battle__cards { flex-direction: row; justify-content: space-between; flex-shrink: 0; padding: 6px 10px 0 10px; }
+.vb-battle__card { flex-grow: 0; width: 88px; height: 172px; }
+.vb-battle__card .vb-operative__skills { flex-direction: row; padding: 0; }
+.vb-battle__card .vb-skill { width: 44px; height: 56px; min-height: 44px; flex-shrink: 0; margin: 0; }
+.vb-battle__card .vb-operative__name { font-size: 12px; letter-spacing: 13.333px; }
+.vb-compact .vb-battle__cards { padding-left: 5px; padding-right: 5px; }
+.vb-compact .vb-battle__card { flex-grow: 1; flex-basis: 0; width: auto; min-width: 0; margin: 0 3px; height: 220px; }
+.vb-compact .vb-battle__card .vb-operative__skills { flex-direction: column; padding: 4px 6px 6px 6px; }
+.vb-compact .vb-battle__card .vb-skill { width: auto; height: 44px; margin-top: 3px; }
+.vb-compact .vb-battle__card .vb-skill__icon { margin-top: 6px; width: 16px; height: 16px; }
+.vb-compact .vb-battle__card .vb-operative__band { height: 36px; }
+.vb-compact .vb-battle__card .vb-operative__name { font-size: 10px; letter-spacing: 0; }

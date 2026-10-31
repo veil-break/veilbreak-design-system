@@ -38,39 +38,24 @@ namespace Veilbreak.Gui {
 }
 
 /// <summary>Roster tile: portrait, name, role and (when picked) its squad slot number. Tap opens details.</summary>
-[UxmlElement] public partial class OperativeTile:VisualElement {
- public const string ClassName="vb-tile";
- readonly VisualElement portrait,kit;readonly Label order,title,role;readonly VbIcon roleIcon;
- public event Action Picked;
- public OperativeTile(){
-  AddToClassList(ClassName);VbShape.Attach(this);this.Clickable(()=>Picked?.Invoke());
-  var band=Ui.Box(this,ClassName+"__band");portrait=Ui.Box(band,ClassName+"__portrait");Ui.Box(band,ClassName+"__shade");order=Ui.Text(band,"",ClassName+"__order");
-  kit=Ui.Box(this,ClassName+"__kit");var body=Ui.Box(this,ClassName+"__body");title=Ui.Text(body,"",ClassName+"__name");
-  var r=Ui.Box(body,ClassName+"__role");roleIcon=new VbIcon("striker",12).Into(r);role=Ui.Text(r,"",ClassName+"__role-text");
- }
+[UxmlElement] public partial class OperativeTile:TileComponent {
+ public OperativeTile():base(ClassName){}
  /// <summary><paramref name="tier"/> frames the tile in its rarity colour; <paramref name="locked"/> says how to get a locked operative
  /// ("Pull in rifts"), which stays visible but cannot be picked.</summary>
  public OperativeTile Bind(OperativeView v,int slot,bool focused,RarityTier tier=RarityTier.None,string locked=null){bool isLocked=!string.IsNullOrEmpty(locked);
-  Ui.Image(portrait,v.portrait);kit.style.backgroundColor=v.kit;title.text=v.name.ToUpperInvariant();role.text=isLocked?locked.ToUpperInvariant():v.role.ToUpperInvariant();roleIcon.Icon=isLocked?"lock":v.roleIcon;
-  order.text=slot.ToString();order.Show(slot>0&&!isLocked);EnableInClassList(ClassName+"--in",slot>0&&!isLocked);EnableInClassList(ClassName+"--focused",focused);EnableInClassList(ClassName+"--locked",isLocked);Ui.State(this,ClassName,tier);
+  Picture=v.portrait;Kit=v.kit;Title=v.name;Caption=isLocked?locked:v.role;CaptionIcon=isLocked?"lock":v.roleIcon;
+  State=(slot>0&&!isLocked?TileState.In:TileState.Idle)|(focused?TileState.Focused:TileState.Idle)|(isLocked?TileState.Locked:TileState.Idle);Order=slot;Tier=tier;
   tooltip=v.name+", "+v.role+(isLocked?", locked: "+locked:slot>0?", squad slot "+slot:", not in squad");return this;
  }
 }
 
 /// <summary>One of the four squad slots on the selection screen: the operative, or a dashed empty slot.</summary>
-[UxmlElement] public partial class SquadSlot:VisualElement {
- public const string ClassName="vb-slot";
- readonly VisualElement portrait,kit,filled,empty;readonly Label order,title,code,emptyLabel;
- public event Action Picked;
- public SquadSlot(){
-  AddToClassList(ClassName);VbShape.Attach(this);this.Clickable(()=>Picked?.Invoke());
-  filled=Ui.Box(this,ClassName+"__filled");var band=Ui.Box(filled,ClassName+"__band");portrait=Ui.Box(band,ClassName+"__portrait");Ui.Box(band,ClassName+"__shade");order=Ui.Text(band,"",ClassName+"__order");
-  kit=Ui.Box(filled,ClassName+"__kit");var row=Ui.Box(filled,ClassName+"__row");title=Ui.Text(row,"",ClassName+"__name");code=Ui.Text(row,"",ClassName+"__code");
-  empty=Ui.Box(this,ClassName+"__empty");new VbIcon("add",20).Into(empty);emptyLabel=Ui.Text(empty,"",ClassName+"__empty-label");
- }
+[UxmlElement] public partial class SquadSlot:TileComponent {
+ public new const string ClassName="vb-slot";
+ public SquadSlot():base(ClassName){}
  public SquadSlot Bind(OperativeView v,int slot){
-  bool has=v!=null;EnableInClassList(ClassName+"--empty",!has);filled.Show(has);empty.Show(!has);emptyLabel.text="SLOT "+slot;
-  if(has){Ui.Image(portrait,v.portrait);kit.style.backgroundColor=v.kit;order.text=slot.ToString();title.text=v.name.ToUpperInvariant();code.text=v.code;}
+  bool has=v!=null;EmptyLabel="SLOT "+slot;State=has?TileState.In:TileState.Empty;
+  if(has){Picture=v.portrait;Kit=v.kit;Order=slot;Title=v.name;Caption=v.code;}
   return this;
  }
 }
@@ -84,7 +69,7 @@ namespace Veilbreak.Gui {
   AddToClassList(ClassName);VbShape.Attach(this);
   var head=Ui.Box(this,ClassName+"__head");kit=Ui.Box(head,ClassName+"__kit");title=Ui.Text(head,"",ClassName+"__name");
   var r=Ui.Box(head,ClassName+"__role");roleIcon=new VbIcon("striker",14).Into(r);role=Ui.Text(r,"",ClassName+"__role-text");slot=Ui.Text(head,"",ClassName+"__slot");
-  var close=VbShape.Attach(Ui.Box(head,ClassName+"__close")).Clickable(()=>Closed?.Invoke());close.tooltip="Close details";new VbIcon("close",12).Into(close);
+  new IconButtonComposite("close","Close details",()=>Closed?.Invoke(),12).Classes(ClassName+"__close").Into(head);
   var stats=Ui.Box(this,ClassName+"__stats");hp=new StatReadout("HEALTH","0").Into(stats);armor=new StatReadout("ARMOR","0").Into(stats);stability=new StatReadout("STABILITY","0").Into(stats);armor.AddToClassList("vb-stat--neutral");stability.AddToClassList("vb-stat--neutral");
   var p=Ui.Box(this,ClassName+"__passive");passive=Ui.Text(p,"",ClassName+"__passive-name");passiveText=Ui.Text(p,"",ClassName+"__passive-text");
   skills=Ui.Box(this,ClassName+"__skills");toggle=new VbButton("ADD TO SQUAD",ButtonVariant.Light,null,"add",()=>Toggled?.Invoke()).Classes(ClassName+"__toggle").Into(this);

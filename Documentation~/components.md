@@ -628,3 +628,73 @@ fighters that cannot retain 1 HP cannot trade. Instant rewards are excluded from
 `HudTop` places pause and icon-only autoplay at the top left. Autoplay retains its state tint and tooltip, speed stays
 on the right, credits sit beside Power. `WaveSlammed` lets the host request its own bounded camera jolt; the GUI has
 no dependency on a camera or arcade simulation. The host must use actual safe-area insets, with a small battle fallback.
+
+## Text, labels, badges, tiles and cards
+
+### TextComponent and LabelComponent
+
+`TextComponent : Label` carries one type style (`TypeStyle.Display`, `Title`, `Label`, `Badge`, `Body`, `Caption`, `Num`
+→ `vb-t-*`) and a tone (`TextTone.Ally`, `Enemy`, `Power`, `Muted` → `vb-t-ally` …; `Default` adds nothing). UXML:
+`<vb:TextComponent type-style="Caption" tone="Muted" text="…"/>`. `LabelComponent` is the caps eyebrow: it uppercases its
+text, takes `LabelSize.Label` or `Badge`, and adds `vb-label` (4 units under it). `Ui.Text(parent, text, TypeStyle, tone)`
+and `Ui.Eyebrow(parent, text)` build them.
+
+### BadgeComponent
+
+A slim chip: optional glyph (`vb-badge__icon`), word (`__text`, uppercased) and value (`__value`), tone
+`BadgeTone.Neutral | Ally | Enemy | Power | Warn | Inverted` as `vb-badge--{tone}`. `Set(value)` only touches the label
+when the value changed. `Badge.Of(parent, …)`, and the presets `Badge.Status(kind, …)` (a `StatusChip`) and
+`Badge.Credits(n)` (a `CreditsChip`).
+
+### TileComponent
+
+The pickable cell `OperativeTile` and `SquadSlot` extend: band (`__portrait`, `__shade`, `__glyph`, `__order`), `__kit`,
+`__body` (`__name`, `__role` with its glyph and `__role-text`) and a lazily built `__empty`. `State` is `TileState` flags
+(`In | Focused`, or `Locked`, or `Empty`) as `--in`, `--focused`, `--locked`, `--empty`; `Tier` adds the rarity frame.
+`Set(title, caption, picture, glyph, state, order, captionIcon)` fills it; `Picked` fires on tap, click, Enter or Space.
+
+### CardComponent
+
+`vb-card`: `Media` (hidden until it has children), head (`__title` LabelComponent, `__meta`), `Body` (the content
+container: `Add` and UXML children land here) and `Foot` (right-aligned actions, hidden while empty; `Actions(...)`).
+`Selected` adds `vb-card--selected` (edge, brackets, cut 10).
+
+### IconButtonComposite
+
+A 44 × 44 chipped square with one glyph (`Icon`) or a short state (`Text`, "2×"), its tooltip as the accessible name,
+`Active` (`--active`, the toggled look) and `Quiet` (`--quiet`, translucent over the world). `Clicked` fires on pointer,
+Enter and Space.
+
+## Forms
+
+`FieldComposite(label, input, help)`: a `LabelComponent` (`__label`), the input (`__input`, the content container) and a
+caption (`__help`). `FormComposite(header)`: a scroll (`__scroll`) of `Fieldset(title)` sections, `Note(icon, text)`,
+`Footer(actions…)` and `Changed`, raised after any `ChangeEvent<float|bool|int>` from inside. `SavedMeta` shows on the
+header's meta, or on the form's own `__status` line without a header.
+
+## Layouts
+
+`StackLayout(gap)` (`vb-stack vb-stack--{4|8|12|16}`; marks its last child `vb-stack__last`), `GridLayout(columns, wrap)`
+(`vb-grid vb-grid--{2|3|4}`, `--wrap`), `ListLayout(empty)` (a `ScrollView` whose content is `vb-list`, 6 between rows,
+with a `vb-list__empty` line) and `BoardLayout` (`Top`, `World`, `Bottom`). `Ui.Stack`, `Ui.Grid` and `Ui.List` build them.
+
+## Views
+
+Every view is a `ScreenView` (`vb-view vb-{block}`) that fills its Navigator page, binds a plain view model and raises
+events; styles are in `Views.uss`.
+
+| View | Bind | Events |
+| --- | --- | --- |
+| `MainMenuView` | `MainMenuViewModel` (status, best, bestWave, checkpoint, squad, notice, canExit) | `Play`, `Resume`, `Scores`, `Settings`, `Exit` |
+| `MenuActionsSectionView` | `Bind(CheckpointView, squadLine, notice)` | `Play`, `Resume`, `Scores`, `Settings` |
+| `SquadView` | `SquadViewModel` (roster, selected, focus, locked, tiers, seed) | `Picked(i)`, `SlotPicked(i)`, `Toggled(i)`, `Closed`, `Start`, `Back` |
+| `SettingsView` | `SettingsViewModel` (written back as it changes) | `Changed(model)`, `ClearScores`, `Accessibility`, `Back` |
+| `PauseOverlayView` | `PauseViewModel` (wave, score, standing, perks, seed, detail) | `Resume`, `Settings`, `Perks`, `Abandon`, `Exit` |
+| `ConfirmDialogView` | `Push(nav, title, body, confirm, cancel)` | the confirm and cancel actions, after the layer closes |
+| `GuideDialogView` | `Push(nav, title, steps, ready)`; `DefaultSteps` | READY, after the layer closes |
+| `PerkDraftView` | `PerkDraftViewModel` (wave, bonus, score, choices, pick, squad) | `Picked(i)`, `Take` |
+| `ResultsView` | `ResultsViewModel` (cause, score, rank, ledger, stats, squad, perks) | `Again`, `Menu` |
+| `HighScoresView` | `Bind(ranked, historical, caption)` | `Back` |
+| `RouteChoiceView` | `RouteView` | `Chosen(side)` |
+| `MerchantScreenView` | `MerchantView` (keeps the scroll position) | `Bought`, `PerkSold`, `HealthSold`, `Left` |
+| `BattleHudView` | `Bind(HudView, OperativeView[], BossView)` every frame; `Card(i)`, `World`, `Announcer` | `Pause`, `Auto`, `Speed`, `QueueCancel` |

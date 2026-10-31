@@ -1,5 +1,35 @@
 # Changelog
 
+## 0.3.0 — 2026-10-31
+
+Everything the GUI Handbook described as partial or proposed now ships, in Unity and on the web. The handbook is
+published from `docs/` (GitHub Pages) and the web kit is a package of its own (`Web~`).
+
+- **Slim frame.** `.vb-frame--slim` (cut-xs 4, no edge) and `.vb-frame--chipped`, `FrameKind`, `VbFrame.Kind`,
+  `Ui.Frame`, token `cut-xs` (`--vb-cut-xs`). The package's containers (sections, dialogs, details, score, perk and rule
+  rows, results, queue rows, merchant exchanges) moved to slim; selected and warning states keep their edge, and every
+  slim container gets an edge back under `vb-contrast`.
+- **Atoms.** `TextComponent` (`TypeStyle`, `TextTone`, new `vb-t-muted`), `LabelComponent` (`LabelSize`, `vb-label`),
+  `BadgeComponent` (`BadgeTone`) with `Badge.Of/Status/Credits` presets, `TileComponent` (`TileState` flags; `OperativeTile`
+  and `SquadSlot` now extend it), `CardComponent` (media, head, body, foot, selected).
+- **Composites.** `IconButtonComposite` (`Active`, `Quiet`); `ScreenHeader`'s back, `HudTop`'s pause, autoplay and speed and
+  `OperativeDetails`' close are built from it. `FieldComposite`, `FormComposite` (fieldsets, note, footer, `Changed`,
+  `SavedMeta`). `Ui.Section` titles are `LabelComponent`s.
+- **Layouts.** `StackLayout` (`vb-stack--{4|8|12|16}`), `ListLayout` (`vb-list`, `vb-list__empty`), `GridLayout`
+  (`vb-grid--{2|3|4}`), `BoardLayout` (`vb-board__top/__world/__bottom`); `Ui.Stack/List/Grid`.
+- **Views** (`Runtime/Views`, `Views.uss`, view models in `Models.cs`): `MainMenuView`, `MenuActionsSectionView`,
+  `SquadView`, `SettingsView`, `PauseOverlayView`, `ConfirmDialogView`, `GuideDialogView`, `PerkDraftView`, `ResultsView`,
+  `HighScoresView`, `RouteChoiceView`, `MerchantScreenView`, `BattleHudView`. The arcade's screen styles moved into the
+  package with `vb-` names, so the handbook no longer needs the game repository.
+- **Web.** `Tools~/web/kit.js` ports every new type; `Tools~/web/package.py` writes `Web~/dist` (IIFE, ES module, CSS,
+  tokens, fonts, types) and `Web~/demo` chains the views into a small app. Layout effects are server-render safe.
+- **Handbook.** All 79 entries are shipped; `build_handbook.py PACKAGE docs` writes the page, the web kit and the demo
+  for GitHub Pages. The "Slim containers" switch is gone (slim is the default); there is a Web kit page.
+- `Tools~/metas.py` writes missing `.meta` files with stable GUIDs.
+- **Breaking:** `vb-score`, `vb-perk-row` and `vb-rule` no longer carry `margin-bottom: 6px`; put rows in a `ListLayout`
+  (or a `vb-list`). `SquadSlot`'s parts are `vb-slot__body` and `vb-slot__role-text` (were `__row`, `__code`), and its
+  filled/empty state is `TileState`. HUD squares carry `vb-icon-button` alongside their old classes.
+
 ## 0.2.0 — 2026-10-30
 
 The package is now the source of the Veilbreak design system: tokens, fonts, icons and the screen layer live here,

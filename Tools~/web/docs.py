@@ -461,6 +461,63 @@ doc(
     ],
 )
 
+# ── The handbook's atoms, composites, layouts and views (0.3.0) ──────────────
+for name, cs, summary, provide, rules in [
+    ('TextComponent', 'Runtime/Controls/Text.cs', 'Every run of text: one type style and an optional tone.',
+     '`typeStyle` (display, title, label, badge, body, caption, num), `tone` (ally, enemy, power, muted), `text`.',
+     ['One type style per run; tones only recolour.', 'Pass caps yourself, or use LabelComponent.']),
+    ('LabelComponent', 'Runtime/Controls/Text.cs', 'The caps eyebrow over a section, field or value, with 4 units under it.',
+     '`text` (uppercased for you), `size` (label or badge), `tone`.', ['A label names a thing; it is never a sentence.']),
+    ('BadgeComponent', 'Runtime/Controls/Badge.cs', 'A small slim chip: a word, an optional glyph before it and a value after it.',
+     '`text`, `icon`, `value`, `tone` (neutral, ally, enemy, power, warn, inverted), children.',
+     ['StatusChip and CreditsChip are the status and currency presets (`Badge.Status`, `Badge.Credits` in Unity).', 'Colour never travels alone: a tone always comes with a word.']),
+    ('IconButtonComposite', 'Runtime/Controls/IconButton.cs', 'A 44 × 44 chipped square with one glyph or a short state, and a tooltip.',
+     '`icon` or `text`, `tooltip` (required: it is the accessible name), `active`, `quiet`, `size`, `onClick`.',
+     ['Back, pause, close, speed and autoplay are all this control.', '`quiet` is the translucent HUD look over the world; `active` is toggled on.']),
+    ('TileComponent', 'Runtime/Controls/Tile.cs', 'A pickable cell: picture or glyph, name, caption with its glyph, order and state.',
+     '`title`, `caption`, `captionIcon`, `picture`, `glyph`, `kit`, `order`, `state` (in, focused, locked, empty; in and focused combine), `tier`, `emptyLabel`, `onPick`, `block`.',
+     ['OperativeTile and SquadSlot are tiles (`block` vb-tile, vb-slot).', 'Locked tiles stay visible and say how to unlock; lay tiles out in a grid.']),
+    ('CardComponent', 'Runtime/Controls/Card.cs', 'A slim container with an optional media band, a head, a body and a foot of actions.',
+     '`title`, `meta`, `media`, `actions`, `selected`, children (the body).', ['Cards are slim; only a selected card is chipped (edge and brackets).', 'Foot actions are right-aligned.']),
+    ('FieldComposite', 'Runtime/Composites/Forms.cs', 'One setting: a caps label, its input and one line of what it does.',
+     '`label`, `help`, children (the input).', ['Use it for inputs without their own label; VbSlider and VbSwitch carry theirs.']),
+    ('Fieldset', 'Runtime/Core/Ui.cs (Ui.Section)', 'A titled group of related fields in one slim container.',
+     '`title`, children (fields).', ['One topic per fieldset, 1–4 fields.']),
+    ('FormComposite', 'Runtime/Composites/Forms.cs', 'Fieldsets in a scroll, an optional note, a footer of secondary actions and a saved line.',
+     '`saved`, `headed` (the saved state shows in a ScreenHeader instead), `note` ({ icon, text }), `footer`, children (fieldsets).',
+     ['Settings apply as they change; there is no Submit.', 'Destructive actions live in the footer as danger buttons and confirm.']),
+    ('StackLayout', 'Runtime/Layouts/Layouts.cs', 'A column with one rhythm: the gap under every child but the last.', '`gap` (4, 8, 12 or 16), children.', ['Use it instead of per-element margins.']),
+    ('GridLayout', 'Runtime/Layouts/Layouts.cs', 'Cells 2, 3 or 4 across; `wrap` adds the row rhythm.', '`columns` (2, 3 or 4), `wrap`, children.', ['Pick the count the items fill; never a half-empty row.']),
+    ('ListLayout', 'Runtime/Layouts/Layouts.cs', 'Rows of one kind in a scroll, 6 between rows, with an empty-state line.', '`empty`, children (rows).', ['ScoreRow, PerkRow and RuleRow carry no margin of their own; put them in a list.']),
+    ('BoardLayout', 'Runtime/Layouts/Layouts.cs', 'The battle board: top band, the world (the rest, at least half) and the bottom band.', '`top`, `world`, `bottom`.', ['Top and bottom never shrink.']),
+    ('MainMenuView', 'Runtime/Views/MenuViews.cs', 'The title screen: offline badge and best, the mark, the menu actions and EXIT.',
+     '`view` (status, subtitle, best, bestWave, checkpoint, squad, notice, canExit), `onPlay`, `onResume`, `onScores`, `onSettings`, `onExit`.', ['PLAY is the one primary.']),
+    ('MenuActionsSectionView', 'Runtime/Views/MenuViews.cs', 'The thumb-zone block: checkpoint card, PLAY, high scores and settings.',
+     '`checkpoint` (wave, score, standing, squadSize, perks, seed) or null, `squadLine`, `notice`, `onPlay`, `onResume`, `onScores`, `onSettings`.',
+     ['RESUME is secondary and lives in the checkpoint card.', 'The card only exists when there is a checkpoint.']),
+    ('SquadView', 'Runtime/Views/SquadView.cs', 'Pick four: squad slots, the roster grid, the open details and START RUN.',
+     '`view` (roster, selected, focus, locked, tiers, seed), `onPick(i)`, `onSlotPick(i)`, `onToggle(i)`, `onClose`, `onStart`, `onBack`.', ['START RUN is blocked with its reason until the squad has four.']),
+    ('SettingsView', 'Runtime/Views/SettingsView.cs', 'Audio, feel, camera and quality as fieldsets in one form; applies as it changes.',
+     '`view` (master, music, effects, sensitivity, haptics, reducedMotion, camera, quality, saved, note), `onChange(model)`, `onClearScores`, `onAccessibility`, `onBack`.', ['Every change reports the whole model.']),
+    ('PauseOverlayView', 'Runtime/Views/OverlayViews.cs', 'The run, frozen: PAUSED, then a sheet with stats, perks, the seed line, RESUME and the exits.',
+     '`view` (wave, score, standing, squadSize, perks, seed, detail), `onResume`, `onSettings`, `onPerks`, `onAbandon`, `onExit`.', ['RESUME is the one primary; Back = Resume.', 'ABANDON is danger and confirms; EXIT is a ghost away from the thumb.']),
+    ('ConfirmDialogView', 'Runtime/Views/OverlayViews.cs', 'One shape for every confirmation: question, consequence, destructive action, way back.',
+     '`title`, `body`, `confirm` ({ label, icon, sub, variant }), `cancel` ({ label, icon }), `onConfirm`, `onCancel`.', ['Unity: `ConfirmDialogView.Push(nav, …)` puts it on a modal layer.']),
+    ('GuideDialogView', 'Runtime/Views/OverlayViews.cs', 'The first-run guide: numbered steps and READY.', '`title`, `steps`, `onReady`.', ['Unity: `GuideDialogView.Push(nav, title, steps, ready)`.']),
+    ('PerkDraftView', 'Runtime/Views/RunViews.cs', 'Wave cleared: three perk cards, the pick explained, the squad that carries forward and TAKE PERK.',
+     '`view` (wave, bonus, score, choices, pick, squad: code, hp, maxHp, stability), `onPick(i)`, `onTake`.', ['TAKE PERK says what the pick does next.']),
+    ('ResultsView', 'Runtime/Views/RunViews.cs', 'Run over: the score and its ledger, stats, the squad\'s contribution, the perks, MENU and RUN AGAIN.',
+     '`view` (cause, score, wave, bosses, rank, of, ledger, distance, simTime, squad, perks), `onMenu`, `onAgain`.', ['RUN AGAIN is the one primary.']),
+    ('HighScoresView', 'Runtime/Views/RunViews.cs', 'Top 20 on this device with the current run framed, then older-rules runs.',
+     '`ranked`, `historical`, `caption`, `onBack`.', ['Local scores only; say so in the footer.']),
+    ('RouteChoiceView', 'Runtime/Views/BattleViews.cs', 'The crossroads screen around RouteChoice.', '`view` (RouteView), `onChoose(side)`.', ['Only one choice is accepted.']),
+    ('MerchantScreenView', 'Runtime/Views/BattleViews.cs', 'The night market screen (design name MerchantView) around MerchantScreen.',
+     '`view` (MerchantView), `onBuy`, `onSellPerk`, `onSellHealth`, `onLeave`.', ['The host confirms every trade and binds again.']),
+    ('BattleHudView', 'Runtime/Views/BattleViews.cs', 'The whole battle board: HUD band, boss bar, announcer, the world and four operative cards.',
+     '`hud` (HudView), `operatives`, `boss` (or null), `announcement`, `world`, `onPause`, `onAuto`, `onSpeed`, `onQueueCancel`.', ['Unity: bind it every frame; the game attaches its aim drag to `Card(i).Skill(n)`.']),
+]:
+    doc(name, cs, summary, provide, rules)
+
 DTS = r"""
 import type * as React from 'react';
 
@@ -481,7 +538,7 @@ export interface BossView { name: string; health: number; stability: number; det
 export interface ScoreView { rank: number; score: number; wave: number; bosses: number; squad: string[]; current?: boolean }
 export interface ContributionView { operative: OperativeView; fellWave?: number; damage?: number; kills?: number; casts?: number; power?: number; share?: number; extraLabel?: string; extraValue?: string }
 
-export interface VbFrameProps { className?: string; style?: React.CSSProperties; children?: React.ReactNode }
+export interface VbFrameProps { kind?: 'slim' | 'chipped'; className?: string; style?: React.CSSProperties; children?: React.ReactNode }
 export declare function VbFrame(props: VbFrameProps): React.ReactElement;
 export interface VbIconProps { icon: KitIconName; size?: number; title?: string; className?: string; style?: React.CSSProperties }
 export declare function VbIcon(props: VbIconProps): React.ReactElement;
@@ -579,6 +636,46 @@ export interface OffscreenIndicatorProps { name: string; team?: WorldTeam; metre
 export declare function OffscreenIndicator(props: OffscreenIndicatorProps): React.ReactElement;
 export interface EdgeWarningProps { caption?: string; urgency?: number; top?: boolean; className?: string; style?: React.CSSProperties }
 export declare function EdgeWarning(props: EdgeWarningProps): React.ReactElement;
+/* ── 0.3.0: the handbook's atoms, composites, layouts and views ── */
+type Base = { className?: string; style?: React.CSSProperties };
+export type TypeStyle = 'display' | 'title' | 'label' | 'badge' | 'body' | 'caption' | 'num';
+export type TextTone = 'default' | 'ally' | 'enemy' | 'power' | 'muted';
+export declare function TextComponent(props: Base & { text?: React.ReactNode; typeStyle?: TypeStyle; tone?: TextTone; children?: React.ReactNode }): React.ReactElement;
+export declare function LabelComponent(props: Base & { text: string; size?: 'label' | 'badge'; tone?: TextTone }): React.ReactElement;
+export type BadgeTone = 'neutral' | 'ally' | 'enemy' | 'power' | 'warn' | 'inverted';
+export declare function BadgeComponent(props: Base & { text?: string; icon?: KitIconName; value?: string | number; tone?: BadgeTone; tooltip?: string; children?: React.ReactNode }): React.ReactElement;
+export declare function IconButtonComposite(props: Base & { icon?: KitIconName; text?: string; tooltip: string; active?: boolean; quiet?: boolean; size?: number; textClass?: string; onClick?: () => void }): React.ReactElement;
+export type TileState = 'in' | 'focused' | 'locked' | 'empty';
+export declare function TileComponent(props: Base & { title?: string; caption?: string; captionIcon?: KitIconName; picture?: string | null; glyph?: KitIconName; kit?: string; order?: number; state?: TileState | TileState[]; tier?: RarityTier; emptyLabel?: string; tooltip?: string; block?: string; onPick?: () => void }): React.ReactElement;
+export declare function CardComponent(props: Base & { title?: string; meta?: string; media?: React.ReactNode; actions?: React.ReactNode; selected?: boolean; children?: React.ReactNode }): React.ReactElement;
+export declare function FieldComposite(props: Base & { label?: string; help?: string; children?: React.ReactNode }): React.ReactElement;
+export declare function Fieldset(props: Base & { title: string; children?: React.ReactNode }): React.ReactElement;
+export declare function FormComposite(props: Base & { saved?: string; headed?: boolean; note?: { icon?: KitIconName; text: string } | null; footer?: React.ReactNode; children?: React.ReactNode }): React.ReactElement;
+export declare function StackLayout(props: Base & { gap?: 4 | 8 | 12 | 16; children?: React.ReactNode }): React.ReactElement;
+export declare function GridLayout(props: Base & { columns?: 2 | 3 | 4; wrap?: boolean; children?: React.ReactNode }): React.ReactElement;
+export declare function ListLayout(props: Base & { empty?: string; children?: React.ReactNode }): React.ReactElement;
+export declare function BoardLayout(props: Base & { top?: React.ReactNode; world?: React.ReactNode; bottom?: React.ReactNode }): React.ReactElement;
+export interface CheckpointView { wave: number; score: number; standing?: number; squadSize?: number; perks?: number; seed?: string }
+export interface MainMenuViewModel { status?: string; subtitle?: string; notice?: string; best?: number; bestWave?: number; checkpoint?: CheckpointView | null; squad?: string[]; canExit?: boolean }
+export declare function MainMenuView(props: Base & { view?: MainMenuViewModel; onPlay?: () => void; onResume?: () => void; onScores?: () => void; onSettings?: () => void; onExit?: () => void }): React.ReactElement;
+export declare function MenuActionsSectionView(props: Base & { checkpoint?: CheckpointView | null; squadLine?: string; notice?: string; onPlay?: () => void; onResume?: () => void; onScores?: () => void; onSettings?: () => void }): React.ReactElement;
+export interface SquadViewModel { roster: OperativeView[]; selected?: number[]; focus?: number; locked?: string[]; tiers?: RarityTier[]; seed?: string }
+export declare function SquadView(props: Base & { view: SquadViewModel; onPick?: (index: number) => void; onSlotPick?: (slot: number) => void; onToggle?: (index: number) => void; onClose?: () => void; onStart?: () => void; onBack?: () => void }): React.ReactElement;
+export interface SettingsViewModel { master?: number; music?: number; effects?: number; sensitivity?: number; haptics?: boolean; reducedMotion?: boolean; camera?: number; quality?: number; saved?: string; note?: string }
+export declare function SettingsView(props: Base & { view?: SettingsViewModel; onChange?: (model: SettingsViewModel) => void; onClearScores?: () => void; onAccessibility?: () => void; onBack?: () => void }): React.ReactElement;
+export interface PauseViewModel { wave: number; score: number; standing: number; squadSize?: number; perks?: PerkView[]; seed?: string; detail?: string }
+export declare function PauseOverlayView(props: Base & { view: PauseViewModel; onResume?: () => void; onSettings?: () => void; onPerks?: () => void; onAbandon?: () => void; onExit?: () => void }): React.ReactElement;
+export declare function ConfirmDialogView(props: Base & { title: string; body?: string; confirm?: { label: string; icon?: KitIconName; sub?: string; variant?: VbButtonProps['variant'] }; cancel?: { label: string; icon?: KitIconName }; onConfirm?: () => void; onCancel?: () => void }): React.ReactElement;
+export declare function GuideDialogView(props: Base & { title?: string; steps?: string[]; onReady?: () => void }): React.ReactElement;
+export interface SquadHealthView { code: string; hp: number; maxHp: number; stability?: number }
+export interface PerkDraftViewModel { wave: number; bonus?: number; score?: number; choices: PerkView[]; pick?: number; squad?: SquadHealthView[] }
+export declare function PerkDraftView(props: Base & { view: PerkDraftViewModel; onPick?: (index: number) => void; onTake?: () => void }): React.ReactElement;
+export interface ResultsViewModel { cause?: string; score: number; wave: number; bosses?: number; rank?: number; of?: number; ledger?: { label: string; value: string }[]; distance?: string; simTime?: string; squad?: ContributionView[]; perks?: PerkView[] }
+export declare function ResultsView(props: Base & { view: ResultsViewModel; onMenu?: () => void; onAgain?: () => void }): React.ReactElement;
+export declare function HighScoresView(props: Base & { ranked: ScoreView[]; historical?: ScoreView[]; caption?: string; onBack?: () => void }): React.ReactElement;
+export declare function RouteChoiceView(props: Base & { view: RouteView; onChoose?: (side: number) => void }): React.ReactElement;
+export declare function MerchantScreenView(props: Base & { view: MerchantView; onBuy?: (index: number) => void; onSellPerk?: (id: string) => void; onSellHealth?: (actor: number) => void; onLeave?: () => void }): React.ReactElement;
+export declare function BattleHudView(props: Base & { hud?: HudView; operatives?: OperativeView[]; boss?: BossView | null; announcement?: string; world?: React.ReactNode; queuePinned?: boolean; onPause?: () => void; onAuto?: () => void; onSpeed?: () => void; onQueueCancel?: (entry: QueueView) => void }): React.ReactElement;
 """
 # The legacy web kit's declarations move into a Legacy namespace; the components the package does not replace stay
 # reachable at the top level too (window.Veilbreak.MatchHeader === window.Veilbreak.Legacy.MatchHeader).

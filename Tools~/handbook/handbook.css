@@ -1,23 +1,4 @@
-/* Handbook additions to the web kit: the proposed slim frame, the slim-container preview switch, and the stages. */
-
-/* ── FrameComponent: slim (proposed) ─ mirrors catalog.SLIM_USS ── */
-.vb-frame--slim { --vb-cut: 4; --vb-bw: 0; --vb-fill: var(--panel); }
-.vb-frame--slim.vb-frame--raised { --vb-fill: var(--raised); }
-.vb-frame--slim.vb-frame--solid { --vb-fill: var(--panel-solid); }
-.vb-frame--slim.vb-frame--ally { --vb-fill: var(--ally-soft); }
-.vb-frame--slim.vb-frame--enemy { --vb-fill: var(--enemy-soft); }
-.vb-frame--slim.vb-frame--power { --vb-fill: var(--power-soft); }
-.vb-frame--chipped { --vb-cut: 10; --vb-bw: 1; --vb-edge: var(--line); }
-.vb-contrast .vb-frame--slim { --vb-bw: 1; --vb-edge: var(--line-strong); }
-.vb-card--selected { --vb-bw: 2; --vb-edge: var(--ally); --vb-bracket: var(--ally); }
-
-/* ── "Slim containers" switch: today's containers on the slim kind (catalog.SLIM_MIGRATION) ── */
-.hb-slim :is(.vb-section, .vb-dialog, .vb-details, .vb-score, .vb-perk-row, .vb-rule, .vb-result, .vb-queue__row,
-  .vb-merchant__exchange, .menu__checkpoint, .pause__perks, .results__score, .settings__note, .menu__best, .pause__chip, .perks__squad, .vb-panel:not(.vb-panel--brackets)) {
-  --vb-cut: 4; --vb-bw: 0;
-}
-.hb-slim .vb-score--current { --vb-bw: 1; }
-.hb-slim.vb-contrast :is(.vb-section, .vb-dialog, .vb-details, .vb-score, .vb-perk-row, .vb-rule, .vb-result, .vb-panel) { --vb-bw: 1; --vb-edge: var(--line-strong); }
+/* Handbook additions to the web kit: the preview stages. The slim frame, cards and badges are in the kit (bundle.css). */
 
 /* ── stages ── */
 .hb-free { background: var(--ground); color: var(--text); font-family: var(--font-body); padding: 16px; box-sizing: border-box; }

@@ -79,6 +79,7 @@
     --vb-space-6: 24px;
     --vb-space-8: 32px;
     --vb-space-12: 48px;
+    --vb-cut-xs: 4px;
     --vb-cut-sm: 6px;
     --vb-cut-md: 10px;
     --vb-cut-lg: 14px;

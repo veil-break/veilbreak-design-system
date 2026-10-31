@@ -4,8 +4,14 @@
 components of the *Veilbreak Arcade Screens* design canvas and has no dependency on any game:
 you bind plain view models (`OperativeView`, `SkillView`, `PerkView`, `HudView` …) from your own state.
 
-It is also the source of the Veilbreak design system: tokens, fonts, icons and guidelines live here, and the
-design-system artifact is regenerated from this folder (`Tools~/web`). Start with
+It is also the source of the Veilbreak design system: tokens, fonts, icons and guidelines live here, and every web
+output is generated from this folder:
+
+- **Web kit** (`Web~`, `@veilbreak/gui`): React 18 ports of every component and view, with the same names, classes and
+  view models, plus tokens, fonts and types. See [`Web~/README.md`](Web~/README.md).
+- **GUI Handbook** (`docs/`, published with GitHub Pages): every component in four tiers with its Unity type, USS,
+  tokens, C# API and a live preview, the web kit page and a small web app demo that chains the views.
+- **Design-system artifact** (`Tools~/web/build.sh`). Start with
 [`Documentation~/index.md`](Documentation~/index.md): the brand book, integration guide, component reference, token
 reference and guidelines.
 
@@ -13,10 +19,10 @@ Unity **6000.3** or newer, UI Toolkit runtime panels. No `Resources.Load`, no sc
 
 ## Install
 
-Embed or reference the folder as a local package, e.g. in `Packages/manifest.json`:
+Add it from Git in `Packages/manifest.json`, or embed or reference a checkout as a local package:
 
 ```json
-"com.veilbreak.gui": "file:../../packages/com.veilbreak.gui"
+"com.veilbreak.gui": "https://github.com/veil-break/veilbreak-design-system.git"
 ```
 
 Use `Runtime/Settings/VeilbreakPortrait.asset` as your `PanelSettings` (390 × 844 reference, match width), or copy
@@ -40,6 +46,10 @@ on `:root`; game sheets use them too (`var(--vb-color-ally-text)`, `-unity-font-
 | Input | `TargetDrag`: one-pointer press, drag and release with capture for aiming and moving; the target carries `vb-dragging`. `GestureSurface`: camera gestures that share a surface with the game's targeting drag. One finger on empty ground or two fingers pan, pinch zooms, twist turns, the wheel zooms, a right drag orbits, a double tap resets and a hovering mouse reports its position. It yields while the game says a drag is busy. |
 | World | `WorldLayer` over a projector you supply (`Func<Vector3,Vector2?>`), advanced on simulation time: `WorldHealthBar` (ghost trail, barrier, elite and boss sizes), merged and capped `CombatText`, `WorldLabel`, `WorldMarker` and `OffscreenIndicator`; `World.uss` |
 | Layout | `Layout.uss`: `vb-row`, `vb-grid4`, `vb-grid2`, `vb-half`, `vb-grow`; Navigator `vb-screen`/`vb-page` (`--headed` under a `ScreenHeader`, `__label`, `__caption`, `__footer`, `__scroll`); `vb-section`; `vb-dialog`; `vb-backdrop`; larger-text sizes |
+| Atoms (0.3.0) | `TextComponent` (`TypeStyle`, `TextTone`), `LabelComponent`, `BadgeComponent` (+ `Badge` presets), `TileComponent` (`TileState`; `OperativeTile` and `SquadSlot` extend it), `CardComponent`, `VbFrame.Kind` (`FrameKind.Slim`/`Chipped`) |
+| Forms | `IconButtonComposite`, `FieldComposite`, `FormComposite` |
+| Layouts | `StackLayout`, `GridLayout`, `ListLayout`, `BoardLayout`; `Ui.Stack/Grid/List/Frame` |
+| Views | `MainMenuView`, `MenuActionsSectionView`, `SquadView`, `SettingsView`, `PauseOverlayView`, `ConfirmDialogView`, `GuideDialogView`, `PerkDraftView`, `ResultsView`, `HighScoresView`, `RouteChoiceView`, `MerchantScreenView`, `BattleHudView` (`Runtime/Views`, `Views.uss`) |
 | Composites | `Dialog` (confirmation sheets, pushed as a modal over the current page), `Backdrop` (cover-scaled artwork with a legibility shade), `HoloFrame`, `ScanLines`, `HoloPlatform`, `RevealCard`, `RuleRow`, `HudTop` (translucent band; hover shows the queue), `QueueList` (manual rows cancel on tap), `BossBar`, `OperativeCard`, `OperativeTile`, `SquadSlot`, `OperativeDetails`, `OperativeStats`, `SquadResult`, `PerkCard`, `PerkDetail`, `PerkChip`, `PerkRow`, `ScreenHeader`, `ScoreRow` |
 
 Every element is also a `[UxmlElement]`, so it can be placed in UXML and styled from USS.
@@ -75,6 +85,8 @@ camera.Pinched += f => rig.ZoomBy(f);                // events carry panel units
   outputs; `--upstream FILE` lists differences from another `tokens.json`).
 - `python3 Tools~/samples.py` rewrites each sample's scene, UXML and asmdef scaffolding (`--check` reports drift).
 - `Tools~/web/build.sh OUT` rebuilds the design-system artifact's files (see `Documentation~/web-mirror.md`).
+- `python3 Tools~/handbook/build_handbook.py . docs` rebuilds the web kit (`Web~/dist`) and the GitHub Pages site (`docs/`).
+- `python3 Tools~/metas.py` writes `.meta` files (stable GUIDs) for new files; `--check` lists missing ones.
 
 ## Samples
 

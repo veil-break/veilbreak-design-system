@@ -13,6 +13,12 @@
 .vb-grid4--wrap { flex-wrap: wrap; }
 .vb-grid4--wrap > * { margin-bottom: 10px; }
 .vb-grid4 > .vb-tile, .vb-grid4 > .vb-slot { width: 23%; }
+/* Generic grid: 2, 3 or 4 across (GridLayout); cells keep their row rhythm with --wrap. */
+.vb-grid { flex-direction: row; flex-wrap: wrap; justify-content: space-between; }
+.vb-grid--2 > * { width: 48.5%; }
+.vb-grid--3 > * { width: 31.5%; }
+.vb-grid--4 > * { width: 23%; }
+.vb-grid--wrap > * { margin-bottom: 10px; }
 /* Two columns; end cells align right. */
 .vb-grid2 { flex-direction: row; flex-wrap: wrap; }
 .vb-grid2__cell { width: 50%; flex-direction: row; }
@@ -50,3 +56,32 @@
 /* ── root classes (SafeAreaRoot.Flags) ─────────────────────────────────── */
 .vb-large-text .vb-t-body { font-size: 15px; }
 .vb-large-text .vb-t-caption { font-size: 13px; }
+
+/* ── stack, list and board (StackLayout, ListLayout, BoardLayout) ─────── */
+/* A column with one rhythm: every child but the last gets the gap underneath (StackLayout marks the last child). */
+.vb-stack { flex-direction: column; flex-shrink: 0; }
+.vb-stack--4 > * { margin-bottom: 4px; }
+.vb-stack--8 > * { margin-bottom: 8px; }
+.vb-stack--12 > * { margin-bottom: 12px; }
+.vb-stack--16 > * { margin-bottom: 16px; }
+.vb-stack > .vb-stack__last { margin-bottom: 0; }
+/* Rows of one kind with 6 between them; the empty line shows while there are none. */
+.vb-list { flex-direction: column; }
+.vb-list > * { margin-bottom: 6px; flex-shrink: 0; }
+.vb-list__empty { margin: 8px 0; color: var(--vb-color-text-3); }
+.vb-list-scroll { flex-grow: 1; flex-shrink: 1; min-height: 0; }
+/* The battle board: top and bottom never shrink, the world takes the rest. */
+.vb-board { flex-grow: 1; flex-direction: column; }
+.vb-board__top { flex-shrink: 0; }
+.vb-board__world { flex-grow: 1; position: relative; overflow: hidden; }
+.vb-board__bottom { flex-shrink: 0; padding-bottom: 6px; }
+
+/* ── slim containers ───────────────────────────────────────────────────── */
+/* Containers read as quiet tonal planes (cut-xs, no edge); the chipped look is left for what you act on or what is selected. */
+.vb-section, .vb-dialog, .vb-details, .vb-score, .vb-perk-row, .vb-rule, .vb-result, .vb-queue__row, .vb-merchant__exchange { --vb-cut: 4; --vb-bw: 0; }
+/* States that are selections or warnings keep an edge. */
+.vb-score--current, .vb-perk-row--selected, .vb-rule--warning, .vb-rule--draft, .vb-queue__row--next, .vb-queue__row--manual { --vb-bw: 1; }
+.vb-contrast .vb-section, .vb-contrast .vb-dialog, .vb-contrast .vb-details, .vb-contrast .vb-score, .vb-contrast .vb-perk-row,
+.vb-contrast .vb-rule, .vb-contrast .vb-result, .vb-contrast .vb-queue__row, .vb-contrast .vb-merchant__exchange { --vb-bw: 1; --vb-edge: var(--vb-color-line-strong); }
+.vb-contrast .vb-score--current, .vb-contrast .vb-perk-row--selected { --vb-edge: var(--vb-color-ally); }
+.vb-contrast .vb-rule--warning { --vb-edge: var(--vb-color-warn); }

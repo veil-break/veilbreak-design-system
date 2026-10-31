@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 namespace Veilbreak.Gui {
 /// <summary>Small fluent helpers every component builds with, so markup stays declarative and class-driven.</summary>
-public static class Ui {
+public static partial class Ui {
  public static T Classes<T>(this T e,params string[] classes) where T:VisualElement {foreach(var c in classes)if(!string.IsNullOrEmpty(c))e.AddToClassList(c);return e;}
  public static T Into<T>(this T e,VisualElement parent) where T:VisualElement {parent?.Add(e);return e;}
  public static T Flag<T>(this T e,string cls,bool on) where T:VisualElement {e.EnableInClassList(cls,on);return e;}
@@ -16,6 +16,9 @@ public static class Ui {
  public static bool Under(VisualElement e,string cls){for(var p=e;p!=null;p=p.hierarchy.parent)if(p.ClassListContains(cls))return true;return false;}
  /// <summary>A shaped panel (<c>vb-panel</c> plus modifiers such as <c>vb-panel--solid</c>) drawn by <see cref="VbShape"/>.</summary>
  public static VisualElement Panel(VisualElement parent,params string[] classes)=>VbShape.Attach(Box(parent,"vb-panel").Classes(classes));
+ /// <summary>A shaped panel of a <see cref="FrameKind"/>: <c>vb-panel vb-frame--slim</c> or <c>vb-panel vb-frame--chipped</c>, plus modifiers
+ /// (<c>vb-frame--raised</c>, <c>--solid</c>, <c>--ally</c>, <c>--enemy</c>, <c>--power</c>).</summary>
+ public static VisualElement Frame(VisualElement parent,FrameKind kind,params string[] classes)=>Panel(parent,kind==FrameKind.Slim?"vb-frame--slim":kind==FrameKind.Chipped?"vb-frame--chipped":null).Classes(classes);
  /// <summary>Takes the free space in a column or row, pushing later siblings to the far end.</summary>
  public static VisualElement Spacer(VisualElement parent)=>Box(parent,"vb-grow");
  /// <summary>A vertical scroll area with hidden scrollbars; touch and wheel scroll it, clipping shows there is more.</summary>
@@ -23,7 +26,7 @@ public static class Ui {
  /// <summary>A caps title and an optional right-aligned meta line at the top of a panel (<c>vb-panel__head</c>).</summary>
  public static VisualElement Head(VisualElement panel,string title,string meta=null){var head=Box(panel,"vb-panel__head");head.SendToBack();Text(head,title,"vb-panel__title");if(!string.IsNullOrEmpty(meta))Text(head,meta,"vb-panel__meta");return head;}
  /// <summary>A titled panel grouping related settings or facts (<c>vb-section</c>).</summary>
- public static VisualElement Section(VisualElement parent,string title,params string[] classes){var p=Panel(parent,"vb-section").Classes(classes);Text(p,title,"vb-t-label","vb-section__title");return p;}
+ public static VisualElement Section(VisualElement parent,string title,params string[] classes){var p=Panel(parent,"vb-section").Classes(classes);new LabelComponent(title).Classes("vb-section__title").Into(p);return p;}
  /// <summary>Runs <paramref name="set"/> with each new value the user picks.</summary>
  public static VbSlider Changed(this VbSlider field,Action<float> set){field.RegisterValueChangedCallback(e=>set(e.newValue));return field;}
  public static VbSwitch Changed(this VbSwitch field,Action<bool> set){field.RegisterValueChangedCallback(e=>set(e.newValue));return field;}

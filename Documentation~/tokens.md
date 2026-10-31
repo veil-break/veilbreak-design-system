@@ -178,6 +178,7 @@ Cut corners, top-left and bottom-right only. The two square corners carry the br
 
 | Token | Value | USS | Usage |
 | --- | --- | --- | --- |
+| `cut-xs` | `4px` | `--vb-cut-xs` | Slim frames: every container (sections, sheets, rows, cards, badges, popovers). |
 | `cut-sm` | `6px` | `--vb-cut-sm` | Chips, item cells, queue chips, small tiles. |
 | `cut-md` | `10px` | `--vb-cut-md` | Buttons, ability buttons, rail tiles, panels. |
 | `cut-lg` | `14px` | `--vb-cut-lg` | Large panels, sheets and the main CTA. |
