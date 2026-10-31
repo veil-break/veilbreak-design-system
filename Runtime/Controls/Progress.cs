@@ -77,15 +77,16 @@ public enum ProgressTone { Ally, Power, Enemy, Neutral }
 /// note on when it can run and an on/off toggle. A warning frames it in warn; a draft is dashed. The player's command always wins.</summary>
 [UxmlElement] public partial class RuleRow:ListRow {
  public new const string ClassName="vb-rule";
- readonly VisualElement conditions,toggle;
+ readonly VisualElement conditions;readonly VbSwitch toggle;
  public RuleView View {get;private set;}
  public event Action<bool> Toggled;
  public RuleRow(){AddToClassList(ClassName);conditions=Ui.Box(Content,ClassName+"__if");conditions.SendToBack();ValueLabel.AddToClassList(ClassName+"__cost");
-  toggle=Ui.Box(null,ClassName+"__toggle").Clickable(()=>Toggle());Ui.Box(toggle,ClassName+"__knob");WithAction(toggle);Bind(new RuleView());}
+  // The shared switch, compact: the row is its label.
+  toggle=new VbSwitch("",null,true).Classes(ClassName+"__toggle","vb-switch--compact");toggle.RegisterValueChangedCallback(e=>{if(View!=null&&e.newValue!=View.enabled)Toggle();});WithAction(toggle);Bind(new RuleView());}
  public RuleRow Bind(RuleView v){View=v;Lead=v.index.ToString();conditions.Clear();Ui.Text(conditions,"IF",ClassName+"__keyword");
   for(int i=0;i<v.conditions.Length;i++){var c=v.conditions[i];if(i>0)Ui.Text(conditions,v.any?"OR":"AND",ClassName+"__join");Ui.Text(conditions,c.text,ClassName+"__text");if(!string.IsNullOrEmpty(c.value))Ui.Text(conditions,c.value,ClassName+"__value");if(!string.IsNullOrEmpty(c.after))Ui.Text(conditions,c.after,ClassName+"__text");}
   Title="THEN "+(v.action??"")+(string.IsNullOrEmpty(v.actionRest)?"":" "+v.actionRest);Value=v.cost>0?"−"+v.cost:"";Caption=v.note;
-  EnableInClassList(ClassName+"--off",!v.enabled);EnableInClassList(ClassName+"--warning",v.warning);EnableInClassList(ClassName+"--draft",v.draft);toggle.EnableInClassList(ClassName+"__toggle--on",v.enabled);toggle.tooltip=v.enabled?"Turn rule off":"Turn rule on";return this;}
+  EnableInClassList(ClassName+"--off",!v.enabled);EnableInClassList(ClassName+"--warning",v.warning);EnableInClassList(ClassName+"--draft",v.draft);toggle.SetValueWithoutNotify(v.enabled);toggle.tooltip=v.enabled?"Turn rule off":"Turn rule on";return this;}
  public void Toggle(){if(View==null)return;View.enabled=!View.enabled;Bind(View);Toggled?.Invoke(View.enabled);}
 }
 }

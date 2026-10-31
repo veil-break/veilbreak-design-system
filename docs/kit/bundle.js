@@ -1317,7 +1317,7 @@
     });
     return h(ListRow, { className: cx('vb-rule', !on && 'vb-rule--off', init.warning && 'vb-rule--warning', init.draft && 'vb-rule--draft', p.className), style: p.style, lead: String(init.index),
       title: 'THEN ' + init.action + (init.actionRest ? ' ' + init.actionRest : ''), caption: init.note, value: init.cost > 0 ? '−' + init.cost : '', valueClass: 'vb-rule__cost',
-      action: h('div', Object.assign({ className: cx('vb-rule__toggle', on && 'vb-rule__toggle--on'), title: on ? 'Turn rule off' : 'Turn rule on', 'aria-pressed': on }, clickable(toggle)), h('div', { className: 'vb-rule__knob' })) },
+      action: h('div', { title: on ? 'Turn rule off' : 'Turn rule on' }, h(VbSwitch, { value: on, onChange: function (x) { if (x !== on) toggle(); }, className: 'vb-rule__toggle vb-switch--compact' })) },
       h('div', { className: 'vb-rule__if' }, cond));
   }
 

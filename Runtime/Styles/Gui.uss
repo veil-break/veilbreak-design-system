@@ -511,6 +511,9 @@
 .vb-switch__knob { position: absolute; left: 4px; top: 4px; width: 16px; height: 16px; background-color: var(--vb-color-text-3); transition-property: left; transition-duration: 0.22s; }
 .vb-switch--on .vb-switch__track { --vb-fill: var(--vb-color-ally); --vb-edge: var(--vb-color-ally); }
 .vb-switch--on .vb-switch__knob { left: 24px; background-color: var(--vb-color-on-cta); }
+/* Compact: the track alone (row toggles such as RuleRow); the row says what it switches. */
+.vb-switch--compact { min-height: 44px; min-width: 44px; justify-content: center; }
+.vb-switch--compact .vb-switch__text { display: none; }
 .vb-switch:focus .vb-switch__track { --vb-bracket: var(--vb-color-text); }
 .vb-switch__text { margin-left: 12px; flex-shrink: 1; }
 .vb-switch__label { -unity-font-definition: var(--vb-font-body-medium); -unity-font-style: bold; font-size: 12px; letter-spacing: 13.333px; }
@@ -725,9 +728,6 @@
 .vb-rule__cost { margin-left: 6px; -unity-font-definition: var(--vb-font-body-medium); font-size: 11px; color: var(--vb-color-power-text); }
 .vb-rule__note { margin-top: 2px; font-size: 10px; color: var(--vb-color-text-3); white-space: normal; }
 .vb-rule--warning .vb-rule__note { color: var(--vb-color-warn); }
-.vb-rule__toggle { width: 44px; height: 44px; flex-shrink: 0; margin-left: 8px; justify-content: center; align-items: center; }
-.vb-rule__knob { width: 30px; height: 16px; border-radius: 8px; background-color: var(--vb-color-raised); border-width: 1px; border-color: var(--vb-color-line-strong); }
-.vb-rule__toggle--on .vb-rule__knob { background-color: var(--vb-color-ally); border-color: var(--vb-color-ally); }
 
 /* Accessibility: high contrast and reduced flashes drop every glow (selection keeps its thicker frame and brackets);
    reduced flashes also caps the refused-command flash to a faint tint. Last in the sheet so it wins equal specificity. */
@@ -821,7 +821,7 @@
 .vb-list-row__caption { margin-top: 1px; }
 .vb-list-row__bar { margin-top: 6px; height: 4px; }
 .vb-list-row__value { -unity-font-definition: var(--vb-font-body-medium); font-size: 13px; margin-left: 8px; }
-.vb-list-row__trail { flex-direction: row; align-items: center; margin-left: 8px; flex-shrink: 0; }
+.vb-list-row__trail { flex-direction: row; align-items: center; margin-left: 12px; flex-shrink: 0; }
 .vb-list-row__trail > .vb-button { min-height: 40px; padding: 6px 12px; }
 .vb-list-row--selected { --vb-bw: 1; --vb-edge: var(--vb-color-ally); --vb-bracket: var(--vb-color-ally); }
 .vb-list-row.vb-perk--rare .vb-list-row__icon { -unity-background-image-tint-color: var(--vb-color-glitch-cyan); }
