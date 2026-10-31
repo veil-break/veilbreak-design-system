@@ -22,15 +22,20 @@ namespace Veilbreak.Gui {
 [UxmlElement] public partial class MerchantScreen:VisualElement {
  public event Action<int> Bought,HealthSold;public event Action<string> PerkSold;public event Action Left;
  public MerchantScreen(){AddToClassList("vb-merchant");}
- public MerchantScreen Bind(MerchantView view){Clear();var head=Ui.Box(this,"vb-merchant__head");new GlitchText("NIGHT MARKET").Classes("vb-t-display","vb-merchant__title").Into(head);new CreditsChip().Set(view.credits).Into(head);
-  var scroll=Ui.Scroll(this,"vb-merchant__scroll");Ui.Text(scroll,"Trade what you carry. Buy what changes the next fight.","vb-t-caption");Ui.Text(scroll,"RARE FINDS · ONE OF EACH","vb-t-label","vb-merchant__section");var offers=Ui.Box(scroll,"vb-merchant__offers");
-  for(int i=0;i<view.offers.Length;i++){int index=i;var offer=view.offers[i];var column=Ui.Box(offers,"vb-merchant__offer");new PerkCard().Bind(offer.perk,false).Into(column);var buy=new VbButton(offer.taken?"SOLD":"BUY · "+offer.price,ButtonVariant.Secondary,offer.taken?"Installed":offer.price+" credits",null,()=>Bought?.Invoke(index)){name="buy-"+i}.Classes("vb-merchant__buy").Into(column);buy.Blocked=offer.taken?"Sold":view.credits<offer.price?"Need "+(offer.price-view.credits):offer.blocked;}
-  Ui.Text(scroll,"SELL STACKS","vb-t-label","vb-merchant__section");if(view.stacks.Length==0)Ui.Text(scroll,"No lasting stacks to sell. Instant rewards cannot be traded.","vb-t-caption");
-  foreach(var stack in view.stacks){var row=Ui.Panel(scroll,"vb-merchant__exchange");var info=Ui.Box(row,"vb-merchant__info");Ui.Text(info,stack.perk.name.ToUpperInvariant()+" ×"+stack.perk.stack,"vb-t-label");Ui.Text(info,"Sell one stack · "+stack.perk.now,"vb-t-caption");new VbButton("SELL +"+stack.payout,ButtonVariant.Secondary,null,null,()=>PerkSold?.Invoke(stack.perk.id)){name="sell-perk-"+stack.perk.id}.Classes("vb-merchant__sell").Into(row);}
-  Ui.Text(scroll,"TRADE HEALTH","vb-t-label","vb-merchant__section");Ui.Text(scroll,"Pay 25% of max HP per trade. At least 1 HP must remain. No automatic healing.","vb-t-caption");
-  foreach(var hp in view.health){var row=Ui.Panel(scroll,"vb-merchant__exchange");var info=Ui.Box(row,"vb-merchant__info");Ui.Text(info,hp.name.ToUpperInvariant(),"vb-t-label");Ui.Text(info,hp.hp+" / "+hp.maxHp+" HP → "+Math.Max(0,hp.hp-hp.cost)+" HP","vb-t-caption");new HealthBar().Set(hp.hp,hp.maxHp).Into(info);var sell=new VbButton("SELL +"+hp.payout,ButtonVariant.Danger,null,null,()=>HealthSold?.Invoke(hp.actor)){name="sell-hp-"+hp.actor}.Classes("vb-merchant__sell").Into(row);sell.Blocked=hp.blocked;}
-  new VbButton("LEAVE MARKET",ButtonVariant.Primary,"Keep your credits · continue to the next wave","chevron",()=>Left?.Invoke()){name="leave-merchant"}.Classes("vb-merchant__leave").Into(this);return this;
+ public MerchantScreen Bind(MerchantView view){Clear();var head=Ui.Box(this,"vb-merchant__head");Ui.Text(head,"NIGHT MARKET",TypeStyle.Title);new CreditsChip().Set(view.credits).Into(head);
+  var list=Ui.List(this,null,"vb-merchant__scroll");
+  Section(list,"Rare finds");for(int i=0;i<view.offers.Length;i++){int index=i;var o=view.offers[i];var row=Row(list,o.perk.name,o.perk.effect,o.perk.icon,o.perk);PerkArt.Tiers(row,o.perk);
+   var buy=new VbButton(o.taken?"SOLD":"BUY "+o.price,ButtonVariant.Secondary,null,null,()=>Bought?.Invoke(index)){name="buy-"+i}.Classes("vb-merchant__buy");buy.Blocked=o.taken?"Sold":view.credits<o.price?"Need "+(o.price-view.credits):o.blocked;row.WithAction(buy);}
+  Section(list,"Sell stacks");if(view.stacks.Length==0)Ui.Text(list,"Nothing to sell yet.","vb-t-caption","vb-list__empty");
+  foreach(var st in view.stacks){var row=Row(list,st.perk.name,st.perk.now,st.perk.icon,st.perk);row.WithAction(new VbButton("+"+st.payout,ButtonVariant.Secondary,null,null,()=>PerkSold?.Invoke(st.perk.id)){name="sell-perk-"+st.perk.id}.Classes("vb-merchant__sell"));}
+  Section(list,"Trade health · 25% max HP");
+  foreach(var hp in view.health){var row=new ListRow(hp.name,hp.hp+" / "+hp.maxHp+" HP → "+Math.Max(0,hp.hp-hp.cost)+" HP","health").Into(list);row.Bar.Set(hp.hp/(float)Math.Max(1,hp.maxHp));
+   var sell=new VbButton("+"+hp.payout,ButtonVariant.Danger,null,null,()=>HealthSold?.Invoke(hp.actor)){name="sell-hp-"+hp.actor}.Classes("vb-merchant__sell");sell.Blocked=hp.blocked;row.WithAction(sell);}
+  new VbButton("LEAVE MARKET",ButtonVariant.Primary,null,"chevron",()=>Left?.Invoke()){name="leave-merchant"}.Classes("vb-merchant__leave").Into(this);return this;
  }
+ static void Section(VisualElement list,string title)=>new LabelComponent(title).Classes("vb-merchant__section").Into(list);
+ /// <summary>A perk as a list row: glyph, name, line, and its levels as a segmented bar.</summary>
+ static ListRow Row(VisualElement list,string title,string caption,string icon,PerkView p){var r=new ListRow(title,caption,icon).Into(list);if(p.max>0)r.Bar.Set(p.stack,p.max);return r;}
  public float ScrollOffset {get=>this.Q<ScrollView>()?.scrollOffset.y??0;set{var scroll=this.Q<ScrollView>();if(scroll!=null)scroll.scrollOffset=new UnityEngine.Vector2(0,value);}}
 }
 }

@@ -212,6 +212,21 @@ e(id='scanlines', tier='atom', name='ScanLinesComponent', unity=['ScanLines'], s
   rules=['Never behind numbers the player reads under pressure.'],
   preview='ScanLines', height=120)
 
+e(id='progress', tier='atom', name='ProgressBarComponent', unity=['ProgressBar', 'ProgressTone'], status='shipped',
+  summary='The one progress bar: continuous, or segments set to the number of levels, with the next level outlined.',
+  blocks=['vb-progress'],
+  csharp='new ProgressBar(segments: perk.max, value: perk.stack).Into(card);   // levels\nbar.Set(perk.stack, perk.max, next: true);                       // outline the level a pick adds\nnew ProgressBar(0, hp / (float)maxHp, ProgressTone.Ally).Into(row);   // continuous',
+  uxml='<vb:ProgressBar segments="5" value="2" next="true" tone="Power" />',
+  rules=['Levels, stacks and steps are segments; health and progress are continuous.', 'StatReadout, ListRow and PerkCard draw their bars with it; never hand-roll a track and fill.'],
+  preview='ProgressBar')
+
+e(id='list-row', tier='atom', name='ListRowComponent', unity=['ListRow'], status='shipped',
+  summary='The one list row: a glyph, a caps title and caption, an optional progress bar, a trailing value and action.',
+  uses=['frame', 'icon', 'text', 'progress', 'button'], blocks=['vb-list-row'],
+  csharp='var row = new ListRow(perk.name, perk.effect, perk.icon).Into(list);\nrow.Bar.Set(perk.stack, perk.max);\nrow.Action(new VbButton("BUY " + price, click: Buy));',
+  rules=['Slim; selected rows get the edge and brackets.', 'Rows live in a ListLayout, which owns the 6-unit rhythm.'],
+  preview='ListRow')
+
 e(id='tile', tier='atom', name='TileComponent', unity=['TileComponent', 'TileState', 'OperativeTile', 'SquadSlot'], status='shipped',
   summary='A square-ish, pickable cell: a picture or glyph, a short name, a caption, a state. Rosters, slots, inventories.',
   uses=['frame', 'text', 'icon', 'badge'], blocks=['vb-tile', 'vb-slot'],
@@ -247,6 +262,17 @@ e(id='icon-button', tier='composite', name='IconButtonComposite', unity=['IconBu
   uxml='<vb:IconButtonComposite icon="pause" tooltip="Pause" quiet="true" />',
   rules=['Always 44 × 44 at least, always a tooltip (it is the accessible name).', 'Chipped (cut 6): it is a control. `Quiet` over the world (the HUD band), `Active` when toggled on.', 'ScreenHeader, HudTop and OperativeDetails build theirs from it; the owner classes only position it.'],
   preview='IconButtonComposite')
+
+e(id='drawer', tier='composite', name='DrawerOverlayComposite', unity=['DrawerOverlay'], status='shipped',
+  summary='A bottom drawer: a slim sheet that slides up over a dimmed backdrop to half the screen; drag its top up for full screen or down to close.',
+  uses=['overlay', 'frame', 'icon-button', 'label', 'button'], blocks=['vb-drawer', 'vb-modal--drawer'],
+  csharp='var d = DrawerOverlay.Push(nav, "Aria", closed: Refocus);    // modal layer; Back pops it\nnew OperativeDetails().Into(d).Bind(view, slot, squadFull);   // children go to the body\nd.Actions(new VbButton("REMOVE FROM SQUAD", ButtonVariant.Danger, icon: "remove"));\nvar docked = new DrawerOverlay { Backdrop = false }.Into(view).Open();   // inline: only the sheet takes input\ndocked.Dismissed += Resume;   // backdrop tap, × or a drag below a quarter of the screen\nd.Snap = DrawerSnap.Full;   // or let the player drag up / tap the handle',
+  uxml='<vb:DrawerOverlay title="Aria" meta="SLOT 1" backdrop="true" close-button="false" />',
+  rules=['Use a drawer for detail and secondary decisions that keep the page behind them: operative details, the paused run, filters. A yes/no confirmation stays a ConfirmDialogView.',
+         'Opens at half the screen. Drag the handle or head: up snaps to full screen, down back to half, below a quarter closes it. A tap on the handle toggles half and full.',
+         'The backdrop and × dismiss it too; Back pops a pushed drawer. The body scrolls at either height; actions sit in the foot, primary first.',
+         'Reduced motion: it appears and goes at once. High contrast: the sheet gets its edge and the handle goes white.'],
+  preview='DrawerOverlay', stage='board')
 
 e(id='field', tier='composite', name='FieldComposite', unity=['FieldComposite', 'VbSlider', 'VbSwitch', 'VbSegmented'], status='shipped',
   summary='One setting: a label, its input, and one line of what it does.',
@@ -489,13 +515,13 @@ e(id='row-layout', tier='layout', name='RowLayout', unity=['vb-row', 'vb-row--be
   csharp='var line = Ui.Box(score, "vb-row", "vb-row--between");\nUi.Text(line, "Wave clears", "vb-t-caption"); Ui.Text(line, "1,200", "vb-t-num");',
   preview=r'''render(col([h('div', { className: 'vb-row vb-row--between', style: { width: 340 } }, h('div', { className: 'vb-l vb-t-caption' }, 'Wave clears · 100 × wave'), h('div', { className: 'vb-l vb-t-num' }, '1,200')), h('div', { className: 'vb-row vb-row--wrap', style: { width: 340, gap: 6 } }, ['Sharpened Output ×2', 'Momentum Tax', 'Overclock', 'Barrier Mesh'].map(function (t, i) { return h(V.VbFrame, { key: i, className: 'vb-frame--slim vb-frame--raised', style: { flexDirection: 'row', alignItems: 'center', height: 22, padding: '0 8px' } }, h('div', { className: 'vb-l vb-t-badge' }, t.toUpperCase())); }))], 14, { alignItems: 'flex-start' }));''', height=130)
 
-e(id='grid-layout', tier='layout', name='GridLayout', unity=['GridLayout', 'Ui.Grid', 'vb-grid', 'vb-grid4', 'vb-grid2'], status='shipped',
+e(id='grid-layout', tier='layout', name='GridLayout', unity=['VbGrid', 'Ui.Grid', 'vb-grid', 'vb-grid4', 'vb-grid2'], status='shipped',
   summary='Cells 2, 3 or 4 across: slots, tiles and result cells take four, perk drafts three, chips and stats two.',
   blocks=['vb-grid', 'vb-grid4', 'vb-grid2'], doc='Layout classes (`Layout.uss`)',
   csharp='var slots = Ui.Grid(page, 4);\nvar roster = Ui.Grid(page, 4, wrap: true);\nvar draft = Ui.Grid(page, 3);\nvar perks = Ui.Box(page, "vb-grid2");   // two columns, end cells right-aligned',
-  uxml='<vb:GridLayout columns="3" wrap="true" />',
+  uxml='<vb:VbGrid columns="3" wrap="true" />',
   rules=['Pick the column count the items fill: 4 operatives → 4 across; never a half-empty row.', '`vb-compact` boards keep the count; cells shrink, text drops a line.', '`vb-grid4` / `vb-grid4--wrap` stay as the four-across shorthand.'],
-  preview='GridLayout')
+  preview='VbGrid')
 
 e(id='list-layout', tier='layout', name='ListLayout', unity=['ListLayout', 'Ui.List', 'vb-list'], status='shipped',
   summary='Rows of the same kind in a scroll: scores, perks, rules, queue entries. 6 between rows, and one empty-state line.',
@@ -551,9 +577,9 @@ e(id='menu-actions', tier='view', name='MenuActionsSectionView', unity=['MenuAct
 
 e(id='squad-view', tier='view', name='SquadView', unity=['SquadView', 'SquadViewModel'], status='shipped',
   summary='Pick four: the squad slots on top, the roster grid below, details on tap, START RUN blocked until four.',
-  uses=['screen-layout', 'screen-header', 'grid-layout', 'squad-slot', 'operative-tile', 'operative-details', 'label'], blocks=['vb-squad-view'],
+  uses=['screen-layout', 'screen-header', 'grid-layout', 'squad-slot', 'operative-tile', 'operative-details', 'drawer', 'label'], blocks=['vb-squad-view'],
   csharp='var squad = new SquadView().Into(nav.Open("squad", MainMenu));\nsquad.Bind(new SquadViewModel { roster = roster, selected = picks, focus = focus, locked = locks });\nsquad.Picked += i => { focus = i; Rebind(); }; squad.Toggled += ToggleInSquad; squad.Start += StartRun; squad.Back += MainMenu;',
-  rules=["Selection is the game's: the view raises events, the game binds again.", 'START RUN says why it is blocked ("Pick 2 more").'],
+  rules=["Selection is the game's: the view raises events, the game binds again.", 'Details open in a bottom drawer over the roster (`DetailsDrawer`); dismissing it raises `Closed`.', 'START RUN says why it is blocked ("Pick 2 more").'],
   preview='SquadView', stage='board')
 
 e(id='settings-view', tier='view', name='SettingsView', unity=['SettingsView', 'SettingsViewModel'], status='shipped',
@@ -564,10 +590,10 @@ e(id='settings-view', tier='view', name='SettingsView', unity=['SettingsView', '
   preview='SettingsView', stage='board')
 
 e(id='pause-overlay', tier='view', name='PauseOverlayView', unity=['PauseOverlayView', 'PauseViewModel'], status='shipped',
-  summary='The run, frozen: a title, then a bottom sheet with wave, score, standing, active perks, resume and the exits.',
-  uses=['overlay', 'sheet-layout', 'stat-readout', 'badge', 'button', 'button-with-icon', 'text'], blocks=['vb-pause'],
-  csharp='var pause = new PauseOverlayView().Into(nav.Open("pause", Resume));\npause.Bind(new PauseViewModel { wave = run.Wave, score = run.Score, standing = alive, perks = build, seed = run.Seed });\npause.Resume += Resume; pause.Settings += Settings; pause.Perks += ActivePerks;\npause.Abandon += AbandonConfirm; pause.Exit += ExitConfirm;',
-  rules=['RESUME is the one primary. ABANDON is danger and confirms; EXIT is ghost, away from the thumb.', 'Back = Resume.', 'Active perks are plain badges in a slim, tappable panel.'],
+  summary='The run, frozen: the screen header (its back square resumes), then one overlay panel centred on the screen with wave, score, standing, perks, resume and the exits.',
+  uses=['overlay', 'screen-header', 'icon-button', 'dialog', 'stat-readout', 'badge', 'button', 'button-with-icon', 'split-layout', 'text'], blocks=['vb-pause'],
+  csharp='var pause = new PauseOverlayView().Into(nav.Open("pause", Resume));\npause.Bind(new PauseViewModel { wave = run.Wave, score = run.Score, standing = alive, perks = build, seed = run.Seed });\npause.Resume += Resume;   // RESUME and the header\'s back square\npause.Settings += Settings; pause.Perks += ActivePerks;\npause.Abandon += AbandonConfirm; pause.Exit += ExitConfirm;',
+  rules=['The top back square is the same IconButtonComposite as Settings and High Scores; on this screen it resumes. Back = Resume.', 'RESUME is the one primary. ABANDON is danger and confirms; EXIT TO MENU is a ghost at the bottom of the panel.', 'The panel is centred in the screen under the header, not docked: pausing is a stop, not a detail.', 'Active perks are plain badges in a slim, tappable panel.'],
   preview='PauseOverlayView', stage='board')
 
 e(id='confirm-view', tier='view', name='ConfirmDialogView', unity=['ConfirmDialogView'], status='shipped',
@@ -607,8 +633,8 @@ e(id='route-view', tier='view', name='RouteChoiceView', unity=['RouteChoiceView'
   preview='RouteChoiceView', stage='board')
 
 e(id='merchant-view', tier='view', name='MerchantView', unity=['MerchantScreenView', 'MerchantScreen', 'MerchantView'], status='shipped',
-  summary='The night market: rare finds, sell stacks, trade health.',
-  uses=['perk-card', 'button', 'credits-badge', 'health-bar', 'list-layout'], blocks=['vb-merchant-view', 'vb-merchant'],
+  summary='The night market, minimal: one list of rows (rare finds, stack sales, health trades), each with its levels or health bar and one action.',
+  uses=['list-row', 'progress', 'button', 'credits-badge', 'list-layout', 'label'], blocks=['vb-merchant-view', 'vb-merchant'],
   csharp='var market = new MerchantScreenView().Into(nav.Open("merchant"));\nmarket.Bind(view);   // keeps the scroll position across confirmed trades\nmarket.Bought += Buy; market.PerkSold += SellStack; market.HealthSold += SellHp; market.Left += Leave;',
   rules=['The host confirms every trade, then binds again.', 'MerchantView is the view model; the screen type is MerchantScreenView.'],
   doc='Projection and the road economy',

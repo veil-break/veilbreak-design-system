@@ -48,7 +48,7 @@ namespace Veilbreak.Gui {
  }
  public ResultsView Bind(ResultsViewModel v){
   eyebrow.text=v.cause+" · wave "+v.wave;value.text=Ui.Number(v.score);rank.text=v.rank>0?"#"+v.rank+" OF "+v.of:"";rank.Show(v.rank>0);
-  ledger.Clear();foreach(var l in v.ledger){var r=Ui.Box(ledger,"vb-row","vb-row--between");Ui.Text(r,l.label,"vb-t-caption");Ui.Text(r,l.value,Block+"__points");}
+  ledger.Clear();foreach(var l in v.ledger)new KeyValueRow(l.label,l.value).Into(ledger);
   waves.Set(v.wave.ToString());bosses.Set(v.bosses.ToString());distance.Show(!string.IsNullOrEmpty(v.distance));if(!string.IsNullOrEmpty(v.distance)){var parts=v.distance.Split(' ');distance.Set(parts[0],parts.Length>1?parts[1]:null);}
   time.Show(!string.IsNullOrEmpty(v.simTime));time.Set(v.simTime??"");
   squad.Clear();foreach(var c in v.squad)new SquadResult().Bind(c).Into(squad);

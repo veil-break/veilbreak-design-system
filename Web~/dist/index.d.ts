@@ -120,6 +120,9 @@ export declare function EdgeWarning(props: EdgeWarningProps): React.ReactElement
 type Base = { className?: string; style?: React.CSSProperties };
 export type TypeStyle = 'display' | 'title' | 'label' | 'badge' | 'body' | 'caption' | 'num';
 export type TextTone = 'default' | 'ally' | 'enemy' | 'power' | 'muted';
+export declare function ProgressBar(props: Base & { segments?: number; value?: number; next?: boolean; tint?: string; tone?: 'ally' | 'power' | 'enemy' | 'neutral' }): React.ReactElement;
+export declare function KeyValueRow(props: Base & { label: string; value: string; good?: boolean }): React.ReactElement;
+export declare function ListRow(props: Base & { icon?: KitIconName; title: string; caption?: string; bar?: { segments?: number; value?: number; next?: boolean; tone?: string } | null; value?: string; action?: React.ReactNode; selected?: boolean; onPick?: () => void }): React.ReactElement;
 export declare function TextComponent(props: Base & { text?: React.ReactNode; typeStyle?: TypeStyle; tone?: TextTone; children?: React.ReactNode }): React.ReactElement;
 export declare function LabelComponent(props: Base & { text: string; size?: 'label' | 'badge'; tone?: TextTone }): React.ReactElement;
 export type BadgeTone = 'neutral' | 'ally' | 'enemy' | 'power' | 'warn' | 'inverted';
@@ -128,11 +131,12 @@ export declare function IconButtonComposite(props: Base & { icon?: KitIconName; 
 export type TileState = 'in' | 'focused' | 'locked' | 'empty';
 export declare function TileComponent(props: Base & { title?: string; caption?: string; captionIcon?: KitIconName; picture?: string | null; glyph?: KitIconName; kit?: string; order?: number; state?: TileState | TileState[]; tier?: RarityTier; emptyLabel?: string; tooltip?: string; block?: string; onPick?: () => void }): React.ReactElement;
 export declare function CardComponent(props: Base & { title?: string; meta?: string; media?: React.ReactNode; actions?: React.ReactNode; selected?: boolean; children?: React.ReactNode }): React.ReactElement;
+export declare function DrawerOverlay(props: Base & { open?: boolean; snap?: 'half' | 'full'; onSnap?: (snap: 'half' | 'full') => void; title?: string; meta?: string; label?: string; backdrop?: boolean; dismissible?: boolean; closeButton?: boolean; actions?: React.ReactNode; onDismiss?: () => void; children?: React.ReactNode }): React.ReactElement;
 export declare function FieldComposite(props: Base & { label?: string; help?: string; children?: React.ReactNode }): React.ReactElement;
 export declare function Fieldset(props: Base & { title: string; children?: React.ReactNode }): React.ReactElement;
 export declare function FormComposite(props: Base & { saved?: string; headed?: boolean; note?: { icon?: KitIconName; text: string } | null; footer?: React.ReactNode; children?: React.ReactNode }): React.ReactElement;
 export declare function StackLayout(props: Base & { gap?: 4 | 8 | 12 | 16; children?: React.ReactNode }): React.ReactElement;
-export declare function GridLayout(props: Base & { columns?: 2 | 3 | 4; wrap?: boolean; children?: React.ReactNode }): React.ReactElement;
+export declare function VbGrid(props: Base & { columns?: 2 | 3 | 4; wrap?: boolean; children?: React.ReactNode }): React.ReactElement;
 export declare function ListLayout(props: Base & { empty?: string; children?: React.ReactNode }): React.ReactElement;
 export declare function BoardLayout(props: Base & { top?: React.ReactNode; world?: React.ReactNode; bottom?: React.ReactNode }): React.ReactElement;
 export interface CheckpointView { wave: number; score: number; standing?: number; squadSize?: number; perks?: number; seed?: string }

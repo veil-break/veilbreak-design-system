@@ -688,6 +688,18 @@ A 44 × 44 chipped square with one glyph (`Icon`) or a short state (`Text`, "2×
 `Active` (`--active`, the toggled look) and `Quiet` (`--quiet`, translucent over the world). `Clicked` fires on pointer,
 Enter and Space.
 
+## Bottom drawer
+
+`DrawerOverlay` (`vb-drawer`): `__backdrop`, then `Sheet` (`__sheet`, slim solid, at most 88% of the board) with `__grip`
+(`__handle`), `__head` (`__title`, `__meta`, `__close`), `Body` (`__body`, a ScrollView and the content container) and
+`Foot` (`__foot`; `Actions(...)`). `Open(at)` slides it up to `DrawerSnap.Half` (half the screen, default) or `Full`
+(`vb-drawer--full`); `Snap` and `SnapChanged` follow the player, who drags the handle or head up to full, down to half or
+below a quarter to close, and taps the handle to toggle. `Close(done)` slides it down and hides it; `Dismiss()` does what
+the backdrop, × and a closing drag do: close, then raise `Dismissed`.
+`Dismissible`, `CloseButton` and `Backdrop` (off: docked inline, `vb-drawer--inline`, only the sheet takes input) are
+UXML attributes. `DrawerOverlay.Push(nav, title, closed)` puts one on a modal layer (`vb-modal--drawer`) that Back pops.
+`SquadView.DetailsDrawer` is one.
+
 ## Forms
 
 `FieldComposite(label, input, help)`: a `LabelComponent` (`__label`), the input (`__input`, the content container) and a
@@ -697,7 +709,7 @@ header's meta, or on the form's own `__status` line without a header.
 
 ## Layouts
 
-`StackLayout(gap)` (`vb-stack vb-stack--{4|8|12|16}`; marks its last child `vb-stack__last`), `GridLayout(columns, wrap)`
+`StackLayout(gap)` (`vb-stack vb-stack--{4|8|12|16}`; marks its last child `vb-stack__last`), `VbGrid(columns, wrap)` (the GridLayout entry; not `UnityEngine.GridLayout`)
 (`vb-grid vb-grid--{2|3|4}`, `--wrap`), `ListLayout(empty)` (a `ScrollView` whose content is `vb-list`, 6 between rows,
 with a `vb-list__empty` line) and `BoardLayout` (`Top`, `World`, `Bottom`). `Ui.Stack`, `Ui.Grid` and `Ui.List` build them.
 

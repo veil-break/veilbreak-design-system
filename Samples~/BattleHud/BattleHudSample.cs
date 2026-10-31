@@ -17,7 +17,7 @@ public sealed class BattleHudSample:MonoBehaviour {
   field=Ui.Box(root,"vb-grow");world=new WorldLayer{Project=Project}.Into(field);
   var strip=Ui.Box(root);strip.style.paddingLeft=strip.style.paddingRight=10;new PowerStrip{name="strip"}.Into(strip);
   var row=Ui.Box(root,"vb-row","vb-row--between");row.style.paddingLeft=row.style.paddingRight=row.style.paddingBottom=10;cards=new OperativeCard[4];for(int i=0;i<4;i++)cards[i]=new OperativeCard().Into(row);
-  top.Add(screen){MinTop=8};screen.Show(false);nav=new Navigator(screen){Fallback=Pause};safe=new SafeAreaRoot(root,document.panelSettings,screen){MinTop=8};
+  top.Add(screen);screen.Show(false);nav=new Navigator(screen){Fallback=Pause};safe=new SafeAreaRoot(root,document.panelSettings,screen){MinTop=8};
   top.RegisterCallback<KeyDownEvent>(e=>{if(e.keyCode==KeyCode.Escape){nav.Back();e.StopPropagation();}});}
  Vector2? Project(Vector3 p){var size=world.Size;if(size.x<=0)return null;return new Vector2(size.x*.5f+p.x*size.x/8,size.y*.55f-p.z*size.y/14);}
  void Pause(){if(nav.Visible)return;var page=nav.Open("pause",nav.Close);Ui.Spacer(page);var sheet=Dialog.Sheet(page,"PAUSED","Combat, focus and world travel are frozen");new VbButton("RESUME",ButtonVariant.Primary,null,"chevron",nav.Close).Into(sheet);}

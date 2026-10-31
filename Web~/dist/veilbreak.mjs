@@ -218,7 +218,7 @@ const window = new Proxy({ React, ReactDOM, Veilbreak: {} }, { get: (t, k) => (k
       L('vb-stat__label', p.label),
       h('div', { className: 'vb-stat__row' }, L('vb-stat__value', p.value), L('vb-stat__unit', p.unit || '', show(!!p.unit)),
         L(cx('vb-stat__delta', d && rise && 'vb-stat__delta--up', d && fall && !rise && 'vb-stat__delta--down'), d, show(d.length > 0))),
-      h('div', { className: 'vb-stat__bar', style: show(bar >= 0) }, h('div', { className: 'vb-stat__fill', style: { width: pct(bar) } })));
+      bar >= 0 ? h(ProgressBar, { value: bar, className: 'vb-stat__bar' }) : null);
   }
 
   var STATUS_ICON = { exposed: 'exposed', silenced: 'silence', rooted: 'root', slowed: 'slow', interrupted: 'warning', barrier: 'barrier' };
@@ -416,14 +416,11 @@ const window = new Proxy({ React, ReactDOM, Veilbreak: {} }, { get: (t, k) => (k
   }
 
   function ScoreRow(p) {
-    var s = Object.assign({ rank: 0, score: 0, wave: 0, bosses: 0, squad: [], current: false }, p.view);
-    return h(Shape, { className: cx('vb-score', s.current && 'vb-score--current', p.className) },
-      L(cx('vb-score__rank', s.rank <= 3 && 'vb-score__rank--top'), pad2(s.rank)),
-      h('div', { className: 'vb-score__text' },
-        h('div', { className: 'vb-score__line' }, L('vb-score__value', num(s.score)), L('vb-score__badge', 'THIS RUN', show(s.current))),
-        L('vb-score__detail', 'Wave ' + s.wave + ' · ' + s.bosses + ' ' + (s.bosses === 1 ? 'boss' : 'bosses'))),
-      h('div', { className: 'vb-score__squad' }, s.squad.map(function (c, i) { return h(Shape, { key: i, className: 'vb-score__code' }, L('vb-score__code-text', c)); })));
+    var v = Object.assign({ rank: 0, score: 0, wave: 0, bosses: 0, squad: [], current: false }, p.view);
+    return h(ListRow, { className: cx('vb-score', v.current && 'vb-score--current', p.className), style: p.style, selected: v.current, lead: pad2(v.rank), leadClass: v.rank <= 3 && 'vb-score__rank--top',
+      title: num(v.score), value: v.current ? 'THIS RUN' : '', caption: 'Wave ' + v.wave + ' · ' + v.bosses + ' ' + (v.bosses === 1 ? 'boss' : 'bosses') + (v.squad.length ? ' · ' + v.squad.join(' ') : '') });
   }
+
 
   /* ── Operatives ───────────────────────────────────────────────────────── */
   var OPERATIVE = { id: '', name: '', code: '', role: '', roleIcon: 'striker', passive: '', passiveText: '', passiveFullText: '', kit: '#ffffff', portrait: null, hp: 0, maxHp: 1, barrier: 0, armor: 0, stability: 100, maxStability: 100, statuses: [], mode: 'auto', manualSeconds: 0, skills: [{}, { slot: 'S', kind: 'Signature' }] };
@@ -517,7 +514,7 @@ const window = new Proxy({ React, ReactDOM, Veilbreak: {} }, { get: (t, k) => (k
           L(cx('vb-contribution__fell', c.fellWave <= 0 && 'vb-contribution__fell--alive'), c.fellWave > 0 ? 'FELL WAVE ' + c.fellWave : 'STANDING'))),
       h('div', { className: 'vb-contribution__share' },
         h('div', { className: 'vb-contribution__share-line' }, L('vb-contribution__share-label', 'Share of squad damage'), L('vb-contribution__share-value', Math.round(c.share * 100) + '%')),
-        h('div', { className: 'vb-contribution__share-track' }, h('div', { className: 'vb-contribution__share-fill', style: { width: pct(c.share), backgroundColor: v.kit } }))),
+        h(ProgressBar, { value: c.share, tint: v.kit, className: 'vb-contribution__share-bar' })),
       h('div', { className: 'vb-contribution__grid' }, cells.map(function (kv, i) { return h('div', { key: i, className: 'vb-contribution__cell' }, L('vb-contribution__key', kv[0]), L('vb-contribution__value', kv[1])); })));
   }
 
@@ -538,21 +535,33 @@ const window = new Proxy({ React, ReactDOM, Veilbreak: {} }, { get: (t, k) => (k
   function tier(p) { return st('vb-perk', p.tier); }
   function Crop(url) { return h('div', { className: 'vb-crop', style: Object.assign({}, img(url), show(!!url)) }); }
 
-  function PerkCard(p) {
-    var v = perk(p.view), sel = !!p.selected, art = !!v.art;
-    return h(Shape, Object.assign({ className: cx('vb-perk-card', tier(v), sel && 'vb-perk-card--selected', p.className), style: p.style }, clickable(p.onPick)),
-      h('div', { className: cx('vb-perk-card__art', 'vb-perk-art', art && 'vb-perk-art--portrait') }, Crop(v.art),
-        h('div', { className: 'vb-perk-card__shade' }),
-        h(Shape, { className: 'vb-perk-card__badge' }, h(VbIcon, { icon: v.icon, size: art ? 16 : 32, className: 'vb-perk-card__glyph' })),
-        v.tier === 'epic' ? h('div', { className: 'vb-perk-card__shimmer' }) : null, L('vb-perk-card__tag', upper(v.tag)), h(VbIcon, { icon: 'check', size: 14, className: 'vb-perk-card__check', style: show(sel) })),
-      h('div', { className: 'vb-perk-card__rule' }),
-      h('div', { className: 'vb-perk-card__body' }, L('vb-perk-card__category', upper(v.category)), L('vb-perk-card__name', upper(v.name)), L('vb-perk-card__effect', v.effect),
-        h('div', { className: 'vb-perk-card__foot' },
-          h('div', { className: 'vb-perk-card__pips' }, Array.apply(null, Array(v.max)).map(function (_, i) {
-            return h('div', { key: i, className: cx('vb-perk-card__pip', i < v.stack ? 'vb-perk-card__pip--owned' : i === v.stack ? 'vb-perk-card__pip--next' : null) });
-          })),
-          L('vb-perk-card__next', v.next), L('vb-perk-card__stacks', stacks(v, true)))));
+  /** ProgressBar (Progress.cs): continuous (`value` 0–1) or `segments` levels filled to `value`; `next` outlines the level a pick adds. */
+  function ProgressBar(p) {
+    var n = p.segments || 0, v = p.value || 0, filled = Math.round(v);
+    return h('div', { className: cx('vb-progress', st('vb-progress', p.tone || 'ally'), n > 0 && 'vb-progress--segmented', p.className), style: p.style, role: 'progressbar', 'aria-valuenow': n ? filled : Math.round(clamp01(v) * 100), 'aria-valuemax': n || 100 },
+      n > 0 ? Array.apply(null, Array(n)).map(function (_, i) { return h('div', { key: i, className: cx('vb-progress__cell', i < filled && 'vb-progress__cell--on', p.next && i === filled && 'vb-progress__cell--next'), style: p.tint && i < filled ? { backgroundColor: p.tint } : null }); })
+        : h('div', { className: 'vb-progress__fill', style: { width: pct(v), backgroundColor: p.tint } }));
   }
+  /** KeyValueRow (Progress.cs): a caption key on the left, a value on the right; `good` reads in ally colour. */
+  function KeyValueRow(p) { return h('div', { className: cx('vb-kv', p.className), style: p.style }, L('vb-t-caption vb-kv__key', p.label), L(cx('vb-kv__value', p.good && 'vb-kv__value--good'), p.value)); }
+  /** ListRow (Progress.cs): glyph, caps title, caption, optional `bar` (ProgressBar props), trailing `value` and `action`. */
+  function ListRow(p) {
+    return h(Shape, Object.assign({ className: cx('vb-list-row', p.selected && 'vb-list-row--selected', p.className), style: p.style }, p.onPick ? clickable(p.onPick) : null),
+      p.lead ? L(cx('vb-list-row__lead', p.leadClass), p.lead) : null, p.icon ? h(VbIcon, { icon: p.icon, size: 20, className: 'vb-list-row__icon' }) : null,
+      h('div', { className: 'vb-list-row__text' }, p.children, L('vb-list-row__title', upper(p.title)), p.caption ? L('vb-t-caption vb-list-row__caption', p.caption) : null,
+        p.bar ? h(ProgressBar, Object.assign({ className: 'vb-list-row__bar' }, p.bar)) : null),
+      p.value ? L(cx('vb-list-row__value', p.valueClass), p.value) : null, p.action ? h('div', { className: 'vb-list-row__trail' }, p.action) : null);
+  }
+  /** PerkCard, minimal: tier word, glyph, name, effect, its levels as a segmented ProgressBar and the value after the pick. */
+  function PerkCard(p) {
+    var v = perk(p.view);
+    return h(Shape, Object.assign({ className: cx('vb-perk-card', tier(v), p.selected && 'vb-perk-card--selected', p.className), style: p.style, title: v.name + ' · ' + stacks(v, true) }, clickable(p.onPick)),
+      L('vb-t-badge vb-perk-card__tag', upper(v.tag)), h(VbIcon, { icon: v.icon, size: 28, className: 'vb-perk-card__glyph' }),
+      L('vb-perk-card__name', upper(v.name)), L('vb-t-caption vb-perk-card__effect', v.effect), h('div', { className: 'vb-grow' }),
+      v.max > 0 ? h(ProgressBar, { segments: v.max, value: v.stack, next: v.stack < v.max, className: 'vb-perk-card__levels' }) : null,
+      L('vb-perk-card__next', v.next));
+  }
+
 
   function PerkDetail(p) {
     var v = perk(p.view), draft = !!p.draft, art = !!v.art;
@@ -564,8 +573,7 @@ const window = new Proxy({ React, ReactDOM, Veilbreak: {} }, { get: (t, k) => (k
         h('div', { className: 'vb-perk-detail__head-text' }, L('vb-perk-detail__name', upper(v.name)), L('vb-perk-detail__tag', upper(v.category + ' · ' + v.tag)))),
       L('vb-perk-detail__effect', v.effect),
       h('div', { className: 'vb-perk-detail__rows' }, rows.map(function (r, i) {
-        return h('div', { key: i, className: cx('vb-perk-detail__row', i === rows.length - 1 && 'vb-perk-detail__row--last') },
-          L('vb-perk-detail__key', r[0]), L(cx('vb-perk-detail__value', r[2] && 'vb-perk-detail__value' + r[2]), r[1]));
+        return h(KeyValueRow, { key: i, label: r[0], value: r[1], good: r[2] === '--good', className: cx('vb-perk-detail__row', i === rows.length - 1 && 'vb-perk-detail__row--last') });
       })));
   }
 
@@ -577,12 +585,11 @@ const window = new Proxy({ React, ReactDOM, Veilbreak: {} }, { get: (t, k) => (k
   }
 
   function PerkRow(p) {
-    var v = perk(p.view), art = !!v.art;
-    return h(Shape, Object.assign({ className: cx('vb-perk-row', tier(v), p.selected && 'vb-perk-row--selected', p.className) }, clickable(p.onPick)),
-      h(Shape, { className: cx('vb-perk-row__thumb', 'vb-perk-art', art && 'vb-perk-art--portrait') }, Crop(v.art), h(VbIcon, { icon: v.icon, size: 20 })),
-      h('div', { className: 'vb-perk-row__text' }, h('div', { className: 'vb-perk-row__line' }, L('vb-perk-row__name', upper(v.name)), L('vb-perk-row__tag', upper(v.tag))), L('vb-perk-row__effect', v.effect)),
-      h('div', { className: 'vb-perk-row__right' }, L('vb-perk-row__value', v.now), L('vb-perk-row__stacks', stacks(v, false))));
+    var v = perk(p.view);
+    return h(ListRow, { className: cx('vb-perk-row', tier(v), p.className), style: p.style, selected: p.selected, onPick: p.onPick || function () { }, icon: v.icon, title: v.name, caption: v.tag + ' · ' + v.effect, value: v.now,
+      bar: v.max > 0 ? { segments: v.max, value: v.stack } : null });
   }
+
 
   /* ── Pages (Dialogs.cs) ───────────────────────────────────────────────── */
   /** Dialog.Sheet: a solid panel with a title and a line of body text; children are the actions. */
@@ -647,22 +654,20 @@ const window = new Proxy({ React, ReactDOM, Veilbreak: {} }, { get: (t, k) => (k
   RevealCard.tierWord = tierWord;
   /** One IF … THEN automation rule (RuleView); the toggle raises onToggle(enabled). */
   function RuleRow(p) {
-    var v = Object.assign({ index: 1, conditions: [], any: false, action: '', actionRest: '', cost: 0, enabled: true, warning: false, draft: false, note: '' }, p.view);
-    var e = useValue(!!v.enabled, p.onToggle), on = e[0], parts = [L('vb-rule__keyword', 'IF')];
-    v.conditions.forEach(function (c, i) {
-      if (i > 0) parts.push(L('vb-rule__join', v.any ? 'OR' : 'AND'));
-      parts.push(L('vb-rule__text', c.text)); if (c.value) parts.push(L('vb-rule__value', c.value)); if (c.after) parts.push(L('vb-rule__text', c.after));
+    var init = Object.assign({ index: 1, conditions: [], any: false, action: '', actionRest: '', cost: 0, enabled: true, warning: false, draft: false, note: '' }, p.view);
+    var e = R.useState(init.enabled), on = e[0], set = e[1]; R.useEffect(function () { set(init.enabled); }, [init.enabled]);
+    function toggle() { set(!on); if (p.onToggle) p.onToggle(!on); }
+    var cond = [h('div', { key: 'k', className: 'vb-l vb-rule__keyword' }, 'IF')];
+    init.conditions.forEach(function (c, i) {
+      if (i) cond.push(h('div', { key: 'j' + i, className: 'vb-l vb-rule__join' }, init.any ? 'OR' : 'AND'));
+      cond.push(h('div', { key: 't' + i, className: 'vb-l vb-rule__text' }, c.text)); if (c.value) cond.push(h('div', { key: 'v' + i, className: 'vb-l vb-rule__value' }, c.value)); if (c.after) cond.push(h('div', { key: 'a' + i, className: 'vb-l vb-rule__text' }, c.after));
     });
-    return h(Shape, { className: cx('vb-rule', !on && 'vb-rule--off', v.warning && 'vb-rule--warning', v.draft && 'vb-rule--draft', p.className), style: p.style },
-      L('vb-rule__index', String(v.index)),
-      h('div', { className: 'vb-rule__body' },
-        h.apply(null, ['div', { className: 'vb-rule__if' }].concat(parts)),
-        h('div', { className: 'vb-rule__then' }, L('vb-rule__keyword', 'THEN'), L('vb-rule__action', upper(v.action) + (v.actionRest ? ' ' + v.actionRest : '')),
-          L('vb-rule__cost', v.cost > 0 ? '−' + v.cost : '', show(v.cost > 0))),
-        L('vb-rule__note', v.note, show(!!v.note))),
-      h('div', Object.assign({ className: cx('vb-rule__toggle', on && 'vb-rule__toggle--on'), 'aria-pressed': on }, clickable(function () { e[1](!on); }), { title: on ? 'Turn rule off' : 'Turn rule on' }),
-        h('div', { className: 'vb-rule__knob' })));
+    return h(ListRow, { className: cx('vb-rule', !on && 'vb-rule--off', init.warning && 'vb-rule--warning', init.draft && 'vb-rule--draft', p.className), style: p.style, lead: String(init.index),
+      title: 'THEN ' + init.action + (init.actionRest ? ' ' + init.actionRest : ''), caption: init.note, value: init.cost > 0 ? '−' + init.cost : '', valueClass: 'vb-rule__cost',
+      action: h('div', { title: on ? 'Turn rule off' : 'Turn rule on' }, h(VbSwitch, { value: on, onChange: function (x) { if (x !== on) toggle(); }, className: 'vb-rule__toggle vb-switch--compact' })) },
+      h('div', { className: 'vb-rule__if' }, cond));
   }
+
 
   /* ── World layer (WorldElements.cs); WorldLayer itself places them over a 3D view ── */
   function WorldHealthBar(p) {
@@ -722,17 +727,22 @@ const window = new Proxy({ React, ReactDOM, Veilbreak: {} }, { get: (t, k) => (k
     return h('div', { className: cx('vb-route', p.className), style: p.style }, L('vb-t-label vb-route__eyebrow', 'CROSSROADS · WAVE ' + pad2(v.wave)), h(GlitchText, { text: 'CHOOSE YOUR ROAD', className: 'vb-t-display vb-route__title' }), L('vb-t-caption', 'Two roads. One choice. Your build carries forward.'),
       h('div', { className: 'vb-route__roads' }, [v.left || {}, v.right || {}].map(function (road, side) { return h(Shape, Object.assign({ key: side, className: 'vb-route__sign vb-route__sign--' + (road.kind || 'combat') }, clickable(function () { if (!locked.current && p.onChoose) { locked.current = true; p.onChoose(side); } })), L('vb-t-badge vb-route__direction', side ? 'RIGHT ROAD →' : '← LEFT ROAD'), h(VbIcon, { icon: road.icon || 'battle', size: 36, className: 'vb-route__glyph' }), L('vb-route__kind', upper(road.title)), L('vb-route__hint', road.hint), h('div', { className: 'vb-grow' }), L('vb-route__confirm', 'TAKE THIS ROAD')); })));
   }
+  /** MerchantScreen, minimal: one list of ListRows (rare finds, stack sales, health trades) and LEAVE MARKET. */
   function MerchantScreen(p) {
     var v = Object.assign({ credits: 0, offers: [], stacks: [], health: [] }, p.view);
-    function heading(t) { return L('vb-t-label vb-merchant__section', t); }
+    function section(t) { return h(LabelComponent, { key: 's' + t, text: t, className: 'vb-merchant__section' }); }
+    function bar(k) { return k.max > 0 ? { segments: k.max, value: k.stack } : null; }
     return h('div', { className: cx('vb-merchant', p.className), style: p.style },
-      h('div', { className: 'vb-merchant__head' }, h(GlitchText, { text: 'NIGHT MARKET', className: 'vb-t-display vb-merchant__title' }), h(CreditsChip, { credits: v.credits })),
-      h('div', { className: 'vb-merchant__scroll', style: { overflowY: 'auto', flexShrink: 1 } }, L('vb-t-caption', 'Trade what you carry. Buy what changes the next fight.'), heading('RARE FINDS · ONE OF EACH'),
-        h('div', { className: 'vb-merchant__offers' }, v.offers.map(function (o, i) { return h('div', { key: i, className: 'vb-merchant__offer' }, h(PerkCard, { view: o.perk }), h(VbButton, { title: o.taken ? 'SOLD' : 'BUY · ' + o.price, sub: o.price + ' credits', blocked: o.taken ? 'Sold' : v.credits < o.price ? 'Need ' + (o.price - v.credits) : o.blocked, className: 'vb-merchant__buy', onClick: function () { if (p.onBuy) p.onBuy(i); } })); })),
-        heading('SELL STACKS'), v.stacks.length ? v.stacks.map(function (s, i) { return h(Shape, { key: i, className: 'vb-merchant__exchange' }, h('div', { className: 'vb-merchant__info' }, L('vb-t-label', upper(s.perk.name) + ' ×' + s.perk.stack), L('vb-t-caption', 'Sell one stack · ' + s.perk.now)), h(VbButton, { title: 'SELL +' + s.payout, className: 'vb-merchant__sell', onClick: function () { if (p.onSellPerk) p.onSellPerk(s.perk.id); } })); }) : L('vb-t-caption', 'No lasting stacks to sell.'),
-        heading('TRADE HEALTH'), L('vb-t-caption', 'Pay 25% of max HP per trade. At least 1 HP must remain.'), v.health.map(function (hp) { return h(Shape, { key: hp.actor, className: 'vb-merchant__exchange' }, h('div', { className: 'vb-merchant__info' }, L('vb-t-label', upper(hp.name)), L('vb-t-caption', hp.hp + ' / ' + hp.maxHp + ' HP → ' + Math.max(0, hp.hp - hp.cost) + ' HP'), h(HealthBar, { hp: hp.hp, max: hp.maxHp })), h(VbButton, { title: 'SELL +' + hp.payout, variant: 'danger', className: 'vb-merchant__sell', blocked: hp.blocked, onClick: function () { if (p.onSellHealth) p.onSellHealth(hp.actor); } })); })),
-      h(VbButton, { title: 'LEAVE MARKET', variant: 'primary', sub: 'Keep your credits · continue to the next wave', icon: 'chevron', className: 'vb-merchant__leave', onClick: p.onLeave }));
+      h('div', { className: 'vb-merchant__head' }, L('vb-t-title', 'NIGHT MARKET'), h(CreditsChip, { credits: v.credits })),
+      h(ListLayout, { className: 'vb-merchant__scroll' },
+        section('Rare finds'), v.offers.map(function (o, i) { return h(ListRow, { key: 'o' + i, className: tier(o.perk), title: o.perk.name, caption: o.perk.effect, icon: o.perk.icon, bar: bar(o.perk),
+          action: h(VbButton, { title: o.taken ? 'SOLD' : 'BUY ' + o.price, blocked: o.taken ? 'Sold' : v.credits < o.price ? 'Need ' + (o.price - v.credits) : o.blocked, className: 'vb-merchant__buy', onClick: function () { call(p.onBuy)(i); } }) }); }),
+        section('Sell stacks'), v.stacks.length ? v.stacks.map(function (k, i) { return h(ListRow, { key: 'k' + i, title: k.perk.name, caption: k.perk.now, icon: k.perk.icon, bar: bar(k.perk), action: h(VbButton, { title: '+' + k.payout, className: 'vb-merchant__sell', onClick: function () { call(p.onSellPerk)(k.perk.id); } }) }); }) : h('div', { key: 'e', className: 'vb-l vb-t-caption vb-list__empty' }, 'Nothing to sell yet.'),
+        section('Trade health · 25% max HP'), v.health.map(function (x) { return h(ListRow, { key: 'h' + x.actor, title: x.name, caption: x.hp + ' / ' + x.maxHp + ' HP → ' + Math.max(0, x.hp - x.cost) + ' HP', icon: 'health', bar: { value: x.hp / Math.max(1, x.maxHp) },
+          action: h(VbButton, { title: '+' + x.payout, variant: 'danger', blocked: x.blocked, className: 'vb-merchant__sell', onClick: function () { call(p.onSellHealth)(x.actor); } }) }); })),
+      h(VbButton, { title: 'LEAVE MARKET', variant: 'primary', icon: 'chevron', className: 'vb-merchant__leave', onClick: p.onLeave }));
   }
+
 
   /* ── Text, label, badge, icon button, card (Text.cs, Badge.cs, IconButton.cs, Card.cs) ── */
   /** TextComponent: one type style (display | title | label | badge | body | caption | num) and a tone (ally | enemy | power | muted). */
@@ -800,10 +810,56 @@ const window = new Proxy({ React, ReactDOM, Veilbreak: {} }, { get: (t, k) => (k
     return h('div', { className: cx('vb-list-scroll vb-page__scroll', p.className), style: Object.assign({ overflowY: 'auto' }, p.style) },
       p.empty && !kids.length ? L('vb-t-caption vb-list__empty', p.empty) : null, h('div', { className: 'vb-list' }, kids));
   }
-  function GridLayout(p) { var n = p.columns <= 2 ? 2 : p.columns >= 4 || p.columns == null ? 4 : 3; return h('div', { className: cx('vb-grid', 'vb-grid--' + n, p.wrap && 'vb-grid--wrap', p.className), style: p.style }, p.children); }
+  function VbGrid(p) { var n = p.columns <= 2 ? 2 : p.columns >= 4 || p.columns == null ? 4 : 3; return h('div', { className: cx('vb-grid', 'vb-grid--' + n, p.wrap && 'vb-grid--wrap', p.className), style: p.style }, p.children); }
   function BoardLayout(p) {
     return h('div', { className: cx('vb-board', p.className), style: p.style },
       h('div', { className: 'vb-board__top' }, p.top), h('div', { className: 'vb-board__world' }, p.world), h('div', { className: 'vb-board__bottom' }, p.bottom));
+  }
+
+  /* ── Bottom drawer (Drawer.cs) ── */
+  /** DrawerOverlay: a slim sheet that slides up over a backdrop to half the screen. Drag the grip or head: up snaps to full screen,
+      down back to half or, below a quarter, closes it; a tap on the grip toggles half/full. The backdrop and × dismiss it too.
+      `open` (default true) slides it in and out; `snap` 'half' | 'full' is where it opens; `backdrop: false` docks it in a view. */
+  function DrawerOverlay(p) {
+    var want = p.open !== false, dismissible = p.dismissible !== false, hasBackdrop = p.backdrop !== false, closeButton = p.closeButton !== false && dismissible;
+    var sh = R.useState(false), shown = sh[0], setShown = sh[1], sn = R.useState(p.snap || 'half'), snap = sn[0], setSnapState = sn[1];
+    var dh = R.useState(null), dragH = dh[0], setDragH = dh[1], live = R.useState(want), mounted = live[0], setMounted = live[1];
+    var root = R.useRef(null), sheet = R.useRef(null), d = R.useRef(null);
+    function setSnap(v) { setSnapState(v); if (p.onSnap) p.onSnap(v); }
+    R.useEffect(function () {
+      if (want) { setMounted(true); setSnapState(p.snap || 'half'); var id = requestAnimationFrame(function () { requestAnimationFrame(function () { setShown(true); }); }); return function () { cancelAnimationFrame(id); }; }
+      setShown(false); var t = setTimeout(function () { setMounted(false); setDragH(null); }, 240); return function () { clearTimeout(t); };
+    }, [want]);
+    function dismiss() { if (!dismissible || !shown) return false; setShown(false); if (p.onDismiss) p.onDismiss(); return true; }
+    function drag(isGrip) {
+      return {
+        onPointerDown: function (e) { if (!shown) return; d.current = { y: e.clientY, h: sheet.current.offsetHeight, moved: false, grip: isGrip }; e.currentTarget.setPointerCapture(e.pointerId); },
+        onPointerMove: function (e) {
+          var g = d.current; if (!g) return; var dy = e.clientY - g.y; if (Math.abs(dy) > 4) g.moved = true; if (!g.moved) return;
+          var full = root.current.offsetHeight; setDragH(Math.max(dismissible ? 0 : full / 2, Math.min(full, g.h - dy)));
+        },
+        onPointerUp: function () {
+          var g = d.current; d.current = null; if (!g) return;
+          if (!g.moved) { if (g.grip) setSnap(snap === 'full' ? 'half' : 'full'); setDragH(null); return; }
+          var full = root.current.offsetHeight, hgt = dragH == null ? g.h : dragH;
+          if (hgt < full * 0.25 && dismiss()) return;   // keep the let-go height while it slides away
+          setSnap(hgt < full * 0.75 ? 'half' : 'full'); setDragH(null);
+        },
+        onPointerCancel: function () { d.current = null; setDragH(null); }
+      };
+    }
+    if (!mounted && !want) return null;
+    var dragging = dragH != null && !!d.current, head = p.title || p.meta || closeButton, foot = [].concat(p.actions || []).filter(Boolean);
+    return h('div', { ref: root, className: cx('vb-drawer', shown && 'vb-drawer--open', snap === 'full' && 'vb-drawer--full', dragging && 'vb-drawer--dragging', !hasBackdrop && 'vb-drawer--inline', p.className), style: Object.assign({ pointerEvents: hasBackdrop && shown ? 'auto' : 'none' }, p.style) },
+      hasBackdrop ? h('div', { className: 'vb-drawer__backdrop', onPointerDown: dismiss }) : null,
+      h(Shape, { ref: sheet, className: 'vb-drawer__sheet', role: 'dialog', 'aria-modal': hasBackdrop || undefined, 'aria-label': p.title || p.label, style: Object.assign({ pointerEvents: 'auto' }, dragH != null ? { height: dragH } : null) },
+        h('div', Object.assign({ className: 'vb-drawer__grip', role: 'button', tabIndex: 0, 'aria-label': snap === 'full' ? 'Half screen' : 'Full screen', title: 'Drag up for full screen, down to close', style: { touchAction: 'none', cursor: 'grab' },
+          onKeyDown: function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSnap(snap === 'full' ? 'half' : 'full'); } } }, drag(true)), h('div', { className: 'vb-drawer__handle' })),
+        head ? h('div', Object.assign({ className: 'vb-drawer__head', style: { touchAction: 'none' } }, drag(false)),
+          p.title ? L('vb-t-title vb-drawer__title', upper(p.title)) : h('div', { className: 'vb-drawer__title' }), p.meta ? L('vb-t-badge vb-drawer__meta', p.meta) : null,
+          closeButton ? h('div', { onPointerDown: function (e) { e.stopPropagation(); } }, h(IconButtonComposite, { icon: 'close', tooltip: 'Close', className: 'vb-drawer__close', onClick: dismiss })) : null) : null,
+        h('div', { className: 'vb-drawer__body vb-page__scroll', style: { overflowY: 'auto' } }, p.children),
+        foot.length ? h('div', { className: 'vb-drawer__foot' }, foot) : null));
   }
 
   /* ── Views (Runtime/Views) ── */
@@ -835,15 +891,17 @@ const window = new Proxy({ React, ReactDOM, Veilbreak: {} }, { get: (t, k) => (k
     var v = Object.assign({ roster: [], selected: [-1, -1, -1, -1], focus: -1, locked: [], tiers: [], seed: 'new seed' }, p.view);
     var picked = v.selected.filter(function (i) { return i >= 0 && i < v.roster.length; }), n = picked.length;
     var unlocked = v.roster.filter(function (_, i) { return !v.locked[i]; }).length, open = v.focus >= 0 && v.focus < v.roster.length;
+    var shownFocus = R.useRef(-1); if (open) shownFocus.current = v.focus; var fi = shownFocus.current;  // keep the details while the drawer slides away
     return View('vb-squad-view', p, [
       h(ScreenHeader, { key: 'h', title: 'SQUAD', meta: n + ' / 4', accent: n === 4, onBack: p.onBack }),
       h(LabelComponent, { key: 'l1', text: 'Squad · tap a slot for details', className: 'vb-page__label' }),
       h('div', { key: 's', className: 'vb-grid4' }, [0, 1, 2, 3].map(function (i) { var r = v.selected[i]; return h(SquadSlot, { key: i, slot: i + 1, view: r >= 0 ? v.roster[r] : null, onPick: function () { call(p.onSlotPick)(i); } }); })),
       h(LabelComponent, { key: 'l2', text: unlocked === v.roster.length ? 'Roster · all ' + v.roster.length + ' unlocked' : 'Roster · ' + unlocked + ' of ' + v.roster.length + ' unlocked', className: 'vb-page__label' }),
       h('div', { key: 'r', className: 'vb-grid4 vb-grid4--wrap' }, v.roster.map(function (o, i) { return h(OperativeTile, { key: i, view: o, slot: v.selected.indexOf(i) + 1, focused: i === v.focus, tier: v.tiers[i], locked: v.locked[i], onPick: function () { call(p.onPick)(i); } }); })),
-      open ? h('div', { key: 'd', className: 'vb-squad-view__sheet', style: { overflowY: 'auto' } }, h(OperativeDetails, { view: v.roster[v.focus], slot: v.selected.indexOf(v.focus) + 1, squadFull: n >= 4, onClose: p.onClose, onToggle: function () { call(p.onToggle)(v.focus); } })) : null,
       h('div', { key: 'g', className: 'vb-grow' }),
-      h(VbButton, { key: 'go', title: 'START RUN', variant: 'primary', icon: 'chevron', className: 'vb-squad-view__start', sub: n ? picked.map(function (i) { return v.roster[i].name; }).join(' · ') + (v.seed ? ' · ' + v.seed : '') : '', blocked: n < 4 ? 'Pick ' + (4 - n) + ' more' : '', onClick: call(p.onStart) })], true);
+      h(VbButton, { key: 'go', title: 'START RUN', variant: 'primary', icon: 'chevron', className: 'vb-squad-view__start', sub: n ? picked.map(function (i) { return v.roster[i].name; }).join(' · ') + (v.seed ? ' · ' + v.seed : '') : '', blocked: n < 4 ? 'Pick ' + (4 - n) + ' more' : '', onClick: call(p.onStart) }),
+      h(DrawerOverlay, { key: 'd', open: open, closeButton: false, className: 'vb-squad-view__drawer', label: 'Operative details', onDismiss: p.onClose },
+        fi >= 0 && v.roster[fi] ? h(OperativeDetails, { view: v.roster[fi], slot: v.selected.indexOf(fi) + 1, squadFull: n >= 4, onClose: p.onClose, onToggle: function () { call(p.onToggle)(v.focus); } }) : null)], true);
   }
   /** SettingsView: AUDIO, FEEL, CAMERA, QUALITY in a FormComposite; applies as it changes (`onChange(model)`). */
   function SettingsView(p) {
@@ -859,23 +917,23 @@ const window = new Proxy({ React, ReactDOM, Veilbreak: {} }, { get: (t, k) => (k
         h(Fieldset, { key: 3, title: 'CAMERA' }, h(VbSegmented, { items: [{ label: 'FULL', sub: 'Parallax' }, { label: 'REDUCED', sub: 'No drift' }, { label: 'OFF', sub: 'Fixed' }], selected: v.camera, onChange: set('camera') }), h(VbSlider, { label: 'Sensitivity', value: v.sensitivity, onChange: set('sensitivity') }), L('vb-t-caption', 'Pinch to zoom, twist to turn, drag empty ground to pan, double-tap to reset.')),
         h(Fieldset, { key: 4, title: 'QUALITY' }, h(VbSegmented, { items: [{ label: 'LOW', sub: 'Stable 30 FPS' }, { label: 'STANDARD', sub: '60 FPS target' }], selected: v.quality, onChange: set('quality') }), L('vb-t-caption', 'Applies on the next wave. Telegraphs stay fully visible on both tiers.')))], true);
   }
-  /** PauseOverlayView: PAUSED, then the sheet (stats, perks, seed line, RESUME, SETTINGS, ABANDON) and EXIT. `view`: PauseViewModel. */
+  /** PauseOverlayView: a ScreenHeader whose back square resumes, then one overlay panel centred on the screen. `view`: PauseViewModel. */
   function PauseOverlayView(p) {
     var v = Object.assign({ wave: 1, score: 0, standing: 4, squadSize: 4, perks: [], seed: '', detail: '' }, p.view);
     var line = [v.seed ? 'Seed ' + v.seed : '', v.detail].filter(Boolean).join(' · ');
     return View('vb-pause', p, [
-      h('div', { key: 't', className: 'vb-pause__title' }, L('vb-t-display', 'PAUSED'), L('vb-t-caption', 'Combat, focus and world travel are frozen')),
-      h('div', { key: 'g', className: 'vb-grow' }),
-      h(Dialog, { key: 's', className: 'vb-pause__sheet' },
-        h('div', { className: 'vb-row vb-pause__stats' }, h(StatReadout, { label: 'WAVE', value: pad2(v.wave) }), h(StatReadout, { label: 'SCORE', value: num(v.score) }), h(StatReadout, { label: 'STANDING', value: String(v.standing), unit: '/' + v.squadSize })),
-        v.perks.length ? h(Shape, Object.assign({ className: 'vb-panel vb-frame--slim vb-frame--raised vb-pause__perks', title: 'Active perks' }, clickable(p.onPerks)),
-          h('div', { className: 'vb-row vb-row--between' }, h(LabelComponent, { text: 'Active perks · ' + v.perks.length }), h('div', { className: 'vb-row' }, L('vb-t-badge vb-t-ally', 'DETAILS'), h(VbIcon, { icon: 'chevron', size: 16, className: 'vb-pause__more' }))),
-          h('div', { className: 'vb-row vb-row--wrap vb-pause__chips' }, v.perks.map(function (k, i) { return h(BadgeComponent, { key: i, icon: k.icon, text: k.name + (k.stack > 1 ? ' ×' + k.stack : ''), className: 'vb-pause__chip' }); }))) : null,
-        line ? L('vb-t-caption', line) : null,
-        h(VbButton, { title: 'RESUME', variant: 'primary', sub: 'Returns to selected speed', icon: 'chevron', onClick: call(p.onResume) }),
-        h(VbButton, { title: 'SETTINGS', icon: 'settings', className: 'vb-pause__button', onClick: call(p.onSettings) }),
-        h(VbButton, { title: 'ABANDON RUN', variant: 'danger', icon: 'remove', className: 'vb-pause__button', onClick: call(p.onAbandon) })),
-      h(VbButton, { key: 'x', title: 'EXIT', variant: 'ghost', icon: 'back', className: 'vb-pause__exit', onClick: call(p.onExit) })]);
+      h(ScreenHeader, { key: 'h', title: 'PAUSED', meta: 'WAVE ' + pad2(v.wave), backLabel: 'Resume', onBack: p.onResume }),
+      h('div', { key: 'c', className: 'vb-pause__center' }, L('vb-t-caption vb-pause__caption', 'Combat, focus and world travel are frozen'),
+        h(Dialog, { className: 'vb-pause__panel' },
+          h('div', { className: 'vb-row vb-pause__stats' }, h(StatReadout, { label: 'WAVE', value: pad2(v.wave) }), h(StatReadout, { label: 'SCORE', value: num(v.score) }), h(StatReadout, { label: 'STANDING', value: String(v.standing), unit: '/' + v.squadSize })),
+          v.perks.length ? h(Shape, Object.assign({ className: 'vb-panel vb-frame--slim vb-frame--raised vb-pause__perks', title: 'Active perks' }, clickable(p.onPerks)),
+            h('div', { className: 'vb-row vb-row--between' }, h(LabelComponent, { text: 'Active perks · ' + v.perks.length }), h('div', { className: 'vb-row' }, L('vb-t-badge vb-t-ally', 'DETAILS'), h(VbIcon, { icon: 'chevron', size: 16, className: 'vb-pause__more' }))),
+            h('div', { className: 'vb-row vb-row--wrap vb-pause__chips' }, v.perks.map(function (k, i) { return h(BadgeComponent, { key: i, icon: k.icon, text: k.name + (k.stack > 1 ? ' ×' + k.stack : ''), className: 'vb-pause__chip' }); }))) : null,
+          line ? L('vb-t-caption', line) : null,
+          h(VbButton, { title: 'RESUME', variant: 'primary', sub: 'Returns to selected speed', icon: 'chevron', onClick: call(p.onResume) }),
+          h('div', { className: 'vb-row vb-pause__row' }, h(VbButton, { title: 'SETTINGS', icon: 'settings', className: 'vb-half vb-pause__button', onClick: call(p.onSettings) }),
+            h(VbButton, { title: 'ABANDON', variant: 'danger', icon: 'remove', className: 'vb-half vb-pause__button vb-pause__abandon', onClick: call(p.onAbandon) })),
+          h(VbButton, { title: 'EXIT TO MENU', variant: 'ghost', icon: 'back', className: 'vb-pause__exit', onClick: call(p.onExit) })))], true);
   }
   /** ConfirmDialogView: the question, its consequence, the destructive action and the way back. */
   function ConfirmDialogView(p) {
@@ -915,7 +973,7 @@ const window = new Proxy({ React, ReactDOM, Veilbreak: {} }, { get: (t, k) => (k
         h(LabelComponent, { text: v.cause + ' · wave ' + v.wave, tone: 'enemy' }), L('vb-t-display', 'RUN OVER'),
         h(Shape, { className: 'vb-panel vb-frame--slim vb-frame--solid vb-results__score' },
           h('div', { className: 'vb-row vb-row--between' }, h('div', null, h(LabelComponent, { text: 'Score' }), L('vb-results__value', num(v.score))), v.rank > 0 ? L('vb-results__rank', '#' + v.rank + ' OF ' + v.of) : null),
-          h('div', { className: 'vb-results__ledger' }, v.ledger.map(function (l, i) { return h('div', { key: i, className: 'vb-row vb-row--between' }, L('vb-t-caption', l.label), L('vb-results__points', l.value)); })),
+          h('div', { className: 'vb-results__ledger' }, v.ledger.map(function (l, i) { return h(KeyValueRow, { key: i, label: l.label, value: l.value }); })),
           h('div', { className: 'vb-row vb-results__stats' }, h(StatReadout, { label: 'WAVES', value: String(v.wave) }), h(StatReadout, { label: 'BOSSES', value: String(v.bosses) }),
             v.distance ? h(StatReadout, { label: 'DISTANCE', value: d[0], unit: d[1] }) : null, v.simTime ? h(StatReadout, { label: 'SIM TIME', value: v.simTime }) : null)),
         h(LabelComponent, { text: 'Squad · hover or tap for contribution', className: 'vb-page__label' }),
@@ -957,8 +1015,8 @@ const window = new Proxy({ React, ReactDOM, Veilbreak: {} }, { get: (t, k) => (k
     OperativeStats: OperativeStats, SquadResult: SquadResult, PerkCard: PerkCard, PerkDetail: PerkDetail, PerkChip: PerkChip, PerkRow: PerkRow,
     Dialog: Dialog, Backdrop: Backdrop, ScanLines: ScanLines, HoloFrame: HoloFrame, HoloPlatform: HoloPlatform, RevealCard: RevealCard, RuleRow: RuleRow,
     WorldHealthBar: WorldHealthBar, CombatText: CombatText, WorldLabel: WorldLabel, WorldMarker: WorldMarker, OffscreenIndicator: OffscreenIndicator, EdgeWarning: EdgeWarning,
-    TextComponent: TextComponent, LabelComponent: LabelComponent, BadgeComponent: BadgeComponent, IconButtonComposite: IconButtonComposite, TileComponent: TileComponent, CardComponent: CardComponent,
-    FieldComposite: FieldComposite, Fieldset: Fieldset, FormComposite: FormComposite, StackLayout: StackLayout, GridLayout: GridLayout, ListLayout: ListLayout, BoardLayout: BoardLayout,
+    ProgressBar: ProgressBar, ListRow: ListRow, KeyValueRow: KeyValueRow, TextComponent: TextComponent, LabelComponent: LabelComponent, BadgeComponent: BadgeComponent, IconButtonComposite: IconButtonComposite, TileComponent: TileComponent, CardComponent: CardComponent,
+    DrawerOverlay: DrawerOverlay, FieldComposite: FieldComposite, Fieldset: Fieldset, FormComposite: FormComposite, StackLayout: StackLayout, VbGrid: VbGrid, ListLayout: ListLayout, BoardLayout: BoardLayout,
     MainMenuView: MainMenuView, MenuActionsSectionView: MenuActionsSectionView, SquadView: SquadView, SettingsView: SettingsView, PauseOverlayView: PauseOverlayView, ConfirmDialogView: ConfirmDialogView,
     GuideDialogView: GuideDialogView, PerkDraftView: PerkDraftView, ResultsView: ResultsView, HighScoresView: HighScoresView, RouteChoiceView: RouteChoiceView, MerchantScreenView: MerchantScreenView, BattleHudView: BattleHudView,
     VbShape: Shape, format: { compact: compact, number: num, seconds: seconds, kebab: kebab }
@@ -1014,17 +1072,21 @@ export const WorldLabel = Veilbreak.WorldLabel;
 export const WorldMarker = Veilbreak.WorldMarker;
 export const OffscreenIndicator = Veilbreak.OffscreenIndicator;
 export const EdgeWarning = Veilbreak.EdgeWarning;
+export const ProgressBar = Veilbreak.ProgressBar;
+export const ListRow = Veilbreak.ListRow;
+export const KeyValueRow = Veilbreak.KeyValueRow;
 export const TextComponent = Veilbreak.TextComponent;
 export const LabelComponent = Veilbreak.LabelComponent;
 export const BadgeComponent = Veilbreak.BadgeComponent;
 export const IconButtonComposite = Veilbreak.IconButtonComposite;
 export const TileComponent = Veilbreak.TileComponent;
 export const CardComponent = Veilbreak.CardComponent;
+export const DrawerOverlay = Veilbreak.DrawerOverlay;
 export const FieldComposite = Veilbreak.FieldComposite;
 export const Fieldset = Veilbreak.Fieldset;
 export const FormComposite = Veilbreak.FormComposite;
 export const StackLayout = Veilbreak.StackLayout;
-export const GridLayout = Veilbreak.GridLayout;
+export const VbGrid = Veilbreak.VbGrid;
 export const ListLayout = Veilbreak.ListLayout;
 export const BoardLayout = Veilbreak.BoardLayout;
 export const MainMenuView = Veilbreak.MainMenuView;

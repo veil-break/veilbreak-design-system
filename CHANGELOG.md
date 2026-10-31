@@ -23,12 +23,45 @@ Every state change in the kit now animates, and the arcade binds package views o
   show and hide through `VbMotion`.
 - **Views.** `ScreenView.Deal()` (glitch-in for every `GlitchText`, then a staggered rise of `DealItems()`); route, merchant
   and perk pages deal. New `ActivePerksView` (`ActivePerksViewModel`), `RevivePickView` and `AccessibilityView`
-  (`AccessibilityViewModel`). `PerkDraftView.Perks`, `ResultsView.Squad`, `SquadView`'s inline operative sheet
-  (`operative-details-scroll`, with roster maxima). `BattleHudView` names its bands (`hud`, `battlefield`, `cards`) and the
+  (`AccessibilityViewModel`). `PerkDraftView.Perks`, `ResultsView.Squad`, `SquadView`'s details drawer
+  (`operative-details`, 0.3.1) binds roster maxima and fades between operatives; a newly selected `PerkCard` pops once. `BattleHudView` names its bands (`hud`, `battlefield`, `cards`) and the
   announcer lane (`hud-message`), adds a cancel band (`Aiming`), `Reveal(t)` and `Bands(on)`, and re-binds the boss bar only
   when a new boss arrives.
 - **Tests.** `MotionTests` (off-panel motion, easing, navigator and modal leaving, same-page reopen, board names, theme import).
-  The form and settings change-event checks moved to `PanelTests`, since change events dispatch only inside a panel.
+  The form and settings change-event checks live in `FormTests` (0.3.1), since change events dispatch only inside a panel.
+- **Merged with 0.3.1–0.3.2** (drawer, ListRow, ProgressBar):
+  - The drawer's × compiles; it called `Dismiss`, which returns a `bool`, as an `Action`.
+  - `ProgressBar.Good` sets its value label's class; the setter's `value` hid the field.
+  - Health trades read `600 / 1000 HP → 350 HP` again, in Unity and on the web.
+
+## 0.3.2 — 2026-10-31
+
+- **ProgressBar** (`vb-progress`): one bar for every read-out, continuous or `Segments` levels with the `Next` level
+  outlined; tones ally, power, enemy, neutral. `StatReadout` draws its bar with it.
+- **ListRow** (`vb-list-row`): one row primitive (lead, glyph, title, caption, optional bar, trailing value and action).
+  `PerkRow`, `ScoreRow` and `RuleRow` are ListRows now (rule rows keep their highlighted IF values); the rule toggle is
+  the shared `VbSwitch` in its compact form (`vb-switch--compact`, track only).
+- **Minimal PerkCard**: tier word, glyph, name, effect, levels as a segmented ProgressBar, the value after the pick. The art
+  band, badge, category, pips and shimmer are gone (and their USS).
+- **Minimal MerchantScreen**: one ListLayout of ListRows (rare finds, stack sales, health trades) and LEAVE MARKET.
+- **KeyValueRow** (`vb-kv`): one key/value line; PerkDetail rows and the results ledger use it. `ProgressBar.Tint(colour)`;
+  the contribution card's damage-share bar is a tinted ProgressBar.
+- Web: `ProgressBar`, `ListRow`, `KeyValueRow` and the same minimal PerkCard and MerchantScreen.
+
+## 0.3.1 — 2026-10-31
+
+- **Bottom drawer.** `DrawerOverlay` (`vb-drawer`): a slim solid sheet that slides up over a dimmed backdrop to **half the
+  screen**, with a grab handle, optional caps title, meta and close square, a scrolling body and a foot of actions. Drag
+  the handle or head: up snaps to the **full screen** (`DrawerSnap.Full`, `vb-drawer--full`), down back to half, and below
+  a quarter of the screen it closes (`Dismissed`); a tap on the handle toggles half and full. The backdrop and × dismiss
+  it too; `Close()` slides it away quietly. `DrawerOverlay.Push(nav, title, closed)` puts one on a modal layer that Back
+  pops; `Backdrop = false` docks it inside a view. Reduced motion skips the slide; high contrast gives the sheet its edge.
+  Web: `DrawerOverlay` with the same tree, `snap` and `onSnap`.
+- `SquadView` opens operative details in a drawer over the roster (`DetailsDrawer`; dismissing raises `Closed`).
+- `PauseOverlayView` is a headed view: a `ScreenHeader` whose back square (the same `IconButtonComposite` as Settings and
+  High Scores) resumes, then one overlay panel centred on the screen (`Panel`). SETTINGS and ABANDON share a row and EXIT
+  TO MENU is a ghost at the bottom of the panel.
+- Handbook: DrawerOverlayComposite entry (80 entries).
 
 ## 0.3.0 — 2026-10-31
 
@@ -45,8 +78,8 @@ published from `docs/` (GitHub Pages) and the web kit is a package of its own (`
 - **Composites.** `IconButtonComposite` (`Active`, `Quiet`); `ScreenHeader`'s back, `HudTop`'s pause, autoplay and speed and
   `OperativeDetails`' close are built from it. `FieldComposite`, `FormComposite` (fieldsets, note, footer, `Changed`,
   `SavedMeta`). `Ui.Section` titles are `LabelComponent`s.
-- **Layouts.** `StackLayout` (`vb-stack--{4|8|12|16}`), `ListLayout` (`vb-list`, `vb-list__empty`), `GridLayout`
-  (`vb-grid--{2|3|4}`), `BoardLayout` (`vb-board__top/__world/__bottom`); `Ui.Stack/List/Grid`.
+- **Layouts.** `StackLayout` (`vb-stack--{4|8|12|16}`), `ListLayout` (`vb-list`, `vb-list__empty`), `VbGrid`
+  (GridLayout; `vb-grid--{2|3|4}`; named so it never clashes with `UnityEngine.GridLayout`), `BoardLayout` (`vb-board__top/__world/__bottom`); `Ui.Stack/List/Grid`.
 - **Views** (`Runtime/Views`, `Views.uss`, view models in `Models.cs`): `MainMenuView`, `MenuActionsSectionView`,
   `SquadView`, `SettingsView`, `PauseOverlayView`, `ConfirmDialogView`, `GuideDialogView`, `PerkDraftView`, `ResultsView`,
   `HighScoresView`, `RouteChoiceView`, `MerchantScreenView`, `BattleHudView`. The arcade's screen styles moved into the
@@ -56,6 +89,8 @@ published from `docs/` (GitHub Pages) and the web kit is a package of its own (`
 - **Handbook.** All 79 entries are shipped; `build_handbook.py PACKAGE docs` writes the page, the web kit and the demo
   for GitHub Pages. The "Slim containers" switch is gone (slim is the default); there is a Web kit page.
 - `Tools~/metas.py` writes missing `.meta` files with stable GUIDs.
+- Fixed: `BattleHudSample` did not compile (`top.Add(screen){…}`); `VbSlider.SetValueWithoutNotify` now refreshes its
+  number and fill, so rebinding a visible slider shows the new value.
 - **Breaking:** `vb-score`, `vb-perk-row` and `vb-rule` no longer carry `margin-bottom: 6px`; put rows in a `ListLayout`
   (or a `vb-list`). `SquadSlot`'s parts are `vb-slot__body` and `vb-slot__role-text` (were `__row`, `__code`), and its
   filled/empty state is `TileState`. HUD squares carry `vb-icon-button` alongside their old classes.
