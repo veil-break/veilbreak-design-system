@@ -16,13 +16,13 @@ namespace Veilbreak.Gui {
 
 /// <summary>Cells 2, 3 or 4 across (<c>vb-grid vb-grid--{n}</c>): slots, tiles and result cells take four, perk drafts three, chips and
 /// stats two. Pick the count the items fill; never a half-empty row. <see cref="Wrap"/> adds the 10-unit row rhythm.</summary>
-[UxmlElement] public partial class GridLayout:VisualElement {
+[UxmlElement] public partial class VbGrid:VisualElement {
  public const string ClassName="vb-grid";
  int columns=4;
  [UxmlAttribute] public int Columns {get=>columns;set{RemoveFromClassList(ClassName+"--"+columns);columns=value<=2?2:value>=4?4:3;AddToClassList(ClassName+"--"+columns);}}
  [UxmlAttribute] public bool Wrap {get=>ClassListContains(ClassName+"--wrap");set=>EnableInClassList(ClassName+"--wrap",value);}
- public GridLayout():this(4){}
- public GridLayout(int columns,bool wrap=false){AddToClassList(ClassName);pickingMode=PickingMode.Ignore;Columns=columns;Wrap=wrap;}
+ public VbGrid():this(4){}
+ public VbGrid(int columns,bool wrap=false){AddToClassList(ClassName);pickingMode=PickingMode.Ignore;Columns=columns;Wrap=wrap;}
 }
 
 /// <summary>Rows of the same kind in a scroll (scores, perks, rules, queue entries) with 6 between rows, and one empty-state line.</summary>
@@ -54,8 +54,8 @@ namespace Veilbreak.Gui {
 public static partial class Ui {
  /// <summary>A <see cref="StackLayout"/> on <paramref name="parent"/>.</summary>
  public static StackLayout Stack(VisualElement parent,int gap=8,params string[] classes)=>new StackLayout(gap).Classes(classes).Into(parent);
- /// <summary>A <see cref="GridLayout"/> on <paramref name="parent"/>.</summary>
- public static GridLayout Grid(VisualElement parent,int columns,bool wrap=false,params string[] classes)=>new GridLayout(columns,wrap).Classes(classes).Into(parent);
+ /// <summary>A <see cref="VbGrid"/> on <paramref name="parent"/>.</summary>
+ public static VbGrid Grid(VisualElement parent,int columns,bool wrap=false,params string[] classes)=>new VbGrid(columns,wrap).Classes(classes).Into(parent);
  /// <summary>A <see cref="ListLayout"/> on <paramref name="parent"/>: rows go in it, the empty line shows while it has none.</summary>
  public static ListLayout List(VisualElement parent,string empty=null,params string[] classes)=>new ListLayout(empty).Classes(classes).Into(parent);
 }

@@ -463,6 +463,9 @@ doc(
 
 # ── The handbook's atoms, composites, layouts and views (0.3.0) ──────────────
 for name, cs, summary, provide, rules in [
+    ('ProgressBar', 'Runtime/Controls/Progress.cs', 'The one progress bar: continuous, or `segments` equal levels.', '`segments` (0 = continuous), `value` (levels, or 0–1), `next` (outline the level a pick adds), `tone` (ally, power, enemy, neutral).', ['Perk levels, stacks and steps are segments; health and progress are continuous.']),
+    ('KeyValueRow', 'Runtime/Controls/Progress.cs', 'One key/value line: a caption key, a value on the right.', '`label`, `value`, `good` (ally colour).', ['Perk details, the results ledger and fact lists use it.']),
+    ('ListRow', 'Runtime/Controls/Progress.cs', 'The one list row: glyph, caps title, caption, optional progress bar, trailing value and action.', '`icon`, `title`, `caption`, `bar` (ProgressBar props), `value`, `action`, `selected`, `onPick`.', ['Merchant offers, stack sales and health trades are ListRows; put rows in a ListLayout.']),
     ('TextComponent', 'Runtime/Controls/Text.cs', 'Every run of text: one type style and an optional tone.',
      '`typeStyle` (display, title, label, badge, body, caption, num), `tone` (ally, enemy, power, muted), `text`.',
      ['One type style per run; tones only recolour.', 'Pass caps yourself, or use LabelComponent.']),
@@ -479,6 +482,11 @@ for name, cs, summary, provide, rules in [
      ['OperativeTile and SquadSlot are tiles (`block` vb-tile, vb-slot).', 'Locked tiles stay visible and say how to unlock; lay tiles out in a grid.']),
     ('CardComponent', 'Runtime/Controls/Card.cs', 'A slim container with an optional media band, a head, a body and a foot of actions.',
      '`title`, `meta`, `media`, `actions`, `selected`, children (the body).', ['Cards are slim; only a selected card is chipped (edge and brackets).', 'Foot actions are right-aligned.']),
+    ('DrawerOverlay', 'Runtime/Composites/Drawer.cs', 'A bottom drawer: a slim sheet that slides up over a backdrop to half the screen; drag its top up for full screen or down to close.',
+     '`open` (default true), `snap` (half or full, where it opens), `onSnap`, `title`, `meta`, `backdrop` (false docks it inside a view), `dismissible`, `closeButton`, `actions`, `onDismiss`, children (the body).',
+     ['Drag the grip or head: up snaps to full screen, down back to half, below a quarter of the screen closes it. A tap on the grip toggles half and full.',
+      'The backdrop and × dismiss it too; `onDismiss` fires, then it slides away. SquadView opens operative details in one.',
+      'Unity: `DrawerOverlay.Push(nav, title, closed)` puts one on a modal layer that Back pops.']),
     ('FieldComposite', 'Runtime/Composites/Forms.cs', 'One setting: a caps label, its input and one line of what it does.',
      '`label`, `help`, children (the input).', ['Use it for inputs without their own label; VbSlider and VbSwitch carry theirs.']),
     ('Fieldset', 'Runtime/Core/Ui.cs (Ui.Section)', 'A titled group of related fields in one slim container.',
@@ -487,7 +495,7 @@ for name, cs, summary, provide, rules in [
      '`saved`, `headed` (the saved state shows in a ScreenHeader instead), `note` ({ icon, text }), `footer`, children (fieldsets).',
      ['Settings apply as they change; there is no Submit.', 'Destructive actions live in the footer as danger buttons and confirm.']),
     ('StackLayout', 'Runtime/Layouts/Layouts.cs', 'A column with one rhythm: the gap under every child but the last.', '`gap` (4, 8, 12 or 16), children.', ['Use it instead of per-element margins.']),
-    ('GridLayout', 'Runtime/Layouts/Layouts.cs', 'Cells 2, 3 or 4 across; `wrap` adds the row rhythm.', '`columns` (2, 3 or 4), `wrap`, children.', ['Pick the count the items fill; never a half-empty row.']),
+    ('VbGrid', 'Runtime/Layouts/Layouts.cs', 'Cells 2, 3 or 4 across; `wrap` adds the row rhythm.', '`columns` (2, 3 or 4), `wrap`, children.', ['Pick the count the items fill; never a half-empty row.']),
     ('ListLayout', 'Runtime/Layouts/Layouts.cs', 'Rows of one kind in a scroll, 6 between rows, with an empty-state line.', '`empty`, children (rows).', ['ScoreRow, PerkRow and RuleRow carry no margin of their own; put them in a list.']),
     ('BoardLayout', 'Runtime/Layouts/Layouts.cs', 'The battle board: top band, the world (the rest, at least half) and the bottom band.', '`top`, `world`, `bottom`.', ['Top and bottom never shrink.']),
     ('MainMenuView', 'Runtime/Views/MenuViews.cs', 'The title screen: offline badge and best, the mark, the menu actions and EXIT.',
@@ -499,8 +507,8 @@ for name, cs, summary, provide, rules in [
      '`view` (roster, selected, focus, locked, tiers, seed), `onPick(i)`, `onSlotPick(i)`, `onToggle(i)`, `onClose`, `onStart`, `onBack`.', ['START RUN is blocked with its reason until the squad has four.']),
     ('SettingsView', 'Runtime/Views/SettingsView.cs', 'Audio, feel, camera and quality as fieldsets in one form; applies as it changes.',
      '`view` (master, music, effects, sensitivity, haptics, reducedMotion, camera, quality, saved, note), `onChange(model)`, `onClearScores`, `onAccessibility`, `onBack`.', ['Every change reports the whole model.']),
-    ('PauseOverlayView', 'Runtime/Views/OverlayViews.cs', 'The run, frozen: PAUSED, then a sheet with stats, perks, the seed line, RESUME and the exits.',
-     '`view` (wave, score, standing, squadSize, perks, seed, detail), `onResume`, `onSettings`, `onPerks`, `onAbandon`, `onExit`.', ['RESUME is the one primary; Back = Resume.', 'ABANDON is danger and confirms; EXIT is a ghost away from the thumb.']),
+    ('PauseOverlayView', 'Runtime/Views/OverlayViews.cs', 'The run, frozen: the screen header (its back square resumes), then one overlay panel centred on the screen.',
+     '`view` (wave, score, standing, squadSize, perks, seed, detail), `onResume`, `onSettings`, `onPerks`, `onAbandon`, `onExit`.', ['RESUME is the one primary; the header back square and Back resume too.', 'ABANDON is danger and confirms; EXIT TO MENU is a ghost at the bottom of the panel.']),
     ('ConfirmDialogView', 'Runtime/Views/OverlayViews.cs', 'One shape for every confirmation: question, consequence, destructive action, way back.',
      '`title`, `body`, `confirm` ({ label, icon, sub, variant }), `cancel` ({ label, icon }), `onConfirm`, `onCancel`.', ['Unity: `ConfirmDialogView.Push(nav, …)` puts it on a modal layer.']),
     ('GuideDialogView', 'Runtime/Views/OverlayViews.cs', 'The first-run guide: numbered steps and READY.', '`title`, `steps`, `onReady`.', ['Unity: `GuideDialogView.Push(nav, title, steps, ready)`.']),
@@ -640,6 +648,9 @@ export declare function EdgeWarning(props: EdgeWarningProps): React.ReactElement
 type Base = { className?: string; style?: React.CSSProperties };
 export type TypeStyle = 'display' | 'title' | 'label' | 'badge' | 'body' | 'caption' | 'num';
 export type TextTone = 'default' | 'ally' | 'enemy' | 'power' | 'muted';
+export declare function ProgressBar(props: Base & { segments?: number; value?: number; next?: boolean; tint?: string; tone?: 'ally' | 'power' | 'enemy' | 'neutral' }): React.ReactElement;
+export declare function KeyValueRow(props: Base & { label: string; value: string; good?: boolean }): React.ReactElement;
+export declare function ListRow(props: Base & { icon?: KitIconName; title: string; caption?: string; bar?: { segments?: number; value?: number; next?: boolean; tone?: string } | null; value?: string; action?: React.ReactNode; selected?: boolean; onPick?: () => void }): React.ReactElement;
 export declare function TextComponent(props: Base & { text?: React.ReactNode; typeStyle?: TypeStyle; tone?: TextTone; children?: React.ReactNode }): React.ReactElement;
 export declare function LabelComponent(props: Base & { text: string; size?: 'label' | 'badge'; tone?: TextTone }): React.ReactElement;
 export type BadgeTone = 'neutral' | 'ally' | 'enemy' | 'power' | 'warn' | 'inverted';
@@ -648,11 +659,12 @@ export declare function IconButtonComposite(props: Base & { icon?: KitIconName; 
 export type TileState = 'in' | 'focused' | 'locked' | 'empty';
 export declare function TileComponent(props: Base & { title?: string; caption?: string; captionIcon?: KitIconName; picture?: string | null; glyph?: KitIconName; kit?: string; order?: number; state?: TileState | TileState[]; tier?: RarityTier; emptyLabel?: string; tooltip?: string; block?: string; onPick?: () => void }): React.ReactElement;
 export declare function CardComponent(props: Base & { title?: string; meta?: string; media?: React.ReactNode; actions?: React.ReactNode; selected?: boolean; children?: React.ReactNode }): React.ReactElement;
+export declare function DrawerOverlay(props: Base & { open?: boolean; snap?: 'half' | 'full'; onSnap?: (snap: 'half' | 'full') => void; title?: string; meta?: string; label?: string; backdrop?: boolean; dismissible?: boolean; closeButton?: boolean; actions?: React.ReactNode; onDismiss?: () => void; children?: React.ReactNode }): React.ReactElement;
 export declare function FieldComposite(props: Base & { label?: string; help?: string; children?: React.ReactNode }): React.ReactElement;
 export declare function Fieldset(props: Base & { title: string; children?: React.ReactNode }): React.ReactElement;
 export declare function FormComposite(props: Base & { saved?: string; headed?: boolean; note?: { icon?: KitIconName; text: string } | null; footer?: React.ReactNode; children?: React.ReactNode }): React.ReactElement;
 export declare function StackLayout(props: Base & { gap?: 4 | 8 | 12 | 16; children?: React.ReactNode }): React.ReactElement;
-export declare function GridLayout(props: Base & { columns?: 2 | 3 | 4; wrap?: boolean; children?: React.ReactNode }): React.ReactElement;
+export declare function VbGrid(props: Base & { columns?: 2 | 3 | 4; wrap?: boolean; children?: React.ReactNode }): React.ReactElement;
 export declare function ListLayout(props: Base & { empty?: string; children?: React.ReactNode }): React.ReactElement;
 export declare function BoardLayout(props: Base & { top?: React.ReactNode; world?: React.ReactNode; bottom?: React.ReactNode }): React.ReactElement;
 export interface CheckpointView { wave: number; score: number; standing?: number; squadSize?: number; perks?: number; seed?: string }

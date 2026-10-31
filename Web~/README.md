@@ -48,8 +48,8 @@ settings and the guide); it is published with the handbook.
 | Tier | Components |
 | --- | --- |
 | Atoms | `TextComponent`, `LabelComponent`, `VbIcon`, `VbMark`, `VbFrame` (`kind="slim"`/`"chipped"`), `VbButton`, `BadgeComponent`, `StatusChip`, `CreditsChip`, `VbMeter`, `VbSwitch`, `VbSlider`, `VbSegmented`, `TileComponent`, `CardComponent`, `GlitchText`, `Backdrop`, `ScanLines`, world atoms |
-| Composites | `IconButtonComposite`, `FieldComposite`, `Fieldset`, `FormComposite`, `StatReadout`, `HealthBar`, `PowerStrip`, `FocusMeter`, `SkillButton`, `QueueChip`, `QueueList`, `HudTop`, `BossBar`, `ScreenHeader`, `ScoreRow`, operative and perk composites, `Dialog`, holo surfaces, `RuleRow` |
-| Layouts | `StackLayout`, `ListLayout`, `BoardLayout`, plus the `vb-row`, `vb-grid4`, `vb-grid2`, `vb-screen`/`vb-page` classes |
+| Composites | `IconButtonComposite`, `DrawerOverlay`, `FieldComposite`, `Fieldset`, `FormComposite`, `StatReadout`, `HealthBar`, `PowerStrip`, `FocusMeter`, `SkillButton`, `QueueChip`, `QueueList`, `HudTop`, `BossBar`, `ScreenHeader`, `ScoreRow`, operative and perk composites, `Dialog`, holo surfaces, `RuleRow` |
+| Layouts | `StackLayout`, `VbGrid`, `ListLayout`, `BoardLayout`, plus the `vb-row`, `vb-grid4`, `vb-grid2`, `vb-screen`/`vb-page` classes |
 | Views | `MainMenuView`, `MenuActionsSectionView`, `SquadView`, `SettingsView`, `PauseOverlayView`, `ConfirmDialogView`, `GuideDialogView`, `PerkDraftView`, `ResultsView`, `HighScoresView`, `RouteChoiceView`, `MerchantScreenView`, `BattleHudView` |
 
 Types are in `dist/index.d.ts`. Views take the same plain view models as their Unity counterparts (`view` prop) and

@@ -36,7 +36,7 @@ namespace Veilbreak.Gui {
   status=new Label{pickingMode=PickingMode.Ignore};status.AddToClassList("vb-t-badge");status.AddToClassList(ClassName+"__status");hierarchy.Add(status);status.Show(false);
   scroll=new ScrollView(ScrollViewMode.Vertical){horizontalScrollerVisibility=ScrollerVisibility.Hidden,verticalScrollerVisibility=ScrollerVisibility.Hidden};scroll.AddToClassList(ClassName+"__scroll");scroll.AddToClassList("vb-page__scroll");hierarchy.Add(scroll);
   footer=new VisualElement{pickingMode=PickingMode.Ignore};footer.AddToClassList(ClassName+"__footer");hierarchy.Add(footer);footer.Show(false);
-  RegisterCallback<ChangeEvent<float>>(_=>Raise());RegisterCallback<ChangeEvent<bool>>(_=>Raise());RegisterCallback<ChangeEvent<int>>(_=>Raise());
+  RegisterCallback<ChangeEvent<float>>(e=>{if(!(e.target is VisualElement t&&t.GetFirstAncestorOfType<Scroller>()!=null)&&!(e.target is Scroller))Raise();});RegisterCallback<ChangeEvent<bool>>(_=>Raise());RegisterCallback<ChangeEvent<int>>(_=>Raise());
  }
  void Raise(){if(saved.Length>0)SavedMeta=saved;Changed?.Invoke();}
  /// <summary>A titled fieldset (<c>vb-section</c>) in the scroll; add fields to it.</summary>

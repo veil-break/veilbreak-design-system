@@ -690,6 +690,16 @@ LY, VW = 'Layouts', 'Views'
 SQUAD = r"""function kitOp(k, i) { return op({ id: k, name: k.charAt(0).toUpperCase() + k.slice(1), code: k.slice(0, 2).toUpperCase(), kit: 'var(--kit-' + k + ')', hp: 600 + i * 90 }); }
 var ROSTER = ['aria', 'sol', 'aegis', 'nyra', 'rook', 'mira', 'hex', 'echo'].map(kitOp);
 """
+card('ProgressBar', C, 140, 'Continuous, or segmented by levels with the next one outlined', r"""
+render(col([h(V.ProgressBar, { value: 0.62, style: { width: 300 }, key: 0 }), h(V.ProgressBar, { segments: 5, value: 2, next: true, style: { width: 300 }, key: 1 }), h(V.ProgressBar, { segments: 3, value: 3, tone: 'power', style: { width: 300 }, key: 2 })], 14));
+""")
+card('KeyValueRow', C, 120, 'Key on the left, value on the right; good values in ally colour', r"""
+render(col([h(V.KeyValueRow, { label: 'Now', value: '+16% damage', key: 0 }), h(V.KeyValueRow, { label: 'After pick', value: '+24% damage', good: true, key: 1 }), h(V.KeyValueRow, { label: 'Creep kills', value: '9,640', key: 2 })], 2, { width: 320 }));
+""")
+card('ListRow', C, 220, 'Glyph, title, caption, levels, and a trailing action', r"""
+render(col([h(V.ListRow, { title: 'Sharpened Output', caption: '+8% damage', icon: 'burst', bar: { segments: 5, value: 2 }, action: h(V.VbButton, { title: 'BUY 80' }), style: { width: 358 }, key: 0 }),
+  h(V.ListRow, { title: 'Aria', caption: '800 → 550 HP', icon: 'health', bar: { value: 0.8 }, action: h(V.VbButton, { title: '+30', variant: 'danger' }), style: { width: 358 }, key: 1 })], 6));
+""")
 card('TextComponent', F, 220, 'One type style per run; tones only recolour', r"""
 var T = V.TextComponent;
 render(col([h(T, { typeStyle: 'display', text: 'PAUSED', key: 0 }), h(T, { typeStyle: 'title', text: 'SQUAD', key: 1 }), h(T, { typeStyle: 'caption', text: 'Combat, focus and world travel are frozen', key: 2 }),
@@ -733,9 +743,9 @@ card('StackLayout', LY, 230, 'One rhythm for a column: 4, 8, 12 or 16 under ever
 function bar(t) { return h(V.VbFrame, { kind: 'slim', style: { width: 150, height: 30, padding: '6px 10px' } }, h('div', { className: 'vb-l vb-t-badge' }, t)); }
 render(row([4, 8, 16].map(function (g) { return cell(h(V.StackLayout, { gap: g }, bar('ONE'), bar('TWO'), bar('THREE')), 'gap ' + g, g); }), 14));
 """)
-card('GridLayout', LY, 300, 'Two, three and four across', r"""
+card('VbGrid', LY, 300, 'Two, three and four across', r"""
 function cellBox(t, k) { return h(V.VbFrame, { kind: 'slim', key: k, style: { height: 40, alignItems: 'center', justifyContent: 'center' } }, h('div', { className: 'vb-l vb-t-badge' }, t)); }
-render(col([2, 3, 4].map(function (n) { return h(V.GridLayout, { key: n, columns: n, wrap: true, style: { width: 358 } }, Array.apply(null, Array(n)).map(function (_, i) { return cellBox(n + ' · ' + (i + 1), i); })); }), 4, { alignItems: 'flex-start' }));
+render(col([2, 3, 4].map(function (n) { return h(V.VbGrid, { key: n, columns: n, wrap: true, style: { width: 358 } }, Array.apply(null, Array(n)).map(function (_, i) { return cellBox(n + ' · ' + (i + 1), i); })); }), 4, { alignItems: 'flex-start' }));
 """)
 card('ListLayout', LY, 280, 'Rows of one kind, 6 between them, and the empty line', r"""
 render(row([h(V.ListLayout, { style: { width: 330, height: 220 }, key: 0 }, [1, 2, 3].map(function (r) { return h(V.ScoreRow, { key: r, view: { rank: r, score: [18240, 14120, 9420][r - 1], wave: [12, 10, 7][r - 1], bosses: [2, 2, 1][r - 1], squad: ['AR', 'SO', 'AE', 'NY'], current: r === 2 } }); })),
@@ -753,6 +763,15 @@ BOARD = r"""function board(node, bg, screen) {
 }
 """
 CHECKPOINT = "{ wave: 7, score: 9420, standing: 3, squadSize: 4, perks: 5, seed: '80A2EB4E' }"
+card('DrawerOverlay', C, 844, 'Bottom drawer over a dimmed page: grip, title, body, actions; drag down, tap × or the backdrop to dismiss', BOARD + SQUAD + r"""
+function Demo() {
+  var s = React.useState(true), open = s[0], set = s[1];
+  return board([h('div', { key: 0, style: { padding: 12 } }, h(V.VbButton, { title: open ? 'DRAWER OPEN' : 'OPEN DRAWER', onClick: function () { set(true); } })),
+    h(V.DrawerOverlay, { key: 1, open: open, title: 'Active perks', meta: '3 OF 5', onDismiss: function () { set(false); }, actions: [h(V.VbButton, { key: 'a', title: 'BACK TO RUN', variant: 'primary', icon: 'chevron', onClick: function () { set(false); } })] },
+      h(V.StackLayout, { gap: 8 }, h(V.PerkRow, { view: PERKS.general, selected: true }), h(V.PerkRow, { view: PERKS.operative }), h(V.PerkRow, { view: PERKS.rare })))], null, 'pause');
+}
+render(h(Demo));
+""", width=390, page=True)
 card('MainMenuView', VW, 844, 'The title screen: badge and best, the mark, the menu actions, EXIT', BOARD + "render(board(h(V.MainMenuView, { view: { best: 18240, bestWave: 12, checkpoint: " + CHECKPOINT + ", squad: ['Aria', 'Sol', 'Aegis', 'Nyra'] } }), '" + MENU_BG + "', 'menu'));", width=390, page=True)
 card('MenuActionsSectionView', VW, 300, 'Checkpoint card, PLAY, HIGH SCORES and SETTINGS', "render(h('div', { style: { width: 358 } }, h(V.MenuActionsSectionView, { checkpoint: " + CHECKPOINT + ", squadLine: 'Squad · Aria · Sol · Aegis · Nyra' })));")
 card('SquadView', VW, 844, 'Four slots, the roster, the open details and START RUN', BOARD + SQUAD + "render(board(h(V.SquadView, { view: { roster: ROSTER, selected: [0, 1, 2, -1], focus: 3, locked: ['', '', '', '', '', '', 'Pull in rifts', ''] } }), null, 'squad'));", width=390, page=True)

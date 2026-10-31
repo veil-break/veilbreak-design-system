@@ -659,6 +659,27 @@ html:has(> body.vbl-stage) { background: var(--ground); }
 .vb-card--selected { --vb-cut: 10; --vb-bw: 2; --vb-edge: var(--ally); --vb-bracket: var(--ally); }
 .vb-contrast .vb-card { --vb-bw: 1; --vb-edge: var(--line-strong); }
 .vb-contrast .vb-card--selected { --vb-bw: 2; --vb-edge: var(--ally); }
+.vb-drawer { position: absolute; left: 0; right: 0; top: 0; bottom: 0; justify-content: flex-end; overflow: hidden; }
+.vb-drawer__backdrop { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(5, 2, 8, 0.60); opacity: 0; transition-property: opacity; transition-duration: 0.2s; }
+.vb-drawer--open .vb-drawer__backdrop { opacity: 1; }
+.vb-drawer__sheet { height: 50%; padding: 0 16px 12px 16px; flex-shrink: 0; translate: 0 100%; transition-property: translate, height; transition-duration: 0.24s, 0.2s; transition-timing-function: ease-out, ease-out; --vb-cut: 4; --vb-bw: 0; --vb-fill: var(--panel-solid); }
+.vb-drawer--open .vb-drawer__sheet { translate: 0 0; }
+.vb-drawer--full .vb-drawer__sheet { height: 100%; }
+.vb-drawer--dragging .vb-drawer__sheet { transition-duration: 0s, 0s; }
+.vb-drawer__grip { height: 24px; align-items: center; justify-content: center; flex-shrink: 0; }
+.vb-drawer__handle { width: 40px; height: 4px; background-color: var(--line-strong); }
+.vb-drawer--full .vb-drawer__handle { background-color: var(--text-3); }
+.vb-drawer__head { flex-direction: row; align-items: center; flex-shrink: 0; margin-bottom: 10px; }
+.vb-drawer__title { flex-grow: 1; flex-shrink: 1; }
+.vb-drawer__meta { margin-left: 8px; }
+.vb-drawer__close { margin-left: 8px; }
+.vb-drawer__body { flex-grow: 1; flex-shrink: 1; min-height: 0; }
+.vb-drawer__foot { flex-shrink: 0; padding-top: 4px; }
+.vb-drawer__foot > * { margin-top: 8px; }
+.vb-reduced-motion .vb-drawer__sheet, .vb-reduced-motion .vb-drawer__backdrop { transition-duration: 0s; }
+.vb-contrast .vb-drawer__sheet { --vb-bw: 1; --vb-edge: var(--line-strong); }
+.vb-contrast .vb-drawer__handle { background-color: var(--text); }
+.vb-modal--drawer { padding: 0; background-color: rgba(0, 0, 0, 0); }
 .vb-field { margin-bottom: 8px; flex-shrink: 0; }
 .vb-field__label { margin-bottom: 6px; }
 .vb-field__help { margin-top: 4px; }
@@ -699,8 +720,7 @@ html:has(> body.vbl-stage) { background: var(--ground); }
 .vb-stat__row { flex-direction: row; align-items: flex-end; }
 .vb-stat__value { font-family: var(--font-body); font-weight: 500; font-size: 18px; color: var(--text); }
 .vb-stat__unit { font-size: 12px; color: var(--text-3); margin-left: 2px; margin-bottom: 2px; }
-.vb-stat__bar { height: 4px; margin-top: 4px; background-color: rgba(250, 238, 244, 0.12); }
-.vb-stat__fill { height: 100%; background-color: var(--ally); }
+.vb-stat__bar { height: 4px; margin-top: 4px; }
 .vb-status { flex-direction: row; align-items: center; height: 22px; padding: 0 8px; margin-right: 6px; --vb-cut: 6; --vb-fill: var(--raised); --vb-edge: var(--line); }
 .vb-status__icon { width: 14px; height: 14px; margin-right: 5px; color: var(--warn); }
 .vb-status__word { font-family: var(--font-body); font-weight: 500; font-weight: 700; font-size: 10px; letter-spacing: 0.1em; }
@@ -865,8 +885,7 @@ html:has(> body.vbl-stage) { background: var(--ground); }
 .vb-contribution__share-line { flex-direction: row; justify-content: space-between; margin-bottom: 4px; }
 .vb-contribution__share-label { font-size: 11px; color: var(--text-3); }
 .vb-contribution__share-value { font-family: var(--font-body); font-weight: 500; font-size: 11px; }
-.vb-contribution__share-track { height: 6px; background-color: rgba(250, 238, 244, 0.10); }
-.vb-contribution__share-fill { height: 100%; }
+.vb-contribution__share-bar { height: 6px; }
 .vb-contribution__grid { flex-direction: row; flex-wrap: wrap; padding-top: 8px; border-top-width: 1px; border-top-color: var(--line); }
 .vb-contribution__cell { width: 50%; margin-bottom: 8px; }
 .vb-contribution__key { font-family: var(--font-body); font-weight: 500; font-weight: 700; font-size: 9px; letter-spacing: 0.1em; color: var(--text-3); }
@@ -877,36 +896,11 @@ html:has(> body.vbl-stage) { background: var(--ground); }
 .vb-result__fell { font-family: var(--font-body); font-weight: 500; font-weight: 700; font-size: 10px; color: var(--text-3); }
 .vb-result__kit { position: absolute; left: 0; right: 0; bottom: 0; height: 2px; }
 .vb-perk-art { overflow: hidden; }
-.vb-perk-card { width: 112px; height: 236px; overflow: hidden; --vb-fill: var(--panel); --vb-edge: var(--line-strong); }
-.vb-perk-card__art { height: 92px; background-color: var(--raised); }
-.vb-perk--rare .vb-perk-card__art { background-color: rgba(165, 139, 255, 0.25); }
-.vb-perk-card__art .vb-crop { left: -20px; top: -4px; width: 152px; height: 228px; }
-.vb-perk-card__glyph { position: absolute; left: 40px; top: 30px; width: 32px; height: 32px; }
-.vb-perk-art--portrait .vb-perk-card__glyph { left: auto; top: auto; right: 6px; bottom: 6px; width: 16px; height: 16px; }
-.vb-perk-card__shade { position: absolute; left: 0; right: 0; bottom: 0; height: 22px; background-color: rgba(14, 9, 20, 0.45); }
-.vb-perk-card__tag { position: absolute; left: 6px; top: 6px; padding: 1px 5px; border-width: 1px; border-color: var(--text-3); background-color: rgba(14, 9, 20, 0.70); font-family: var(--font-body); font-weight: 500; font-weight: 700; font-size: 9px; letter-spacing: 0.0889em; color: var(--text-3); }
-.vb-perk-card__check { position: absolute; right: 6px; top: 6px; width: 20px; height: 20px; background-color: var(--ally); color: var(--on-cta); }
-.vb-perk-card__rule { height: 2px; background-color: var(--text-3); }
-.vb-perk-card__body { flex-grow: 1; padding: 7px 8px 8px 8px; }
-.vb-perk-card__category { font-family: var(--font-body); font-weight: 500; font-weight: 700; font-size: 9px; letter-spacing: 0.1em; color: var(--text-3); }
-.vb-perk-card__name { font-family: var(--font-display); font-weight: 700; font-size: 12px; letter-spacing: 0.1167em; white-space: normal; margin-top: 3px; }
-.vb-perk-card__effect { font-size: 11px; color: var(--text-2); white-space: normal; margin-top: 3px; }
-.vb-perk-card__foot { margin-top: auto; }
-.vb-perk-card__pips { flex-direction: row; height: 6px; margin-bottom: 4px; }
-.vb-perk-card__pip { width: 12px; height: 6px; margin-right: 3px; border-width: 1px; border-color: var(--line-strong); }
-.vb-perk-card__pip--owned { background-color: var(--text-2); border-color: var(--text-2); }
-.vb-perk-card__pip--next { background-color: var(--ally); border-color: var(--ally); }
-.vb-perk-card__next { font-family: var(--font-body); font-weight: 500; font-size: 12px; color: var(--ally-text); white-space: normal; }
-.vb-perk-card__stacks { font-family: var(--font-body); font-weight: 500; font-size: 10px; color: var(--text-3); }
 .vb-perk--operative .vb-perk-card__tag { border-color: var(--ally-text); color: var(--ally-text); }
-.vb-perk--operative .vb-perk-card__rule { background-color: var(--ally-text); }
 .vb-perk--rare.vb-perk-card { --vb-edge: var(--tier-violet); }
 .vb-perk--rare .vb-perk-card__tag { border-color: var(--tier-violet); color: var(--tier-violet); }
-.vb-perk--rare .vb-perk-card__rule { background-color: var(--tier-violet); }
-.vb-perk--rare .vb-perk-card__glyph { color: var(--tier-violet); }
 .vb-perk-card:hover { --vb-edge: rgba(250, 238, 244, 0.70); }
 .vb-perk-card.vb-perk-card--selected { --vb-fill: var(--ally-soft); --vb-edge: var(--ally); --vb-bw: 2; --vb-bracket: var(--ally); --vb-glow: rgba(29, 217, 160, 0.35); }
-.vb-perk-card--selected .vb-perk-card__shade { background-color: rgba(16, 38, 40, 0.55); }
 .vb-perk-detail { padding: 12px; --vb-fill: var(--panel-solid); --vb-edge: var(--line-strong); }
 .vb-perk-detail__head { flex-direction: row; align-items: center; }
 .vb-perk-detail__thumb { width: 44px; height: 44px; margin-right: 10px; align-items: center; justify-content: center; --vb-cut: 6; --vb-fill: var(--raised); --vb-edge: var(--line-strong); }
@@ -1015,6 +1009,8 @@ html:has(> body.vbl-stage) { background: var(--ground); }
 .vb-switch__knob { position: absolute; left: 4px; top: 4px; width: 16px; height: 16px; background-color: var(--text-3); transition-property: left; transition-duration: 0.22s; }
 .vb-switch--on .vb-switch__track { --vb-fill: var(--ally); --vb-edge: var(--ally); }
 .vb-switch--on .vb-switch__knob { left: 24px; background-color: var(--on-cta); }
+.vb-switch--compact { min-height: 44px; min-width: 44px; justify-content: center; }
+.vb-switch--compact .vb-switch__text { display: none; }
 .vb-switch:focus .vb-switch__track { --vb-bracket: var(--text); }
 .vb-switch__text { margin-left: 12px; flex-shrink: 1; }
 .vb-switch__label { font-family: var(--font-body); font-weight: 500; font-weight: 700; font-size: 12px; letter-spacing: 0.1333em; }
@@ -1069,7 +1065,7 @@ html:has(> body.vbl-stage) { background: var(--ground); }
 .vb-stat__label { height: 16px; flex-shrink: 0; }
 .vb-stat__row { height: 24px; flex-shrink: 0; }
 .vb-stat__bar { flex-shrink: 0; }
-.vb-stat--neutral .vb-stat__fill { background-color: var(--text-2); }
+.vb-stat--neutral .vb-progress__fill { background-color: var(--text-2); }
 .vb-details__passive-name { height: 14px; flex-shrink: 0; }
 .vb-details__passive-text { min-height: 18px; }
 .vb-details__skill { height: 50px; flex-shrink: 0; }
@@ -1085,16 +1081,6 @@ html:has(> body.vbl-stage) { background: var(--ground); }
 .vb-slider .vb-u-base-field__label { padding: 0; margin: 0 12px 0 0; width: 72px; min-width: 72px; }
 .vb-slider .vb-u-base-slider__tracker { background-image: none; }
 .vb-slider .vb-u-base-slider__dragger { background-image: none; }
-.vb-perk-art--portrait .vb-perk-card__glyph { padding: 5px; width: 26px; height: 26px; background-color: var(--raised); border-width: 1px; border-color: var(--line-strong); }
-.vb-perk-card__art .vb-crop { left: -28px; top: -4px; width: 168px; height: 252px; }
-.vb-perk-card__category { margin-bottom: 0; }
-.vb-perk-card__name { margin-top: 0; }
-.vb-perk-card__effect { margin-top: 0; }
-.vb-perk-card__art { height: 90px; }
-.vb-perk-card__badge { position: absolute; left: 40px; top: 30px; width: 32px; height: 32px; align-items: center; justify-content: center; }
-.vb-perk-art--portrait .vb-perk-card__badge { left: auto; top: auto; right: 6px; bottom: 6px; width: 26px; height: 26px; --vb-cut: 6; --vb-fill: var(--raised); --vb-edge: var(--line-strong); }
-.vb-perk-card__badge .vb-perk-card__glyph { position: relative; left: auto; right: auto; top: auto; bottom: auto; padding: 0; border-width: 0; background-color: transparent; }
-.vb-perk-card__effect { font-size: 10.5px; }
 .vb-perk-detail__row--last .vb-perk-detail__value { font-family: var(--font-body); font-weight: 500; color: var(--text-2); }
 .vb-skill__sweep { position: absolute; left: 0; top: 0; bottom: 0; background-color: rgba(192, 132, 252, 0.30); border-right-width: 1px; border-right-color: var(--power-text); }
 .vb-skill--windup { --vb-fill: var(--power-soft); --vb-edge: var(--power); }
@@ -1133,8 +1119,8 @@ html:has(> body.vbl-stage) { background: var(--ground); }
 .vb-stat__delta { margin-left: 5px; margin-bottom: 2px; font-family: var(--font-body); font-weight: 600; font-size: 12px; color: var(--text-2); }
 .vb-stat__delta--up { color: var(--ally-text); }
 .vb-stat__delta--down { color: var(--enemy-text); }
-.vb-stat--power .vb-stat__fill { background-color: var(--power); }
-.vb-stat--text .vb-stat__fill { background-color: var(--text-2); }
+.vb-stat--power .vb-progress__fill { background-color: var(--power); }
+.vb-stat--text .vb-progress__fill { background-color: var(--text-2); }
 .vb-tile--blue { --vb-edge: var(--tier-blue); }
 .vb-tile--violet { --vb-edge: var(--tier-violet); }
 .vb-tile--gold { --vb-edge: var(--tier-gold); --vb-glow: rgba(255, 200, 80, 0.30); }
@@ -1197,9 +1183,6 @@ html:has(> body.vbl-stage) { background: var(--ground); }
 .vb-rule__cost { margin-left: 6px; font-family: var(--font-body); font-weight: 500; font-size: 11px; color: var(--power-text); }
 .vb-rule__note { margin-top: 2px; font-size: 10px; color: var(--text-3); white-space: normal; }
 .vb-rule--warning .vb-rule__note { color: var(--warn); }
-.vb-rule__toggle { width: 44px; height: 44px; flex-shrink: 0; margin-left: 8px; justify-content: center; align-items: center; }
-.vb-rule__knob { width: 30px; height: 16px; border-radius: 8px; background-color: var(--raised); border-width: 1px; border-color: var(--line-strong); }
-.vb-rule__toggle--on .vb-rule__knob { background-color: var(--ally); border-color: var(--ally); }
 .vb-contrast .vb-shape, .vb-reduced-flashes .vb-shape { --vb-glow: rgba(0, 0, 0, 0); }
 .vb-reduced-flashes .vb-skill--flash { --vb-fill: rgba(240, 80, 154, 0.12); }
 .vb-glitch { overflow: visible; }
@@ -1234,12 +1217,6 @@ html:has(> body.vbl-stage) { background: var(--ground); }
 .vb-merchant__section { margin-top: 18px; margin-bottom: 8px; color: var(--glitch-cyan); }
 .vb-merchant__offers { flex-direction: row; align-items: stretch; }
 .vb-merchant__offer { flex-grow: 1; flex-basis: 0; min-width: 0; margin: 0 3px; }
-.vb-merchant__offer .vb-perk-card { width: auto; height: auto; flex-grow: 1; min-height: 260px; }
-.vb-merchant__offer .vb-perk-card__art { height: 88px; flex-shrink: 0; }
-.vb-merchant__offer .vb-perk-card__body { padding: 8px 6px; flex-shrink: 0; }
-.vb-merchant__offer .vb-perk-card__name { font-size: 12px; }
-.vb-merchant__offer .vb-perk-card__effect { font-size: 10px; }
-.vb-merchant__offer .vb-perk-card__next { display: none; }
 .vb-merchant__buy { min-height: 48px; margin-top: 5px; padding: 6px 4px; font-size: 11px; }
 .vb-merchant__buy .vb-button__sub { font-size: 9px; white-space: normal; }
 .vb-merchant__exchange { flex-direction: row; align-items: center; padding: 8px; margin-bottom: 6px; min-height: 64px; --vb-cut: 6; }
@@ -1248,17 +1225,9 @@ html:has(> body.vbl-stage) { background: var(--ground); }
 .vb-merchant__sell { min-width: 86px; min-height: 44px; padding: 8px; font-size: 11px; flex-shrink: 0; }
 .vb-merchant__leave { margin-top: 10px; flex-shrink: 0; }
 .vb-perk--rare.vb-perk-card, .vb-perk--rare.vb-perk-detail, .vb-perk--rare.vb-perk-chip { --vb-edge: var(--glitch-cyan); }
-.vb-perk--rare .vb-perk-card__art { background-color: rgba(72,245,239,0.12); }
 .vb-perk--rare .vb-perk-card__tag, .vb-perk--rare .vb-perk-detail__tag, .vb-perk--rare .vb-perk-row__tag { color: var(--glitch-cyan); border-color: var(--glitch-cyan); }
-.vb-perk--rare .vb-perk-card__rule { background-color: var(--glitch-cyan); }
-.vb-perk--rare .vb-perk-card__glyph { color: var(--glitch-cyan); }
 .vb-perk--epic.vb-perk-card, .vb-perk--epic.vb-perk-detail, .vb-perk--epic.vb-perk-chip { --vb-edge: var(--tier-violet); }
-.vb-perk--epic .vb-perk-card__art { background-color: rgba(165,139,255,0.24); }
 .vb-perk--epic .vb-perk-card__tag, .vb-perk--epic .vb-perk-detail__tag, .vb-perk--epic .vb-perk-row__tag { color: var(--tier-violet); border-color: var(--tier-violet); }
-.vb-perk--epic .vb-perk-card__rule { background-color: var(--tier-violet); }
-.vb-perk--epic .vb-perk-card__glyph { color: var(--tier-violet); }
-.vb-perk-card__shimmer { position: absolute; top: -20px; bottom: -20px; width: 18px; background-color: rgba(224,205,255,0.2); rotate: 18deg; }
-.vb-reduced-motion .vb-perk-card__shimmer, .vb-reduced-flashes .vb-perk-card__shimmer, .vb-contrast .vb-perk-card__shimmer { display: none; }
 .vb-hud__pause { margin-right: 4px; }
 .vb-hud__auto, .vb-compact .vb-hud__auto { min-width: 44px; width: 44px; padding: 8px; }
 .vb-hud__auto .vb-icon, .vb-compact .vb-hud__auto .vb-icon { display: flex; margin: 0; }
@@ -1274,6 +1243,49 @@ html:has(> body.vbl-stage) { background: var(--ground); }
 .vb-hud__pause, .vb-hud__auto, .vb-compact .vb-hud__auto { min-width: 45px; width: 45px; min-height: 45px; height: 45px; }
 .vb-merchant__title { flex-grow: 1; flex-shrink: 1; min-width: 0; margin-right: 8px; font-size: 24px; }
 .vb-route__title { font-size: 28px; }
+.vb-progress { flex-direction: row; height: 6px; background-color: rgba(250, 238, 244, 0.10); flex-shrink: 0; }
+.vb-progress__fill { height: 100%; background-color: var(--ally); }
+.vb-progress--segmented { background-color: rgba(0, 0, 0, 0); }
+.vb-progress__cell { flex-grow: 1; flex-basis: 0; margin-right: 3px; background-color: rgba(250, 238, 244, 0.12); border-width: 1px; border-color: rgba(0, 0, 0, 0); }
+.vb-progress__cell--on { background-color: var(--ally); }
+.vb-progress__cell--next { border-color: var(--ally); }
+.vb-progress--power .vb-progress__fill, .vb-progress--power .vb-progress__cell--on { background-color: var(--power); }
+.vb-progress--power .vb-progress__cell--next { border-color: var(--power); }
+.vb-progress--enemy .vb-progress__fill, .vb-progress--enemy .vb-progress__cell--on { background-color: var(--enemy); }
+.vb-progress--neutral .vb-progress__fill, .vb-progress--neutral .vb-progress__cell--on { background-color: var(--text-2); }
+.vb-list-row { flex-direction: row; align-items: center; min-height: 56px; padding: 8px 10px; --vb-cut: 4; --vb-bw: 0; --vb-fill: var(--panel); }
+.vb-list-row__lead { font-family: var(--font-display); font-weight: 700; font-size: 16px; width: 28px; margin-right: 8px; color: var(--text-3); flex-shrink: 0; }
+.vb-score__rank--top { color: var(--text); }
+.vb-rule__if { flex-direction: row; flex-wrap: wrap; align-items: center; margin-bottom: 2px; }
+.vb-list-row__icon { width: 20px; height: 20px; margin-right: 10px; color: var(--text-2); }
+.vb-list-row__text { flex-grow: 1; flex-shrink: 1; min-width: 0; }
+.vb-list-row__title { font-family: var(--font-body); font-weight: 500; font-weight: 700; font-size: 12px; letter-spacing: 0.1em; }
+.vb-list-row__caption { margin-top: 1px; }
+.vb-list-row__bar { margin-top: 6px; height: 4px; }
+.vb-list-row__value { font-family: var(--font-body); font-weight: 500; font-size: 13px; margin-left: 8px; }
+.vb-list-row__trail { flex-direction: row; align-items: center; margin-left: 12px; flex-shrink: 0; }
+.vb-list-row__trail > .vb-button { min-height: 40px; padding: 6px 12px; }
+.vb-list-row--selected { --vb-bw: 1; --vb-edge: var(--ally); --vb-bracket: var(--ally); }
+.vb-list-row.vb-perk--rare .vb-list-row__icon { color: var(--glitch-cyan); }
+.vb-list-row.vb-perk--epic .vb-list-row__icon { color: var(--tier-violet); }
+.vb-contrast .vb-list-row { --vb-bw: 1; --vb-edge: var(--line-strong); }
+.vb-perk-card { width: 112px; height: auto; min-height: 196px; padding: 12px 10px 10px 10px; --vb-cut: 4; --vb-bw: 0; --vb-fill: var(--panel); }
+.vb-perk-card__tag { margin-bottom: 14px; }
+.vb-perk-card__glyph { width: 28px; height: 28px; margin-bottom: 10px; color: var(--text-2); }
+.vb-perk-card__name { font-family: var(--font-display); font-weight: 700; font-size: 13px; letter-spacing: 0.08em; white-space: normal; margin-bottom: 4px; }
+.vb-perk-card__effect { white-space: normal; }
+.vb-perk-card__levels { margin: 10px 0 6px 0; }
+.vb-perk-card__next { font-family: var(--font-body); font-weight: 500; font-size: 12px; color: var(--ally-text); white-space: normal; }
+.vb-perk-card--selected { --vb-cut: 10; --vb-bw: 2; --vb-edge: var(--ally); --vb-bracket: var(--ally); }
+.vb-perk--rare.vb-perk-card .vb-perk-card__glyph, .vb-perk--rare .vb-perk-card__tag { color: var(--glitch-cyan); color: var(--glitch-cyan); }
+.vb-perk--epic.vb-perk-card .vb-perk-card__glyph, .vb-perk--epic .vb-perk-card__tag { color: var(--tier-violet); color: var(--tier-violet); }
+.vb-merchant__head { flex-direction: row; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.vb-merchant__section { margin-top: 10px; }
+.vb-merchant__leave { flex-shrink: 0; margin-top: 8px; }
+.vb-kv { flex-direction: row; justify-content: space-between; align-items: center; min-height: 22px; }
+.vb-kv__key { flex-shrink: 1; margin-right: 8px; }
+.vb-kv__value { font-family: var(--font-body); font-weight: 500; font-size: 12px; color: var(--text); flex-shrink: 0; }
+.vb-kv__value--good { color: var(--ally-text); }
 /* Layout.uss */
 .vb-root { flex-grow: 1; }
 .vb-grow { flex-grow: 1; }
@@ -1335,11 +1347,14 @@ html:has(> body.vbl-stage) { background: var(--ground); }
 .vb-contrast .vb-score--current, .vb-contrast .vb-perk-row--selected { --vb-edge: var(--ally); }
 .vb-contrast .vb-rule--warning { --vb-edge: var(--warn); }
 /* Views.uss */
+.vb-view > .vb-drawer { bottom: -8px; }
+.vb-page > .vb-view > .vb-drawer { left: -16px; right: -16px; }
+.vb-page > .vb-view--headed > .vb-drawer { left: 0; right: 0; }
 .vb-view { flex-grow: 1; flex-shrink: 1; min-height: 0; }
 .vb-page > .vb-view--headed { margin-left: -16px; margin-right: -16px; }
 .vb-page--headed > .vb-view--headed { margin-left: 0; margin-right: 0; }
 .vb-view--headed > * { margin-left: 12px; margin-right: 12px; }
-.vb-view--headed > .vb-header { margin-left: 0; margin-right: 0; }
+.vb-view--headed > .vb-header, .vb-view--headed > .vb-drawer { margin-left: 0; margin-right: 0; }
 .vb-screen--route, .vb-screen--merchant { background-color: rgba(5, 2, 8, 0.88); }
 .vb-screen--menu { background-color: rgba(5, 2, 8, 0.30); }
 .vb-screen--perks, .vb-screen--build, .vb-screen--revive { background-color: rgba(5, 2, 8, 0.85); }
@@ -1360,14 +1375,13 @@ html:has(> body.vbl-stage) { background: var(--ground); }
 .vb-compact .vb-menu__row > .vb-button { margin-right: 12px; }
 .vb-menu__notice { margin-top: 10px; color: var(--text-3); }
 .vb-squad-view > * { flex-shrink: 0; }
-.vb-squad-view > .vb-squad-view__sheet { margin-top: 10px; flex-shrink: 1; min-height: 0; }
-.vb-squad-view__sheet > .vb-details, .vb-squad-view__sheet .vb-details { width: auto; height: auto; min-height: 0; flex-shrink: 0; }
 .vb-squad-view__start { flex-shrink: 0; margin-top: 8px; }
+.vb-squad-view__drawer .vb-details { width: auto; height: auto; min-height: 0; flex-shrink: 0; padding: 0; --vb-fill: rgba(0, 0, 0, 0); --vb-bw: 0; --vb-glow: rgba(0, 0, 0, 0); }
 .vb-settings > .vb-form { margin-left: 12px; margin-right: 12px; }
 .vb-pause { padding-bottom: 0; }
-.vb-pause__title { align-items: center; margin-top: 110px; flex-shrink: 0; }
-.vb-pause__title > .vb-t-display { font-size: 40px; letter-spacing: 0.14em; }
-.vb-pause__sheet > #abandon { margin-bottom: 0; }
+.vb-pause__center { position: absolute; left: 0; right: 0; top: 0; bottom: 0; justify-content: center; }
+.vb-pause__caption { display: flex; align-items: center; justify-content: center; text-align: center; margin-bottom: 12px; }
+.vb-pause__panel > * { margin-bottom: 10px; }
 .vb-pause__stats > .vb-stat { margin-right: 12px; }
 .vb-pause__perks { padding: 10px 12px; }
 .vb-pause__perks:hover { --vb-bw: 1; --vb-edge: rgba(29, 217, 160, 0.70); }
@@ -1375,8 +1389,10 @@ html:has(> body.vbl-stage) { background: var(--ground); }
 .vb-pause__more { color: var(--ally-text); }
 .vb-pause__chips { max-height: 76px; overflow: hidden; }
 .vb-pause__chip { margin: 0 6px 6px 0; --vb-fill: rgb(14, 9, 20); }
+.vb-pause__row > .vb-half { margin: 0; }
+.vb-pause__row > .vb-pause__abandon { margin-left: 10px; }
 .vb-pause__button { min-height: 48px; }
-.vb-pause__exit { position: absolute; left: 10px; top: 0; min-height: 45px; --vb-fill: rgba(14, 9, 20, 0.85); --vb-fill-to: rgba(14, 9, 20, 0.85); --vb-edge: rgba(250, 238, 244, 0.35); }
+.vb-pause__panel > .vb-pause__exit { align-self: center; min-height: 44px; margin-bottom: 0; }
 .vb-confirm, .vb-guide { flex-shrink: 0; margin-bottom: 12px; }
 .vb-guide__step { align-items: flex-start; }
 .vb-guide__index { margin-right: 10px; min-width: 22px; justify-content: center; }
@@ -1385,7 +1401,6 @@ html:has(> body.vbl-stage) { background: var(--ground); }
 .vb-draft__scroll { flex-grow: 1; }
 .vb-draft__cards { flex-direction: row; justify-content: space-between; margin-top: 6px; margin-bottom: 14px; }
 .vb-draft__cards > .vb-perk-card { width: 112px; height: auto; min-height: 236px; }
-.vb-draft__cards .vb-perk-card__art, .vb-draft__cards .vb-perk-card__body { flex-shrink: 0; }
 .vb-compact .vb-draft__cards > .vb-perk-card { width: auto; flex-grow: 1; flex-basis: 0; margin: 0 3px; }
 .vb-draft__detail { margin-bottom: 12px; }
 .vb-draft__squad { padding: 9px 12px; margin-top: 12px; margin-bottom: 12px; }
@@ -1517,3 +1532,6 @@ html:has(> body.vb-stage) { background: var(--ground); }
 .vb-root .vb-page__scroll > *, .vb-root .vb-page__scroll > .vb-u-scroll-view__content-container > *, .vb-root .vb-list > * { flex-shrink: 0; }
 .vb-root .vb-page__scroll { overflow-y: auto; }
 .vb-stack > :last-child { margin-bottom: 0; }
+/* The pause panel's centring layer spans the screen but only its panel takes input (pickingMode Ignore in Unity). */
+.vb-pause__center { pointer-events: none; }
+.vb-pause__center > * { pointer-events: auto; }

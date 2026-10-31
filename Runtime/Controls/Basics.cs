@@ -46,19 +46,19 @@ namespace Veilbreak.Gui {
 /// <summary>A labelled number with an optional bar (inspectors, results, pause).</summary>
 [UxmlElement] public partial class StatReadout:VisualElement {
  public const string ClassName="vb-stat";
- readonly Label label,value,unit,delta;readonly VisualElement bar,fill;
+ readonly Label label,value,unit,delta;readonly ProgressBar bar;
  public StatReadout():this("","",null){}
  public StatReadout(string label,string value,string unit=null,float bar=-1){
   AddToClassList(ClassName);pickingMode=PickingMode.Ignore;this.label=Ui.Text(this,label,ClassName+"__label");
   var row=Ui.Box(this,ClassName+"__row");this.value=Ui.Text(row,value,ClassName+"__value");this.unit=Ui.Text(row,"",ClassName+"__unit");delta=Ui.Text(row,"",ClassName+"__delta");delta.Show(false);
-  this.bar=Ui.Box(this,ClassName+"__bar");fill=Ui.Box(this.bar,ClassName+"__fill");Set(value,unit,bar);
+  this.bar=new ProgressBar().Classes(ClassName+"__bar").Into(this);Set(value,unit,bar);
  }
  /// <summary>The change being previewed ("+12", "−4%"). A leading + reads up (teal), − reads down (pink); <paramref name="up"/> overrides when lower is better.</summary>
  public StatReadout Delta(string change,bool? up=null){change??="";delta.text=change;delta.Show(change.Length>0);bool rise=up??change.StartsWith("+"),fall=up.HasValue?!up.Value:change.StartsWith("−")||change.StartsWith("-");
   delta.EnableInClassList(ClassName+"__delta--up",change.Length>0&&rise);delta.EnableInClassList(ClassName+"__delta--down",change.Length>0&&fall&&!rise);return this;}
  /// <summary>Bar tone: ally (default), power or text.</summary>
  public StatReadout Tone(string tone){foreach(var t in new[]{"power","text"})EnableInClassList(ClassName+"--"+t,t==tone);return this;}
- public StatReadout Set(string value,string unit=null,float bar=-1){this.value.text=value;this.unit.text=unit??"";this.unit.Show(!string.IsNullOrEmpty(unit));this.bar.Show(bar>=0);if(bar>=0)Ui.Fill(fill,bar);return this;}
+ public StatReadout Set(string value,string unit=null,float bar=-1){this.value.text=value;this.unit.text=unit??"";this.unit.Show(!string.IsNullOrEmpty(unit));this.bar.Show(bar>=0);if(bar>=0)this.bar.Value=bar;return this;}
 }
 
 /// <summary>A status with its own glyph and word, so no two statuses read alike and none relies on colour.</summary>

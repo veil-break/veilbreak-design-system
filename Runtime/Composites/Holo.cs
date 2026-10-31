@@ -68,20 +68,4 @@ public enum PlatformState { Occupied, Selected, Open }
  void Face(bool up){Flipped=up;back.Show(!up);front.Show(up);EnableInClassList(ClassName+"--flipped",up);}
 }
 
-/// <summary>One IF … THEN automation rule: its place, highlighted condition values, the action and cost, an on/off toggle and a plain
-/// note on when it can run. A warning frames it in warn; a draft is dashed. The player's own command always wins.</summary>
-[UxmlElement] public partial class RuleRow:VisualElement {
- public const string ClassName="vb-rule";
- readonly Label index,action,cost,note;readonly VisualElement conditions,toggle;
- public RuleView View {get;private set;}
- public event Action<bool> Toggled;
- public RuleRow(){AddToClassList(ClassName);VbShape.Attach(this);pickingMode=PickingMode.Ignore;index=Ui.Text(this,"1",ClassName+"__index");var body=Ui.Box(this,ClassName+"__body");conditions=Ui.Box(body,ClassName+"__if");
-  var then=Ui.Box(body,ClassName+"__then");Ui.Text(then,"THEN",ClassName+"__keyword");action=Ui.Text(then,"",ClassName+"__action");cost=Ui.Text(then,"",ClassName+"__cost");note=Ui.Text(body,"",ClassName+"__note");
-  toggle=Ui.Box(this,ClassName+"__toggle").Clickable(()=>Toggle());Ui.Box(toggle,ClassName+"__knob");Bind(new RuleView());}
- public RuleRow Bind(RuleView v){View=v;index.text=v.index.ToString();conditions.Clear();Ui.Text(conditions,"IF",ClassName+"__keyword");
-  for(int i=0;i<v.conditions.Length;i++){var c=v.conditions[i];if(i>0)Ui.Text(conditions,v.any?"OR":"AND",ClassName+"__join");Ui.Text(conditions,c.text,ClassName+"__text");if(!string.IsNullOrEmpty(c.value))Ui.Text(conditions,c.value,ClassName+"__value");if(!string.IsNullOrEmpty(c.after))Ui.Text(conditions,c.after,ClassName+"__text");}
-  action.text=(v.action??"").ToUpperInvariant()+(string.IsNullOrEmpty(v.actionRest)?"":" "+v.actionRest);cost.text=v.cost>0?"−"+v.cost:"";cost.Show(v.cost>0);note.text=v.note??"";note.Show(note.text.Length>0);
-  EnableInClassList(ClassName+"--off",!v.enabled);EnableInClassList(ClassName+"--warning",v.warning);EnableInClassList(ClassName+"--draft",v.draft);toggle.EnableInClassList(ClassName+"__toggle--on",v.enabled);toggle.tooltip=v.enabled?"Turn rule off":"Turn rule on";return this;}
- public void Toggle(){if(View==null)return;View.enabled=!View.enabled;Bind(View);Toggled?.Invoke(View.enabled);}
-}
 }
