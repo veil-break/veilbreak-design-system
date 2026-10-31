@@ -2,29 +2,35 @@ using System;
 using System.Linq;
 using UnityEngine.UIElements;
 namespace Veilbreak.Gui {
-/// <summary>The run, frozen: PAUSED, then a bottom sheet with wave, score and who stands, the active perks (tap for details), the
-/// seed line, RESUME (the one primary), settings and ABANDON (danger, confirms). EXIT is a ghost in the top-left corner. Back = Resume.</summary>
+/// <summary>The run, frozen: PAUSED, then a bottom drawer with wave, score and who stands, the active perks (tap for details), the
+/// seed line, RESUME (the one primary), settings and ABANDON (danger, confirms). EXIT is a ghost in the top-left corner.
+/// Back = Resume, and so is dragging the drawer down.</summary>
 [UxmlElement] public partial class PauseOverlayView:ScreenView {
  public const string Block="vb-pause";
- readonly StatReadout wave,score,standing;readonly VisualElement perks,chips;readonly LabelComponent perksTitle;readonly Label detail,caption;
+ readonly StatReadout wave,score,standing;readonly VisualElement perks,chips;readonly LabelComponent perksTitle;readonly Label detail,caption;readonly DrawerOverlay drawer;
  public event Action Resume,Settings,Perks,Abandon,Exit;
+ /// <summary>The docked drawer holding the run's sheet.</summary>
+ public DrawerOverlay Drawer=>drawer;
  public PauseOverlayView():base(Block){
   var title=Ui.Box(this,Block+"__title");Ui.Text(title,"PAUSED","vb-t-display");caption=Ui.Text(title,"Combat, focus and world travel are frozen","vb-t-caption");
-  Ui.Spacer(this);var sheet=Dialog.Sheet(this,null,null,"vb-t-caption",Block+"__sheet");
-  var stats=Ui.Box(sheet,"vb-row",Block+"__stats");wave=new StatReadout("WAVE","01").Into(stats);score=new StatReadout("SCORE","0").Into(stats);standing=new StatReadout("STANDING","4","/4").Into(stats);
-  perks=Ui.Frame(sheet,FrameKind.Slim,"vb-frame--raised",Block+"__perks").Clickable(()=>Perks?.Invoke());perks.name="perks";perks.tooltip="Active perks";
+  // Docked, no backdrop (the screen layer already dims the run): the corner EXIT stays reachable; dragging the sheet down resumes.
+  drawer=new DrawerOverlay{Backdrop=false,CloseButton=false}.Classes(Block+"__drawer").Into(this);drawer.Dismissed+=()=>Resume?.Invoke();
+  var stats=Ui.Box(drawer,"vb-row",Block+"__stats");wave=new StatReadout("WAVE","01").Into(stats);score=new StatReadout("SCORE","0").Into(stats);standing=new StatReadout("STANDING","4","/4").Into(stats);
+  perks=Ui.Frame(drawer,FrameKind.Slim,"vb-frame--raised",Block+"__perks").Clickable(()=>Perks?.Invoke());perks.name="perks";perks.tooltip="Active perks";
   var head=Ui.Box(perks,"vb-row","vb-row--between");perksTitle=new LabelComponent("").Into(head);var more=Ui.Box(head,"vb-row");Ui.Text(more,"DETAILS","vb-t-badge","vb-t-ally");new VbIcon("chevron",16).Classes(Block+"__more").Into(more);
-  chips=Ui.Box(perks,"vb-row","vb-row--wrap",Block+"__chips");detail=Ui.Text(sheet,"","vb-t-caption");
-  new VbButton("RESUME",ButtonVariant.Primary,"Returns to selected speed","chevron",()=>Resume?.Invoke()){name="resume"}.Into(sheet);
-  new VbButton("SETTINGS",ButtonVariant.Secondary,null,"settings",()=>Settings?.Invoke()){name="settings"}.Classes(Block+"__button").Into(sheet);
-  new VbButton("ABANDON RUN",ButtonVariant.Danger,null,"remove",()=>Abandon?.Invoke()){name="abandon"}.Classes(Block+"__button").Into(sheet);
+  chips=Ui.Box(perks,"vb-row","vb-row--wrap",Block+"__chips");detail=Ui.Text(drawer,"","vb-t-caption");
+  drawer.Actions(new VbButton("RESUME",ButtonVariant.Primary,"Returns to selected speed","chevron",()=>Resume?.Invoke()){name="resume"},
+   new VbButton("SETTINGS",ButtonVariant.Secondary,null,"settings",()=>Settings?.Invoke()){name="settings"}.Classes(Block+"__button"),
+   new VbButton("ABANDON RUN",ButtonVariant.Danger,null,"remove",()=>Abandon?.Invoke()){name="abandon"}.Classes(Block+"__button"));
   new VbButton("EXIT",ButtonVariant.Ghost,null,"back",()=>Exit?.Invoke()){name="exit"}.Classes(Block+"__exit").Into(this);
+  drawer.Open();
  }
  public PauseOverlayView Bind(PauseViewModel v){
   wave.Set(v.wave.ToString("00"));score.Set(Ui.Number(v.score));standing.Set(v.standing.ToString(),"/"+v.squadSize);
   perksTitle.text="Active perks · "+v.perks.Length;perks.Show(v.perks.Length>0);chips.Clear();
   foreach(var p in v.perks)new BadgeComponent(p.name+(p.stack>1?" ×"+p.stack:""),p.icon).Classes(Block+"__chip").Into(chips);
-  var line=string.Join(" · ",new[]{string.IsNullOrEmpty(v.seed)?null:"Seed "+v.seed,v.detail}.Where(s=>!string.IsNullOrEmpty(s)));detail.text=line;detail.Show(line.Length>0);return this;
+  var line=string.Join(" · ",new[]{string.IsNullOrEmpty(v.seed)?null:"Seed "+v.seed,v.detail}.Where(s=>!string.IsNullOrEmpty(s)));detail.text=line;detail.Show(line.Length>0);
+  if(!drawer.IsOpen)drawer.Open();return this;
  }
 }
 

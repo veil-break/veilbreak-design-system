@@ -479,6 +479,11 @@ for name, cs, summary, provide, rules in [
      ['OperativeTile and SquadSlot are tiles (`block` vb-tile, vb-slot).', 'Locked tiles stay visible and say how to unlock; lay tiles out in a grid.']),
     ('CardComponent', 'Runtime/Controls/Card.cs', 'A slim container with an optional media band, a head, a body and a foot of actions.',
      '`title`, `meta`, `media`, `actions`, `selected`, children (the body).', ['Cards are slim; only a selected card is chipped (edge and brackets).', 'Foot actions are right-aligned.']),
+    ('DrawerOverlay', 'Runtime/Composites/Drawer.cs', 'A bottom drawer: a slim sheet that slides up over a backdrop, with a grab handle, title, body and actions.',
+     '`open` (default true), `title`, `meta`, `backdrop` (false docks it inside a view), `dismissible`, `closeButton`, `actions`, `onDismiss`, children (the body).',
+     ['Dismiss: tap the backdrop, tap ×, or drag the handle down past a quarter of the sheet; `onDismiss` fires, then it slides away.',
+      'SquadView opens operative details in one; PauseOverlayView docks its run sheet in one (dragging it down resumes).',
+      'Unity: `DrawerOverlay.Push(nav, title, closed)` puts one on a modal layer that Back pops.']),
     ('FieldComposite', 'Runtime/Composites/Forms.cs', 'One setting: a caps label, its input and one line of what it does.',
      '`label`, `help`, children (the input).', ['Use it for inputs without their own label; VbSlider and VbSwitch carry theirs.']),
     ('Fieldset', 'Runtime/Core/Ui.cs (Ui.Section)', 'A titled group of related fields in one slim container.',
@@ -648,6 +653,7 @@ export declare function IconButtonComposite(props: Base & { icon?: KitIconName; 
 export type TileState = 'in' | 'focused' | 'locked' | 'empty';
 export declare function TileComponent(props: Base & { title?: string; caption?: string; captionIcon?: KitIconName; picture?: string | null; glyph?: KitIconName; kit?: string; order?: number; state?: TileState | TileState[]; tier?: RarityTier; emptyLabel?: string; tooltip?: string; block?: string; onPick?: () => void }): React.ReactElement;
 export declare function CardComponent(props: Base & { title?: string; meta?: string; media?: React.ReactNode; actions?: React.ReactNode; selected?: boolean; children?: React.ReactNode }): React.ReactElement;
+export declare function DrawerOverlay(props: Base & { open?: boolean; title?: string; meta?: string; label?: string; backdrop?: boolean; dismissible?: boolean; closeButton?: boolean; actions?: React.ReactNode; onDismiss?: () => void; children?: React.ReactNode }): React.ReactElement;
 export declare function FieldComposite(props: Base & { label?: string; help?: string; children?: React.ReactNode }): React.ReactElement;
 export declare function Fieldset(props: Base & { title: string; children?: React.ReactNode }): React.ReactElement;
 export declare function FormComposite(props: Base & { saved?: string; headed?: boolean; note?: { icon?: KitIconName; text: string } | null; footer?: React.ReactNode; children?: React.ReactNode }): React.ReactElement;

@@ -60,6 +60,7 @@ public sealed class GuiGallery:MonoBehaviour {
   Open("PERKS",()=>new PerkDraftView().Into(nav.Open("perks",nav.Close)).Bind(new PerkDraftViewModel{wave=7,bonus=700,score=9420,choices=new[]{Perk(PerkTier.General),Perk(PerkTier.Operative),Perk(PerkTier.Rare)},squad=new[]{new SquadHealthView{code="AR",hp=820,maxHp=1000}}}).Take+=nav.Close);
   Open("RESULTS",()=>new ResultsView().Into(nav.Open("results",nav.Close)).Bind(new ResultsViewModel{score=18240,wave=12,bosses=2,rank=1,ledger=new[]{new LedgerLine{label="Creep kills",value="9,640"}},perks=new[]{Perk(PerkTier.General)}}).Menu+=nav.Close);
   Open("SCORES",()=>new HighScoresView().Into(nav.Open("scores",nav.Close)).Bind(new[]{new ScoreView{rank=1,score=18240,wave=12,bosses=2,squad=new[]{"AR","SO"}}}).Back+=nav.Close);
+  Open("DRAWER",()=>{nav.Open("drawer",nav.Close);var d=DrawerOverlay.Push(nav,"Aria");d.Meta="SLOT 1";new OperativeDetails().Into(d).Bind(Operative(ControlMode.Auto),1,false);});
   Open("GUIDE",()=>{nav.Open("guide",nav.Close);GuideDialogView.Push(nav,"RUN THE BOULEVARD",GuideDialogView.DefaultSteps,nav.Close);});
   root.RegisterCallback<KeyDownEvent>(e=>{if(e.keyCode==KeyCode.Escape)nav.Back();});
   Title("Results");new SquadResult().Into(page).Bind(new ContributionView{operative=Operative(ControlMode.Fallen),fellWave=12,damage=48200,kills=162,casts=74,power=1960,share=.47f,extraValue="312"});

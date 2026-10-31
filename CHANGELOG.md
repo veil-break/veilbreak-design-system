@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.3.1 — 2026-10-31
+
+- **Bottom drawer.** `DrawerOverlay` (`vb-drawer`): a slim solid sheet that slides up over a dimmed backdrop, with a grab
+  handle, optional caps title, meta and close square, a scrolling body and a foot of actions. Dismiss by tapping the
+  backdrop or ×, or dragging the handle down past a quarter of the sheet (`Dismissed`); `Close()` slides it away quietly.
+  `DrawerOverlay.Push(nav, title, closed)` puts one on a modal layer that Back pops; `Backdrop = false` docks it inside a
+  view. Reduced motion skips the slide; high contrast gives the sheet its edge. Web: `DrawerOverlay` with the same tree.
+- `SquadView` opens operative details in a drawer over the roster (`DetailsDrawer`; dismissing raises `Closed`).
+- `PauseOverlayView` docks its run sheet in a drawer (`Drawer`); dragging it down resumes, like Back.
+- Handbook: DrawerOverlayComposite entry (80 entries).
+
 ## 0.3.0 — 2026-10-31
 
 Everything the GUI Handbook described as partial or proposed now ships, in Unity and on the web. The handbook is

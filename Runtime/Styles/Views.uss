@@ -2,12 +2,16 @@
    board and the confirm and guide dialogs. Ported from the arcade's Arcade.uss so a game only binds data. Load after Layout.uss. */
 
 /* ── every view ────────────────────────────────────────────────────────── */
+/* Drawers docked in a view span the board: past the page's side gutters and its bottom padding. */
+.vb-view > .vb-drawer { bottom: -8px; }
+.vb-page > .vb-view > .vb-drawer { left: -16px; right: -16px; }
+.vb-page > .vb-view--headed > .vb-drawer { left: 0; right: 0; }
 .vb-view { flex-grow: 1; flex-shrink: 1; min-height: 0; }
 /* A headed view spans the board under a page with padding; its content keeps a 12-unit gutter. */
 .vb-page > .vb-view--headed { margin-left: -16px; margin-right: -16px; }
 .vb-page--headed > .vb-view--headed { margin-left: 0; margin-right: 0; }
 .vb-view--headed > * { margin-left: 12px; margin-right: 12px; }
-.vb-view--headed > .vb-header { margin-left: 0; margin-right: 0; }
+.vb-view--headed > .vb-header, .vb-view--headed > .vb-drawer { margin-left: 0; margin-right: 0; }
 
 /* Screen layer tints per page name (Navigator.Open). */
 .vb-screen--route, .vb-screen--merchant { background-color: rgba(5, 2, 8, 0.88); }
@@ -34,9 +38,9 @@
 
 /* ── SquadView ─────────────────────────────────────────────────────────── */
 .vb-squad-view > * { flex-shrink: 0; }
-.vb-squad-view > .vb-squad-view__sheet { margin-top: 10px; flex-shrink: 1; min-height: 0; }
-.vb-squad-view__sheet > .vb-details, .vb-squad-view__sheet .vb-details { width: auto; height: auto; min-height: 0; flex-shrink: 0; }
 .vb-squad-view__start { flex-shrink: 0; margin-top: 8px; }
+/* Operative details open in a drawer: the drawer is the frame, so the sheet drops its own. */
+.vb-squad-view__drawer .vb-details { width: auto; height: auto; min-height: 0; flex-shrink: 0; padding: 0; --vb-fill: rgba(0, 0, 0, 0); --vb-bw: 0; --vb-glow: rgba(0, 0, 0, 0); }
 
 /* ── SettingsView ──────────────────────────────────────────────────────── */
 .vb-settings > .vb-form { margin-left: 12px; margin-right: 12px; }
@@ -45,9 +49,9 @@
 .vb-pause { padding-bottom: 0; }
 .vb-pause__title { align-items: center; margin-top: 110px; flex-shrink: 0; }
 .vb-pause__title > .vb-t-display { font-size: 40px; letter-spacing: 14.000px; }
-.vb-pause__sheet > #abandon { margin-bottom: 0; }
+.vb-pause__stats { margin-bottom: 12px; }
 .vb-pause__stats > .vb-stat { margin-right: 12px; }
-.vb-pause__perks { padding: 10px 12px; }
+.vb-pause__perks { padding: 10px 12px; margin-bottom: 10px; }
 .vb-pause__perks:hover { --vb-bw: 1; --vb-edge: rgba(29, 217, 160, 0.70); }
 .vb-pause__perks > .vb-row--between { margin-bottom: 8px; }
 .vb-pause__more { -unity-background-image-tint-color: var(--vb-color-ally-text); }

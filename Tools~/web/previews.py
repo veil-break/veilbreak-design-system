@@ -753,6 +753,15 @@ BOARD = r"""function board(node, bg, screen) {
 }
 """
 CHECKPOINT = "{ wave: 7, score: 9420, standing: 3, squadSize: 4, perks: 5, seed: '80A2EB4E' }"
+card('DrawerOverlay', C, 844, 'Bottom drawer over a dimmed page: grip, title, body, actions; drag down, tap × or the backdrop to dismiss', BOARD + SQUAD + r"""
+function Demo() {
+  var s = React.useState(true), open = s[0], set = s[1];
+  return board([h('div', { key: 0, style: { padding: 12 } }, h(V.VbButton, { title: open ? 'DRAWER OPEN' : 'OPEN DRAWER', onClick: function () { set(true); } })),
+    h(V.DrawerOverlay, { key: 1, open: open, title: 'Active perks', meta: '3 OF 5', onDismiss: function () { set(false); }, actions: [h(V.VbButton, { key: 'a', title: 'BACK TO RUN', variant: 'primary', icon: 'chevron', onClick: function () { set(false); } })] },
+      h(V.StackLayout, { gap: 8 }, h(V.PerkRow, { view: PERKS.general, selected: true }), h(V.PerkRow, { view: PERKS.operative }), h(V.PerkRow, { view: PERKS.rare })))], null, 'pause');
+}
+render(h(Demo));
+""", width=390, page=True)
 card('MainMenuView', VW, 844, 'The title screen: badge and best, the mark, the menu actions, EXIT', BOARD + "render(board(h(V.MainMenuView, { view: { best: 18240, bestWave: 12, checkpoint: " + CHECKPOINT + ", squad: ['Aria', 'Sol', 'Aegis', 'Nyra'] } }), '" + MENU_BG + "', 'menu'));", width=390, page=True)
 card('MenuActionsSectionView', VW, 300, 'Checkpoint card, PLAY, HIGH SCORES and SETTINGS', "render(h('div', { style: { width: 358 } }, h(V.MenuActionsSectionView, { checkpoint: " + CHECKPOINT + ", squadLine: 'Squad · Aria · Sol · Aegis · Nyra' })));")
 card('SquadView', VW, 844, 'Four slots, the roster, the open details and START RUN', BOARD + SQUAD + "render(board(h(V.SquadView, { view: { roster: ROSTER, selected: [0, 1, 2, -1], focus: 3, locked: ['', '', '', '', '', '', 'Pull in rifts', ''] } }), null, 'squad'));", width=390, page=True)

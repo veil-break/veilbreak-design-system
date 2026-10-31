@@ -1,6 +1,6 @@
 {
   "name": "@veilbreak/gui",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "The Veilbreak design system for the web: React 18 ports of com.veilbreak.gui (the Unity UI Toolkit kit), with the same element trees, classes, tokens, fonts and icons.",
   "license": "SEE LICENSE IN ../LICENSE.md",
   "author": "tuomashatakka",

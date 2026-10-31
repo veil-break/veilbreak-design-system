@@ -665,6 +665,16 @@ A 44 × 44 chipped square with one glyph (`Icon`) or a short state (`Text`, "2×
 `Active` (`--active`, the toggled look) and `Quiet` (`--quiet`, translucent over the world). `Clicked` fires on pointer,
 Enter and Space.
 
+## Bottom drawer
+
+`DrawerOverlay` (`vb-drawer`): `__backdrop`, then `Sheet` (`__sheet`, slim solid, at most 88% of the board) with `__grip`
+(`__handle`), `__head` (`__title`, `__meta`, `__close`), `Body` (`__body`, a ScrollView and the content container) and
+`Foot` (`__foot`; `Actions(...)`). `Open()` slides it up (`vb-drawer--open`), `Close(done)` slides it down and hides it,
+`Dismiss()` does what the backdrop, × and a drag past a quarter of the sheet do: close, then raise `Dismissed`.
+`Dismissible`, `CloseButton` and `Backdrop` (off: docked inline, `vb-drawer--inline`, only the sheet takes input) are
+UXML attributes. `DrawerOverlay.Push(nav, title, closed)` puts one on a modal layer (`vb-modal--drawer`) that Back pops.
+`SquadView.DetailsDrawer` and `PauseOverlayView.Drawer` are drawers.
+
 ## Forms
 
 `FieldComposite(label, input, help)`: a `LabelComponent` (`__label`), the input (`__input`, the content container) and a

@@ -28,5 +28,16 @@ public sealed class ComponentTests {
  [Test] public void HighScoresListOlderRulesAfterALabel(){var v=new HighScoresView().Bind(new[]{new ScoreView{rank=1,score=10}},new[]{new ScoreView{rank=1,score=5}});Assert.AreEqual(2,v.Query<ScoreRow>().ToList().Count);Assert.IsNotNull(v.Q(className:"vb-scores__older"));}
  [Test] public void BattleBoardHidesTheBossBarWithoutABoss(){var b=new BattleHudView().Bind(new HudView(),new[]{new OperativeView{name="Aria"}});Assert.AreEqual(DisplayStyle.None,b.Boss.style.display.value);Assert.AreEqual(DisplayStyle.None,b.Card(1).style.display.value);
   b.Bind(new HudView(),new OperativeView[0],new BossView{name="Warden"});Assert.AreEqual(DisplayStyle.Flex,b.Boss.style.display.value);}
+ [Test] public void DrawersOpenDismissAndCloseQuietly(){var d=new DrawerOverlay{Title="Details"};int dismissed=0;d.Dismissed+=()=>dismissed++;Assert.AreEqual(DisplayStyle.None,d.style.display.value,"Closed until opened");
+  d.Open();Assert.IsTrue(d.IsOpen);Assert.IsTrue(d.ClassListContains(DrawerOverlay.OpenClass));Assert.IsTrue(d.Dismiss());Assert.AreEqual(1,dismissed);Assert.IsFalse(d.IsOpen);Assert.IsFalse(d.Dismiss(),"Dismiss twice does nothing");
+  d.Open();d.Close();Assert.AreEqual(1,dismissed,"Close is not a dismiss");d.Dismissible=false;d.Open();Assert.IsFalse(d.Dismiss());var l=new Label("x");d.Add(l);Assert.AreSame(d.Body,l.hierarchy.parent);}
+ [Test] public void InlineDrawersLetTheViewTakeInput(){var d=new DrawerOverlay{Backdrop=false};Assert.AreEqual(PickingMode.Ignore,d.pickingMode);Assert.IsTrue(d.ClassListContains("vb-drawer--inline"));Assert.AreEqual(PickingMode.Position,d.Sheet.pickingMode);}
+ [Test] public void PushedDrawersAreModalLayersThatBackCloses(){var root=new VisualElement();var nav=new Navigator(root);nav.Open("squad");int closed=0;var d=DrawerOverlay.Push(nav,"Aria",()=>closed++);
+  Assert.AreEqual(1,nav.Modals.Count);Assert.IsTrue(d.IsOpen);Assert.IsTrue(nav.Back());Assert.AreEqual(0,nav.Modals.Count);Assert.AreEqual(1,closed);}
+ [Test] public void SquadDetailsOpenInADrawer(){var ops=Enumerable.Range(0,4).Select(i=>new OperativeView{name="Op"+i,code="O"+i}).ToArray();var v=new SquadView();bool closed=false;v.Closed+=()=>closed=true;
+  v.Bind(new SquadViewModel{roster=ops,focus=-1});Assert.IsFalse(v.DetailsDrawer.IsOpen);v.Bind(new SquadViewModel{roster=ops,focus=2});Assert.IsTrue(v.DetailsDrawer.IsOpen);Assert.IsNotNull(v.DetailsDrawer.Q<OperativeDetails>());
+  v.DetailsDrawer.Dismiss();Assert.IsTrue(closed);}
+ [Test] public void DraggingThePauseDrawerAwayResumes(){var p=new PauseOverlayView().Bind(new PauseViewModel{wave=7,score=9420,standing=3});bool resumed=false;p.Resume+=()=>resumed=true;Assert.IsTrue(p.Drawer.IsOpen);Assert.IsFalse(p.Drawer.Backdrop);
+  Assert.IsNotNull(p.Drawer.Foot.Q<VbButton>("resume"));p.Drawer.Dismiss();Assert.IsTrue(resumed);p.Bind(new PauseViewModel());Assert.IsTrue(p.Drawer.IsOpen,"Binding again reopens it");}
 }
 }

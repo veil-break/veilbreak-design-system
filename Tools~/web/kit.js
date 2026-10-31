@@ -801,6 +801,37 @@
       h('div', { className: 'vb-board__top' }, p.top), h('div', { className: 'vb-board__world' }, p.world), h('div', { className: 'vb-board__bottom' }, p.bottom));
   }
 
+  /* ── Bottom drawer (Drawer.cs) ── */
+  /** DrawerOverlay: a slim sheet that slides up over a backdrop; grip and head drag it down, the backdrop and × dismiss it.
+      `open` (default true) slides it in and out; `backdrop: false` docks it inside a view; `onDismiss` fires on a player dismiss. */
+  function DrawerOverlay(p) {
+    var want = p.open !== false, dismissible = p.dismissible !== false, hasBackdrop = p.backdrop !== false, closeButton = p.closeButton !== false && dismissible;
+    var sh = R.useState(false), shown = sh[0], setShown = sh[1], dr = R.useState(0), dy = dr[0], setDy = dr[1];
+    var sheet = R.useRef(null), from = R.useRef(-1), live = R.useState(want), mounted = live[0], setMounted = live[1];
+    R.useEffect(function () {
+      if (want) { setMounted(true); var id = requestAnimationFrame(function () { requestAnimationFrame(function () { setShown(true); }); }); return function () { cancelAnimationFrame(id); }; }
+      setShown(false); var t = setTimeout(function () { setMounted(false); }, 240); return function () { clearTimeout(t); };
+    }, [want]);
+    function dismiss() { if (!dismissible || !shown) return; setShown(false); setDy(0); if (p.onDismiss) p.onDismiss(); }
+    var drag = dismissible ? {
+      onPointerDown: function (e) { if (!shown) return; from.current = e.clientY; e.currentTarget.setPointerCapture(e.pointerId); },
+      onPointerMove: function (e) { if (from.current >= 0) setDy(Math.max(0, e.clientY - from.current)); },
+      onPointerUp: function () { if (from.current < 0) return; from.current = -1; var hgt = sheet.current ? sheet.current.offsetHeight : 400; if (dy > Math.max(80, hgt * 0.25)) dismiss(); else setDy(0); },
+      onPointerCancel: function () { from.current = -1; setDy(0); }
+    } : {};
+    if (!mounted && !want) return null;
+    var dragging = dy > 0 && from.current >= 0, head = p.title || p.meta || closeButton, foot = [].concat(p.actions || []).filter(Boolean);
+    return h('div', { className: cx('vb-drawer', shown && 'vb-drawer--open', dragging && 'vb-drawer--dragging', !hasBackdrop && 'vb-drawer--inline', p.className), style: Object.assign({ pointerEvents: hasBackdrop && shown ? 'auto' : 'none' }, p.style) },
+      hasBackdrop ? h('div', { className: 'vb-drawer__backdrop', onPointerDown: dismiss }) : null,
+      h(Shape, { ref: sheet, className: 'vb-drawer__sheet', role: 'dialog', 'aria-modal': hasBackdrop || undefined, 'aria-label': p.title || p.label, style: Object.assign({ pointerEvents: 'auto' }, dy > 0 ? { translate: '0 ' + dy + 'px' } : null) },
+        h('div', Object.assign({ className: 'vb-drawer__grip', title: dismissible ? 'Drag down to close' : undefined, style: { touchAction: 'none', cursor: dismissible ? 'grab' : null } }, drag), h('div', { className: 'vb-drawer__handle' })),
+        head ? h('div', Object.assign({ className: 'vb-drawer__head', style: { touchAction: 'none' } }, drag),
+          p.title ? L('vb-t-title vb-drawer__title', upper(p.title)) : h('div', { className: 'vb-drawer__title' }), p.meta ? L('vb-t-badge vb-drawer__meta', p.meta) : null,
+          closeButton ? h(IconButtonComposite, { icon: 'close', tooltip: 'Close', className: 'vb-drawer__close', onClick: dismiss }) : null) : null,
+        h('div', { className: 'vb-drawer__body vb-page__scroll', style: { overflowY: 'auto' } }, p.children),
+        foot.length ? h('div', { className: 'vb-drawer__foot' }, foot) : null));
+  }
+
   /* ── Views (Runtime/Views) ── */
   function View(block, p, kids, headed) { return h('div', { className: cx('vb-view', block, headed && 'vb-view--headed', p.className), style: p.style }, kids); }
   function call(fn) { return function () { if (fn) fn.apply(null, arguments); }; }
@@ -830,15 +861,17 @@
     var v = Object.assign({ roster: [], selected: [-1, -1, -1, -1], focus: -1, locked: [], tiers: [], seed: 'new seed' }, p.view);
     var picked = v.selected.filter(function (i) { return i >= 0 && i < v.roster.length; }), n = picked.length;
     var unlocked = v.roster.filter(function (_, i) { return !v.locked[i]; }).length, open = v.focus >= 0 && v.focus < v.roster.length;
+    var shownFocus = R.useRef(-1); if (open) shownFocus.current = v.focus; var fi = shownFocus.current;  // keep the details while the drawer slides away
     return View('vb-squad-view', p, [
       h(ScreenHeader, { key: 'h', title: 'SQUAD', meta: n + ' / 4', accent: n === 4, onBack: p.onBack }),
       h(LabelComponent, { key: 'l1', text: 'Squad · tap a slot for details', className: 'vb-page__label' }),
       h('div', { key: 's', className: 'vb-grid4' }, [0, 1, 2, 3].map(function (i) { var r = v.selected[i]; return h(SquadSlot, { key: i, slot: i + 1, view: r >= 0 ? v.roster[r] : null, onPick: function () { call(p.onSlotPick)(i); } }); })),
       h(LabelComponent, { key: 'l2', text: unlocked === v.roster.length ? 'Roster · all ' + v.roster.length + ' unlocked' : 'Roster · ' + unlocked + ' of ' + v.roster.length + ' unlocked', className: 'vb-page__label' }),
       h('div', { key: 'r', className: 'vb-grid4 vb-grid4--wrap' }, v.roster.map(function (o, i) { return h(OperativeTile, { key: i, view: o, slot: v.selected.indexOf(i) + 1, focused: i === v.focus, tier: v.tiers[i], locked: v.locked[i], onPick: function () { call(p.onPick)(i); } }); })),
-      open ? h('div', { key: 'd', className: 'vb-squad-view__sheet', style: { overflowY: 'auto' } }, h(OperativeDetails, { view: v.roster[v.focus], slot: v.selected.indexOf(v.focus) + 1, squadFull: n >= 4, onClose: p.onClose, onToggle: function () { call(p.onToggle)(v.focus); } })) : null,
       h('div', { key: 'g', className: 'vb-grow' }),
-      h(VbButton, { key: 'go', title: 'START RUN', variant: 'primary', icon: 'chevron', className: 'vb-squad-view__start', sub: n ? picked.map(function (i) { return v.roster[i].name; }).join(' · ') + (v.seed ? ' · ' + v.seed : '') : '', blocked: n < 4 ? 'Pick ' + (4 - n) + ' more' : '', onClick: call(p.onStart) })], true);
+      h(VbButton, { key: 'go', title: 'START RUN', variant: 'primary', icon: 'chevron', className: 'vb-squad-view__start', sub: n ? picked.map(function (i) { return v.roster[i].name; }).join(' · ') + (v.seed ? ' · ' + v.seed : '') : '', blocked: n < 4 ? 'Pick ' + (4 - n) + ' more' : '', onClick: call(p.onStart) }),
+      h(DrawerOverlay, { key: 'd', open: open, closeButton: false, className: 'vb-squad-view__drawer', label: 'Operative details', onDismiss: p.onClose },
+        fi >= 0 && v.roster[fi] ? h(OperativeDetails, { view: v.roster[fi], slot: v.selected.indexOf(fi) + 1, squadFull: n >= 4, onClose: p.onClose, onToggle: function () { call(p.onToggle)(v.focus); } }) : null)], true);
   }
   /** SettingsView: AUDIO, FEEL, CAMERA, QUALITY in a FormComposite; applies as it changes (`onChange(model)`). */
   function SettingsView(p) {
@@ -860,16 +893,15 @@
     var line = [v.seed ? 'Seed ' + v.seed : '', v.detail].filter(Boolean).join(' · ');
     return View('vb-pause', p, [
       h('div', { key: 't', className: 'vb-pause__title' }, L('vb-t-display', 'PAUSED'), L('vb-t-caption', 'Combat, focus and world travel are frozen')),
-      h('div', { key: 'g', className: 'vb-grow' }),
-      h(Dialog, { key: 's', className: 'vb-pause__sheet' },
+      h(DrawerOverlay, { key: 's', backdrop: false, closeButton: false, className: 'vb-pause__drawer', label: 'Paused run', onDismiss: p.onResume,
+        actions: [h(VbButton, { key: 'r', title: 'RESUME', variant: 'primary', sub: 'Returns to selected speed', icon: 'chevron', onClick: call(p.onResume) }),
+          h(VbButton, { key: 's', title: 'SETTINGS', icon: 'settings', className: 'vb-pause__button', onClick: call(p.onSettings) }),
+          h(VbButton, { key: 'a', title: 'ABANDON RUN', variant: 'danger', icon: 'remove', className: 'vb-pause__button', onClick: call(p.onAbandon) })] },
         h('div', { className: 'vb-row vb-pause__stats' }, h(StatReadout, { label: 'WAVE', value: pad2(v.wave) }), h(StatReadout, { label: 'SCORE', value: num(v.score) }), h(StatReadout, { label: 'STANDING', value: String(v.standing), unit: '/' + v.squadSize })),
         v.perks.length ? h(Shape, Object.assign({ className: 'vb-panel vb-frame--slim vb-frame--raised vb-pause__perks', title: 'Active perks' }, clickable(p.onPerks)),
           h('div', { className: 'vb-row vb-row--between' }, h(LabelComponent, { text: 'Active perks · ' + v.perks.length }), h('div', { className: 'vb-row' }, L('vb-t-badge vb-t-ally', 'DETAILS'), h(VbIcon, { icon: 'chevron', size: 16, className: 'vb-pause__more' }))),
           h('div', { className: 'vb-row vb-row--wrap vb-pause__chips' }, v.perks.map(function (k, i) { return h(BadgeComponent, { key: i, icon: k.icon, text: k.name + (k.stack > 1 ? ' ×' + k.stack : ''), className: 'vb-pause__chip' }); }))) : null,
-        line ? L('vb-t-caption', line) : null,
-        h(VbButton, { title: 'RESUME', variant: 'primary', sub: 'Returns to selected speed', icon: 'chevron', onClick: call(p.onResume) }),
-        h(VbButton, { title: 'SETTINGS', icon: 'settings', className: 'vb-pause__button', onClick: call(p.onSettings) }),
-        h(VbButton, { title: 'ABANDON RUN', variant: 'danger', icon: 'remove', className: 'vb-pause__button', onClick: call(p.onAbandon) })),
+        line ? L('vb-t-caption', line) : null),
       h(VbButton, { key: 'x', title: 'EXIT', variant: 'ghost', icon: 'back', className: 'vb-pause__exit', onClick: call(p.onExit) })]);
   }
   /** ConfirmDialogView: the question, its consequence, the destructive action and the way back. */
@@ -953,7 +985,7 @@
     Dialog: Dialog, Backdrop: Backdrop, ScanLines: ScanLines, HoloFrame: HoloFrame, HoloPlatform: HoloPlatform, RevealCard: RevealCard, RuleRow: RuleRow,
     WorldHealthBar: WorldHealthBar, CombatText: CombatText, WorldLabel: WorldLabel, WorldMarker: WorldMarker, OffscreenIndicator: OffscreenIndicator, EdgeWarning: EdgeWarning,
     TextComponent: TextComponent, LabelComponent: LabelComponent, BadgeComponent: BadgeComponent, IconButtonComposite: IconButtonComposite, TileComponent: TileComponent, CardComponent: CardComponent,
-    FieldComposite: FieldComposite, Fieldset: Fieldset, FormComposite: FormComposite, StackLayout: StackLayout, VbGrid: VbGrid, ListLayout: ListLayout, BoardLayout: BoardLayout,
+    DrawerOverlay: DrawerOverlay, FieldComposite: FieldComposite, Fieldset: Fieldset, FormComposite: FormComposite, StackLayout: StackLayout, VbGrid: VbGrid, ListLayout: ListLayout, BoardLayout: BoardLayout,
     MainMenuView: MainMenuView, MenuActionsSectionView: MenuActionsSectionView, SquadView: SquadView, SettingsView: SettingsView, PauseOverlayView: PauseOverlayView, ConfirmDialogView: ConfirmDialogView,
     GuideDialogView: GuideDialogView, PerkDraftView: PerkDraftView, ResultsView: ResultsView, HighScoresView: HighScoresView, RouteChoiceView: RouteChoiceView, MerchantScreenView: MerchantScreenView, BattleHudView: BattleHudView,
     VbShape: Shape, format: { compact: compact, number: num, seconds: seconds, kebab: kebab }

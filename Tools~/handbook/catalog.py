@@ -248,6 +248,17 @@ e(id='icon-button', tier='composite', name='IconButtonComposite', unity=['IconBu
   rules=['Always 44 × 44 at least, always a tooltip (it is the accessible name).', 'Chipped (cut 6): it is a control. `Quiet` over the world (the HUD band), `Active` when toggled on.', 'ScreenHeader, HudTop and OperativeDetails build theirs from it; the owner classes only position it.'],
   preview='IconButtonComposite')
 
+e(id='drawer', tier='composite', name='DrawerOverlayComposite', unity=['DrawerOverlay'], status='shipped',
+  summary='A bottom drawer: a slim sheet that slides up over a dimmed backdrop, with a grab handle, a title, a scrolling body and actions.',
+  uses=['overlay', 'frame', 'icon-button', 'label', 'button'], blocks=['vb-drawer', 'vb-modal--drawer'],
+  csharp='var d = DrawerOverlay.Push(nav, "Aria", closed: Refocus);    // modal layer; Back pops it\nnew OperativeDetails().Into(d).Bind(view, slot, squadFull);   // children go to the body\nd.Actions(new VbButton("REMOVE FROM SQUAD", ButtonVariant.Danger, icon: "remove"));\nvar docked = new DrawerOverlay { Backdrop = false }.Into(view).Open();   // inline: only the sheet takes input\ndocked.Dismissed += Resume;   // backdrop tap, × or a drag past a quarter of the sheet',
+  uxml='<vb:DrawerOverlay title="Aria" meta="SLOT 1" backdrop="true" close-button="false" />',
+  rules=['Use a drawer for detail and secondary decisions that keep the page behind them: operative details, the paused run, filters. A yes/no confirmation stays a ConfirmDialogView.',
+         'Slim and solid; the handle is the affordance: drag it down, tap the backdrop or × to dismiss. Back pops a pushed drawer.',
+         'The sheet stops at 88% of the board, and its body scrolls. Actions sit in the foot, primary first.',
+         'Reduced motion: it appears and goes at once. High contrast: the sheet gets its edge and the handle goes white.'],
+  preview='DrawerOverlay', stage='board')
+
 e(id='field', tier='composite', name='FieldComposite', unity=['FieldComposite', 'VbSlider', 'VbSwitch', 'VbSegmented'], status='shipped',
   summary='One setting: a label, its input, and one line of what it does.',
   uses=['label', 'progress-input', 'toggle-input', 'choice-input', 'text'], blocks=['vb-field', 'vb-section'],
@@ -551,9 +562,9 @@ e(id='menu-actions', tier='view', name='MenuActionsSectionView', unity=['MenuAct
 
 e(id='squad-view', tier='view', name='SquadView', unity=['SquadView', 'SquadViewModel'], status='shipped',
   summary='Pick four: the squad slots on top, the roster grid below, details on tap, START RUN blocked until four.',
-  uses=['screen-layout', 'screen-header', 'grid-layout', 'squad-slot', 'operative-tile', 'operative-details', 'label'], blocks=['vb-squad-view'],
+  uses=['screen-layout', 'screen-header', 'grid-layout', 'squad-slot', 'operative-tile', 'operative-details', 'drawer', 'label'], blocks=['vb-squad-view'],
   csharp='var squad = new SquadView().Into(nav.Open("squad", MainMenu));\nsquad.Bind(new SquadViewModel { roster = roster, selected = picks, focus = focus, locked = locks });\nsquad.Picked += i => { focus = i; Rebind(); }; squad.Toggled += ToggleInSquad; squad.Start += StartRun; squad.Back += MainMenu;',
-  rules=["Selection is the game's: the view raises events, the game binds again.", 'START RUN says why it is blocked ("Pick 2 more").'],
+  rules=["Selection is the game's: the view raises events, the game binds again.", 'Details open in a bottom drawer over the roster (`DetailsDrawer`); dismissing it raises `Closed`.', 'START RUN says why it is blocked ("Pick 2 more").'],
   preview='SquadView', stage='board')
 
 e(id='settings-view', tier='view', name='SettingsView', unity=['SettingsView', 'SettingsViewModel'], status='shipped',
@@ -564,10 +575,10 @@ e(id='settings-view', tier='view', name='SettingsView', unity=['SettingsView', '
   preview='SettingsView', stage='board')
 
 e(id='pause-overlay', tier='view', name='PauseOverlayView', unity=['PauseOverlayView', 'PauseViewModel'], status='shipped',
-  summary='The run, frozen: a title, then a bottom sheet with wave, score, standing, active perks, resume and the exits.',
-  uses=['overlay', 'sheet-layout', 'stat-readout', 'badge', 'button', 'button-with-icon', 'text'], blocks=['vb-pause'],
+  summary='The run, frozen: a title, then a docked bottom drawer with wave, score, standing, active perks, resume and the exits.',
+  uses=['overlay', 'drawer', 'stat-readout', 'badge', 'button', 'button-with-icon', 'text'], blocks=['vb-pause'],
   csharp='var pause = new PauseOverlayView().Into(nav.Open("pause", Resume));\npause.Bind(new PauseViewModel { wave = run.Wave, score = run.Score, standing = alive, perks = build, seed = run.Seed });\npause.Resume += Resume; pause.Settings += Settings; pause.Perks += ActivePerks;\npause.Abandon += AbandonConfirm; pause.Exit += ExitConfirm;',
-  rules=['RESUME is the one primary. ABANDON is danger and confirms; EXIT is ghost, away from the thumb.', 'Back = Resume.', 'Active perks are plain badges in a slim, tappable panel.'],
+  rules=['RESUME is the one primary. ABANDON is danger and confirms; EXIT is ghost, away from the thumb.', 'Back = Resume, and so is dragging the drawer down (`Drawer.Dismissed`).', 'Active perks are plain badges in a slim, tappable panel.'],
   preview='PauseOverlayView', stage='board')
 
 e(id='confirm-view', tier='view', name='ConfirmDialogView', unity=['ConfirmDialogView'], status='shipped',
