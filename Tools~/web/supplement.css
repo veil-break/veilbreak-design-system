@@ -38,3 +38,6 @@ html:has(> body.vb-stage) { background: var(--ground); }
 .vb-root .vb-page__scroll > *, .vb-root .vb-page__scroll > .vb-u-scroll-view__content-container > *, .vb-root .vb-list > * { flex-shrink: 0; }
 .vb-root .vb-page__scroll { overflow-y: auto; }
 .vb-stack > :last-child { margin-bottom: 0; }
+/* The pause panel's centring layer spans the screen but only its panel takes input (pickingMode Ignore in Unity). */
+.vb-pause__center { pointer-events: none; }
+.vb-pause__center > * { pointer-events: auto; }

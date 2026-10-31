@@ -37,7 +37,12 @@ public sealed class ComponentTests {
  [Test] public void SquadDetailsOpenInADrawer(){var ops=Enumerable.Range(0,4).Select(i=>new OperativeView{name="Op"+i,code="O"+i}).ToArray();var v=new SquadView();bool closed=false;v.Closed+=()=>closed=true;
   v.Bind(new SquadViewModel{roster=ops,focus=-1});Assert.IsFalse(v.DetailsDrawer.IsOpen);v.Bind(new SquadViewModel{roster=ops,focus=2});Assert.IsTrue(v.DetailsDrawer.IsOpen);Assert.IsNotNull(v.DetailsDrawer.Q<OperativeDetails>());
   v.DetailsDrawer.Dismiss();Assert.IsTrue(closed);}
- [Test] public void DraggingThePauseDrawerAwayResumes(){var p=new PauseOverlayView().Bind(new PauseViewModel{wave=7,score=9420,standing=3});bool resumed=false;p.Resume+=()=>resumed=true;Assert.IsTrue(p.Drawer.IsOpen);Assert.IsFalse(p.Drawer.Backdrop);
-  Assert.IsNotNull(p.Drawer.Foot.Q<VbButton>("resume"));p.Drawer.Dismiss();Assert.IsTrue(resumed);p.Bind(new PauseViewModel());Assert.IsTrue(p.Drawer.IsOpen,"Binding again reopens it");}
+ [Test] public void PauseIsACentredOverlayWhoseBackSquareResumes(){var p=new PauseOverlayView().Bind(new PauseViewModel{wave=7,score=9420,standing=3});bool resumed=false;p.Resume+=()=>resumed=true;
+  Assert.IsNull(p.Q<DrawerOverlay>(),"The pause menu is not a drawer");Assert.IsTrue(p.ClassListContains("vb-view--headed"));Assert.AreEqual("WAVE 07",p.Header.Meta);
+  var back=p.Header.Q<IconButtonComposite>("back");Assert.IsNotNull(back,"Same back square as Settings and High Scores");Assert.AreEqual("Resume",back.tooltip);
+  Assert.IsTrue(p.Panel.parent.ClassListContains("vb-pause__center"));Assert.IsNotNull(p.Panel.Q<VbButton>("resume"));Assert.IsNotNull(p.Panel.Q<VbButton>("exit"));Assert.IsFalse(resumed);}
+ [Test] public void DrawersOpenAtHalfAndSnapByHeight(){var d=new DrawerOverlay().Open();Assert.AreEqual(DrawerSnap.Half,d.Snap);Assert.IsFalse(d.ClassListContains(DrawerOverlay.FullClass));
+  d.Snap=DrawerSnap.Full;Assert.IsTrue(d.ClassListContains(DrawerOverlay.FullClass));d.Close();d.Open();Assert.AreEqual(DrawerSnap.Half,d.Snap,"Every open starts at half");
+  Assert.IsNull(DrawerOverlay.SnapFor(150,844),"Below a quarter closes");Assert.AreEqual(DrawerSnap.Half,DrawerOverlay.SnapFor(500,844));Assert.AreEqual(DrawerSnap.Full,DrawerOverlay.SnapFor(700,844));}
 }
 }

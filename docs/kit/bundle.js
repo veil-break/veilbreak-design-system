@@ -1461,32 +1461,47 @@
   }
 
   /* ── Bottom drawer (Drawer.cs) ── */
-  /** DrawerOverlay: a slim sheet that slides up over a backdrop; grip and head drag it down, the backdrop and × dismiss it.
-      `open` (default true) slides it in and out; `backdrop: false` docks it inside a view; `onDismiss` fires on a player dismiss. */
+  /** DrawerOverlay: a slim sheet that slides up over a backdrop to half the screen. Drag the grip or head: up snaps to full screen,
+      down back to half or, below a quarter, closes it; a tap on the grip toggles half/full. The backdrop and × dismiss it too.
+      `open` (default true) slides it in and out; `snap` 'half' | 'full' is where it opens; `backdrop: false` docks it in a view. */
   function DrawerOverlay(p) {
     var want = p.open !== false, dismissible = p.dismissible !== false, hasBackdrop = p.backdrop !== false, closeButton = p.closeButton !== false && dismissible;
-    var sh = R.useState(false), shown = sh[0], setShown = sh[1], dr = R.useState(0), dy = dr[0], setDy = dr[1];
-    var sheet = R.useRef(null), from = R.useRef(-1), live = R.useState(want), mounted = live[0], setMounted = live[1];
+    var sh = R.useState(false), shown = sh[0], setShown = sh[1], sn = R.useState(p.snap || 'half'), snap = sn[0], setSnapState = sn[1];
+    var dh = R.useState(null), dragH = dh[0], setDragH = dh[1], live = R.useState(want), mounted = live[0], setMounted = live[1];
+    var root = R.useRef(null), sheet = R.useRef(null), d = R.useRef(null);
+    function setSnap(v) { setSnapState(v); if (p.onSnap) p.onSnap(v); }
     R.useEffect(function () {
-      if (want) { setMounted(true); var id = requestAnimationFrame(function () { requestAnimationFrame(function () { setShown(true); }); }); return function () { cancelAnimationFrame(id); }; }
-      setShown(false); var t = setTimeout(function () { setMounted(false); }, 240); return function () { clearTimeout(t); };
+      if (want) { setMounted(true); setSnapState(p.snap || 'half'); var id = requestAnimationFrame(function () { requestAnimationFrame(function () { setShown(true); }); }); return function () { cancelAnimationFrame(id); }; }
+      setShown(false); var t = setTimeout(function () { setMounted(false); setDragH(null); }, 240); return function () { clearTimeout(t); };
     }, [want]);
-    function dismiss() { if (!dismissible || !shown) return; setShown(false); setDy(0); if (p.onDismiss) p.onDismiss(); }
-    var drag = dismissible ? {
-      onPointerDown: function (e) { if (!shown) return; from.current = e.clientY; e.currentTarget.setPointerCapture(e.pointerId); },
-      onPointerMove: function (e) { if (from.current >= 0) setDy(Math.max(0, e.clientY - from.current)); },
-      onPointerUp: function () { if (from.current < 0) return; from.current = -1; var hgt = sheet.current ? sheet.current.offsetHeight : 400; if (dy > Math.max(80, hgt * 0.25)) dismiss(); else setDy(0); },
-      onPointerCancel: function () { from.current = -1; setDy(0); }
-    } : {};
+    function dismiss() { if (!dismissible || !shown) return false; setShown(false); if (p.onDismiss) p.onDismiss(); return true; }
+    function drag(isGrip) {
+      return {
+        onPointerDown: function (e) { if (!shown) return; d.current = { y: e.clientY, h: sheet.current.offsetHeight, moved: false, grip: isGrip }; e.currentTarget.setPointerCapture(e.pointerId); },
+        onPointerMove: function (e) {
+          var g = d.current; if (!g) return; var dy = e.clientY - g.y; if (Math.abs(dy) > 4) g.moved = true; if (!g.moved) return;
+          var full = root.current.offsetHeight; setDragH(Math.max(dismissible ? 0 : full / 2, Math.min(full, g.h - dy)));
+        },
+        onPointerUp: function () {
+          var g = d.current; d.current = null; if (!g) return;
+          if (!g.moved) { if (g.grip) setSnap(snap === 'full' ? 'half' : 'full'); setDragH(null); return; }
+          var full = root.current.offsetHeight, hgt = dragH == null ? g.h : dragH;
+          if (hgt < full * 0.25 && dismiss()) return;   // keep the let-go height while it slides away
+          setSnap(hgt < full * 0.75 ? 'half' : 'full'); setDragH(null);
+        },
+        onPointerCancel: function () { d.current = null; setDragH(null); }
+      };
+    }
     if (!mounted && !want) return null;
-    var dragging = dy > 0 && from.current >= 0, head = p.title || p.meta || closeButton, foot = [].concat(p.actions || []).filter(Boolean);
-    return h('div', { className: cx('vb-drawer', shown && 'vb-drawer--open', dragging && 'vb-drawer--dragging', !hasBackdrop && 'vb-drawer--inline', p.className), style: Object.assign({ pointerEvents: hasBackdrop && shown ? 'auto' : 'none' }, p.style) },
+    var dragging = dragH != null && !!d.current, head = p.title || p.meta || closeButton, foot = [].concat(p.actions || []).filter(Boolean);
+    return h('div', { ref: root, className: cx('vb-drawer', shown && 'vb-drawer--open', snap === 'full' && 'vb-drawer--full', dragging && 'vb-drawer--dragging', !hasBackdrop && 'vb-drawer--inline', p.className), style: Object.assign({ pointerEvents: hasBackdrop && shown ? 'auto' : 'none' }, p.style) },
       hasBackdrop ? h('div', { className: 'vb-drawer__backdrop', onPointerDown: dismiss }) : null,
-      h(Shape, { ref: sheet, className: 'vb-drawer__sheet', role: 'dialog', 'aria-modal': hasBackdrop || undefined, 'aria-label': p.title || p.label, style: Object.assign({ pointerEvents: 'auto' }, dy > 0 ? { translate: '0 ' + dy + 'px' } : null) },
-        h('div', Object.assign({ className: 'vb-drawer__grip', title: dismissible ? 'Drag down to close' : undefined, style: { touchAction: 'none', cursor: dismissible ? 'grab' : null } }, drag), h('div', { className: 'vb-drawer__handle' })),
-        head ? h('div', Object.assign({ className: 'vb-drawer__head', style: { touchAction: 'none' } }, drag),
+      h(Shape, { ref: sheet, className: 'vb-drawer__sheet', role: 'dialog', 'aria-modal': hasBackdrop || undefined, 'aria-label': p.title || p.label, style: Object.assign({ pointerEvents: 'auto' }, dragH != null ? { height: dragH } : null) },
+        h('div', Object.assign({ className: 'vb-drawer__grip', role: 'button', tabIndex: 0, 'aria-label': snap === 'full' ? 'Half screen' : 'Full screen', title: 'Drag up for full screen, down to close', style: { touchAction: 'none', cursor: 'grab' },
+          onKeyDown: function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSnap(snap === 'full' ? 'half' : 'full'); } } }, drag(true)), h('div', { className: 'vb-drawer__handle' })),
+        head ? h('div', Object.assign({ className: 'vb-drawer__head', style: { touchAction: 'none' } }, drag(false)),
           p.title ? L('vb-t-title vb-drawer__title', upper(p.title)) : h('div', { className: 'vb-drawer__title' }), p.meta ? L('vb-t-badge vb-drawer__meta', p.meta) : null,
-          closeButton ? h(IconButtonComposite, { icon: 'close', tooltip: 'Close', className: 'vb-drawer__close', onClick: dismiss }) : null) : null,
+          closeButton ? h('div', { onPointerDown: function (e) { e.stopPropagation(); } }, h(IconButtonComposite, { icon: 'close', tooltip: 'Close', className: 'vb-drawer__close', onClick: dismiss })) : null) : null,
         h('div', { className: 'vb-drawer__body vb-page__scroll', style: { overflowY: 'auto' } }, p.children),
         foot.length ? h('div', { className: 'vb-drawer__foot' }, foot) : null));
   }
@@ -1546,22 +1561,23 @@
         h(Fieldset, { key: 3, title: 'CAMERA' }, h(VbSegmented, { items: [{ label: 'FULL', sub: 'Parallax' }, { label: 'REDUCED', sub: 'No drift' }, { label: 'OFF', sub: 'Fixed' }], selected: v.camera, onChange: set('camera') }), h(VbSlider, { label: 'Sensitivity', value: v.sensitivity, onChange: set('sensitivity') }), L('vb-t-caption', 'Pinch to zoom, twist to turn, drag empty ground to pan, double-tap to reset.')),
         h(Fieldset, { key: 4, title: 'QUALITY' }, h(VbSegmented, { items: [{ label: 'LOW', sub: 'Stable 30 FPS' }, { label: 'STANDARD', sub: '60 FPS target' }], selected: v.quality, onChange: set('quality') }), L('vb-t-caption', 'Applies on the next wave. Telegraphs stay fully visible on both tiers.')))], true);
   }
-  /** PauseOverlayView: PAUSED, then the sheet (stats, perks, seed line, RESUME, SETTINGS, ABANDON) and EXIT. `view`: PauseViewModel. */
+  /** PauseOverlayView: a ScreenHeader whose back square resumes, then one overlay panel centred on the screen. `view`: PauseViewModel. */
   function PauseOverlayView(p) {
     var v = Object.assign({ wave: 1, score: 0, standing: 4, squadSize: 4, perks: [], seed: '', detail: '' }, p.view);
     var line = [v.seed ? 'Seed ' + v.seed : '', v.detail].filter(Boolean).join(' · ');
     return View('vb-pause', p, [
-      h('div', { key: 't', className: 'vb-pause__title' }, L('vb-t-display', 'PAUSED'), L('vb-t-caption', 'Combat, focus and world travel are frozen')),
-      h(DrawerOverlay, { key: 's', backdrop: false, closeButton: false, className: 'vb-pause__drawer', label: 'Paused run', onDismiss: p.onResume,
-        actions: [h(VbButton, { key: 'r', title: 'RESUME', variant: 'primary', sub: 'Returns to selected speed', icon: 'chevron', onClick: call(p.onResume) }),
-          h(VbButton, { key: 's', title: 'SETTINGS', icon: 'settings', className: 'vb-pause__button', onClick: call(p.onSettings) }),
-          h(VbButton, { key: 'a', title: 'ABANDON RUN', variant: 'danger', icon: 'remove', className: 'vb-pause__button', onClick: call(p.onAbandon) })] },
-        h('div', { className: 'vb-row vb-pause__stats' }, h(StatReadout, { label: 'WAVE', value: pad2(v.wave) }), h(StatReadout, { label: 'SCORE', value: num(v.score) }), h(StatReadout, { label: 'STANDING', value: String(v.standing), unit: '/' + v.squadSize })),
-        v.perks.length ? h(Shape, Object.assign({ className: 'vb-panel vb-frame--slim vb-frame--raised vb-pause__perks', title: 'Active perks' }, clickable(p.onPerks)),
-          h('div', { className: 'vb-row vb-row--between' }, h(LabelComponent, { text: 'Active perks · ' + v.perks.length }), h('div', { className: 'vb-row' }, L('vb-t-badge vb-t-ally', 'DETAILS'), h(VbIcon, { icon: 'chevron', size: 16, className: 'vb-pause__more' }))),
-          h('div', { className: 'vb-row vb-row--wrap vb-pause__chips' }, v.perks.map(function (k, i) { return h(BadgeComponent, { key: i, icon: k.icon, text: k.name + (k.stack > 1 ? ' ×' + k.stack : ''), className: 'vb-pause__chip' }); }))) : null,
-        line ? L('vb-t-caption', line) : null),
-      h(VbButton, { key: 'x', title: 'EXIT', variant: 'ghost', icon: 'back', className: 'vb-pause__exit', onClick: call(p.onExit) })]);
+      h(ScreenHeader, { key: 'h', title: 'PAUSED', meta: 'WAVE ' + pad2(v.wave), backLabel: 'Resume', onBack: p.onResume }),
+      h('div', { key: 'c', className: 'vb-pause__center' }, L('vb-t-caption vb-pause__caption', 'Combat, focus and world travel are frozen'),
+        h(Dialog, { className: 'vb-pause__panel' },
+          h('div', { className: 'vb-row vb-pause__stats' }, h(StatReadout, { label: 'WAVE', value: pad2(v.wave) }), h(StatReadout, { label: 'SCORE', value: num(v.score) }), h(StatReadout, { label: 'STANDING', value: String(v.standing), unit: '/' + v.squadSize })),
+          v.perks.length ? h(Shape, Object.assign({ className: 'vb-panel vb-frame--slim vb-frame--raised vb-pause__perks', title: 'Active perks' }, clickable(p.onPerks)),
+            h('div', { className: 'vb-row vb-row--between' }, h(LabelComponent, { text: 'Active perks · ' + v.perks.length }), h('div', { className: 'vb-row' }, L('vb-t-badge vb-t-ally', 'DETAILS'), h(VbIcon, { icon: 'chevron', size: 16, className: 'vb-pause__more' }))),
+            h('div', { className: 'vb-row vb-row--wrap vb-pause__chips' }, v.perks.map(function (k, i) { return h(BadgeComponent, { key: i, icon: k.icon, text: k.name + (k.stack > 1 ? ' ×' + k.stack : ''), className: 'vb-pause__chip' }); }))) : null,
+          line ? L('vb-t-caption', line) : null,
+          h(VbButton, { title: 'RESUME', variant: 'primary', sub: 'Returns to selected speed', icon: 'chevron', onClick: call(p.onResume) }),
+          h('div', { className: 'vb-row vb-pause__row' }, h(VbButton, { title: 'SETTINGS', icon: 'settings', className: 'vb-half vb-pause__button', onClick: call(p.onSettings) }),
+            h(VbButton, { title: 'ABANDON', variant: 'danger', icon: 'remove', className: 'vb-half vb-pause__button vb-pause__abandon', onClick: call(p.onAbandon) })),
+          h(VbButton, { title: 'EXIT TO MENU', variant: 'ghost', icon: 'back', className: 'vb-pause__exit', onClick: call(p.onExit) })))], true);
   }
   /** ConfirmDialogView: the question, its consequence, the destructive action and the way back. */
   function ConfirmDialogView(p) {

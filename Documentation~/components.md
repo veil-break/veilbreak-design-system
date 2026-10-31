@@ -669,11 +669,13 @@ Enter and Space.
 
 `DrawerOverlay` (`vb-drawer`): `__backdrop`, then `Sheet` (`__sheet`, slim solid, at most 88% of the board) with `__grip`
 (`__handle`), `__head` (`__title`, `__meta`, `__close`), `Body` (`__body`, a ScrollView and the content container) and
-`Foot` (`__foot`; `Actions(...)`). `Open()` slides it up (`vb-drawer--open`), `Close(done)` slides it down and hides it,
-`Dismiss()` does what the backdrop, × and a drag past a quarter of the sheet do: close, then raise `Dismissed`.
+`Foot` (`__foot`; `Actions(...)`). `Open(at)` slides it up to `DrawerSnap.Half` (half the screen, default) or `Full`
+(`vb-drawer--full`); `Snap` and `SnapChanged` follow the player, who drags the handle or head up to full, down to half or
+below a quarter to close, and taps the handle to toggle. `Close(done)` slides it down and hides it; `Dismiss()` does what
+the backdrop, × and a closing drag do: close, then raise `Dismissed`.
 `Dismissible`, `CloseButton` and `Backdrop` (off: docked inline, `vb-drawer--inline`, only the sheet takes input) are
 UXML attributes. `DrawerOverlay.Push(nav, title, closed)` puts one on a modal layer (`vb-modal--drawer`) that Back pops.
-`SquadView.DetailsDrawer` and `PauseOverlayView.Drawer` are drawers.
+`SquadView.DetailsDrawer` is one.
 
 ## Forms
 

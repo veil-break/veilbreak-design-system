@@ -2,13 +2,17 @@
 
 ## 0.3.1 — 2026-10-31
 
-- **Bottom drawer.** `DrawerOverlay` (`vb-drawer`): a slim solid sheet that slides up over a dimmed backdrop, with a grab
-  handle, optional caps title, meta and close square, a scrolling body and a foot of actions. Dismiss by tapping the
-  backdrop or ×, or dragging the handle down past a quarter of the sheet (`Dismissed`); `Close()` slides it away quietly.
-  `DrawerOverlay.Push(nav, title, closed)` puts one on a modal layer that Back pops; `Backdrop = false` docks it inside a
-  view. Reduced motion skips the slide; high contrast gives the sheet its edge. Web: `DrawerOverlay` with the same tree.
+- **Bottom drawer.** `DrawerOverlay` (`vb-drawer`): a slim solid sheet that slides up over a dimmed backdrop to **half the
+  screen**, with a grab handle, optional caps title, meta and close square, a scrolling body and a foot of actions. Drag
+  the handle or head: up snaps to the **full screen** (`DrawerSnap.Full`, `vb-drawer--full`), down back to half, and below
+  a quarter of the screen it closes (`Dismissed`); a tap on the handle toggles half and full. The backdrop and × dismiss
+  it too; `Close()` slides it away quietly. `DrawerOverlay.Push(nav, title, closed)` puts one on a modal layer that Back
+  pops; `Backdrop = false` docks it inside a view. Reduced motion skips the slide; high contrast gives the sheet its edge.
+  Web: `DrawerOverlay` with the same tree, `snap` and `onSnap`.
 - `SquadView` opens operative details in a drawer over the roster (`DetailsDrawer`; dismissing raises `Closed`).
-- `PauseOverlayView` docks its run sheet in a drawer (`Drawer`); dragging it down resumes, like Back.
+- `PauseOverlayView` is a headed view: a `ScreenHeader` whose back square (the same `IconButtonComposite` as Settings and
+  High Scores) resumes, then one overlay panel centred on the screen (`Panel`). SETTINGS and ABANDON share a row and EXIT
+  TO MENU is a ghost at the bottom of the panel.
 - Handbook: DrawerOverlayComposite entry (80 entries).
 
 ## 0.3.0 — 2026-10-31

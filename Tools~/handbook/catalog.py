@@ -249,13 +249,13 @@ e(id='icon-button', tier='composite', name='IconButtonComposite', unity=['IconBu
   preview='IconButtonComposite')
 
 e(id='drawer', tier='composite', name='DrawerOverlayComposite', unity=['DrawerOverlay'], status='shipped',
-  summary='A bottom drawer: a slim sheet that slides up over a dimmed backdrop, with a grab handle, a title, a scrolling body and actions.',
+  summary='A bottom drawer: a slim sheet that slides up over a dimmed backdrop to half the screen; drag its top up for full screen or down to close.',
   uses=['overlay', 'frame', 'icon-button', 'label', 'button'], blocks=['vb-drawer', 'vb-modal--drawer'],
-  csharp='var d = DrawerOverlay.Push(nav, "Aria", closed: Refocus);    // modal layer; Back pops it\nnew OperativeDetails().Into(d).Bind(view, slot, squadFull);   // children go to the body\nd.Actions(new VbButton("REMOVE FROM SQUAD", ButtonVariant.Danger, icon: "remove"));\nvar docked = new DrawerOverlay { Backdrop = false }.Into(view).Open();   // inline: only the sheet takes input\ndocked.Dismissed += Resume;   // backdrop tap, × or a drag past a quarter of the sheet',
+  csharp='var d = DrawerOverlay.Push(nav, "Aria", closed: Refocus);    // modal layer; Back pops it\nnew OperativeDetails().Into(d).Bind(view, slot, squadFull);   // children go to the body\nd.Actions(new VbButton("REMOVE FROM SQUAD", ButtonVariant.Danger, icon: "remove"));\nvar docked = new DrawerOverlay { Backdrop = false }.Into(view).Open();   // inline: only the sheet takes input\ndocked.Dismissed += Resume;   // backdrop tap, × or a drag below a quarter of the screen\nd.Snap = DrawerSnap.Full;   // or let the player drag up / tap the handle',
   uxml='<vb:DrawerOverlay title="Aria" meta="SLOT 1" backdrop="true" close-button="false" />',
   rules=['Use a drawer for detail and secondary decisions that keep the page behind them: operative details, the paused run, filters. A yes/no confirmation stays a ConfirmDialogView.',
-         'Slim and solid; the handle is the affordance: drag it down, tap the backdrop or × to dismiss. Back pops a pushed drawer.',
-         'The sheet stops at 88% of the board, and its body scrolls. Actions sit in the foot, primary first.',
+         'Opens at half the screen. Drag the handle or head: up snaps to full screen, down back to half, below a quarter closes it. A tap on the handle toggles half and full.',
+         'The backdrop and × dismiss it too; Back pops a pushed drawer. The body scrolls at either height; actions sit in the foot, primary first.',
          'Reduced motion: it appears and goes at once. High contrast: the sheet gets its edge and the handle goes white.'],
   preview='DrawerOverlay', stage='board')
 
@@ -575,10 +575,10 @@ e(id='settings-view', tier='view', name='SettingsView', unity=['SettingsView', '
   preview='SettingsView', stage='board')
 
 e(id='pause-overlay', tier='view', name='PauseOverlayView', unity=['PauseOverlayView', 'PauseViewModel'], status='shipped',
-  summary='The run, frozen: a title, then a docked bottom drawer with wave, score, standing, active perks, resume and the exits.',
-  uses=['overlay', 'drawer', 'stat-readout', 'badge', 'button', 'button-with-icon', 'text'], blocks=['vb-pause'],
-  csharp='var pause = new PauseOverlayView().Into(nav.Open("pause", Resume));\npause.Bind(new PauseViewModel { wave = run.Wave, score = run.Score, standing = alive, perks = build, seed = run.Seed });\npause.Resume += Resume; pause.Settings += Settings; pause.Perks += ActivePerks;\npause.Abandon += AbandonConfirm; pause.Exit += ExitConfirm;',
-  rules=['RESUME is the one primary. ABANDON is danger and confirms; EXIT is ghost, away from the thumb.', 'Back = Resume, and so is dragging the drawer down (`Drawer.Dismissed`).', 'Active perks are plain badges in a slim, tappable panel.'],
+  summary='The run, frozen: the screen header (its back square resumes), then one overlay panel centred on the screen with wave, score, standing, perks, resume and the exits.',
+  uses=['overlay', 'screen-header', 'icon-button', 'dialog', 'stat-readout', 'badge', 'button', 'button-with-icon', 'split-layout', 'text'], blocks=['vb-pause'],
+  csharp='var pause = new PauseOverlayView().Into(nav.Open("pause", Resume));\npause.Bind(new PauseViewModel { wave = run.Wave, score = run.Score, standing = alive, perks = build, seed = run.Seed });\npause.Resume += Resume;   // RESUME and the header\'s back square\npause.Settings += Settings; pause.Perks += ActivePerks;\npause.Abandon += AbandonConfirm; pause.Exit += ExitConfirm;',
+  rules=['The top back square is the same IconButtonComposite as Settings and High Scores; on this screen it resumes. Back = Resume.', 'RESUME is the one primary. ABANDON is danger and confirms; EXIT TO MENU is a ghost at the bottom of the panel.', 'The panel is centred in the screen under the header, not docked: pausing is a stop, not a detail.', 'Active perks are plain badges in a slim, tappable panel.'],
   preview='PauseOverlayView', stage='board')
 
 e(id='confirm-view', tier='view', name='ConfirmDialogView', unity=['ConfirmDialogView'], status='shipped',
