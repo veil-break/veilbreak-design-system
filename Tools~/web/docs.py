@@ -487,7 +487,7 @@ for name, cs, summary, provide, rules in [
      '`saved`, `headed` (the saved state shows in a ScreenHeader instead), `note` ({ icon, text }), `footer`, children (fieldsets).',
      ['Settings apply as they change; there is no Submit.', 'Destructive actions live in the footer as danger buttons and confirm.']),
     ('StackLayout', 'Runtime/Layouts/Layouts.cs', 'A column with one rhythm: the gap under every child but the last.', '`gap` (4, 8, 12 or 16), children.', ['Use it instead of per-element margins.']),
-    ('GridLayout', 'Runtime/Layouts/Layouts.cs', 'Cells 2, 3 or 4 across; `wrap` adds the row rhythm.', '`columns` (2, 3 or 4), `wrap`, children.', ['Pick the count the items fill; never a half-empty row.']),
+    ('VbGrid', 'Runtime/Layouts/Layouts.cs', 'Cells 2, 3 or 4 across; `wrap` adds the row rhythm.', '`columns` (2, 3 or 4), `wrap`, children.', ['Pick the count the items fill; never a half-empty row.']),
     ('ListLayout', 'Runtime/Layouts/Layouts.cs', 'Rows of one kind in a scroll, 6 between rows, with an empty-state line.', '`empty`, children (rows).', ['ScoreRow, PerkRow and RuleRow carry no margin of their own; put them in a list.']),
     ('BoardLayout', 'Runtime/Layouts/Layouts.cs', 'The battle board: top band, the world (the rest, at least half) and the bottom band.', '`top`, `world`, `bottom`.', ['Top and bottom never shrink.']),
     ('MainMenuView', 'Runtime/Views/MenuViews.cs', 'The title screen: offline badge and best, the mark, the menu actions and EXIT.',
@@ -652,7 +652,7 @@ export declare function FieldComposite(props: Base & { label?: string; help?: st
 export declare function Fieldset(props: Base & { title: string; children?: React.ReactNode }): React.ReactElement;
 export declare function FormComposite(props: Base & { saved?: string; headed?: boolean; note?: { icon?: KitIconName; text: string } | null; footer?: React.ReactNode; children?: React.ReactNode }): React.ReactElement;
 export declare function StackLayout(props: Base & { gap?: 4 | 8 | 12 | 16; children?: React.ReactNode }): React.ReactElement;
-export declare function GridLayout(props: Base & { columns?: 2 | 3 | 4; wrap?: boolean; children?: React.ReactNode }): React.ReactElement;
+export declare function VbGrid(props: Base & { columns?: 2 | 3 | 4; wrap?: boolean; children?: React.ReactNode }): React.ReactElement;
 export declare function ListLayout(props: Base & { empty?: string; children?: React.ReactNode }): React.ReactElement;
 export declare function BoardLayout(props: Base & { top?: React.ReactNode; world?: React.ReactNode; bottom?: React.ReactNode }): React.ReactElement;
 export interface CheckpointView { wave: number; score: number; standing?: number; squadSize?: number; perks?: number; seed?: string }

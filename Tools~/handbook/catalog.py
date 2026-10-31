@@ -489,13 +489,13 @@ e(id='row-layout', tier='layout', name='RowLayout', unity=['vb-row', 'vb-row--be
   csharp='var line = Ui.Box(score, "vb-row", "vb-row--between");\nUi.Text(line, "Wave clears", "vb-t-caption"); Ui.Text(line, "1,200", "vb-t-num");',
   preview=r'''render(col([h('div', { className: 'vb-row vb-row--between', style: { width: 340 } }, h('div', { className: 'vb-l vb-t-caption' }, 'Wave clears · 100 × wave'), h('div', { className: 'vb-l vb-t-num' }, '1,200')), h('div', { className: 'vb-row vb-row--wrap', style: { width: 340, gap: 6 } }, ['Sharpened Output ×2', 'Momentum Tax', 'Overclock', 'Barrier Mesh'].map(function (t, i) { return h(V.VbFrame, { key: i, className: 'vb-frame--slim vb-frame--raised', style: { flexDirection: 'row', alignItems: 'center', height: 22, padding: '0 8px' } }, h('div', { className: 'vb-l vb-t-badge' }, t.toUpperCase())); }))], 14, { alignItems: 'flex-start' }));''', height=130)
 
-e(id='grid-layout', tier='layout', name='GridLayout', unity=['GridLayout', 'Ui.Grid', 'vb-grid', 'vb-grid4', 'vb-grid2'], status='shipped',
+e(id='grid-layout', tier='layout', name='GridLayout', unity=['VbGrid', 'Ui.Grid', 'vb-grid', 'vb-grid4', 'vb-grid2'], status='shipped',
   summary='Cells 2, 3 or 4 across: slots, tiles and result cells take four, perk drafts three, chips and stats two.',
   blocks=['vb-grid', 'vb-grid4', 'vb-grid2'], doc='Layout classes (`Layout.uss`)',
   csharp='var slots = Ui.Grid(page, 4);\nvar roster = Ui.Grid(page, 4, wrap: true);\nvar draft = Ui.Grid(page, 3);\nvar perks = Ui.Box(page, "vb-grid2");   // two columns, end cells right-aligned',
-  uxml='<vb:GridLayout columns="3" wrap="true" />',
+  uxml='<vb:VbGrid columns="3" wrap="true" />',
   rules=['Pick the column count the items fill: 4 operatives → 4 across; never a half-empty row.', '`vb-compact` boards keep the count; cells shrink, text drops a line.', '`vb-grid4` / `vb-grid4--wrap` stay as the four-across shorthand.'],
-  preview='GridLayout')
+  preview='VbGrid')
 
 e(id='list-layout', tier='layout', name='ListLayout', unity=['ListLayout', 'Ui.List', 'vb-list'], status='shipped',
   summary='Rows of the same kind in a scroll: scores, perks, rules, queue entries. 6 between rows, and one empty-state line.',

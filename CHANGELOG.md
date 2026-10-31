@@ -15,8 +15,8 @@ published from `docs/` (GitHub Pages) and the web kit is a package of its own (`
 - **Composites.** `IconButtonComposite` (`Active`, `Quiet`); `ScreenHeader`'s back, `HudTop`'s pause, autoplay and speed and
   `OperativeDetails`' close are built from it. `FieldComposite`, `FormComposite` (fieldsets, note, footer, `Changed`,
   `SavedMeta`). `Ui.Section` titles are `LabelComponent`s.
-- **Layouts.** `StackLayout` (`vb-stack--{4|8|12|16}`), `ListLayout` (`vb-list`, `vb-list__empty`), `GridLayout`
-  (`vb-grid--{2|3|4}`), `BoardLayout` (`vb-board__top/__world/__bottom`); `Ui.Stack/List/Grid`.
+- **Layouts.** `StackLayout` (`vb-stack--{4|8|12|16}`), `ListLayout` (`vb-list`, `vb-list__empty`), `VbGrid`
+  (GridLayout; `vb-grid--{2|3|4}`; named so it never clashes with `UnityEngine.GridLayout`), `BoardLayout` (`vb-board__top/__world/__bottom`); `Ui.Stack/List/Grid`.
 - **Views** (`Runtime/Views`, `Views.uss`, view models in `Models.cs`): `MainMenuView`, `MenuActionsSectionView`,
   `SquadView`, `SettingsView`, `PauseOverlayView`, `ConfirmDialogView`, `GuideDialogView`, `PerkDraftView`, `ResultsView`,
   `HighScoresView`, `RouteChoiceView`, `MerchantScreenView`, `BattleHudView`. The arcade's screen styles moved into the
@@ -26,6 +26,8 @@ published from `docs/` (GitHub Pages) and the web kit is a package of its own (`
 - **Handbook.** All 79 entries are shipped; `build_handbook.py PACKAGE docs` writes the page, the web kit and the demo
   for GitHub Pages. The "Slim containers" switch is gone (slim is the default); there is a Web kit page.
 - `Tools~/metas.py` writes missing `.meta` files with stable GUIDs.
+- Fixed: `BattleHudSample` did not compile (`top.Add(screen){…}`); `VbSlider.SetValueWithoutNotify` now refreshes its
+  number and fill, so rebinding a visible slider shows the new value.
 - **Breaking:** `vb-score`, `vb-perk-row` and `vb-rule` no longer carry `margin-bottom: 6px`; put rows in a `ListLayout`
   (or a `vb-list`). `SquadSlot`'s parts are `vb-slot__body` and `vb-slot__role-text` (were `__row`, `__code`), and its
   filled/empty state is `TileState`. HUD squares carry `vb-icon-button` alongside their old classes.

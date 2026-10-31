@@ -48,7 +48,7 @@ on `:root`; game sheets use them too (`var(--vb-color-ally-text)`, `-unity-font-
 | Layout | `Layout.uss`: `vb-row`, `vb-grid4`, `vb-grid2`, `vb-half`, `vb-grow`; Navigator `vb-screen`/`vb-page` (`--headed` under a `ScreenHeader`, `__label`, `__caption`, `__footer`, `__scroll`); `vb-section`; `vb-dialog`; `vb-backdrop`; larger-text sizes |
 | Atoms (0.3.0) | `TextComponent` (`TypeStyle`, `TextTone`), `LabelComponent`, `BadgeComponent` (+ `Badge` presets), `TileComponent` (`TileState`; `OperativeTile` and `SquadSlot` extend it), `CardComponent`, `VbFrame.Kind` (`FrameKind.Slim`/`Chipped`) |
 | Forms | `IconButtonComposite`, `FieldComposite`, `FormComposite` |
-| Layouts | `StackLayout`, `GridLayout`, `ListLayout`, `BoardLayout`; `Ui.Stack/Grid/List/Frame` |
+| Layouts | `StackLayout`, `VbGrid` (GridLayout), `ListLayout`, `BoardLayout`; `Ui.Stack/Grid/List/Frame` |
 | Views | `MainMenuView`, `MenuActionsSectionView`, `SquadView`, `SettingsView`, `PauseOverlayView`, `ConfirmDialogView`, `GuideDialogView`, `PerkDraftView`, `ResultsView`, `HighScoresView`, `RouteChoiceView`, `MerchantScreenView`, `BattleHudView` (`Runtime/Views`, `Views.uss`) |
 | Composites | `Dialog` (confirmation sheets, pushed as a modal over the current page), `Backdrop` (cover-scaled artwork with a legibility shade), `HoloFrame`, `ScanLines`, `HoloPlatform`, `RevealCard`, `RuleRow`, `HudTop` (translucent band; hover shows the queue), `QueueList` (manual rows cancel on tap), `BossBar`, `OperativeCard`, `OperativeTile`, `SquadSlot`, `OperativeDetails`, `OperativeStats`, `SquadResult`, `PerkCard`, `PerkDetail`, `PerkChip`, `PerkRow`, `ScreenHeader`, `ScoreRow` |
 

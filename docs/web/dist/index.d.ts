@@ -132,7 +132,7 @@ export declare function FieldComposite(props: Base & { label?: string; help?: st
 export declare function Fieldset(props: Base & { title: string; children?: React.ReactNode }): React.ReactElement;
 export declare function FormComposite(props: Base & { saved?: string; headed?: boolean; note?: { icon?: KitIconName; text: string } | null; footer?: React.ReactNode; children?: React.ReactNode }): React.ReactElement;
 export declare function StackLayout(props: Base & { gap?: 4 | 8 | 12 | 16; children?: React.ReactNode }): React.ReactElement;
-export declare function GridLayout(props: Base & { columns?: 2 | 3 | 4; wrap?: boolean; children?: React.ReactNode }): React.ReactElement;
+export declare function VbGrid(props: Base & { columns?: 2 | 3 | 4; wrap?: boolean; children?: React.ReactNode }): React.ReactElement;
 export declare function ListLayout(props: Base & { empty?: string; children?: React.ReactNode }): React.ReactElement;
 export declare function BoardLayout(props: Base & { top?: React.ReactNode; world?: React.ReactNode; bottom?: React.ReactNode }): React.ReactElement;
 export interface CheckpointView { wave: number; score: number; standing?: number; squadSize?: number; perks?: number; seed?: string }

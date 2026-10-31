@@ -733,9 +733,9 @@ card('StackLayout', LY, 230, 'One rhythm for a column: 4, 8, 12 or 16 under ever
 function bar(t) { return h(V.VbFrame, { kind: 'slim', style: { width: 150, height: 30, padding: '6px 10px' } }, h('div', { className: 'vb-l vb-t-badge' }, t)); }
 render(row([4, 8, 16].map(function (g) { return cell(h(V.StackLayout, { gap: g }, bar('ONE'), bar('TWO'), bar('THREE')), 'gap ' + g, g); }), 14));
 """)
-card('GridLayout', LY, 300, 'Two, three and four across', r"""
+card('VbGrid', LY, 300, 'Two, three and four across', r"""
 function cellBox(t, k) { return h(V.VbFrame, { kind: 'slim', key: k, style: { height: 40, alignItems: 'center', justifyContent: 'center' } }, h('div', { className: 'vb-l vb-t-badge' }, t)); }
-render(col([2, 3, 4].map(function (n) { return h(V.GridLayout, { key: n, columns: n, wrap: true, style: { width: 358 } }, Array.apply(null, Array(n)).map(function (_, i) { return cellBox(n + ' · ' + (i + 1), i); })); }), 4, { alignItems: 'flex-start' }));
+render(col([2, 3, 4].map(function (n) { return h(V.VbGrid, { key: n, columns: n, wrap: true, style: { width: 358 } }, Array.apply(null, Array(n)).map(function (_, i) { return cellBox(n + ' · ' + (i + 1), i); })); }), 4, { alignItems: 'flex-start' }));
 """)
 card('ListLayout', LY, 280, 'Rows of one kind, 6 between them, and the empty line', r"""
 render(row([h(V.ListLayout, { style: { width: 330, height: 220 }, key: 0 }, [1, 2, 3].map(function (r) { return h(V.ScoreRow, { key: r, view: { rank: r, score: [18240, 14120, 9420][r - 1], wave: [12, 10, 7][r - 1], bosses: [2, 2, 1][r - 1], squad: ['AR', 'SO', 'AE', 'NY'], current: r === 2 } }); })),

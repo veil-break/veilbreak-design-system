@@ -361,4 +361,6 @@ page = (shell.replace('/*@@DATA@@*/', json.dumps(DATA, ensure_ascii=False).repla
         .replace('/*@@APP@@*/', (HERE / 'app.js').read_text()))
 (OUT / 'index.html').write_text(page)
 shutil.rmtree(tmp, ignore_errors=True)
+# The site lives inside the Unity package: give its files .meta files (stable GUIDs) so Unity imports it quietly.
+subprocess.run([sys.executable, str(PKG / 'Tools~' / 'metas.py')], check=True, stdout=subprocess.DEVNULL)
 print(f"{len(ENTRIES)} entries · {len(TOKENS)} tokens · {len(ICONS)} icons · {len(RULES)} USS rules · {len(PREVIEW_JS)} previews → {OUT}")

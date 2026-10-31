@@ -800,7 +800,7 @@ const window = new Proxy({ React, ReactDOM, Veilbreak: {} }, { get: (t, k) => (k
     return h('div', { className: cx('vb-list-scroll vb-page__scroll', p.className), style: Object.assign({ overflowY: 'auto' }, p.style) },
       p.empty && !kids.length ? L('vb-t-caption vb-list__empty', p.empty) : null, h('div', { className: 'vb-list' }, kids));
   }
-  function GridLayout(p) { var n = p.columns <= 2 ? 2 : p.columns >= 4 || p.columns == null ? 4 : 3; return h('div', { className: cx('vb-grid', 'vb-grid--' + n, p.wrap && 'vb-grid--wrap', p.className), style: p.style }, p.children); }
+  function VbGrid(p) { var n = p.columns <= 2 ? 2 : p.columns >= 4 || p.columns == null ? 4 : 3; return h('div', { className: cx('vb-grid', 'vb-grid--' + n, p.wrap && 'vb-grid--wrap', p.className), style: p.style }, p.children); }
   function BoardLayout(p) {
     return h('div', { className: cx('vb-board', p.className), style: p.style },
       h('div', { className: 'vb-board__top' }, p.top), h('div', { className: 'vb-board__world' }, p.world), h('div', { className: 'vb-board__bottom' }, p.bottom));
@@ -958,7 +958,7 @@ const window = new Proxy({ React, ReactDOM, Veilbreak: {} }, { get: (t, k) => (k
     Dialog: Dialog, Backdrop: Backdrop, ScanLines: ScanLines, HoloFrame: HoloFrame, HoloPlatform: HoloPlatform, RevealCard: RevealCard, RuleRow: RuleRow,
     WorldHealthBar: WorldHealthBar, CombatText: CombatText, WorldLabel: WorldLabel, WorldMarker: WorldMarker, OffscreenIndicator: OffscreenIndicator, EdgeWarning: EdgeWarning,
     TextComponent: TextComponent, LabelComponent: LabelComponent, BadgeComponent: BadgeComponent, IconButtonComposite: IconButtonComposite, TileComponent: TileComponent, CardComponent: CardComponent,
-    FieldComposite: FieldComposite, Fieldset: Fieldset, FormComposite: FormComposite, StackLayout: StackLayout, GridLayout: GridLayout, ListLayout: ListLayout, BoardLayout: BoardLayout,
+    FieldComposite: FieldComposite, Fieldset: Fieldset, FormComposite: FormComposite, StackLayout: StackLayout, VbGrid: VbGrid, ListLayout: ListLayout, BoardLayout: BoardLayout,
     MainMenuView: MainMenuView, MenuActionsSectionView: MenuActionsSectionView, SquadView: SquadView, SettingsView: SettingsView, PauseOverlayView: PauseOverlayView, ConfirmDialogView: ConfirmDialogView,
     GuideDialogView: GuideDialogView, PerkDraftView: PerkDraftView, ResultsView: ResultsView, HighScoresView: HighScoresView, RouteChoiceView: RouteChoiceView, MerchantScreenView: MerchantScreenView, BattleHudView: BattleHudView,
     VbShape: Shape, format: { compact: compact, number: num, seconds: seconds, kebab: kebab }
@@ -1024,7 +1024,7 @@ export const FieldComposite = Veilbreak.FieldComposite;
 export const Fieldset = Veilbreak.Fieldset;
 export const FormComposite = Veilbreak.FormComposite;
 export const StackLayout = Veilbreak.StackLayout;
-export const GridLayout = Veilbreak.GridLayout;
+export const VbGrid = Veilbreak.VbGrid;
 export const ListLayout = Veilbreak.ListLayout;
 export const BoardLayout = Veilbreak.BoardLayout;
 export const MainMenuView = Veilbreak.MainMenuView;

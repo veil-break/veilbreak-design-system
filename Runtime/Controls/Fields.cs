@@ -29,6 +29,7 @@ namespace Veilbreak.Gui {
   AddToClassList(VbClassName);readout=new Label{pickingMode=PickingMode.Ignore}.Classes(VbClassName+"__value").Into(this);
   this.RegisterValueChangedCallback(_=>Refresh());RegisterCallback<GeometryChangedEvent>(_=>Refresh());SetValueWithoutNotify(value);Refresh();
  }
+ public override void SetValueWithoutNotify(float newValue){base.SetValueWithoutNotify(newValue);if(readout!=null)Refresh();}
  void Refresh(){
   float t=Mathf.InverseLerp(lowValue,highValue,value);readout.text=Mathf.RoundToInt(t*100).ToString();
   if(fill==null){var tracker=this.Q(className:"unity-base-slider__tracker");if(tracker==null)return;fill=Ui.Box(tracker,VbClassName+"__fill");}

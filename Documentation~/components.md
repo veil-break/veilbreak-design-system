@@ -674,7 +674,7 @@ header's meta, or on the form's own `__status` line without a header.
 
 ## Layouts
 
-`StackLayout(gap)` (`vb-stack vb-stack--{4|8|12|16}`; marks its last child `vb-stack__last`), `GridLayout(columns, wrap)`
+`StackLayout(gap)` (`vb-stack vb-stack--{4|8|12|16}`; marks its last child `vb-stack__last`), `VbGrid(columns, wrap)` (the GridLayout entry; not `UnityEngine.GridLayout`)
 (`vb-grid vb-grid--{2|3|4}`, `--wrap`), `ListLayout(empty)` (a `ScrollView` whose content is `vb-list`, 6 between rows,
 with a `vb-list__empty` line) and `BoardLayout` (`Top`, `World`, `Bottom`). `Ui.Stack`, `Ui.Grid` and `Ui.List` build them.
 

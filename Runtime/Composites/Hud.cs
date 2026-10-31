@@ -18,7 +18,7 @@ namespace Veilbreak.Gui {
   auto=new IconButtonComposite("automation","Autoplay",()=>AutoClicked?.Invoke()){Quiet=true,name="auto"}.Classes(ClassName+"__auto").Into(row);
   var stats=Ui.Box(row,ClassName+"__stats");var w=Ui.Box(stats,ClassName+"__stat");waveWord=Ui.Text(w,"WAVE",ClassName+"__key");wave=new GlitchText("01").Classes(ClassName+"__wave").Into(w);wave.name="wave-number";
   var s=Ui.Box(stats,ClassName+"__stat");Ui.Text(s,"SCORE",ClassName+"__key");score=Ui.Text(s,"0",ClassName+"__score");
-  speed=new IconButtonComposite("","Toggle simulation speed",()=>SpeedClicked?.Invoke()){Text="1×",name="speed"}.Classes(ClassName+"__speed").Into(row);speed.Q<Label>(className:IconButtonComposite.ClassName+"__text").AddToClassList(ClassName+"__auto-state");
+  speed=new IconButtonComposite("","Toggle simulation speed",()=>SpeedClicked?.Invoke()){Text="1×",name="speed"}.Classes(ClassName+"__speed").Into(row);speed.TextLabel.AddToClassList(ClassName+"__auto-state");
   resources=VbShape.Attach(Ui.Box(this,ClassName+"__resources"));resources.focusable=true;resources.pickingMode=PickingMode.Position;
   var resourceRow=Ui.Box(resources,ClassName+"__resource-row");power=new PowerStrip().Into(resourceRow);credits=new CreditsChip().Into(resourceRow);focus=new FocusMeter().Into(resources);
   Queue=Popover.Attach(resources,()=>view!=null&&view.queue.Length>0?new QueueList().Bind(view.queue,view.queueTitle,view.queueHint,q=>QueueCancel?.Invoke(q)):null);
