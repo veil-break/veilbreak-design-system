@@ -75,7 +75,6 @@
 .vb-draft__scroll { flex-grow: 1; }
 .vb-draft__cards { flex-direction: row; justify-content: space-between; margin-top: 6px; margin-bottom: 14px; }
 .vb-draft__cards > .vb-perk-card { width: 112px; height: auto; min-height: 236px; }
-.vb-draft__cards .vb-perk-card__art, .vb-draft__cards .vb-perk-card__body { flex-shrink: 0; }
 .vb-compact .vb-draft__cards > .vb-perk-card { width: auto; flex-grow: 1; flex-basis: 0; margin: 0 3px; }
 .vb-draft__detail { margin-bottom: 12px; }
 .vb-draft__squad { padding: 9px 12px; margin-top: 12px; margin-bottom: 12px; }

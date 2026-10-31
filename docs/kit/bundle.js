@@ -1,4 +1,4 @@
-/* @ds-bundle: {"format":4,"namespace":"Veilbreak","components":[{"name":"GlitchText"},{"name":"CreditsChip"},{"name":"RouteChoice"},{"name":"MerchantScreen"},{"name":"VbFrame"},{"name":"VbIcon"},{"name":"VbMark"},{"name":"VbButton"},{"name":"StatReadout"},{"name":"StatusChip"},{"name":"VbSwitch"},{"name":"VbSlider"},{"name":"VbSegmented"},{"name":"VbMeter"},{"name":"HealthBar"},{"name":"PowerStrip"},{"name":"FocusMeter"},{"name":"SkillButton"},{"name":"QueueChip"},{"name":"HudTop"},{"name":"QueueList"},{"name":"BossBar"},{"name":"ScreenHeader"},{"name":"ScoreRow"},{"name":"OperativeCard"},{"name":"OperativeTile"},{"name":"SquadSlot"},{"name":"OperativeDetails"},{"name":"OperativeStats"},{"name":"SquadResult"},{"name":"PerkCard"},{"name":"PerkDetail"},{"name":"PerkChip"},{"name":"PerkRow"},{"name":"Dialog"},{"name":"Backdrop"},{"name":"ScanLines"},{"name":"HoloFrame"},{"name":"HoloPlatform"},{"name":"RevealCard"},{"name":"RuleRow"},{"name":"WorldHealthBar"},{"name":"CombatText"},{"name":"WorldLabel"},{"name":"WorldMarker"},{"name":"OffscreenIndicator"},{"name":"EdgeWarning"},{"name":"TextComponent"},{"name":"LabelComponent"},{"name":"BadgeComponent"},{"name":"IconButtonComposite"},{"name":"TileComponent"},{"name":"CardComponent"},{"name":"DrawerOverlay"},{"name":"FieldComposite"},{"name":"Fieldset"},{"name":"FormComposite"},{"name":"StackLayout"},{"name":"VbGrid"},{"name":"ListLayout"},{"name":"BoardLayout"},{"name":"MainMenuView"},{"name":"MenuActionsSectionView"},{"name":"SquadView"},{"name":"SettingsView"},{"name":"PauseOverlayView"},{"name":"ConfirmDialogView"},{"name":"GuideDialogView"},{"name":"PerkDraftView"},{"name":"ResultsView"},{"name":"HighScoresView"},{"name":"RouteChoiceView"},{"name":"MerchantScreenView"},{"name":"BattleHudView"},{"name":"ConnectionPill"},{"name":"ConnectionBanner"},{"name":"CombatFeed"},{"name":"Minimap"},{"name":"NavBar"},{"name":"MatchHeader"},{"name":"ItemCell"},{"name":"RailButton"},{"name":"Timeline"},{"name":"FighterPortrait"},{"name":"Telegraph"}]} */
+/* @ds-bundle: {"format":4,"namespace":"Veilbreak","components":[{"name":"GlitchText"},{"name":"CreditsChip"},{"name":"RouteChoice"},{"name":"MerchantScreen"},{"name":"VbFrame"},{"name":"VbIcon"},{"name":"VbMark"},{"name":"VbButton"},{"name":"StatReadout"},{"name":"StatusChip"},{"name":"VbSwitch"},{"name":"VbSlider"},{"name":"VbSegmented"},{"name":"VbMeter"},{"name":"HealthBar"},{"name":"PowerStrip"},{"name":"FocusMeter"},{"name":"SkillButton"},{"name":"QueueChip"},{"name":"HudTop"},{"name":"QueueList"},{"name":"BossBar"},{"name":"ScreenHeader"},{"name":"ScoreRow"},{"name":"OperativeCard"},{"name":"OperativeTile"},{"name":"SquadSlot"},{"name":"OperativeDetails"},{"name":"OperativeStats"},{"name":"SquadResult"},{"name":"PerkCard"},{"name":"PerkDetail"},{"name":"PerkChip"},{"name":"PerkRow"},{"name":"Dialog"},{"name":"Backdrop"},{"name":"ScanLines"},{"name":"HoloFrame"},{"name":"HoloPlatform"},{"name":"RevealCard"},{"name":"RuleRow"},{"name":"WorldHealthBar"},{"name":"CombatText"},{"name":"WorldLabel"},{"name":"WorldMarker"},{"name":"OffscreenIndicator"},{"name":"EdgeWarning"},{"name":"ProgressBar"},{"name":"ListRow"},{"name":"TextComponent"},{"name":"LabelComponent"},{"name":"BadgeComponent"},{"name":"IconButtonComposite"},{"name":"TileComponent"},{"name":"CardComponent"},{"name":"DrawerOverlay"},{"name":"FieldComposite"},{"name":"Fieldset"},{"name":"FormComposite"},{"name":"StackLayout"},{"name":"VbGrid"},{"name":"ListLayout"},{"name":"BoardLayout"},{"name":"MainMenuView"},{"name":"MenuActionsSectionView"},{"name":"SquadView"},{"name":"SettingsView"},{"name":"PauseOverlayView"},{"name":"ConfirmDialogView"},{"name":"GuideDialogView"},{"name":"PerkDraftView"},{"name":"ResultsView"},{"name":"HighScoresView"},{"name":"RouteChoiceView"},{"name":"MerchantScreenView"},{"name":"BattleHudView"},{"name":"ConnectionPill"},{"name":"ConnectionBanner"},{"name":"CombatFeed"},{"name":"Minimap"},{"name":"NavBar"},{"name":"MatchHeader"},{"name":"ItemCell"},{"name":"RailButton"},{"name":"Timeline"},{"name":"FighterPortrait"},{"name":"Telegraph"}]} */
 (function () {
   'use strict';
   var R = window.React;
@@ -872,7 +872,7 @@
       L('vb-stat__label', p.label),
       h('div', { className: 'vb-stat__row' }, L('vb-stat__value', p.value), L('vb-stat__unit', p.unit || '', show(!!p.unit)),
         L(cx('vb-stat__delta', d && rise && 'vb-stat__delta--up', d && fall && !rise && 'vb-stat__delta--down'), d, show(d.length > 0))),
-      h('div', { className: 'vb-stat__bar', style: show(bar >= 0) }, h('div', { className: 'vb-stat__fill', style: { width: pct(bar) } })));
+      bar >= 0 ? h(ProgressBar, { value: bar, className: 'vb-stat__bar' }) : null);
   }
 
   var STATUS_ICON = { exposed: 'exposed', silenced: 'silence', rooted: 'root', slowed: 'slow', interrupted: 'warning', barrier: 'barrier' };
@@ -1192,21 +1192,31 @@
   function tier(p) { return st('vb-perk', p.tier); }
   function Crop(url) { return h('div', { className: 'vb-crop', style: Object.assign({}, img(url), show(!!url)) }); }
 
-  function PerkCard(p) {
-    var v = perk(p.view), sel = !!p.selected, art = !!v.art;
-    return h(Shape, Object.assign({ className: cx('vb-perk-card', tier(v), sel && 'vb-perk-card--selected', p.className), style: p.style }, clickable(p.onPick)),
-      h('div', { className: cx('vb-perk-card__art', 'vb-perk-art', art && 'vb-perk-art--portrait') }, Crop(v.art),
-        h('div', { className: 'vb-perk-card__shade' }),
-        h(Shape, { className: 'vb-perk-card__badge' }, h(VbIcon, { icon: v.icon, size: art ? 16 : 32, className: 'vb-perk-card__glyph' })),
-        v.tier === 'epic' ? h('div', { className: 'vb-perk-card__shimmer' }) : null, L('vb-perk-card__tag', upper(v.tag)), h(VbIcon, { icon: 'check', size: 14, className: 'vb-perk-card__check', style: show(sel) })),
-      h('div', { className: 'vb-perk-card__rule' }),
-      h('div', { className: 'vb-perk-card__body' }, L('vb-perk-card__category', upper(v.category)), L('vb-perk-card__name', upper(v.name)), L('vb-perk-card__effect', v.effect),
-        h('div', { className: 'vb-perk-card__foot' },
-          h('div', { className: 'vb-perk-card__pips' }, Array.apply(null, Array(v.max)).map(function (_, i) {
-            return h('div', { key: i, className: cx('vb-perk-card__pip', i < v.stack ? 'vb-perk-card__pip--owned' : i === v.stack ? 'vb-perk-card__pip--next' : null) });
-          })),
-          L('vb-perk-card__next', v.next), L('vb-perk-card__stacks', stacks(v, true)))));
+  /** ProgressBar (Progress.cs): continuous (`value` 0–1) or `segments` levels filled to `value`; `next` outlines the level a pick adds. */
+  function ProgressBar(p) {
+    var n = p.segments || 0, v = p.value || 0, filled = Math.round(v);
+    return h('div', { className: cx('vb-progress', st('vb-progress', p.tone || 'ally'), n > 0 && 'vb-progress--segmented', p.className), style: p.style, role: 'progressbar', 'aria-valuenow': n ? filled : Math.round(clamp01(v) * 100), 'aria-valuemax': n || 100 },
+      n > 0 ? Array.apply(null, Array(n)).map(function (_, i) { return h('div', { key: i, className: cx('vb-progress__cell', i < filled && 'vb-progress__cell--on', p.next && i === filled && 'vb-progress__cell--next') }); })
+        : h('div', { className: 'vb-progress__fill', style: { width: pct(v) } }));
   }
+  /** ListRow (Progress.cs): glyph, caps title, caption, optional `bar` (ProgressBar props), trailing `value` and `action`. */
+  function ListRow(p) {
+    return h(Shape, Object.assign({ className: cx('vb-list-row', p.selected && 'vb-list-row--selected', p.className), style: p.style }, p.onPick ? clickable(p.onPick) : null),
+      p.icon ? h(VbIcon, { icon: p.icon, size: 20, className: 'vb-list-row__icon' }) : null,
+      h('div', { className: 'vb-list-row__text' }, L('vb-list-row__title', upper(p.title)), p.caption ? L('vb-t-caption vb-list-row__caption', p.caption) : null,
+        p.bar ? h(ProgressBar, Object.assign({ className: 'vb-list-row__bar' }, p.bar)) : null),
+      p.value ? L('vb-list-row__value', p.value) : null, p.action ? h('div', { className: 'vb-list-row__trail' }, p.action) : null);
+  }
+  /** PerkCard, minimal: tier word, glyph, name, effect, its levels as a segmented ProgressBar and the value after the pick. */
+  function PerkCard(p) {
+    var v = perk(p.view);
+    return h(Shape, Object.assign({ className: cx('vb-perk-card', tier(v), p.selected && 'vb-perk-card--selected', p.className), style: p.style, title: v.name + ' · ' + stacks(v, true) }, clickable(p.onPick)),
+      L('vb-t-badge vb-perk-card__tag', upper(v.tag)), h(VbIcon, { icon: v.icon, size: 28, className: 'vb-perk-card__glyph' }),
+      L('vb-perk-card__name', upper(v.name)), L('vb-t-caption vb-perk-card__effect', v.effect), h('div', { className: 'vb-grow' }),
+      v.max > 0 ? h(ProgressBar, { segments: v.max, value: v.stack, next: v.stack < v.max, className: 'vb-perk-card__levels' }) : null,
+      L('vb-perk-card__next', v.next));
+  }
+
 
   function PerkDetail(p) {
     var v = perk(p.view), draft = !!p.draft, art = !!v.art;
@@ -1376,17 +1386,22 @@
     return h('div', { className: cx('vb-route', p.className), style: p.style }, L('vb-t-label vb-route__eyebrow', 'CROSSROADS · WAVE ' + pad2(v.wave)), h(GlitchText, { text: 'CHOOSE YOUR ROAD', className: 'vb-t-display vb-route__title' }), L('vb-t-caption', 'Two roads. One choice. Your build carries forward.'),
       h('div', { className: 'vb-route__roads' }, [v.left || {}, v.right || {}].map(function (road, side) { return h(Shape, Object.assign({ key: side, className: 'vb-route__sign vb-route__sign--' + (road.kind || 'combat') }, clickable(function () { if (!locked.current && p.onChoose) { locked.current = true; p.onChoose(side); } })), L('vb-t-badge vb-route__direction', side ? 'RIGHT ROAD →' : '← LEFT ROAD'), h(VbIcon, { icon: road.icon || 'battle', size: 36, className: 'vb-route__glyph' }), L('vb-route__kind', upper(road.title)), L('vb-route__hint', road.hint), h('div', { className: 'vb-grow' }), L('vb-route__confirm', 'TAKE THIS ROAD')); })));
   }
+  /** MerchantScreen, minimal: one list of ListRows (rare finds, stack sales, health trades) and LEAVE MARKET. */
   function MerchantScreen(p) {
     var v = Object.assign({ credits: 0, offers: [], stacks: [], health: [] }, p.view);
-    function heading(t) { return L('vb-t-label vb-merchant__section', t); }
+    function section(t) { return h(LabelComponent, { key: 's' + t, text: t, className: 'vb-merchant__section' }); }
+    function bar(k) { return k.max > 0 ? { segments: k.max, value: k.stack } : null; }
     return h('div', { className: cx('vb-merchant', p.className), style: p.style },
-      h('div', { className: 'vb-merchant__head' }, h(GlitchText, { text: 'NIGHT MARKET', className: 'vb-t-display vb-merchant__title' }), h(CreditsChip, { credits: v.credits })),
-      h('div', { className: 'vb-merchant__scroll', style: { overflowY: 'auto', flexShrink: 1 } }, L('vb-t-caption', 'Trade what you carry. Buy what changes the next fight.'), heading('RARE FINDS · ONE OF EACH'),
-        h('div', { className: 'vb-merchant__offers' }, v.offers.map(function (o, i) { return h('div', { key: i, className: 'vb-merchant__offer' }, h(PerkCard, { view: o.perk }), h(VbButton, { title: o.taken ? 'SOLD' : 'BUY · ' + o.price, sub: o.price + ' credits', blocked: o.taken ? 'Sold' : v.credits < o.price ? 'Need ' + (o.price - v.credits) : o.blocked, className: 'vb-merchant__buy', onClick: function () { if (p.onBuy) p.onBuy(i); } })); })),
-        heading('SELL STACKS'), v.stacks.length ? v.stacks.map(function (s, i) { return h(Shape, { key: i, className: 'vb-merchant__exchange' }, h('div', { className: 'vb-merchant__info' }, L('vb-t-label', upper(s.perk.name) + ' ×' + s.perk.stack), L('vb-t-caption', 'Sell one stack · ' + s.perk.now)), h(VbButton, { title: 'SELL +' + s.payout, className: 'vb-merchant__sell', onClick: function () { if (p.onSellPerk) p.onSellPerk(s.perk.id); } })); }) : L('vb-t-caption', 'No lasting stacks to sell.'),
-        heading('TRADE HEALTH'), L('vb-t-caption', 'Pay 25% of max HP per trade. At least 1 HP must remain.'), v.health.map(function (hp) { return h(Shape, { key: hp.actor, className: 'vb-merchant__exchange' }, h('div', { className: 'vb-merchant__info' }, L('vb-t-label', upper(hp.name)), L('vb-t-caption', hp.hp + ' / ' + hp.maxHp + ' HP → ' + Math.max(0, hp.hp - hp.cost) + ' HP'), h(HealthBar, { hp: hp.hp, max: hp.maxHp })), h(VbButton, { title: 'SELL +' + hp.payout, variant: 'danger', className: 'vb-merchant__sell', blocked: hp.blocked, onClick: function () { if (p.onSellHealth) p.onSellHealth(hp.actor); } })); })),
-      h(VbButton, { title: 'LEAVE MARKET', variant: 'primary', sub: 'Keep your credits · continue to the next wave', icon: 'chevron', className: 'vb-merchant__leave', onClick: p.onLeave }));
+      h('div', { className: 'vb-merchant__head' }, L('vb-t-title', 'NIGHT MARKET'), h(CreditsChip, { credits: v.credits })),
+      h(ListLayout, { className: 'vb-merchant__scroll' },
+        section('Rare finds'), v.offers.map(function (o, i) { return h(ListRow, { key: 'o' + i, className: tier(o.perk), title: o.perk.name, caption: o.perk.effect, icon: o.perk.icon, bar: bar(o.perk),
+          action: h(VbButton, { title: o.taken ? 'SOLD' : 'BUY ' + o.price, blocked: o.taken ? 'Sold' : v.credits < o.price ? 'Need ' + (o.price - v.credits) : o.blocked, className: 'vb-merchant__buy', onClick: function () { call(p.onBuy)(i); } }) }); }),
+        section('Sell stacks'), v.stacks.length ? v.stacks.map(function (k, i) { return h(ListRow, { key: 'k' + i, title: k.perk.name, caption: k.perk.now, icon: k.perk.icon, bar: bar(k.perk), action: h(VbButton, { title: '+' + k.payout, className: 'vb-merchant__sell', onClick: function () { call(p.onSellPerk)(k.perk.id); } }) }); }) : h('div', { key: 'e', className: 'vb-l vb-t-caption vb-list__empty' }, 'Nothing to sell yet.'),
+        section('Trade health · 25% max HP'), v.health.map(function (x) { return h(ListRow, { key: 'h' + x.actor, title: x.name, caption: x.hp + ' → ' + Math.max(0, x.hp - x.cost) + ' HP', icon: 'health', bar: { value: x.hp / Math.max(1, x.maxHp) },
+          action: h(VbButton, { title: '+' + x.payout, variant: 'danger', blocked: x.blocked, className: 'vb-merchant__sell', onClick: function () { call(p.onSellHealth)(x.actor); } }) }); })),
+      h(VbButton, { title: 'LEAVE MARKET', variant: 'primary', icon: 'chevron', className: 'vb-merchant__leave', onClick: p.onLeave }));
   }
+
 
   /* ── Text, label, badge, icon button, card (Text.cs, Badge.cs, IconButton.cs, Card.cs) ── */
   /** TextComponent: one type style (display | title | label | badge | body | caption | num) and a tone (ally | enemy | power | muted). */
@@ -1659,7 +1674,7 @@
     OperativeStats: OperativeStats, SquadResult: SquadResult, PerkCard: PerkCard, PerkDetail: PerkDetail, PerkChip: PerkChip, PerkRow: PerkRow,
     Dialog: Dialog, Backdrop: Backdrop, ScanLines: ScanLines, HoloFrame: HoloFrame, HoloPlatform: HoloPlatform, RevealCard: RevealCard, RuleRow: RuleRow,
     WorldHealthBar: WorldHealthBar, CombatText: CombatText, WorldLabel: WorldLabel, WorldMarker: WorldMarker, OffscreenIndicator: OffscreenIndicator, EdgeWarning: EdgeWarning,
-    TextComponent: TextComponent, LabelComponent: LabelComponent, BadgeComponent: BadgeComponent, IconButtonComposite: IconButtonComposite, TileComponent: TileComponent, CardComponent: CardComponent,
+    ProgressBar: ProgressBar, ListRow: ListRow, TextComponent: TextComponent, LabelComponent: LabelComponent, BadgeComponent: BadgeComponent, IconButtonComposite: IconButtonComposite, TileComponent: TileComponent, CardComponent: CardComponent,
     DrawerOverlay: DrawerOverlay, FieldComposite: FieldComposite, Fieldset: Fieldset, FormComposite: FormComposite, StackLayout: StackLayout, VbGrid: VbGrid, ListLayout: ListLayout, BoardLayout: BoardLayout,
     MainMenuView: MainMenuView, MenuActionsSectionView: MenuActionsSectionView, SquadView: SquadView, SettingsView: SettingsView, PauseOverlayView: PauseOverlayView, ConfirmDialogView: ConfirmDialogView,
     GuideDialogView: GuideDialogView, PerkDraftView: PerkDraftView, ResultsView: ResultsView, HighScoresView: HighScoresView, RouteChoiceView: RouteChoiceView, MerchantScreenView: MerchantScreenView, BattleHudView: BattleHudView,

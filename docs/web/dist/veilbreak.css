@@ -148,8 +148,7 @@
 .vb-stat__row { flex-direction: row; align-items: flex-end; }
 .vb-stat__value { font-family: var(--font-body); font-weight: 500; font-size: 18px; color: var(--text); }
 .vb-stat__unit { font-size: 12px; color: var(--text-3); margin-left: 2px; margin-bottom: 2px; }
-.vb-stat__bar { height: 4px; margin-top: 4px; background-color: rgba(250, 238, 244, 0.12); }
-.vb-stat__fill { height: 100%; background-color: var(--ally); }
+.vb-stat__bar { height: 4px; margin-top: 4px; }
 .vb-status { flex-direction: row; align-items: center; height: 22px; padding: 0 8px; margin-right: 6px; --vb-cut: 6; --vb-fill: var(--raised); --vb-edge: var(--line); }
 .vb-status__icon { width: 14px; height: 14px; margin-right: 5px; color: var(--warn); }
 .vb-status__word { font-family: var(--font-body); font-weight: 500; font-weight: 700; font-size: 10px; letter-spacing: 0.1em; }
@@ -326,36 +325,11 @@
 .vb-result__fell { font-family: var(--font-body); font-weight: 500; font-weight: 700; font-size: 10px; color: var(--text-3); }
 .vb-result__kit { position: absolute; left: 0; right: 0; bottom: 0; height: 2px; }
 .vb-perk-art { overflow: hidden; }
-.vb-perk-card { width: 112px; height: 236px; overflow: hidden; --vb-fill: var(--panel); --vb-edge: var(--line-strong); }
-.vb-perk-card__art { height: 92px; background-color: var(--raised); }
-.vb-perk--rare .vb-perk-card__art { background-color: rgba(165, 139, 255, 0.25); }
-.vb-perk-card__art .vb-crop { left: -20px; top: -4px; width: 152px; height: 228px; }
-.vb-perk-card__glyph { position: absolute; left: 40px; top: 30px; width: 32px; height: 32px; }
-.vb-perk-art--portrait .vb-perk-card__glyph { left: auto; top: auto; right: 6px; bottom: 6px; width: 16px; height: 16px; }
-.vb-perk-card__shade { position: absolute; left: 0; right: 0; bottom: 0; height: 22px; background-color: rgba(14, 9, 20, 0.45); }
-.vb-perk-card__tag { position: absolute; left: 6px; top: 6px; padding: 1px 5px; border-width: 1px; border-color: var(--text-3); background-color: rgba(14, 9, 20, 0.70); font-family: var(--font-body); font-weight: 500; font-weight: 700; font-size: 9px; letter-spacing: 0.0889em; color: var(--text-3); }
-.vb-perk-card__check { position: absolute; right: 6px; top: 6px; width: 20px; height: 20px; background-color: var(--ally); color: var(--on-cta); }
-.vb-perk-card__rule { height: 2px; background-color: var(--text-3); }
-.vb-perk-card__body { flex-grow: 1; padding: 7px 8px 8px 8px; }
-.vb-perk-card__category { font-family: var(--font-body); font-weight: 500; font-weight: 700; font-size: 9px; letter-spacing: 0.1em; color: var(--text-3); }
-.vb-perk-card__name { font-family: var(--font-display); font-weight: 700; font-size: 12px; letter-spacing: 0.1167em; white-space: normal; margin-top: 3px; }
-.vb-perk-card__effect { font-size: 11px; color: var(--text-2); white-space: normal; margin-top: 3px; }
-.vb-perk-card__foot { margin-top: auto; }
-.vb-perk-card__pips { flex-direction: row; height: 6px; margin-bottom: 4px; }
-.vb-perk-card__pip { width: 12px; height: 6px; margin-right: 3px; border-width: 1px; border-color: var(--line-strong); }
-.vb-perk-card__pip--owned { background-color: var(--text-2); border-color: var(--text-2); }
-.vb-perk-card__pip--next { background-color: var(--ally); border-color: var(--ally); }
-.vb-perk-card__next { font-family: var(--font-body); font-weight: 500; font-size: 12px; color: var(--ally-text); white-space: normal; }
-.vb-perk-card__stacks { font-family: var(--font-body); font-weight: 500; font-size: 10px; color: var(--text-3); }
 .vb-perk--operative .vb-perk-card__tag { border-color: var(--ally-text); color: var(--ally-text); }
-.vb-perk--operative .vb-perk-card__rule { background-color: var(--ally-text); }
 .vb-perk--rare.vb-perk-card { --vb-edge: var(--tier-violet); }
 .vb-perk--rare .vb-perk-card__tag { border-color: var(--tier-violet); color: var(--tier-violet); }
-.vb-perk--rare .vb-perk-card__rule { background-color: var(--tier-violet); }
-.vb-perk--rare .vb-perk-card__glyph { color: var(--tier-violet); }
 .vb-perk-card:hover { --vb-edge: rgba(250, 238, 244, 0.70); }
 .vb-perk-card.vb-perk-card--selected { --vb-fill: var(--ally-soft); --vb-edge: var(--ally); --vb-bw: 2; --vb-bracket: var(--ally); --vb-glow: rgba(29, 217, 160, 0.35); }
-.vb-perk-card--selected .vb-perk-card__shade { background-color: rgba(16, 38, 40, 0.55); }
 .vb-perk-detail { padding: 12px; --vb-fill: var(--panel-solid); --vb-edge: var(--line-strong); }
 .vb-perk-detail__head { flex-direction: row; align-items: center; }
 .vb-perk-detail__thumb { width: 44px; height: 44px; margin-right: 10px; align-items: center; justify-content: center; --vb-cut: 6; --vb-fill: var(--raised); --vb-edge: var(--line-strong); }
@@ -518,7 +492,7 @@
 .vb-stat__label { height: 16px; flex-shrink: 0; }
 .vb-stat__row { height: 24px; flex-shrink: 0; }
 .vb-stat__bar { flex-shrink: 0; }
-.vb-stat--neutral .vb-stat__fill { background-color: var(--text-2); }
+.vb-stat--neutral .vb-progress__fill { background-color: var(--text-2); }
 .vb-details__passive-name { height: 14px; flex-shrink: 0; }
 .vb-details__passive-text { min-height: 18px; }
 .vb-details__skill { height: 50px; flex-shrink: 0; }
@@ -534,16 +508,6 @@
 .vb-slider .vb-u-base-field__label { padding: 0; margin: 0 12px 0 0; width: 72px; min-width: 72px; }
 .vb-slider .vb-u-base-slider__tracker { background-image: none; }
 .vb-slider .vb-u-base-slider__dragger { background-image: none; }
-.vb-perk-art--portrait .vb-perk-card__glyph { padding: 5px; width: 26px; height: 26px; background-color: var(--raised); border-width: 1px; border-color: var(--line-strong); }
-.vb-perk-card__art .vb-crop { left: -28px; top: -4px; width: 168px; height: 252px; }
-.vb-perk-card__category { margin-bottom: 0; }
-.vb-perk-card__name { margin-top: 0; }
-.vb-perk-card__effect { margin-top: 0; }
-.vb-perk-card__art { height: 90px; }
-.vb-perk-card__badge { position: absolute; left: 40px; top: 30px; width: 32px; height: 32px; align-items: center; justify-content: center; }
-.vb-perk-art--portrait .vb-perk-card__badge { left: auto; top: auto; right: 6px; bottom: 6px; width: 26px; height: 26px; --vb-cut: 6; --vb-fill: var(--raised); --vb-edge: var(--line-strong); }
-.vb-perk-card__badge .vb-perk-card__glyph { position: relative; left: auto; right: auto; top: auto; bottom: auto; padding: 0; border-width: 0; background-color: transparent; }
-.vb-perk-card__effect { font-size: 10.5px; }
 .vb-perk-detail__row--last .vb-perk-detail__value { font-family: var(--font-body); font-weight: 500; color: var(--text-2); }
 .vb-skill__sweep { position: absolute; left: 0; top: 0; bottom: 0; background-color: rgba(192, 132, 252, 0.30); border-right-width: 1px; border-right-color: var(--power-text); }
 .vb-skill--windup { --vb-fill: var(--power-soft); --vb-edge: var(--power); }
@@ -582,8 +546,8 @@
 .vb-stat__delta { margin-left: 5px; margin-bottom: 2px; font-family: var(--font-body); font-weight: 600; font-size: 12px; color: var(--text-2); }
 .vb-stat__delta--up { color: var(--ally-text); }
 .vb-stat__delta--down { color: var(--enemy-text); }
-.vb-stat--power .vb-stat__fill { background-color: var(--power); }
-.vb-stat--text .vb-stat__fill { background-color: var(--text-2); }
+.vb-stat--power .vb-progress__fill { background-color: var(--power); }
+.vb-stat--text .vb-progress__fill { background-color: var(--text-2); }
 .vb-tile--blue { --vb-edge: var(--tier-blue); }
 .vb-tile--violet { --vb-edge: var(--tier-violet); }
 .vb-tile--gold { --vb-edge: var(--tier-gold); --vb-glow: rgba(255, 200, 80, 0.30); }
@@ -683,12 +647,6 @@
 .vb-merchant__section { margin-top: 18px; margin-bottom: 8px; color: var(--glitch-cyan); }
 .vb-merchant__offers { flex-direction: row; align-items: stretch; }
 .vb-merchant__offer { flex-grow: 1; flex-basis: 0; min-width: 0; margin: 0 3px; }
-.vb-merchant__offer .vb-perk-card { width: auto; height: auto; flex-grow: 1; min-height: 260px; }
-.vb-merchant__offer .vb-perk-card__art { height: 88px; flex-shrink: 0; }
-.vb-merchant__offer .vb-perk-card__body { padding: 8px 6px; flex-shrink: 0; }
-.vb-merchant__offer .vb-perk-card__name { font-size: 12px; }
-.vb-merchant__offer .vb-perk-card__effect { font-size: 10px; }
-.vb-merchant__offer .vb-perk-card__next { display: none; }
 .vb-merchant__buy { min-height: 48px; margin-top: 5px; padding: 6px 4px; font-size: 11px; }
 .vb-merchant__buy .vb-button__sub { font-size: 9px; white-space: normal; }
 .vb-merchant__exchange { flex-direction: row; align-items: center; padding: 8px; margin-bottom: 6px; min-height: 64px; --vb-cut: 6; }
@@ -697,17 +655,9 @@
 .vb-merchant__sell { min-width: 86px; min-height: 44px; padding: 8px; font-size: 11px; flex-shrink: 0; }
 .vb-merchant__leave { margin-top: 10px; flex-shrink: 0; }
 .vb-perk--rare.vb-perk-card, .vb-perk--rare.vb-perk-detail, .vb-perk--rare.vb-perk-chip { --vb-edge: var(--glitch-cyan); }
-.vb-perk--rare .vb-perk-card__art { background-color: rgba(72,245,239,0.12); }
 .vb-perk--rare .vb-perk-card__tag, .vb-perk--rare .vb-perk-detail__tag, .vb-perk--rare .vb-perk-row__tag { color: var(--glitch-cyan); border-color: var(--glitch-cyan); }
-.vb-perk--rare .vb-perk-card__rule { background-color: var(--glitch-cyan); }
-.vb-perk--rare .vb-perk-card__glyph { color: var(--glitch-cyan); }
 .vb-perk--epic.vb-perk-card, .vb-perk--epic.vb-perk-detail, .vb-perk--epic.vb-perk-chip { --vb-edge: var(--tier-violet); }
-.vb-perk--epic .vb-perk-card__art { background-color: rgba(165,139,255,0.24); }
 .vb-perk--epic .vb-perk-card__tag, .vb-perk--epic .vb-perk-detail__tag, .vb-perk--epic .vb-perk-row__tag { color: var(--tier-violet); border-color: var(--tier-violet); }
-.vb-perk--epic .vb-perk-card__rule { background-color: var(--tier-violet); }
-.vb-perk--epic .vb-perk-card__glyph { color: var(--tier-violet); }
-.vb-perk-card__shimmer { position: absolute; top: -20px; bottom: -20px; width: 18px; background-color: rgba(224,205,255,0.2); rotate: 18deg; }
-.vb-reduced-motion .vb-perk-card__shimmer, .vb-reduced-flashes .vb-perk-card__shimmer, .vb-contrast .vb-perk-card__shimmer { display: none; }
 .vb-hud__pause { margin-right: 4px; }
 .vb-hud__auto, .vb-compact .vb-hud__auto { min-width: 44px; width: 44px; padding: 8px; }
 .vb-hud__auto .vb-icon, .vb-compact .vb-hud__auto .vb-icon { display: flex; margin: 0; }
@@ -723,6 +673,42 @@
 .vb-hud__pause, .vb-hud__auto, .vb-compact .vb-hud__auto { min-width: 45px; width: 45px; min-height: 45px; height: 45px; }
 .vb-merchant__title { flex-grow: 1; flex-shrink: 1; min-width: 0; margin-right: 8px; font-size: 24px; }
 .vb-route__title { font-size: 28px; }
+.vb-progress { flex-direction: row; height: 6px; background-color: rgba(250, 238, 244, 0.10); flex-shrink: 0; }
+.vb-progress__fill { height: 100%; background-color: var(--ally); }
+.vb-progress--segmented { background-color: rgba(0, 0, 0, 0); }
+.vb-progress__cell { flex-grow: 1; flex-basis: 0; margin-right: 3px; background-color: rgba(250, 238, 244, 0.12); border-width: 1px; border-color: rgba(0, 0, 0, 0); }
+.vb-progress__cell--on { background-color: var(--ally); }
+.vb-progress__cell--next { border-color: var(--ally); }
+.vb-progress--power .vb-progress__fill, .vb-progress--power .vb-progress__cell--on { background-color: var(--power); }
+.vb-progress--power .vb-progress__cell--next { border-color: var(--power); }
+.vb-progress--enemy .vb-progress__fill, .vb-progress--enemy .vb-progress__cell--on { background-color: var(--enemy); }
+.vb-progress--neutral .vb-progress__fill, .vb-progress--neutral .vb-progress__cell--on { background-color: var(--text-2); }
+.vb-list-row { flex-direction: row; align-items: center; min-height: 56px; padding: 8px 10px; --vb-cut: 4; --vb-bw: 0; --vb-fill: var(--panel); }
+.vb-list-row__icon { width: 20px; height: 20px; margin-right: 10px; color: var(--text-2); }
+.vb-list-row__text { flex-grow: 1; flex-shrink: 1; min-width: 0; }
+.vb-list-row__title { font-family: var(--font-body); font-weight: 500; font-weight: 700; font-size: 12px; letter-spacing: 0.1em; }
+.vb-list-row__caption { margin-top: 1px; }
+.vb-list-row__bar { margin-top: 6px; height: 4px; }
+.vb-list-row__value { font-family: var(--font-body); font-weight: 500; font-size: 13px; margin-left: 8px; }
+.vb-list-row__trail { flex-direction: row; align-items: center; margin-left: 8px; flex-shrink: 0; }
+.vb-list-row__trail > .vb-button { min-height: 40px; padding: 6px 12px; }
+.vb-list-row--selected { --vb-bw: 1; --vb-edge: var(--ally); --vb-bracket: var(--ally); }
+.vb-list-row.vb-perk--rare .vb-list-row__icon { color: var(--glitch-cyan); }
+.vb-list-row.vb-perk--epic .vb-list-row__icon { color: var(--tier-violet); }
+.vb-contrast .vb-list-row { --vb-bw: 1; --vb-edge: var(--line-strong); }
+.vb-perk-card { width: 112px; height: auto; min-height: 196px; padding: 12px 10px 10px 10px; --vb-cut: 4; --vb-bw: 0; --vb-fill: var(--panel); }
+.vb-perk-card__tag { margin-bottom: 14px; }
+.vb-perk-card__glyph { width: 28px; height: 28px; margin-bottom: 10px; color: var(--text-2); }
+.vb-perk-card__name { font-family: var(--font-display); font-weight: 700; font-size: 13px; letter-spacing: 0.08em; white-space: normal; margin-bottom: 4px; }
+.vb-perk-card__effect { white-space: normal; }
+.vb-perk-card__levels { margin: 10px 0 6px 0; }
+.vb-perk-card__next { font-family: var(--font-body); font-weight: 500; font-size: 12px; color: var(--ally-text); white-space: normal; }
+.vb-perk-card--selected { --vb-cut: 10; --vb-bw: 2; --vb-edge: var(--ally); --vb-bracket: var(--ally); }
+.vb-perk--rare.vb-perk-card .vb-perk-card__glyph, .vb-perk--rare .vb-perk-card__tag { color: var(--glitch-cyan); color: var(--glitch-cyan); }
+.vb-perk--epic.vb-perk-card .vb-perk-card__glyph, .vb-perk--epic .vb-perk-card__tag { color: var(--tier-violet); color: var(--tier-violet); }
+.vb-merchant__head { flex-direction: row; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.vb-merchant__section { margin-top: 10px; }
+.vb-merchant__leave { flex-shrink: 0; margin-top: 8px; }
 /* Layout.uss */
 .vb-root { flex-grow: 1; }
 .vb-grow { flex-grow: 1; }
@@ -838,7 +824,6 @@
 .vb-draft__scroll { flex-grow: 1; }
 .vb-draft__cards { flex-direction: row; justify-content: space-between; margin-top: 6px; margin-bottom: 14px; }
 .vb-draft__cards > .vb-perk-card { width: 112px; height: auto; min-height: 236px; }
-.vb-draft__cards .vb-perk-card__art, .vb-draft__cards .vb-perk-card__body { flex-shrink: 0; }
 .vb-compact .vb-draft__cards > .vb-perk-card { width: auto; flex-grow: 1; flex-basis: 0; margin: 0 3px; }
 .vb-draft__detail { margin-bottom: 12px; }
 .vb-draft__squad { padding: 9px 12px; margin-top: 12px; margin-bottom: 12px; }

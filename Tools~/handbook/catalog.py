@@ -212,6 +212,21 @@ e(id='scanlines', tier='atom', name='ScanLinesComponent', unity=['ScanLines'], s
   rules=['Never behind numbers the player reads under pressure.'],
   preview='ScanLines', height=120)
 
+e(id='progress', tier='atom', name='ProgressBarComponent', unity=['ProgressBar', 'ProgressTone'], status='shipped',
+  summary='The one progress bar: continuous, or segments set to the number of levels, with the next level outlined.',
+  blocks=['vb-progress'],
+  csharp='new ProgressBar(segments: perk.max, value: perk.stack).Into(card);   // levels\nbar.Set(perk.stack, perk.max, next: true);                       // outline the level a pick adds\nnew ProgressBar(0, hp / (float)maxHp, ProgressTone.Ally).Into(row);   // continuous',
+  uxml='<vb:ProgressBar segments="5" value="2" next="true" tone="Power" />',
+  rules=['Levels, stacks and steps are segments; health and progress are continuous.', 'StatReadout, ListRow and PerkCard draw their bars with it; never hand-roll a track and fill.'],
+  preview='ProgressBar')
+
+e(id='list-row', tier='atom', name='ListRowComponent', unity=['ListRow'], status='shipped',
+  summary='The one list row: a glyph, a caps title and caption, an optional progress bar, a trailing value and action.',
+  uses=['frame', 'icon', 'text', 'progress', 'button'], blocks=['vb-list-row'],
+  csharp='var row = new ListRow(perk.name, perk.effect, perk.icon).Into(list);\nrow.Bar.Set(perk.stack, perk.max);\nrow.Action(new VbButton("BUY " + price, click: Buy));',
+  rules=['Slim; selected rows get the edge and brackets.', 'Rows live in a ListLayout, which owns the 6-unit rhythm.'],
+  preview='ListRow')
+
 e(id='tile', tier='atom', name='TileComponent', unity=['TileComponent', 'TileState', 'OperativeTile', 'SquadSlot'], status='shipped',
   summary='A square-ish, pickable cell: a picture or glyph, a short name, a caption, a state. Rosters, slots, inventories.',
   uses=['frame', 'text', 'icon', 'badge'], blocks=['vb-tile', 'vb-slot'],
@@ -618,8 +633,8 @@ e(id='route-view', tier='view', name='RouteChoiceView', unity=['RouteChoiceView'
   preview='RouteChoiceView', stage='board')
 
 e(id='merchant-view', tier='view', name='MerchantView', unity=['MerchantScreenView', 'MerchantScreen', 'MerchantView'], status='shipped',
-  summary='The night market: rare finds, sell stacks, trade health.',
-  uses=['perk-card', 'button', 'credits-badge', 'health-bar', 'list-layout'], blocks=['vb-merchant-view', 'vb-merchant'],
+  summary='The night market, minimal: one list of rows (rare finds, stack sales, health trades), each with its levels or health bar and one action.',
+  uses=['list-row', 'progress', 'button', 'credits-badge', 'list-layout', 'label'], blocks=['vb-merchant-view', 'vb-merchant'],
   csharp='var market = new MerchantScreenView().Into(nav.Open("merchant"));\nmarket.Bind(view);   // keeps the scroll position across confirmed trades\nmarket.Bought += Buy; market.PerkSold += SellStack; market.HealthSold += SellHp; market.Left += Leave;',
   rules=['The host confirms every trade, then binds again.', 'MerchantView is the view model; the screen type is MerchantScreenView.'],
   doc='Projection and the road economy',

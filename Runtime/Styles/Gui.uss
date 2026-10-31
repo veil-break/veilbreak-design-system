@@ -187,8 +187,7 @@
 .vb-stat__row { flex-direction: row; align-items: flex-end; }
 .vb-stat__value { -unity-font-definition: var(--vb-font-body-medium); font-size: 18px; color: var(--vb-color-text); }
 .vb-stat__unit { font-size: 12px; color: var(--vb-color-text-3); margin-left: 2px; margin-bottom: 2px; }
-.vb-stat__bar { height: 4px; margin-top: 4px; background-color: rgba(250, 238, 244, 0.12); }
-.vb-stat__fill { height: 100%; background-color: var(--vb-color-ally); }
+.vb-stat__bar { height: 4px; margin-top: 4px; }
 
 .vb-status { flex-direction: row; align-items: center; height: 22px; padding: 0 8px; margin-right: 6px; --vb-cut: 6; --vb-fill: var(--vb-color-raised); --vb-edge: var(--vb-color-line); }
 .vb-status__icon { width: 14px; height: 14px; margin-right: 5px; -unity-background-image-tint-color: var(--vb-color-warn); }
@@ -386,36 +385,11 @@
 /* ── perks ─────────────────────────────────────────────────────────────── */
 .vb-perk-art { overflow: hidden; }
 
-.vb-perk-card { width: 112px; height: 236px; overflow: hidden; --vb-fill: var(--vb-color-panel); --vb-edge: var(--vb-color-line-strong); }
-.vb-perk-card__art { height: 92px; background-color: var(--vb-color-raised); }
-.vb-perk--rare .vb-perk-card__art { background-color: rgba(165, 139, 255, 0.25); }
-.vb-perk-card__art .vb-crop { left: -20px; top: -4px; width: 152px; height: 228px; }
-.vb-perk-card__glyph { position: absolute; left: 40px; top: 30px; width: 32px; height: 32px; }
-.vb-perk-art--portrait .vb-perk-card__glyph { left: auto; top: auto; right: 6px; bottom: 6px; width: 16px; height: 16px; }
-.vb-perk-card__shade { position: absolute; left: 0; right: 0; bottom: 0; height: 22px; background-color: rgba(14, 9, 20, 0.45); }
-.vb-perk-card__tag { position: absolute; left: 6px; top: 6px; padding: 1px 5px; border-width: 1px; border-color: var(--vb-color-text-3); background-color: rgba(14, 9, 20, 0.70); -unity-font-definition: var(--vb-font-body-medium); -unity-font-style: bold; font-size: 9px; letter-spacing: 8.889px; color: var(--vb-color-text-3); }
-.vb-perk-card__check { position: absolute; right: 6px; top: 6px; width: 20px; height: 20px; background-color: var(--vb-color-ally); -unity-background-image-tint-color: var(--vb-color-on-cta); }
-.vb-perk-card__rule { height: 2px; background-color: var(--vb-color-text-3); }
-.vb-perk-card__body { flex-grow: 1; padding: 7px 8px 8px 8px; }
-.vb-perk-card__category { -unity-font-definition: var(--vb-font-body-medium); -unity-font-style: bold; font-size: 9px; letter-spacing: 10.000px; color: var(--vb-color-text-3); }
-.vb-perk-card__name { -unity-font-definition: var(--vb-font-display-bold); font-size: 12px; letter-spacing: 11.667px; white-space: normal; margin-top: 3px; }
-.vb-perk-card__effect { font-size: 11px; color: var(--vb-color-text-2); white-space: normal; margin-top: 3px; }
-.vb-perk-card__foot { margin-top: auto; }
-.vb-perk-card__pips { flex-direction: row; height: 6px; margin-bottom: 4px; }
-.vb-perk-card__pip { width: 12px; height: 6px; margin-right: 3px; border-width: 1px; border-color: var(--vb-color-line-strong); }
-.vb-perk-card__pip--owned { background-color: var(--vb-color-text-2); border-color: var(--vb-color-text-2); }
-.vb-perk-card__pip--next { background-color: var(--vb-color-ally); border-color: var(--vb-color-ally); }
-.vb-perk-card__next { -unity-font-definition: var(--vb-font-body-medium); font-size: 12px; color: var(--vb-color-ally-text); white-space: normal; }
-.vb-perk-card__stacks { -unity-font-definition: var(--vb-font-body-medium); font-size: 10px; color: var(--vb-color-text-3); }
 .vb-perk--operative .vb-perk-card__tag { border-color: var(--vb-color-ally-text); color: var(--vb-color-ally-text); }
-.vb-perk--operative .vb-perk-card__rule { background-color: var(--vb-color-ally-text); }
 .vb-perk--rare.vb-perk-card { --vb-edge: var(--vb-color-tier-violet); }
 .vb-perk--rare .vb-perk-card__tag { border-color: var(--vb-color-tier-violet); color: var(--vb-color-tier-violet); }
-.vb-perk--rare .vb-perk-card__rule { background-color: var(--vb-color-tier-violet); }
-.vb-perk--rare .vb-perk-card__glyph { -unity-background-image-tint-color: var(--vb-color-tier-violet); }
 .vb-perk-card:hover { --vb-edge: rgba(250, 238, 244, 0.70); }
 .vb-perk-card.vb-perk-card--selected { --vb-fill: var(--vb-color-ally-soft); --vb-edge: var(--vb-color-ally); --vb-bw: 2; --vb-bracket: var(--vb-color-ally); --vb-glow: rgba(29, 217, 160, 0.35); }
-.vb-perk-card--selected .vb-perk-card__shade { background-color: rgba(16, 38, 40, 0.55); }
 
 .vb-perk-detail { padding: 12px; --vb-fill: var(--vb-color-panel-solid); --vb-edge: var(--vb-color-line-strong); }
 .vb-perk-detail__head { flex-direction: row; align-items: center; }
@@ -610,7 +584,7 @@
 .vb-stat__label { height: 16px; flex-shrink: 0; }
 .vb-stat__row { height: 24px; flex-shrink: 0; }
 .vb-stat__bar { flex-shrink: 0; }
-.vb-stat--neutral .vb-stat__fill { background-color: var(--vb-color-text-2); }
+.vb-stat--neutral .vb-progress__fill { background-color: var(--vb-color-text-2); }
 .vb-details__passive-name { height: 14px; flex-shrink: 0; }
 .vb-details__passive-text { min-height: 18px; }
 .vb-details__skill { height: 50px; flex-shrink: 0; }
@@ -628,17 +602,7 @@
 .vb-slider .unity-base-slider__dragger { background-image: none; }
 
 /* Portrait draft glyphs retain the authored framed badge. */
-.vb-perk-art--portrait .vb-perk-card__glyph { padding: 5px; width: 26px; height: 26px; background-color: var(--vb-color-raised); border-width: 1px; border-color: var(--vb-color-line-strong); }
-.vb-perk-card__art .vb-crop { left: -28px; top: -4px; width: 168px; height: 252px; }
-.vb-perk-card__category { margin-bottom: 0; }
-.vb-perk-card__name { margin-top: 0; }
-.vb-perk-card__effect { margin-top: 0; }
 
-.vb-perk-card__art { height: 90px; }
-.vb-perk-card__badge { position: absolute; left: 40px; top: 30px; width: 32px; height: 32px; align-items: center; justify-content: center; }
-.vb-perk-art--portrait .vb-perk-card__badge { left: auto; top: auto; right: 6px; bottom: 6px; width: 26px; height: 26px; --vb-cut: 6; --vb-fill: var(--vb-color-raised); --vb-edge: var(--vb-color-line-strong); }
-.vb-perk-card__badge .vb-perk-card__glyph { position: relative; left: auto; right: auto; top: auto; bottom: auto; padding: 0; border-width: 0; background-color: transparent; }
-.vb-perk-card__effect { font-size: 10.5px; }
 .vb-perk-detail__row--last .vb-perk-detail__value { -unity-font-definition: var(--vb-font-body-medium); color: var(--vb-color-text-2); }
 
 /* ── design-system ports (0.2.0) ───────────────────────────────────────── */
@@ -689,8 +653,8 @@
 .vb-stat__delta { margin-left: 5px; margin-bottom: 2px; -unity-font-definition: var(--vb-font-body-semibold); font-size: 12px; color: var(--vb-color-text-2); }
 .vb-stat__delta--up { color: var(--vb-color-ally-text); }
 .vb-stat__delta--down { color: var(--vb-color-enemy-text); }
-.vb-stat--power .vb-stat__fill { background-color: var(--vb-color-power); }
-.vb-stat--text .vb-stat__fill { background-color: var(--vb-color-text-2); }
+.vb-stat--power .vb-progress__fill { background-color: var(--vb-color-power); }
+.vb-stat--text .vb-progress__fill { background-color: var(--vb-color-text-2); }
 
 /* OperativeTile rarity frames and the locked state (shown, never hidden). */
 .vb-tile--blue { --vb-edge: var(--vb-color-tier-blue); }
@@ -805,12 +769,6 @@
 .vb-merchant__section { margin-top: 18px; margin-bottom: 8px; color: var(--vb-color-glitch-cyan); }
 .vb-merchant__offers { flex-direction: row; align-items: stretch; }
 .vb-merchant__offer { flex-grow: 1; flex-basis: 0; min-width: 0; margin: 0 3px; }
-.vb-merchant__offer .vb-perk-card { width: auto; height: auto; flex-grow: 1; min-height: 260px; }
-.vb-merchant__offer .vb-perk-card__art { height: 88px; flex-shrink: 0; }
-.vb-merchant__offer .vb-perk-card__body { padding: 8px 6px; flex-shrink: 0; }
-.vb-merchant__offer .vb-perk-card__name { font-size: 12px; }
-.vb-merchant__offer .vb-perk-card__effect { font-size: 10px; }
-.vb-merchant__offer .vb-perk-card__next { display: none; }
 .vb-merchant__buy { min-height: 48px; margin-top: 5px; padding: 6px 4px; font-size: 11px; }
 .vb-merchant__buy .vb-button__sub { font-size: 9px; white-space: normal; }
 .vb-merchant__exchange { flex-direction: row; align-items: center; padding: 8px; margin-bottom: 6px; min-height: 64px; --vb-cut: 6; }
@@ -819,17 +777,9 @@
 .vb-merchant__sell { min-width: 86px; min-height: 44px; padding: 8px; font-size: 11px; flex-shrink: 0; }
 .vb-merchant__leave { margin-top: 10px; flex-shrink: 0; }
 .vb-perk--rare.vb-perk-card, .vb-perk--rare.vb-perk-detail, .vb-perk--rare.vb-perk-chip { --vb-edge: var(--vb-color-glitch-cyan); }
-.vb-perk--rare .vb-perk-card__art { background-color: rgba(72,245,239,0.12); }
 .vb-perk--rare .vb-perk-card__tag, .vb-perk--rare .vb-perk-detail__tag, .vb-perk--rare .vb-perk-row__tag { color: var(--vb-color-glitch-cyan); border-color: var(--vb-color-glitch-cyan); }
-.vb-perk--rare .vb-perk-card__rule { background-color: var(--vb-color-glitch-cyan); }
-.vb-perk--rare .vb-perk-card__glyph { -unity-background-image-tint-color: var(--vb-color-glitch-cyan); }
 .vb-perk--epic.vb-perk-card, .vb-perk--epic.vb-perk-detail, .vb-perk--epic.vb-perk-chip { --vb-edge: var(--vb-color-tier-violet); }
-.vb-perk--epic .vb-perk-card__art { background-color: rgba(165,139,255,0.24); }
 .vb-perk--epic .vb-perk-card__tag, .vb-perk--epic .vb-perk-detail__tag, .vb-perk--epic .vb-perk-row__tag { color: var(--vb-color-tier-violet); border-color: var(--vb-color-tier-violet); }
-.vb-perk--epic .vb-perk-card__rule { background-color: var(--vb-color-tier-violet); }
-.vb-perk--epic .vb-perk-card__glyph { -unity-background-image-tint-color: var(--vb-color-tier-violet); }
-.vb-perk-card__shimmer { position: absolute; top: -20px; bottom: -20px; width: 18px; background-color: rgba(224,205,255,0.2); rotate: 18deg; }
-.vb-reduced-motion .vb-perk-card__shimmer, .vb-reduced-flashes .vb-perk-card__shimmer, .vb-contrast .vb-perk-card__shimmer { display: none; }
 
 /* Compact top-left controls; the automation glyph keeps its full touch target on narrow phones. */
 .vb-hud__pause { margin-right: 4px; }
@@ -848,3 +798,44 @@
 .vb-hud__pause, .vb-hud__auto, .vb-compact .vb-hud__auto { min-width: 45px; width: 45px; min-height: 45px; height: 45px; }
 .vb-merchant__title { flex-grow: 1; flex-shrink: 1; min-width: 0; margin-right: 8px; font-size: 24px; }
 .vb-route__title { font-size: 28px; }
+
+/* ── progress bar and list row (ProgressBar, ListRow): the shared primitives ─ */
+.vb-progress { flex-direction: row; height: 6px; background-color: rgba(250, 238, 244, 0.10); flex-shrink: 0; }
+.vb-progress__fill { height: 100%; background-color: var(--vb-color-ally); }
+.vb-progress--segmented { background-color: rgba(0, 0, 0, 0); }
+.vb-progress__cell { flex-grow: 1; flex-basis: 0; margin-right: 3px; background-color: rgba(250, 238, 244, 0.12); border-width: 1px; border-color: rgba(0, 0, 0, 0); }
+.vb-progress__cell--on { background-color: var(--vb-color-ally); }
+.vb-progress__cell--next { border-color: var(--vb-color-ally); }
+.vb-progress--power .vb-progress__fill, .vb-progress--power .vb-progress__cell--on { background-color: var(--vb-color-power); }
+.vb-progress--power .vb-progress__cell--next { border-color: var(--vb-color-power); }
+.vb-progress--enemy .vb-progress__fill, .vb-progress--enemy .vb-progress__cell--on { background-color: var(--vb-color-enemy); }
+.vb-progress--neutral .vb-progress__fill, .vb-progress--neutral .vb-progress__cell--on { background-color: var(--vb-color-text-2); }
+
+.vb-list-row { flex-direction: row; align-items: center; min-height: 56px; padding: 8px 10px; --vb-cut: 4; --vb-bw: 0; --vb-fill: var(--vb-color-panel); }
+.vb-list-row__icon { width: 20px; height: 20px; margin-right: 10px; -unity-background-image-tint-color: var(--vb-color-text-2); }
+.vb-list-row__text { flex-grow: 1; flex-shrink: 1; min-width: 0; }
+.vb-list-row__title { -unity-font-definition: var(--vb-font-body-medium); -unity-font-style: bold; font-size: 12px; letter-spacing: 10.000px; }
+.vb-list-row__caption { margin-top: 1px; }
+.vb-list-row__bar { margin-top: 6px; height: 4px; }
+.vb-list-row__value { -unity-font-definition: var(--vb-font-body-medium); font-size: 13px; margin-left: 8px; }
+.vb-list-row__trail { flex-direction: row; align-items: center; margin-left: 8px; flex-shrink: 0; }
+.vb-list-row__trail > .vb-button { min-height: 40px; padding: 6px 12px; }
+.vb-list-row--selected { --vb-bw: 1; --vb-edge: var(--vb-color-ally); --vb-bracket: var(--vb-color-ally); }
+.vb-list-row.vb-perk--rare .vb-list-row__icon { -unity-background-image-tint-color: var(--vb-color-glitch-cyan); }
+.vb-list-row.vb-perk--epic .vb-list-row__icon { -unity-background-image-tint-color: var(--vb-color-tier-violet); }
+.vb-contrast .vb-list-row { --vb-bw: 1; --vb-edge: var(--vb-color-line-strong); }
+
+/* ── minimal perk card and market (0.3.2) ── */
+.vb-perk-card { width: 112px; height: auto; min-height: 196px; padding: 12px 10px 10px 10px; --vb-cut: 4; --vb-bw: 0; --vb-fill: var(--vb-color-panel); }
+.vb-perk-card__tag { margin-bottom: 14px; }
+.vb-perk-card__glyph { width: 28px; height: 28px; margin-bottom: 10px; -unity-background-image-tint-color: var(--vb-color-text-2); }
+.vb-perk-card__name { -unity-font-definition: var(--vb-font-display-bold); font-size: 13px; letter-spacing: 8.000px; white-space: normal; margin-bottom: 4px; }
+.vb-perk-card__effect { white-space: normal; }
+.vb-perk-card__levels { margin: 10px 0 6px 0; }
+.vb-perk-card__next { -unity-font-definition: var(--vb-font-body-medium); font-size: 12px; color: var(--vb-color-ally-text); white-space: normal; }
+.vb-perk-card--selected { --vb-cut: 10; --vb-bw: 2; --vb-edge: var(--vb-color-ally); --vb-bracket: var(--vb-color-ally); }
+.vb-perk--rare.vb-perk-card .vb-perk-card__glyph, .vb-perk--rare .vb-perk-card__tag { -unity-background-image-tint-color: var(--vb-color-glitch-cyan); color: var(--vb-color-glitch-cyan); }
+.vb-perk--epic.vb-perk-card .vb-perk-card__glyph, .vb-perk--epic .vb-perk-card__tag { -unity-background-image-tint-color: var(--vb-color-tier-violet); color: var(--vb-color-tier-violet); }
+.vb-merchant__head { flex-direction: row; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.vb-merchant__section { margin-top: 10px; }
+.vb-merchant__leave { flex-shrink: 0; margin-top: 8px; }

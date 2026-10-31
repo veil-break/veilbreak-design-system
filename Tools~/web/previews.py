@@ -690,6 +690,13 @@ LY, VW = 'Layouts', 'Views'
 SQUAD = r"""function kitOp(k, i) { return op({ id: k, name: k.charAt(0).toUpperCase() + k.slice(1), code: k.slice(0, 2).toUpperCase(), kit: 'var(--kit-' + k + ')', hp: 600 + i * 90 }); }
 var ROSTER = ['aria', 'sol', 'aegis', 'nyra', 'rook', 'mira', 'hex', 'echo'].map(kitOp);
 """
+card('ProgressBar', C, 140, 'Continuous, or segmented by levels with the next one outlined', r"""
+render(col([h(V.ProgressBar, { value: 0.62, style: { width: 300 }, key: 0 }), h(V.ProgressBar, { segments: 5, value: 2, next: true, style: { width: 300 }, key: 1 }), h(V.ProgressBar, { segments: 3, value: 3, tone: 'power', style: { width: 300 }, key: 2 })], 14));
+""")
+card('ListRow', C, 220, 'Glyph, title, caption, levels, and a trailing action', r"""
+render(col([h(V.ListRow, { title: 'Sharpened Output', caption: '+8% damage', icon: 'burst', bar: { segments: 5, value: 2 }, action: h(V.VbButton, { title: 'BUY 80' }), style: { width: 358 }, key: 0 }),
+  h(V.ListRow, { title: 'Aria', caption: '800 → 550 HP', icon: 'health', bar: { value: 0.8 }, action: h(V.VbButton, { title: '+30', variant: 'danger' }), style: { width: 358 }, key: 1 })], 6));
+""")
 card('TextComponent', F, 220, 'One type style per run; tones only recolour', r"""
 var T = V.TextComponent;
 render(col([h(T, { typeStyle: 'display', text: 'PAUSED', key: 0 }), h(T, { typeStyle: 'title', text: 'SQUAD', key: 1 }), h(T, { typeStyle: 'caption', text: 'Combat, focus and world travel are frozen', key: 2 }),

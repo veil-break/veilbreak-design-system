@@ -10,28 +10,23 @@ static class PerkArt {
  public static string Stacks(PerkView p,bool draft)=>p.max>0?(draft?$"STACK {p.stack+1} / {p.max}":$"×{p.stack} OF {p.max}"):p.tier==PerkTier.Rare?"RARE DRAW":p.stack>1?"×"+p.stack:"REPEATABLE";
 }
 
-/// <summary>Draft card (one of three): art, tier tag, name, effect, stack pips and the value after the pick.</summary>
+/// <summary>Draft card (one of three), minimal: tier word, glyph, name, effect, a segmented progress bar of its levels (the next one
+/// outlined) and the value after the pick. Selected = brackets./summary>
 [UxmlElement] public partial class PerkCard:VisualElement {
  public const string ClassName="vb-perk-card";
- readonly VisualElement art,pips,shimmer;IVisualElementScheduledItem shimmerTick;readonly VbIcon glyph,check;readonly Label tag,category,title,effect,next,stacks;
+ readonly VbIcon glyph;readonly Label tag,title,effect,next;readonly ProgressBar levels;
  public PerkView View {get;private set;}
  public event Action Picked;
  public PerkCard(){
   AddToClassList(ClassName);VbShape.Attach(this);this.Clickable(()=>Picked?.Invoke());
-  art=Ui.Box(this,ClassName+"__art","vb-perk-art");Ui.Box(art,ClassName+"__shade");var badge=VbShape.Attach(Ui.Box(art,ClassName+"__badge"));glyph=new VbIcon("add",32).Classes(ClassName+"__glyph").Into(badge);
-  shimmer=Ui.Box(art,ClassName+"__shimmer");shimmer.Show(false);RegisterCallback<AttachToPanelEvent>(_=>StartShimmer());RegisterCallback<DetachFromPanelEvent>(_=>shimmerTick?.Pause());
-  tag=Ui.Text(art,"",ClassName+"__tag");check=new VbIcon("check",14).Classes(ClassName+"__check").Into(art);Ui.Box(this,ClassName+"__rule");
-  var body=Ui.Box(this,ClassName+"__body");category=Ui.Text(body,"",ClassName+"__category");title=Ui.Text(body,"",ClassName+"__name");effect=Ui.Text(body,"",ClassName+"__effect");
-  var foot=Ui.Box(body,ClassName+"__foot");pips=Ui.Box(foot,ClassName+"__pips");next=Ui.Text(foot,"",ClassName+"__next");stacks=Ui.Text(foot,"",ClassName+"__stacks");
- }
- void StartShimmer(){shimmerTick?.Pause();bool epic=View?.tier==PerkTier.Epic;shimmer.Show(epic);if(!epic||panel==null)return;
-  shimmerTick=schedule.Execute(()=>{bool on=!Glitch.Calm(this)&&!Ui.Under(this,SafeAreaRoot.Contrast);float p=UnityEngine.Time.unscaledTime%4f;shimmer.Show(on&&p<.8f);if(on&&p<.8f)shimmer.style.left=-40+(resolvedStyle.width+80)*p/.8f;}).Every(33);
+  tag=Ui.Text(this,"","vb-t-badge",ClassName+"__tag");glyph=new VbIcon("add",28).Classes(ClassName+"__glyph").Into(this);
+  title=Ui.Text(this,"",ClassName+"__name");effect=Ui.Text(this,"","vb-t-caption",ClassName+"__effect");Ui.Spacer(this);
+  levels=new ProgressBar().Classes(ClassName+"__levels").Into(this);next=Ui.Text(this,"",ClassName+"__next");
  }
  public PerkCard Bind(PerkView p,bool selected){
-  View=p;StartShimmer();PerkArt.Tiers(this,p);PerkArt.Fill(art,glyph,p);EnableInClassList(ClassName+"--selected",selected);check.Show(selected);
-  tag.text=p.tag.ToUpperInvariant();category.text=p.category.ToUpperInvariant();title.text=p.name.ToUpperInvariant();effect.text=p.effect;next.text=p.next;stacks.text=PerkArt.Stacks(p,true);
-  pips.Clear();for(int i=0;i<p.max;i++)Ui.Box(pips,ClassName+"__pip",i<p.stack?ClassName+"__pip--owned":i==p.stack?ClassName+"__pip--next":null);
-  return this;
+  View=p;PerkArt.Tiers(this,p);EnableInClassList(ClassName+"--selected",selected);glyph.Icon=p.icon;
+  tag.text=p.tag.ToUpperInvariant();title.text=p.name.ToUpperInvariant();effect.text=p.effect;next.text=p.next;
+  levels.Show(p.max>0);levels.Set(p.stack,p.max,p.stack<p.max);tooltip=p.name+" · "+PerkArt.Stacks(p,true);return this;
  }
 }
 

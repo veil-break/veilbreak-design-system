@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.2 — 2026-10-31
+
+- **ProgressBar** (`vb-progress`): one bar for every read-out, continuous or `Segments` levels with the `Next` level
+  outlined; tones ally, power, enemy, neutral. `StatReadout` draws its bar with it.
+- **ListRow** (`vb-list-row`): one row primitive (glyph, title, caption, optional bar, trailing value and action).
+- **Minimal PerkCard**: tier word, glyph, name, effect, levels as a segmented ProgressBar, the value after the pick. The art
+  band, badge, category, pips and shimmer are gone (and their USS).
+- **Minimal MerchantScreen**: one ListLayout of ListRows (rare finds, stack sales, health trades) and LEAVE MARKET.
+- Web: `ProgressBar`, `ListRow` and the same minimal PerkCard and MerchantScreen.
+
 ## 0.3.1 — 2026-10-31
 
 - **Bottom drawer.** `DrawerOverlay` (`vb-drawer`): a slim solid sheet that slides up over a dimmed backdrop to **half the
