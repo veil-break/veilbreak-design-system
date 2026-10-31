@@ -1,0 +1,19 @@
+# Self-contained copy of the repository's tools/pyproject.toml Ruff settings, so the package's tooling lints alone.
+target-version = "py312"
+line-length = 120
+indent-width = 4
+
+[lint]
+preview = true
+extend-select = ["E", "W"]
+fixable = ["ALL"]
+ignore = []
+
+[lint.per-file-ignores]
+# Embedded JS, Markdown and preview templates are emitted verbatim; wrapping them would change the generated files.
+"web/docs.py" = ["E501"]
+"web/previews.py" = ["E501"]
+
+[format]
+preview = true
+quote-style = "single"

@@ -1,0 +1,1 @@
+{"name":"Veilbreak.Gui.Tests","rootNamespace":"Veilbreak.Gui.Tests","references":["Veilbreak.Gui","UnityEngine.TestRunner","UnityEditor.TestRunner"],"includePlatforms":["Editor"],"overrideReferences":true,"precompiledReferences":["nunit.framework.dll"],"autoReferenced":false,"defineConstraints":["UNITY_INCLUDE_TESTS"]}

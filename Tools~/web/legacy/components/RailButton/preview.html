@@ -1,0 +1,21 @@
+<!-- @dsCard group="Actions" height=196 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>RailButton — Veilbreak</title></head>
+<body class="vb vb-stage">
+<div id="root"></div>
+<script>
+var V = window.Veilbreak, h = React.createElement, F = React.Fragment;
+function cell(node, cap, style) { return h('div', { className: 'vb-col', style: Object.assign({ alignItems: 'flex-start' }, style || {}) }, node, cap ? h('div', { className: 'vb-cap' }, cap) : null); }
+function row(kids, style) { return h('div', { className: 'vb-row', style: Object.assign({ alignItems: 'flex-start', gap: 20 }, style || {}) }, kids); }
+var Rb = V.RailButton;
+ReactDOM.createRoot(document.getElementById('root')).render(row([
+  cell(h('div', { className: 'vb-col', style: { gap: 8 } }, h(Rb, { icon: 'team', label: 'Team', active: true }), h(Rb, { icon: 'automation', label: 'Auto' })), 'active · idle'),
+  cell(h(Rb, { icon: 'replay', label: 'Replays', isNew: true }), 'new badge'),
+  cell(h(Rb, { icon: 'studio', label: 'Studio' }), 'idle'),
+  cell(h(Rb, { icon: 'menu', ariaLabel: 'Menu' }), 'menu (icon only)'),
+  cell(h(Rb, { icon: 'automation', label: 'Automation', desktop: true }), 'desktop 104 × 80')
+]));
+</script>
+</body>
+</html>

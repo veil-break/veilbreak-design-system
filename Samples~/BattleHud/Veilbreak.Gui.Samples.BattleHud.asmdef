@@ -1,0 +1,7 @@
+{
+  "name": "Veilbreak.Gui.Samples.BattleHud",
+  "references": [
+    "Veilbreak.Gui"
+  ],
+  "autoReferenced": false
+}

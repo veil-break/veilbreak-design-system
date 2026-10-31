@@ -1,0 +1,7 @@
+{
+  "name": "Veilbreak.Gui.Samples.Gallery",
+  "references": [
+    "Veilbreak.Gui"
+  ],
+  "autoReferenced": false
+}

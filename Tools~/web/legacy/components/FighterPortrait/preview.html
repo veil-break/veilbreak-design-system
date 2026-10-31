@@ -1,0 +1,30 @@
+<!-- @dsCard group="Battle HUD" height=420 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>FighterPortrait — Veilbreak</title></head>
+<body class="vb vb-stage">
+<div id="root"></div>
+<script>
+var V = window.Veilbreak, h = React.createElement, F = React.Fragment;
+function cell(node, cap, style) { return h('div', { className: 'vb-col', style: Object.assign({ alignItems: 'flex-start' }, style || {}) }, node, cap ? h('div', { className: 'vb-cap' }, cap) : null); }
+function row(kids, style) { return h('div', { className: 'vb-row', style: Object.assign({ alignItems: 'flex-start', gap: 20 }, style || {}) }, kids); }
+var P = V.FighterPortrait;
+ReactDOM.createRoot(document.getElementById('root')).render(h('div', { className: 'vb-col', style: { gap: 22 } },
+  row([
+    cell(h(P, { code: 'AR', name: 'Aria', health: 72, stability: 80, state: 'selected', slot: 1 }), 'selected'),
+    cell(h(P, { code: 'AE', name: 'Aegis', health: 96, stability: 90, slot: 2, queue: 1 }), 'queued #1'),
+    cell(h(P, { code: 'MI', name: 'Mira', health: 58, stability: 40, auto: true, slot: 3 }), 'automated'),
+    cell(h(P, { code: 'NY', name: 'Nyra', health: 88, barrier: 10, stability: 70, slot: 4 }), 'barrier'),
+    cell(h(P, { code: 'RO', name: 'Rook', health: 45, state: 'exposed', team: 'enemy' }), 'enemy · exposed'),
+    cell(h(P, { code: 'EC', name: 'Echo', state: 'defeated', team: 'enemy' }), 'defeated')
+  ], { gap: 22 }),
+  row([
+    cell(h(P, { variant: 'card', code: 'AR', name: 'Aria', health: 72, stability: 80, state: 'selected', activity: 'aiming' }), 'card · aiming'),
+    cell(h(P, { variant: 'card', code: 'AE', name: 'Aegis', health: 96, stability: 60, activity: 'idle' }), 'card · idle'),
+    cell(h(P, { variant: 'card', code: 'MI', name: 'Mira', health: 58, stability: 40, activity: 'auto' }), 'card · auto'),
+    cell(h(P, { variant: 'card', code: 'NY', name: 'Nyra', health: 88, stability: 70, activity: 'queued #2' }), 'card · queued')
+  ], { gap: 14 })
+));
+</script>
+</body>
+</html>

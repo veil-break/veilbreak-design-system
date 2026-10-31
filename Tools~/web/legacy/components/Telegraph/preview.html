@@ -1,0 +1,23 @@
+<!-- @dsCard group="World space" height=530 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Telegraph — Veilbreak</title></head>
+<body class="vb vb-stage vb-stage--scene">
+<div id="root"></div>
+<script>
+var V = window.Veilbreak, h = React.createElement, F = React.Fragment;
+function cell(node, cap, style) { return h('div', { className: 'vb-col', style: Object.assign({ alignItems: 'flex-start' }, style || {}) }, node, cap ? h('div', { className: 'vb-cap' }, cap) : null); }
+function row(kids, style) { return h('div', { className: 'vb-row', style: Object.assign({ alignItems: 'flex-start', gap: 20 }, style || {}) }, kids); }
+var T = V.Telegraph;
+var shapes = ['projectile', 'fan', 'cone', 'burst', 'zone', 'beam', 'dash', 'wall'];
+ReactDOM.createRoot(document.getElementById('root')).render(h('div', { className: 'vb-col', style: { gap: 14 } },
+  row(shapes.map(function (s, i) { return cell(h(T, { shape: s, team: i % 2 ? 'enemy' : 'ally', width: 180 }), s + (i % 2 ? ' · enemy' : ' · ally')); }), { gap: 12 }),
+  row([
+    cell(h(T, { shape: 'beam', team: 'enemy', progress: 0.55, iso: true, width: 210 }), 'enemy beam · windup 55% · iso'),
+    cell(h(T, { shape: 'fan', team: 'ally', state: 'predicted', iso: true, width: 210 }), 'ally fan · predicted (dashed)'),
+    cell(h(T, { shape: 'burst', team: 'enemy', progress: 0.7, iso: true, width: 210 }), 'enemy burst · 70%')
+  ], { gap: 30, marginTop: 6 })
+));
+</script>
+</body>
+</html>

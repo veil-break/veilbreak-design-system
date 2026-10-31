@@ -1,0 +1,3 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:vb="Veilbreak.Gui">
+  <ui:ScrollView name="gallery" class="vb-root" />
+</ui:UXML>

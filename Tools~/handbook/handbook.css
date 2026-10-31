@@ -1,0 +1,30 @@
+/* Handbook additions to the web kit: the proposed slim frame, the slim-container preview switch, and the stages. */
+
+/* ── FrameComponent: slim (proposed) ─ mirrors catalog.SLIM_USS ── */
+.vb-frame--slim { --vb-cut: 4; --vb-bw: 0; --vb-fill: var(--panel); }
+.vb-frame--slim.vb-frame--raised { --vb-fill: var(--raised); }
+.vb-frame--slim.vb-frame--solid { --vb-fill: var(--panel-solid); }
+.vb-frame--slim.vb-frame--ally { --vb-fill: var(--ally-soft); }
+.vb-frame--slim.vb-frame--enemy { --vb-fill: var(--enemy-soft); }
+.vb-frame--slim.vb-frame--power { --vb-fill: var(--power-soft); }
+.vb-frame--chipped { --vb-cut: 10; --vb-bw: 1; --vb-edge: var(--line); }
+.vb-contrast .vb-frame--slim { --vb-bw: 1; --vb-edge: var(--line-strong); }
+.vb-card--selected { --vb-bw: 2; --vb-edge: var(--ally); --vb-bracket: var(--ally); }
+
+/* ── "Slim containers" switch: today's containers on the slim kind (catalog.SLIM_MIGRATION) ── */
+.hb-slim :is(.vb-section, .vb-dialog, .vb-details, .vb-score, .vb-perk-row, .vb-rule, .vb-result, .vb-queue__row,
+  .vb-merchant__exchange, .menu__checkpoint, .pause__perks, .results__score, .settings__note, .menu__best, .pause__chip, .perks__squad, .vb-panel:not(.vb-panel--brackets)) {
+  --vb-cut: 4; --vb-bw: 0;
+}
+.hb-slim .vb-score--current { --vb-bw: 1; }
+.hb-slim.vb-contrast :is(.vb-section, .vb-dialog, .vb-details, .vb-score, .vb-perk-row, .vb-rule, .vb-result, .vb-panel) { --vb-bw: 1; --vb-edge: var(--line-strong); }
+
+/* ── stages ── */
+.hb-free { background: var(--ground); color: var(--text); font-family: var(--font-body); padding: 16px; box-sizing: border-box; }
+.hb-phone { position: relative; width: 390px; height: 844px; overflow: hidden; color: var(--text); font-family: var(--font-body); }
+.hb-phone__status { position: absolute; left: 0; right: 0; top: 0; height: 48px; display: flex; justify-content: space-between; align-items: center; padding: 0 28px; font: 600 13px/1 var(--font-body); color: rgba(250,238,244,.8); z-index: 2; }
+.hb-phone__root { position: absolute; left: 0; right: 0; top: 48px; bottom: 34px; }
+.hb-phone::after { content: ""; position: absolute; left: 50%; bottom: 10px; width: 134px; height: 5px; margin-left: -67px; border-radius: 3px; background: rgba(250,238,244,.55); z-index: 3; pointer-events: none; }
+.hb-phone--raw .hb-phone__root { top: 0; bottom: 0; padding: 16px; background: var(--ground); }
+.hb-zone { border: 1px dashed rgba(143,240,207,.45); background: rgba(143,240,207,.05); display: flex; align-items: center; justify-content: center; min-height: 32px; }
+.hb-zone__label { font: 700 10px/1.2 var(--font-body); letter-spacing: .14em; color: var(--ally-text); text-transform: uppercase; text-align: center; white-space: normal; padding: 4px 8px; }

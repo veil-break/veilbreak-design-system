@@ -1,0 +1,21 @@
+<!-- @dsCard group="Battle HUD" height=260 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>MatchHeader — Veilbreak</title></head>
+<body class="vb vb-stage">
+<div id="root"></div>
+<script>
+var V = window.Veilbreak, h = React.createElement, F = React.Fragment;
+function cell(node, cap, style) { return h('div', { className: 'vb-col', style: Object.assign({ alignItems: 'flex-start' }, style || {}) }, node, cap ? h('div', { className: 'vb-cap' }, cap) : null); }
+function row(kids, style) { return h('div', { className: 'vb-row', style: Object.assign({ alignItems: 'flex-start', gap: 20 }, style || {}) }, kids); }
+var foes = [{ name: 'Sol', health: 64 }, { name: 'Rook', health: 48 }, { name: 'Hex', health: 80 }, { name: 'Echo', health: 0, defeated: true }];
+ReactDOM.createRoot(document.getElementById('root')).render(h('div', { className: 'vb-col', style: { gap: 18 } },
+  cell(h(V.MatchHeader, { clock: '0:58', fighters: foes }), 'landscape · enemies split around the clock'),
+  row([
+    cell(h(V.MatchHeader, { clock: '4:22', phase: 'pressure', fighters: foes.slice(0, 2) }), 'pressure phase'),
+    cell(h('div', { style: { width: 300 } }, h(V.MatchHeader, { compact: true, clock: '0:58', sub: 'Pressure in 0:28', fighters: foes })), 'portrait · compact')
+  ])
+));
+</script>
+</body>
+</html>

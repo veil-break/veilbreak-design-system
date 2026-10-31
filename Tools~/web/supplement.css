@@ -1,0 +1,35 @@
+/* Unity's default theme lays out the BaseSlider parts; the kit's rules above only restyle them. */
+.vb-slider { flex-direction: row; }
+.vb-slider .vb-u-base-field__label { display: flex; align-items: center; }
+.vb-slider .vb-u-base-slider__input { flex-grow: 1; flex-direction: row; }
+.vb-slider .vb-u-base-slider__drag-container { flex-grow: 1; cursor: pointer; touch-action: none; }
+.vb-slider .vb-u-base-slider__tracker { position: absolute; left: 0; right: 0; top: 50%; }
+.vb-slider .vb-u-base-slider__dragger { position: absolute; top: 50%; }
+/* ScanLines paints its lines as a mesh in Unity; here one gradient from the same two properties. */
+.vb-scanlines { background-image: repeating-linear-gradient(to bottom, var(--vb-scan) 0 1px, transparent 1px calc(var(--vb-scan-pitch) * 1px)); pointer-events: none; }
+/* Preview pages: the kit's stage (the legacy kit has its own vbl-stage). */
+body.vb-stage { background: var(--ground); color: var(--text); font-family: var(--font-body); padding: var(--space-4); min-height: 100vh; margin: 0; box-sizing: border-box; }
+html:has(> body.vb-stage) { background: var(--ground); }
+
+/* Web equivalent of the package's scheduled projection, with the same accessibility fallbacks. */
+.vb-web-glitch--in { animation: vb-projection-in var(--dur-glitch-in, 220ms) ease-out both; }
+.vb-web-glitch--out { animation: vb-projection-out var(--dur-glitch-out, 120ms) ease-in both; }
+.vb-web-glitch--slam { animation: vb-wave-slam var(--dur-wave-slam, 140ms) ease-out both; }
+.vb-glitch__copy { pointer-events: none; animation: vb-channel var(--dur-glitch-in, 220ms) steps(4) both; }
+.vb-glitch__red { transform: translateX(-2px); }
+.vb-glitch__cyan { transform: translateX(2px); }
+.vb-perk--epic .vb-perk-card__shimmer { animation: vb-shimmer 4s linear infinite; }
+@keyframes vb-projection-in { 0% { opacity: 0; transform: translateX(-3px); } 30% { opacity: .65; transform: translateX(3px); } 100% { opacity: 1; transform: none; } }
+@keyframes vb-projection-out { to { opacity: 0; transform: translateX(3px); } }
+@keyframes vb-wave-slam { 0% { transform: scale(2.4); } 72% { transform: scale(.91); } 100% { transform: scale(1); } }
+@keyframes vb-channel { 0%, 60% { opacity: .5; } 30%, 100% { opacity: 0; } }
+@keyframes vb-shimmer { 0% { left: -40px; opacity: 0; } 5% { opacity: 1; } 20% { left: 130%; opacity: 0; } 100% { left: 130%; opacity: 0; } }
+.vb-reduced-motion .vb-glitch, .vb-reduced-flashes .vb-glitch { animation: vb-fade-in 220ms linear both; }
+@keyframes vb-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .vb-glitch { animation: vb-fade-in 220ms linear both; } .vb-glitch__copy, .vb-perk-card__shimmer { display: none; } }
+
+.vb-glitch__clip { animation: vb-band var(--dur-glitch-in, 220ms) steps(5) both; pointer-events: none; }
+@keyframes vb-band { 0% { opacity: 0; transform: translateX(-9px); } 35% { opacity: .65; transform: translateX(8px); } 55% { opacity: .1; transform: translateX(-3px); } 80% { opacity: .4; transform: translateX(2px); } 100% { opacity: 0; transform: none; } }
+.vb-reduced-motion .vb-web-glitch--out, .vb-reduced-flashes .vb-web-glitch--out { animation: vb-fade-out var(--dur-glitch-out, 120ms) linear both; }
+@keyframes vb-fade-out { to { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .vb-glitch__clip { display: none; } .vb-web-glitch--out { animation: vb-fade-out var(--dur-glitch-out, 120ms) linear both; } }

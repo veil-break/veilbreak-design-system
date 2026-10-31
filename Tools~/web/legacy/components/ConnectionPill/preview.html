@@ -1,0 +1,20 @@
+<!-- @dsCard group="Battle HUD" height=120 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>ConnectionPill — Veilbreak</title></head>
+<body class="vb vb-stage">
+<div id="root"></div>
+<script>
+var V = window.Veilbreak, h = React.createElement, F = React.Fragment;
+function cell(node, cap, style) { return h('div', { className: 'vb-col', style: Object.assign({ alignItems: 'flex-start' }, style || {}) }, node, cap ? h('div', { className: 'vb-cap' }, cap) : null); }
+function row(kids, style) { return h('div', { className: 'vb-row', style: Object.assign({ alignItems: 'flex-start', gap: 20 }, style || {}) }, kids); }
+var Cp = V.ConnectionPill;
+ReactDOM.createRoot(document.getElementById('root')).render(row([
+  cell(h(Cp, { ms: 38, region: 'EU North' }), 'synced (< 120 ms)'),
+  cell(h(Cp, { ms: 148 }), 'unstable (120–199)'),
+  cell(h(Cp, { ms: 241 }), 'bad (≥ 200)'),
+  cell(h(Cp, { state: 'reconnecting' }), 'reconnecting')
+]));
+</script>
+</body>
+</html>

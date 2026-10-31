@@ -1,0 +1,35 @@
+{
+  "name": "com.veilbreak.gui",
+  "version": "0.2.0",
+  "displayName": "Veilbreak GUI",
+  "unity": "6000.3",
+  "description": "Portable UI Toolkit kit and source of the Veilbreak design system (Veil theme): generated tokens, fonts and icons, cut-corner shapes painted from USS, themed buttons and form controls, Power/focus/health meters, skill buttons, operative and perk cards, hover/tap popovers, a translucent portrait battle HUD, camera gestures and a portrait screen layer (navigator, safe area, dialogs). Data-agnostic: bind plain view models from any game.",
+  "dependencies": {
+    "com.unity.modules.uielements": "1.0.0",
+    "com.unity.modules.vectorgraphics": "1.0.0"
+  },
+  "keywords": [
+    "ui-toolkit",
+    "hud",
+    "veilbreak",
+    "theme",
+    "mobile"
+  ],
+  "author": {
+    "name": "tuomashatakka",
+    "url": "https://tuomashatakka.github.io",
+    "email": "tuomas.hatakka@gmail.com"
+  },
+  "samples": [
+    {
+      "displayName": "Gallery",
+      "description": "Every component in its main states, bound to sample view models.",
+      "path": "Samples~/Gallery"
+    },
+    {
+      "displayName": "BattleHud",
+      "description": "A portrait battle board with fake data: HUD band, manual queue, operative cards and the world layer.",
+      "path": "Samples~/BattleHud"
+    }
+  ]
+}

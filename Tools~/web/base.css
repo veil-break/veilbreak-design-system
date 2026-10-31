@@ -1,0 +1,17 @@
+/* ════════════════════════════════════════════════════════════════════════
+   The kit (com.veilbreak.gui): Gui.uss, Layout.uss and World.uss ported 1:1.
+   Put class "vb-root" on the screen's root (and nothing else) — it carries
+   UI Toolkit's layout defaults so the ported rules lay out as in Unity.
+   ════════════════════════════════════════════════════════════════════════ */
+.vb-root { display: flex; flex-direction: column; line-height: normal; -webkit-font-smoothing: antialiased; box-sizing: border-box; }
+.vb-root :where(div, button) {
+  display: flex; flex-direction: column; position: relative; box-sizing: border-box;
+  flex-shrink: 1; min-width: 0; min-height: 0; margin: 0; padding: 0; border: 0 solid transparent;
+}
+.vb-root :where(button) { font: inherit; color: inherit; text-align: left; background: none; cursor: pointer; appearance: none; }
+.vb-root :where(.vb-l) { display: block; white-space: nowrap; }
+.vb-root :where([tabindex], button):focus:not(:focus-visible) { outline: none; }
+.vb-root :where([tabindex], button):focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.vb-root :where([role="button"], [role="switch"], [role="radio"], .vb-tile, .vb-slot, .vb-perk-card, .vb-perk-row) { cursor: pointer; }
+.vb-paint { position: absolute; left: -8px; top: -8px; width: calc(100% + 16px); height: calc(100% + 16px); overflow: visible; pointer-events: none; display: block; }
+.vb-icon > svg, .vb-mark > svg { display: block; }

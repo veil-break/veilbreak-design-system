@@ -1,0 +1,6 @@
+/* Fixture for PanelTests.ShapePropertiesResolveTokenVariables: a token defined on an ancestor, read through a VbShape colour property. */
+.probe-host { --vb-color-probe: #ff0000; --vb-probe-cut: 9; }
+.probe-token { --vb-fill: var(--vb-color-probe); --vb-cut: var(--vb-probe-cut); width: 10px; height: 10px; }
+.probe-literal { --vb-fill: #00ff00; width: 10px; height: 10px; }
+.probe-host { --vb-probe-font: url("../../Runtime/Fonts/texgyreadventor-bold.otf"); }
+.probe-font { -unity-font-definition: var(--vb-probe-font); }

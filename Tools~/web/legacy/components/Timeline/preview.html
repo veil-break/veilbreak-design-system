@@ -1,0 +1,18 @@
+<!-- @dsCard group="Meta & collection" height=150 width=900 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Timeline — Veilbreak</title></head>
+<body class="vb vb-stage">
+<div id="root"></div>
+<script>
+var V = window.Veilbreak, h = React.createElement, F = React.Fragment;
+function cell(node, cap, style) { return h('div', { className: 'vb-col', style: Object.assign({ alignItems: 'flex-start' }, style || {}) }, node, cap ? h('div', { className: 'vb-cap' }, cap) : null); }
+function row(kids, style) { return h('div', { className: 'vb-row', style: Object.assign({ alignItems: 'flex-start', gap: 20 }, style || {}) }, kids); }
+ReactDOM.createRoot(document.getElementById('root')).render(h('div', { style: { maxWidth: 820 } }, h(V.Timeline, {
+  duration: 120, position: 72.4, pressureFrom: 90,
+  events: [{ t: 41.2, team: 'ally', label: 'Aegis shield blocked Sol' }, { t: 58, team: 'enemy', label: 'Rook field · Mira interrupted' }, { t: 66.7, team: 'ally', label: 'Mira ring' },
+    { t: 72.4, team: 'ally', label: 'Aria Fan' }, { t: 86.1, team: 'ally', label: 'Echo defeated' }, { t: 90, team: 'phase', label: 'Pressure phase' }, { t: 108.5, team: 'enemy', label: 'Rook zone damage' }]
+})));
+</script>
+</body>
+</html>

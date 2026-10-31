@@ -1,0 +1,58 @@
+<!-- @dsCard height=288 -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Veilbreak</title>
+<style>
+  html, body { margin: 0; height: 100%; }
+  body { background: var(--ground); color: var(--text); font-family: var(--font-body); overflow: hidden; }
+  .cover { position: relative; height: 288px; overflow: hidden; }
+  .art { position: absolute; top: 0; left: 480px; width: 480px; height: 288px; overflow: hidden; }
+  .art svg { display: block; width: 480px; height: 288px; }
+  .power { fill: var(--lavender-500); }
+  .ally { fill: var(--teal-500); }
+  .mint { fill: var(--teal-300); }
+  .enemy { fill: var(--crimson-400); }
+  .raised { fill: var(--dark-50); }
+  .hatch { stroke: var(--ground); stroke-width: 5px; stroke-linecap: butt; }
+  .words { position: absolute; left: var(--space-6); bottom: var(--space-6); max-width: 440px; }
+  .name { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: 68px; line-height: .95; letter-spacing: .06em; color: var(--text); }
+  .tag { margin: var(--space-2) 0 0 3px; font-size: 14px; line-height: 20px; color: var(--text-2); }
+</style>
+</head>
+<body>
+<div class="cover">
+<div class="art" aria-hidden="true">
+<svg viewBox="0 0 480 288" width="480" height="288">
+<!--
+  blocks      lavender-500 144×248 bled off the top (Power, the brand's midpoint) · teal-500 176×176 (ally/CTA) · crimson-400 112×112 bled off the right edge (enemy) · dark-50 112×64 (raised panel) · teal-300 64×16 once (the CTA's mint end) — about 40% of 960×288
+  arrangement one tall Power slab with satellites stepping right toward the enemy, bottoms on one line (y 240), space-4 gutters, the mint chip in the gutter between enemy and raised
+  pattern     the queued hatch, from "queued things are lavender hatch": 135° ground-colour lines at 3 × space-2 pitch cut through the Power slab only (16 lines)
+  scales      sides in space-4 multiples; gutters space-4; hatch pitch space-6 (4 × hatch-pitch); every block cut top-left/bottom-right at cut-lg (14), never rounded
+-->
+<defs>
+  <clipPath id="slab"><polygon points="16,-16 160,-16 160,226 146,240 16,240"/></clipPath>
+</defs>
+<polygon class="power" points="16,-16 160,-16 160,226 146,240 16,240"/>
+<g class="hatch" clip-path="url(#slab)">
+  <line x1="-40" y1="0" x2="200" y2="240"/><line x1="-64" y1="0" x2="176" y2="240"/><line x1="-88" y1="0" x2="152" y2="240"/>
+  <line x1="-112" y1="0" x2="128" y2="240"/><line x1="-136" y1="0" x2="104" y2="240"/><line x1="-160" y1="0" x2="80" y2="240"/>
+  <line x1="-184" y1="0" x2="56" y2="240"/><line x1="-208" y1="0" x2="32" y2="240"/>
+  <line x1="-16" y1="0" x2="224" y2="240"/><line x1="8" y1="0" x2="248" y2="240"/><line x1="32" y1="0" x2="272" y2="240"/>
+  <line x1="56" y1="0" x2="296" y2="240"/><line x1="80" y1="0" x2="320" y2="240"/><line x1="104" y1="0" x2="344" y2="240"/>
+  <line x1="128" y1="0" x2="368" y2="240"/><line x1="-232" y1="0" x2="8" y2="240"/>
+</g>
+<polygon class="ally" points="190,64 352,64 352,226 338,240 176,240 176,78"/>
+<polygon class="mint" points="368,144 432,144 432,160 368,160"/>
+<polygon class="enemy" points="382,16 496,16 496,128 368,128 368,30"/>
+<polygon class="raised" points="368,176 480,176 480,226 466,240 368,240"/>
+</svg>
+</div>
+<div class="words">
+<h1 class="name">Veilbreak</h1>
+<p class="tag">Legible tactics on a small screen.</p>
+</div>
+</div>
+</body>
+</html>

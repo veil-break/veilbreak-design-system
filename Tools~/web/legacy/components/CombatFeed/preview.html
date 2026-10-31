@@ -1,0 +1,21 @@
+<!-- @dsCard group="Battle HUD" height=250 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>CombatFeed — Veilbreak</title></head>
+<body class="vb vb-stage">
+<div id="root"></div>
+<script>
+var V = window.Veilbreak, h = React.createElement, F = React.Fragment;
+function cell(node, cap, style) { return h('div', { className: 'vb-col', style: Object.assign({ alignItems: 'flex-start' }, style || {}) }, node, cap ? h('div', { className: 'vb-cap' }, cap) : null); }
+function row(kids, style) { return h('div', { className: 'vb-row', style: Object.assign({ alignItems: 'flex-start', gap: 20 }, style || {}) }, kids); }
+ReactDOM.createRoot(document.getElementById('root')).render(h(V.CombatFeed, { entries: [
+  { t: '0:22', actor: 'Sol', team: 'enemy', text: 'telegraphs beam at', target: 'Aria' },
+  { t: '0:24', actor: 'Rook', team: 'enemy', text: 'stability 0 → Exposed (+40% damage taken)' },
+  { t: '0:27', actor: 'Hex', team: 'enemy', text: 'debuff missed', target: 'Nyra' },
+  { t: '0:30', actor: 'Pressure', team: 'system', text: 'phase began' },
+  { t: '0:34', actor: 'Aria', team: 'ally', text: 'Pierce hit', target: 'Echo', after: '· defeated' },
+  { t: '0:36', actor: 'Aegis', team: 'ally', text: 'shield blocked 2 projectiles' }
+] }));
+</script>
+</body>
+</html>

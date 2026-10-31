@@ -1,0 +1,14 @@
+<!-- @dsCard group="Battle HUD" height=120 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>ConnectionBanner — Veilbreak</title></head>
+<body class="vb vb-stage">
+<div id="root"></div>
+<script>
+var V = window.Veilbreak, h = React.createElement, F = React.Fragment;
+function cell(node, cap, style) { return h('div', { className: 'vb-col', style: Object.assign({ alignItems: 'flex-start' }, style || {}) }, node, cap ? h('div', { className: 'vb-cap' }, cap) : null); }
+function row(kids, style) { return h('div', { className: 'vb-row', style: Object.assign({ alignItems: 'flex-start', gap: 20 }, style || {}) }, kids); }
+ReactDOM.createRoot(document.getElementById('root')).render(h('div', { style: { maxWidth: 620 } }, h(V.ConnectionBanner)));
+</script>
+</body>
+</html>

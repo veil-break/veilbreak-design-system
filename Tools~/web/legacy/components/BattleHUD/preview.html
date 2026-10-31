@@ -1,0 +1,98 @@
+<!-- @dsCard group="Showcase" height=390 width=844 subtitle="Mobile landscape reference board, 844 × 390, built only from the bundle" page -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Battle HUD — Veilbreak</title>
+<style>
+  html, body { margin: 0; background: var(--ground); }
+  .board { position: relative; width: 844px; height: 390px; overflow: hidden; font-family: var(--font-body); color: var(--text);
+    background: radial-gradient(90% 80% at 55% 35%, var(--scene-fog) 0%, var(--dark-100) 60%, var(--dark-300) 100%); }
+  .floor { position: absolute; left: -80px; top: -300px; width: 1000px; height: 900px; transform: rotateX(56deg) rotateZ(-38deg); transform-style: preserve-3d;
+    background-color: var(--scene-ground); }
+  .floor::before { content: ""; position: absolute; inset: 0; background-image:
+      linear-gradient(rgb(143 240 207 / .06) 1px, transparent 1px), linear-gradient(90deg, rgb(143 240 207 / .06) 1px, transparent 1px);
+      background-size: 28px 28px; }
+  .street { position: absolute; background: repeating-linear-gradient(90deg, rgb(250 238 244 / .07) 0 10px, transparent 10px 20px); }
+  .box { position: absolute; transform-style: preserve-3d; }
+  .box i { position: absolute; display: block; }
+  .box .top { inset: 0; background: #3a3150; transform: translateZ(var(--hz)); box-shadow: inset 0 0 0 1px rgb(250 238 244 / .08); }
+  .box .s1 { left: 0; right: 0; bottom: 0; height: var(--hz); background: #2a2238; transform-origin: bottom; transform: rotateX(-90deg); }
+  .box .s2 { top: 0; bottom: 0; right: 0; width: var(--hz); background: #1f1829; transform-origin: right; transform: rotateY(90deg); }
+  .box .neon { left: 8%; right: 8%; bottom: 30%; height: 2px; background: var(--scene-neon); transform-origin: bottom; transform: rotateX(-90deg) translateZ(1px); box-shadow: 0 0 8px var(--scene-neon); }
+  .decal { position: absolute; transform: translate(-50%, -50%); }
+  .tele { position: absolute; transform-origin: 30px 70px; }
+  .probe { position: absolute; width: 2px; height: 2px; }
+  .ov { position: absolute; transform: translate(-50%, -100%); pointer-events: none; }
+  .fighter { display: block; filter: drop-shadow(0 2px 2px rgb(0 0 0 / .6)); }
+  .hud { position: absolute; z-index: 50; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+var V = window.Veilbreak, h = React.createElement, F = React.Fragment;
+var fighters = {
+  Aria: { x: 353, y: 573, team: 'ally', sel: true }, Aegis: { x: 367, y: 653, team: 'ally' }, Mira: { x: 285, y: 468, team: 'ally' }, Nyra: { x: 256, y: 566, team: 'ally' },
+  Sol: { x: 661, y: 633, team: 'enemy', hp: 64 }, Rook: { x: 566, y: 593, team: 'enemy', hp: 48 }, Hex: { x: 642, y: 731, team: 'enemy', hp: 80 }
+};
+var boxes = [[455, 540, 34, 70, 28], [300, 400, 50, 50, 34], [520, 720, 60, 32, 22], [720, 470, 34, 70, 30], [500, 420, 54, 28, 18], [190, 660, 80, 30, 24], [640, 380, 40, 40, 26]];
+function ang(a, b) { return Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI; }
+function dist(a, b) { return Math.hypot(b.x - a.x, b.y - a.y); }
+function Pawn(p) {
+  var c = p.team === 'enemy' ? 'var(--enemy)' : 'var(--ally)';
+  return h('svg', { className: 'fighter', width: 26, height: 46, viewBox: '0 0 26 46' },
+    p.team === 'enemy' ? h('path', { d: 'M8 9L10 4L13 7L16 4L18 9Z', fill: 'var(--enemy-text)' }) : h('rect', { x: 10, y: 1, width: 6, height: 6, transform: 'rotate(45 13 4)', fill: 'var(--text)' }),
+    h('path', { d: 'M8 13H18L21 28H5Z', fill: p.team === 'enemy' ? 'var(--enemy-soft)' : 'var(--ally-soft)', stroke: c, strokeWidth: 1.6 }),
+    h('path', { d: 'M10 28L9 43M16 28L17 43M13 28V38', stroke: c, strokeWidth: 1.6, fill: 'none' }));
+}
+function Board() {
+  var ref = React.useRef(null);
+  var st = React.useState({});
+  React.useLayoutEffect(function () {
+    var root = ref.current, base = root.getBoundingClientRect(), out = {};
+    root.querySelectorAll('[data-probe]').forEach(function (el) { var r = el.getBoundingClientRect(); out[el.getAttribute('data-probe')] = [r.left + r.width / 2 - base.left, r.top + r.height / 2 - base.top]; });
+    st[1](out);
+  }, []);
+  var pos = st[0];
+  var A = fighters.Aria, Ro = fighters.Rook, So = fighters.Sol, Ae = fighters.Aegis;
+  function at(name, node, dy, extra) { var p = pos[name]; if (!p) return null; return h('div', { key: name + (extra || ''), className: 'ov', style: { left: p[0], top: p[1] + (dy || 0) } }, node); }
+  var floor = h('div', { className: 'floor' },
+    h('i', { className: 'street', style: { left: 0, right: 0, top: 760, height: 40 } }),
+    h('i', { className: 'street', style: { left: 0, right: 0, top: 330, height: 40 } }),
+    h('div', { className: 'tele', style: { left: A.x - 30, top: A.y - 70, transform: 'rotate(' + ang(A, Ro).toFixed(1) + 'deg)' } }, h(V.Telegraph, { shape: 'fan', team: 'ally', width: 220 })),
+    h('div', { className: 'tele', style: { left: So.x - 30 * 260 / 220, top: So.y - 70 * 260 / 220, transformOrigin: (30 * 260 / 220) + 'px ' + (70 * 260 / 220) + 'px', transform: 'rotate(' + ang(So, Ae).toFixed(1) + 'deg)' } }, h(V.Telegraph, { shape: 'beam', team: 'enemy', progress: 0.6, width: 260 })),
+    Object.keys(fighters).map(function (n) { var f = fighters[n]; return h('div', { key: 'm' + n, className: 'decal', style: { left: f.x, top: f.y } }, h(V.WorldMarker, { kind: f.sel ? 'selected' : f.team, size: f.sel ? 58 : 40 })); }),
+    boxes.map(function (b, i) { return h('div', { key: 'b' + i, className: 'box', style: { left: b[0], top: b[1], width: b[2], height: b[3], '--hz': b[4] + 'px' } }, h('i', { className: 's1' }), h('i', { className: 's2' }), h('i', { className: 'top' }), i % 2 ? null : h('i', { className: 'neon' })); }),
+    Object.keys(fighters).map(function (n) { var f = fighters[n]; return h('i', { key: 'p' + n, className: 'probe', 'data-probe': n, style: { left: f.x - 1, top: f.y - 1 } }); }),
+    null);
+  var over = [];
+  Object.keys(fighters).forEach(function (n) {
+    var f = fighters[n];
+    over.push(at(n, h(Pawn, { team: f.team }), 4, 'pawn'));
+    if (f.team === 'enemy') over.push(at(n, h(V.WorldLabel, { kind: 'name', title: n, health: f.hp, stability: n === 'Rook' ? 0 : 60, exposed: n === 'Rook', team: 'enemy' }), -46, 'tag'));
+    else if (!f.sel) over.push(at(n, h(V.HealthBar, { value: n === 'Mira' ? 58 : 90, stability: 70, size: 'world' }), -46, 'tag'));
+  });
+  over.push(at('Aria', h(V.WorldLabel, { kind: 'aim', title: 'Q · Fan', cost: 18, detail: 'Fan −18 → 16 left' }), -50, 'aim'));
+  over.push(at('Sol', h(V.WorldLabel, { kind: 'telegraph', title: 'Beam telegraph · 0.4s' }), -70, 'bl'));
+  return h('div', { ref: ref, className: 'vb board' },
+    floor, over,
+    h('div', { className: 'hud', style: { left: 16, top: 12 } }, h(V.ConnectionPill, { ms: 38, showState: false })),
+    h('div', { className: 'hud', style: { left: '50%', top: 6, transform: 'translateX(-50%)' } }, h(V.MatchHeader, { clock: '0:58', fighters: [{ name: 'Sol', health: 64 }, { name: 'Rook', health: 48 }, { name: 'Hex', health: 80 }, { name: 'Echo', defeated: true }] })),
+    h('div', { className: 'hud', style: { right: 24, top: 6 } }, h(V.RailButton, { icon: 'menu', ariaLabel: 'Menu' })),
+    h('div', { className: 'hud vb-col', style: { left: 16, top: 70, gap: 6 } },
+      h(V.FighterPortrait, { code: 'AR', name: 'Aria', health: 72, stability: 80, state: 'selected' }),
+      h(V.FighterPortrait, { code: 'AE', name: 'Aegis', health: 90, stability: 70 }),
+      h(V.FighterPortrait, { code: 'MI', name: 'Mira', health: 58, stability: 40, auto: true }),
+      h(V.FighterPortrait, { code: 'NY', name: 'Nyra', health: 90, stability: 70 })),
+    h('div', { className: 'hud', style: { right: 24, top: 158 } }, h(V.AbilityButton, { label: 'Pierce', icon: 'pierce', cost: 40, state: 'short', time: '0.8s' })),
+    h('div', { className: 'hud vb-row', style: { right: 24, top: 230, gap: 8, alignItems: 'flex-end' } },
+      h(V.AbilityButton, { label: 'Queue', icon: 'queue' }),
+      h(V.AbilityButton, { label: 'Fan', icon: 'fan', cost: 18, state: 'aiming' }),
+      h(V.AbilityButton, { label: 'Arrow', icon: 'arrow', cost: 0, size: 'lg' })),
+    h('div', { className: 'hud', style: { left: 16, right: 24, bottom: 10 } },
+      h(V.Panel, { cut: 'md', style: { padding: '8px 14px 10px' } }, h(V.PowerStrip, { value: 34, regen: '+8/s', preview: [16, 34], hint: h(F, null, 'Fan −18 → ', h('b', null, '16 left')) })))
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(h(Board));
+</script>
+</body>
+</html>
