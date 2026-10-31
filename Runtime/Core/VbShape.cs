@@ -15,16 +15,23 @@ public static class VbShape {
  const float Diagonal=.4142f;
  static readonly CustomStyleProperty<float> CutP=new CustomStyleProperty<float>("--vb-cut"),WidthP=new CustomStyleProperty<float>("--vb-bw"),DirP=new CustomStyleProperty<float>("--vb-fill-dir"),DashP=new CustomStyleProperty<float>("--vb-dash"),BracketLengthP=new CustomStyleProperty<float>("--vb-bracket-len");
  static readonly CustomStyleProperty<Color> FillP=new CustomStyleProperty<Color>("--vb-fill"),FillToP=new CustomStyleProperty<Color>("--vb-fill-to"),EdgeP=new CustomStyleProperty<Color>("--vb-edge"),EdgeToP=new CustomStyleProperty<Color>("--vb-edge-to"),BracketP=new CustomStyleProperty<Color>("--vb-bracket"),GlowP=new CustomStyleProperty<Color>("--vb-glow");
- sealed class Look {public float cut=10,width=1,dir,bracketLength=8;public bool dash;public Color fill,fillTo,edge,edgeTo,bracket,glow;}
+ /// <summary>The six colours a shape paints; state changes cross-fade between two of these.</summary>
+ struct Palette {public Color fill,fillTo,edge,edgeTo,bracket,glow;
+  public static Palette Lerp(in Palette a,in Palette b,float t)=>new Palette{fill=Color.Lerp(a.fill,b.fill,t),fillTo=Color.Lerp(a.fillTo,b.fillTo,t),edge=Color.Lerp(a.edge,b.edge,t),edgeTo=Color.Lerp(a.edgeTo,b.edgeTo,t),bracket=Color.Lerp(a.bracket,b.bracket,t),glow=Color.Lerp(a.glow,b.glow,t)};
+  public bool Same(in Palette o)=>fill==o.fill&&fillTo==o.fillTo&&edge==o.edge&&edgeTo==o.edgeTo&&bracket==o.bracket&&glow==o.glow;}
+ sealed class Look {public float cut=10,width=1,dir,bracketLength=8;public bool dash,painted;public Color fill,fillTo,edge,edgeTo,bracket,glow;public Palette from,to;public IVisualElementScheduledItem timer;public float began;
+  public Palette Shown=>new Palette{fill=fill,fillTo=fillTo,edge=edge,edgeTo=edgeTo,bracket=bracket,glow=glow};
+  public void Set(in Palette p){fill=p.fill;fillTo=p.fillTo;edge=p.edge;edgeTo=p.edgeTo;bracket=p.bracket;glow=p.glow;}}
  static readonly ConditionalWeakTable<VisualElement,Look> Looks=new ConditionalWeakTable<VisualElement,Look>();
 
  /// <summary>Paints <paramref name="element"/> as a cut shape from its stylesheet and returns it.</summary>
  public static T Attach<T>(T element) where T:VisualElement {
   if(Looks.TryGetValue(element,out _))return element;
   var look=new Look();Looks.Add(element,look);element.AddToClassList(ClassName);
-  element.RegisterCallback<CustomStyleResolvedEvent>(_=>{Read(element.customStyle,look);element.MarkDirtyRepaint();});
+  element.RegisterCallback<CustomStyleResolvedEvent>(_=>{Read(element.customStyle,look);Settle(element,look);element.MarkDirtyRepaint();});
   element.RegisterCallback<GeometryChangedEvent>(_=>element.MarkDirtyRepaint());
-  element.generateVisualContent+=context=>Paint(context,element.layout.width,element.layout.height,look);
+  element.generateVisualContent+=context=>{look.painted=true;Paint(context,element.layout.width,element.layout.height,look);};
+  element.RegisterCallback<DetachFromPanelEvent>(_=>{look.timer?.Pause();look.timer=null;look.Set(look.to);look.painted=false;});
   return element;
  }
 
@@ -32,7 +39,17 @@ public static class VbShape {
   float N(CustomStyleProperty<float> p,float d)=>s.TryGetValue(p,out var v)?v:d;
   Color C(CustomStyleProperty<Color> p)=>s.TryGetValue(p,out var v)?v:Color.clear;
   k.cut=N(CutP,10);k.width=N(WidthP,1);k.dir=N(DirP,0);k.dash=N(DashP,0)>.5f;k.bracketLength=N(BracketLengthP,8);
-  k.fill=C(FillP);k.fillTo=C(FillToP);k.edge=C(EdgeP);k.edgeTo=C(EdgeToP);k.bracket=C(BracketP);k.glow=C(GlowP);
+  k.to=new Palette{fill=C(FillP),fillTo=C(FillToP),edge=C(EdgeP),edgeTo=C(EdgeToP),bracket=C(BracketP),glow=C(GlowP)};
+ }
+
+ /// <summary>State changes (selected, pressed, blocked, a skill coming ready) cross-fade the colours over <c>dur-ui</c> on real time; the first
+ /// paint, and a shape off a panel, take them at once. Shape, width and dashes switch at once: they are states, not decoration.</summary>
+ static void Settle(VisualElement e,Look k){
+  if(!k.painted||e.panel==null){k.timer?.Pause();k.timer=null;k.Set(k.to);return;}
+  var shown=k.Shown;if(shown.Same(k.to)){k.timer?.Pause();k.timer=null;return;}
+  k.from=shown;k.began=Time.realtimeSinceStartup;
+  if(k.timer==null)k.timer=e.schedule.Execute(()=>{float p=Mathf.Clamp01((Time.realtimeSinceStartup-k.began)*1000/VbTokens.DurUi);k.Set(Palette.Lerp(k.from,k.to,VbMotion.Ease(p)));e.MarkDirtyRepaint();if(p>=1){k.timer.Pause();k.timer=null;}}).Every(16);
+  else k.timer.Resume();
  }
 
  /// <summary>The chamfered outline of a <paramref name="w"/>×<paramref name="h"/> shape, moved inward by <paramref name="inset"/> (negative grows it).</summary>

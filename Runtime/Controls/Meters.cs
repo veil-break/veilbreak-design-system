@@ -13,7 +13,7 @@ namespace Veilbreak.Gui {
   extra.Show(extraSpan>0);extra.style.left=Length.Percent(value*100);Ui.Fill(extra,extraSpan);return this;
  }
  /// <summary>Dashed span between two fractions; a negative <paramref name="from"/> hides it.</summary>
- public VbMeter Preview(float from,float to){bool on=from>=0&&to>from;preview.Show(on);if(on){preview.style.left=Length.Percent(Mathf.Clamp01(from)*100);preview.style.width=Length.Percent(Mathf.Clamp01(to-from)*100);}return this;}
+ public VbMeter Preview(float from,float to){bool on=from>=0&&to>from;VbMotion.Show(preview,on);if(on){preview.style.left=Length.Percent(Mathf.Clamp01(from)*100);preview.style.width=Length.Percent(Mathf.Clamp01(to-from)*100);}return this;}
  /// <summary>Numbered marks at fractions of the track (queue entries firing at a Power level).</summary>
  public VbMeter Marks(IReadOnlyList<float> at){
   for(int i=0;i<Mathf.Max(marks.Count,at?.Count??0);i++){
@@ -52,14 +52,14 @@ namespace Veilbreak.Gui {
  }
  int shownMax=-1;
  public PowerStrip Set(int value,int max,string regen,string hint=null,int previewFrom=-1,int previewTo=-1,IReadOnlyList<float> marks=null){
-  float m=Mathf.Max(1,max);this.value.text=Ui.Count(value);if(max!=shownMax){shownMax=max;this.max.text="/"+max;}this.regen.text=regen??"";this.hint.text=hint??"";this.hint.Show(!string.IsNullOrEmpty(hint));
+  float m=Mathf.Max(1,max);this.value.text=Ui.Count(value);if(max!=shownMax){shownMax=max;this.max.text="/"+max;}this.regen.text=regen??"";this.hint.text=hint??"";VbMotion.Show(this.hint,!string.IsNullOrEmpty(hint),MotionKind.Drop);
   meter.Set(value/m).Preview(previewFrom<0?-1:previewFrom/m,previewTo/m).Marks(marks);return this;
  }
  /// <summary>The autopilot's soft reserve as a line on the track; zero or less hides it.</summary>
  public PowerStrip Reserve(int at,int max=100){reserve.Show(at>0);if(at>0)reserve.style.left=Length.Percent(Mathf.Clamp01(at/(float)Mathf.Max(1,max))*100);reserve.tooltip="Autoplay keeps "+at+" Power in reserve";return this;}
  /// <summary>Queue entries as chips under the track (at most four, first in first out). Manual chips raise <paramref name="cancel"/> from their ×.</summary>
- public PowerStrip Queue(IReadOnlyList<QueueView> entries,Action<QueueView> cancel=null){this.cancel=cancel;int n=Mathf.Min(4,entries?.Count??0);queue.Show(n>0);
-  for(int i=0;i<Mathf.Max(n,chips.Count);i++){if(i>=chips.Count){var chip=new QueueChip().Into(queue);chip.Cancelled+=()=>this.cancel?.Invoke(chip.View);chips.Add(chip);}chips[i].Show(i<n);if(i<n)chips[i].Bind(entries[i],i+1);}
+ public PowerStrip Queue(IReadOnlyList<QueueView> entries,Action<QueueView> cancel=null){this.cancel=cancel;int n=Mathf.Min(4,entries?.Count??0);VbMotion.Show(queue,n>0,MotionKind.Drop);
+  for(int i=0;i<Mathf.Max(n,chips.Count);i++){if(i>=chips.Count){var chip=new QueueChip().Into(queue);chip.Cancelled+=()=>this.cancel?.Invoke(chip.View);chips.Add(chip);}VbMotion.Show(chips[i],i<n,MotionKind.Left);if(i<n)chips[i].Bind(entries[i],i+1);}
   return this;}
  /// <summary>A one-line key under the strip ("▮ queued · ┊ reserve"); empty hides it.</summary>
  public PowerStrip Legend(string text){legend.text=text??"";legend.Show(legend.text.Length>0);return this;}

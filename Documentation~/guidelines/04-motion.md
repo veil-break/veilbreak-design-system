@@ -54,6 +54,28 @@ Component timings that are not tokens:
   (game-side).
 - The camera drifts toward the pointer by at most the parallax limits in [world space](02-world-space.md#the-battle-camera).
 
+## State changes
+
+Every GUI and HUD state change animates through `VbMotion` (see the [component reference](../components.md#vbmotion)); a view
+never flips `display` directly.
+
+| Change | Motion |
+| --- | --- |
+| Page change (`Navigator.Open`) | The old page fades out while the new one rises in (`dur-ui`). |
+| Screen close | Fades out (`dur-glitch-out`). |
+| Modal layer | The scrim fades in and the content rises in, staggered. Closing fades the layer out; input under it returns at once. |
+| Popover | Drops (or rises) in and fades out. |
+| Shown or hidden part (hints, previews, chips, barrier, sheets, checkpoint card) | `VbMotion.Show`: rise, zoom or fade in, fade out. |
+| Lists, grids and dealt cards | Staggered rise, 50 ms apart. |
+| Content replaced in place | `Swap`: fade out, rebuild, fade in. |
+| Number change (score, credits) | `Count` rolls it over `dur-change`. |
+| Toggle or value change (speed, autoplay, header meta, skill ready) | `Pop`: a single 10% swell. |
+| Refused action | `Shake`, with the refused flash. |
+| State colours (VbShape fills, edges and glows; text and tint) | Cross-fade over `dur-ui` (`Motion.uss` and `VbShape`). |
+
+UI motion runs on real time, so it keeps its speed under Clock focus. It never delays input: leaving pages and layers
+stop taking input as soon as they start to leave.
+
 ## Reduced motion and reduced flashes
 
 The game passes both settings to `SafeAreaRoot.Flags(largeText, reducedMotion, contrast, reducedFlashes)` and sets
@@ -61,7 +83,7 @@ The game passes both settings to `SafeAreaRoot.Flags(largeText, reducedMotion, c
 
 | Setting | Effect |
 | --- | --- |
-| Reduced motion (`vb-reduced-motion`) | Combat text fades in place without rising or popping. `HoloFrame` fades instead of flickering and loses its chromatic copies. `RevealCard` turns face up at once. The camera drops parallax, drift and shake. |
+| Reduced motion (`vb-reduced-motion`) | Every `VbMotion` movement becomes a fade, `Count` jumps and `Motion.uss` transitions stop. Combat text fades in place without rising or popping. `HoloFrame` fades instead of flickering and loses its chromatic copies. `RevealCard` turns face up at once. The camera drops parallax, drift and shake. |
 | Reduced flashes (`vb-reduced-flashes`) | No glows. `HoloFrame` fades instead of flickering and loses its chromatic copies. The refused flash becomes a faint tint. Global brightness pulses stop (feedback package). |
 
 Sweeps and cooldown fills stay in both modes: they are data, not decoration.

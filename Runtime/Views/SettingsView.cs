@@ -15,7 +15,7 @@ namespace Veilbreak.Gui {
   header=new ScreenHeader("SETTINGS","").Into(this);header.Back+=()=>Back?.Invoke();form=new FormComposite(header).Into(this);
   var audio=form.Fieldset("AUDIO");master=new VbSlider("Master",0).Into(audio).Changed(v=>view.master=v);music=new VbSlider("Music",0).Into(audio).Changed(v=>view.music=v);effects=new VbSlider("Effects",0).Into(audio).Changed(v=>view.effects=v);
   var feel=form.Fieldset("FEEL");haptics=new VbSwitch("HAPTICS","Light pulse when an order is accepted",false).Into(feel).Changed(v=>view.haptics=v);motion=new VbSwitch("REDUCED MOTION","No camera shake · fades replace flicker · flat panels",false).Into(feel).Changed(v=>view.reducedMotion=v);
-  var cam=form.Fieldset("CAMERA");camera=new VbSegmented(new[]{("FULL","Parallax"),("REDUCED","No drift"),("OFF","Fixed")},0).Into(cam).Changed(v=>view.camera=v);sensitivity=new VbSlider("Sensitivity",0).Into(cam).Changed(v=>view.sensitivity=v);
+  var cam=form.Fieldset("CAMERA");camera=new VbSegmented(new[]{("FULL","Parallax"),("REDUCED","No drift"),("OFF","Fixed")},0){name="camera-motion"}.Into(cam).Changed(v=>view.camera=v);sensitivity=new VbSlider("Sensitivity",0).Into(cam).Changed(v=>view.sensitivity=v);
   Ui.Text(cam,"Pinch to zoom, twist to turn, drag empty ground to pan, double-tap to reset.","vb-t-caption");
   var q=form.Fieldset("QUALITY");quality=new VbSegmented(new[]{("LOW","Stable 30 FPS"),("STANDARD","60 FPS target")},1).Into(q).Changed(v=>view.quality=v);Ui.Text(q,"Applies on the next wave. Telegraphs stay fully visible on both tiers.","vb-t-caption");
   note=form.Note("automation","").Q<Label>();
@@ -30,5 +30,20 @@ namespace Veilbreak.Gui {
   haptics.SetValueWithoutNotify(view.haptics);motion.SetValueWithoutNotify(view.reducedMotion);camera.SetValueWithoutNotify(view.camera);quality.SetValueWithoutNotify(view.quality);
   note.text=view.note??"";note.parent.Show(note.text.Length>0);form.SavedMeta=view.saved;return this;
  }
+}
+
+/// <summary>Display accessibility: reduced flashes, larger text and high contrast. Values apply as they change.</summary>
+[UxmlElement] public partial class AccessibilityView:ScreenView {
+ public const string Block="vb-accessibility";
+ readonly VbSwitch flashes,text,contrast;AccessibilityViewModel view=new AccessibilityViewModel();
+ public event Action<AccessibilityViewModel> Changed;
+ public event Action Back;
+ public AccessibilityView():base(Block,true){
+  var header=new ScreenHeader("DISPLAY","ACCESSIBILITY").Into(this);header.Back+=()=>Back?.Invoke();var form=new FormComposite(header).Into(this);var display=form.Fieldset("DISPLAY");
+  flashes=new VbSwitch("REDUCED FLASHES","Removes global brightness pulses",false){name="reduced-flashes"}.Into(display).Changed(v=>{view.reducedFlashes=v;Changed?.Invoke(view);});
+  text=new VbSwitch("LARGER TEXT","Increase body text and scroll long content",false){name="larger-text"}.Into(display).Changed(v=>{view.largerText=v;Changed?.Invoke(view);});
+  contrast=new VbSwitch("HIGH CONTRAST","Brighter text, lines and team colours",false){name="high-contrast"}.Into(display).Changed(v=>{view.highContrast=v;Changed?.Invoke(view);});
+ }
+ public AccessibilityView Bind(AccessibilityViewModel v){view=v??new AccessibilityViewModel();flashes.SetValueWithoutNotify(view.reducedFlashes);text.SetValueWithoutNotify(view.largerText);contrast.SetValueWithoutNotify(view.highContrast);return this;}
 }
 }

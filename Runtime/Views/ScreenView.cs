@@ -6,5 +6,10 @@ namespace Veilbreak.Gui {
 public abstract class ScreenView:VisualElement {
  public const string ClassName="vb-view";
  protected ScreenView(string block,bool headed=false){AddToClassList(ClassName);AddToClassList(block);EnableInClassList(ClassName+"--headed",headed);pickingMode=PickingMode.Ignore;}
+ /// <summary>What a deal brings in one after another (perk cards, road signs, offers); empty by default.</summary>
+ protected virtual System.Collections.Generic.IEnumerable<VisualElement> DealItems(){yield break;}
+ /// <summary>The page deal (guideline 4): heads-up titles glitch in and the deal items rise in <see cref="VbMotion.StaggerStep"/> apart, after
+ /// the page's own entrance. Call it once the view is on its page.</summary>
+ public ScreenView Deal(){foreach(var text in this.Query<GlitchText>().ToList())Glitch.In(text);VbMotion.Stagger(new System.Collections.Generic.List<VisualElement>(DealItems()),MotionKind.Rise,VbMotion.StaggerStep);return this;}
 }
 }

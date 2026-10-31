@@ -54,7 +54,8 @@
 .vb-pause__chips { max-height: 76px; overflow: hidden; }
 .vb-pause__chip { margin: 0 6px 6px 0; --vb-fill: rgb(14, 9, 20); }
 .vb-pause__button { min-height: 48px; }
-.vb-pause__exit { position: absolute; left: 10px; top: 0; min-height: 45px; --vb-fill: rgba(14, 9, 20, 0.85); --vb-fill-to: rgba(14, 9, 20, 0.85); --vb-edge: rgba(250, 238, 244, 0.35); }
+/* EXIT replaces the HUD pause button in place: 10px from the screen edge, through the page's 16px gutter */
+.vb-pause__exit { position: absolute; left: -6px; top: 0; min-height: 45px; --vb-fill: rgba(14, 9, 20, 0.85); --vb-fill-to: rgba(14, 9, 20, 0.85); --vb-edge: rgba(250, 238, 244, 0.35); }
 
 /* ── ConfirmDialogView, GuideDialogView ────────────────────────────────── */
 .vb-confirm, .vb-guide { flex-shrink: 0; margin-bottom: 12px; }
@@ -116,3 +117,18 @@
 .vb-compact .vb-battle__card .vb-skill__icon { margin-top: 6px; width: 16px; height: 16px; }
 .vb-compact .vb-battle__card .vb-operative__band { height: 36px; }
 .vb-compact .vb-battle__card .vb-operative__name { font-size: 10px; letter-spacing: 0; }
+
+/* ── active perks, revive, accessibility ───────────────────────────────── */
+.vb-build__summary { flex-direction: row; flex-wrap: wrap; padding: 8px 12px; margin-top: 6px; margin-bottom: 3px; flex-shrink: 0; }
+.vb-build__bonus { flex-direction: row; align-items: center; margin-right: 12px; }
+.vb-build__bonus-value { margin-left: 6px; -unity-font-definition: var(--vb-font-body-medium); font-size: 13px; color: var(--vb-color-ally-text); }
+.vb-build__list { flex-grow: 0; flex-shrink: 1; max-height: 348px; margin-bottom: 10px; }
+.vb-build__detail { margin-top: 12px; flex-shrink: 0; }
+.vb-revive .vb-grid4 { margin-top: 8px; }
+.vb-accessibility > .vb-form { margin-left: 12px; margin-right: 12px; }
+
+/* ── leaving pages overlay the one that replaces them ──────────────────── */
+.vb-page--leaving { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
+.vb-battle__bottom { position: relative; }
+.vb-board__bottom { position: relative; }
+.vb-battle__cancel { position: absolute; left: 10px; right: 10px; bottom: 100%; height: 40px; margin-bottom: 8px; border-width: 1px; border-color: var(--vb-color-line-strong); background-color: rgba(5, 2, 8, 0.70); -unity-text-align: middle-center; -unity-font-definition: var(--vb-font-body-medium); -unity-font-style: bold; font-size: 11px; letter-spacing: 12.727px; color: var(--vb-color-text-2); }

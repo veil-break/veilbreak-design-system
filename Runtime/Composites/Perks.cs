@@ -28,7 +28,7 @@ static class PerkArt {
   shimmerTick=schedule.Execute(()=>{bool on=!Glitch.Calm(this)&&!Ui.Under(this,SafeAreaRoot.Contrast);float p=UnityEngine.Time.unscaledTime%4f;shimmer.Show(on&&p<.8f);if(on&&p<.8f)shimmer.style.left=-40+(resolvedStyle.width+80)*p/.8f;}).Every(33);
  }
  public PerkCard Bind(PerkView p,bool selected){
-  View=p;StartShimmer();PerkArt.Tiers(this,p);PerkArt.Fill(art,glyph,p);EnableInClassList(ClassName+"--selected",selected);check.Show(selected);
+  View=p;StartShimmer();PerkArt.Tiers(this,p);PerkArt.Fill(art,glyph,p);EnableInClassList(ClassName+"--selected",selected);VbMotion.Show(check,selected,MotionKind.Zoom);
   tag.text=p.tag.ToUpperInvariant();category.text=p.category.ToUpperInvariant();title.text=p.name.ToUpperInvariant();effect.text=p.effect;next.text=p.next;stacks.text=PerkArt.Stacks(p,true);
   pips.Clear();for(int i=0;i<p.max;i++)Ui.Box(pips,ClassName+"__pip",i<p.stack?ClassName+"__pip--owned":i==p.stack?ClassName+"__pip--next":null);
   return this;

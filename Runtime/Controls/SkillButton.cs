@@ -22,7 +22,9 @@ namespace Veilbreak.Gui {
  // The tooltip is rebuilt only when what it says changes; buttons are bound every frame.
  (string,int,SkillState,int,string) tipKey;
  public SkillButton Bind(SkillView v){
-  if(v.state==SkillState.Rejected&&View?.state!=SkillState.Rejected){AddToClassList(ClassName+"--flash");schedule.Execute(()=>RemoveFromClassList(ClassName+"--flash")).StartingIn(400);}
+  if(v.state==SkillState.Rejected&&View?.state!=SkillState.Rejected){AddToClassList(ClassName+"--flash");schedule.Execute(()=>RemoveFromClassList(ClassName+"--flash")).StartingIn(400);VbMotion.Shake(this);}
+  // Coming ready after a recharge, a silence or a windup swells once; the state colours cross-fade in VbShape.
+  else if(v.state==SkillState.Ready&&View!=null&&View.state!=SkillState.Ready&&View.state!=SkillState.Aiming&&View.state!=SkillState.Rejected)VbMotion.Pop(this,.08f);
   View=v;Ui.State(this,ClassName,v.state);slot.text=v.slot;glyph.Icon=v.state==SkillState.Fallen?"lock":v.state==SkillState.Invalid?"no-target":v.icon;
   charge.Show(v.state==SkillState.Cooldown);Ui.Fill(charge,v.charged,true);sweep.Show(v.state==SkillState.Windup);Ui.Fill(sweep,v.progress);slash.Show(v.state==SkillState.Silenced||v.state==SkillState.Invalid);
   switch(v.state){

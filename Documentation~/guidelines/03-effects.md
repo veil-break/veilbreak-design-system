@@ -66,6 +66,14 @@ Combat particles, decals, lights and post-processing belong to `com.veilbreak.fe
 simulation events through the cue catalog and bounded pools, never spawned ad hoc. They follow the same settings:
 reduced flashes removes brightness pulses, and reduced motion removes shake.
 
+- **Arrival fractures:** where a hostile arrives, the street or a wall cracks open. Lit fissures race out from a burning
+  pit, then seal and fade. Grit, dust and motes burst out within the effect budget.
+- **Telegraphs:** an over-bright solid rim with a soft glow, then a light curtain of vertical rays and dust rising from
+  hostile outlines. The curtain is taller for elites and bosses.
+- **Heavy hits:** a whole-screen impact (shockwave refraction, a zoom punch and chromatic split, a vignette in the hit's
+  colour) with shake, sparks, a flare and a ground ring. Reduced motion drops the refraction, punch and split; reduced
+  flashes drops the vignette.
+
 ## Heads-up projection pattern
 
 Use `GlitchText` with `Glitch.In/Out/Pulse` and an `Announcer` for transient heads-up text. The red and cyan channels

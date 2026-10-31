@@ -79,6 +79,8 @@ Nested modal layers over a screen layer.
   - `Pop()`, `Clear()`, `Count`.
 - **Access:** focus moves to the new layer and returns to the previously focused element when it closes. Opening a
   layer closes all popovers.
+- **Motion:** the scrim fades in and the layer's children rise in, staggered, on the next frame. `Pop` renames the layer
+  `modal-layer-leaving`, disables it and fades it out before removing it; the covered content is restored at once.
 
 ### Navigator
 
@@ -92,8 +94,29 @@ One page at a time on a screen layer, with modal layers and popovers above it.
   - `Close()`, `Back()`, `Page`, `Visible`, `Content`, `Modals`.
   - Events `Opening(name)` and `Closed`. Hooks `Blocked` (Back does nothing while true), `Fallback` and `PageBack`.
 - **Back order:** popover, then modal, then `PageBack`, then `Fallback`. It returns false only when nothing handled it.
+- **Motion:** `Open(name, back, enter = MotionKind.Rise)`. The old page is marked `vb-page--leaving` (absolute, disabled),
+  fades out and is removed while the new one enters; a page opened on a hidden screen fades. Re-opening the open page
+  swaps it at once. `Close()` fades the screen out and raises `Closed` immediately; `Visible` follows the target state.
 - **USS:** `vb-screen` and `vb-page`, plus `vb-page--headed` (under a `ScreenHeader`), `vb-page__label`, `__caption`,
   `__footer` and `__scroll`, all in `Layout.uss`.
+
+### VbMotion
+
+Real-time UI motion for every show, hide and value change (`Runtime/Core/VbMotion.cs`). It runs on the panel scheduler
+with one timer per element; a newer call cancels the older one, and the element's own translate, scale and opacity are
+restored afterwards.
+
+- **Show and hide:** `Show(e, on, kind, done)` (idempotent), `In(e, kind, delayMs, done)`, `Out(e, kind, done)` (remove the
+  element in `done`). `MotionKind` is `Fade`, `Rise`, `Drop`, `Left`, `Right` or `Zoom` (from 0.94). Entrances take
+  `dur-ui`; exits take `dur-glitch-out`.
+- **Groups:** `Stagger(items, kind, start, step)` and `StaggerChildren(parent, ...)`, 50 ms apart; `Swap(e, rebuild, kind)`
+  fades out, rebuilds and fades back in.
+- **Value cues:** `Pop(e, amount)` swells once, `Shake(e)` shakes sideways (refusals), and `Count(label, value, format)` rolls
+  a number over `dur-change`.
+- **State:** `Shown(e)` (target state), `Displayed(e)` (inline display when code set one, else the resolved style, so a UXML or USS `display: none` counts), `Busy(e)`, `Finish(e)`, `Calm(e)` (under Reduced Motion), `Ease(p)` (ease-out cubic).
+- **Rules:** Reduced Motion turns movement into fades and makes `Count` jump. Elements without a panel change at once, so
+  binding stays synchronous off screen. Sweeps, cooldowns and windups never go through `VbMotion`: they are tick-exact
+  data.
 
 ### SafeAreaRoot
 
@@ -692,9 +715,17 @@ events; styles are in `Views.uss`.
 | `PauseOverlayView` | `PauseViewModel` (wave, score, standing, perks, seed, detail) | `Resume`, `Settings`, `Perks`, `Abandon`, `Exit` |
 | `ConfirmDialogView` | `Push(nav, title, body, confirm, cancel)` | the confirm and cancel actions, after the layer closes |
 | `GuideDialogView` | `Push(nav, title, steps, ready)`; `DefaultSteps` | READY, after the layer closes |
-| `PerkDraftView` | `PerkDraftViewModel` (wave, bonus, score, choices, pick, squad) | `Picked(i)`, `Take` |
-| `ResultsView` | `ResultsViewModel` (cause, score, rank, ledger, stats, squad, perks) | `Again`, `Menu` |
+| `PerkDraftView` | `PerkDraftViewModel` (wave, bonus, score, choices, pick, squad) | `Picked(i)`, `Take`, `Perks` (the carry frame) |
+| `ResultsView` | `ResultsViewModel` (cause, score, rank, ledger, stats, squad, perks) | `Again`, `Menu`, `Squad` |
+| `ActivePerksView` | `ActivePerksViewModel` (wave, perks, pick, totals) | `Picked(i)`, `Back` |
+| `RevivePickView` | the fallen operatives to bring back | `Picked(i)`, `Back` |
+| `AccessibilityView` | `AccessibilityViewModel` (reducedFlashes, largerText, highContrast; written back) | `Changed(model)`, `Back` |
 | `HighScoresView` | `Bind(ranked, historical, caption)` | `Back` |
 | `RouteChoiceView` | `RouteView` | `Chosen(side)` |
 | `MerchantScreenView` | `MerchantView` (keeps the scroll position) | `Bought`, `PerkSold`, `HealthSold`, `Left` |
-| `BattleHudView` | `Bind(HudView, OperativeView[], BossView)` every frame; `Card(i)`, `World`, `Announcer` | `Pause`, `Auto`, `Speed`, `QueueCancel` |
+| `BattleHudView` | `Bind(HudView, OperativeView[], BossView)` every frame; `Card(i)`, `World`, `Announcer`, `CancelBand`; `Aiming(on)`, `Reveal(t)`, `Bands(on)` | `Pause`, `Auto`, `Speed`, `QueueCancel` |
+
+`ScreenView.Deal()` glitches every `GlitchText` in and rises the view's `DealItems()` in one after another; route, merchant
+and perk pages call it when they open. `BattleHudView` names its bands `hud`, `battlefield` and `cards` and the announcer
+lane `hud-message`. Its cancel band (`cancel-hint`) shows over the cards while a skill is being aimed, `Reveal(t)` slides
+the bands in during deployment and `Bands(on)` shows or hides them. Re-binding the same boss leaves the bar alone.

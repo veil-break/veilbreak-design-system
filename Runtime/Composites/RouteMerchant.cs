@@ -5,7 +5,7 @@ namespace Veilbreak.Gui {
 [UxmlElement] public partial class CreditsChip:VisualElement {
  readonly Label value;int shown=-1;
  public CreditsChip(){AddToClassList("vb-credits");VbShape.Attach(this);pickingMode=PickingMode.Ignore;new VbIcon("currency",14).Into(this);value=Ui.Text(this,"0","vb-credits__value");tooltip="Credits · spend at a merchant";}
- public CreditsChip Set(int credits){if(shown!=credits){shown=credits;value.text=Ui.Number(credits);}return this;}
+ public CreditsChip Set(int credits){if(shown!=credits){bool change=shown>=0;shown=credits;VbMotion.Count(value,credits,Ui.Number);if(change)VbMotion.Pop(this);}return this;}
 }
 /// <summary>Two distinct, fully labelled road signs. The entire sign is a keyboard and touch target.</summary>
 [UxmlElement] public partial class RouteChoice:VisualElement {

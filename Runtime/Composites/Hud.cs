@@ -23,12 +23,13 @@ namespace Veilbreak.Gui {
   var resourceRow=Ui.Box(resources,ClassName+"__resource-row");power=new PowerStrip().Into(resourceRow);credits=new CreditsChip().Into(resourceRow);focus=new FocusMeter().Into(resources);
   Queue=Popover.Attach(resources,()=>view!=null&&view.queue.Length>0?new QueueList().Bind(view.queue,view.queueTitle,view.queueHint,q=>QueueCancel?.Invoke(q)):null);
  }
- long shownWave=-1,shownScore=-1;
+ long shownWave=-1,shownScore=-1;int shownSpeed;bool? shownAuto;
  public HudTop Bind(HudView v){
   view=v;EnableInClassList(ClassName+"--boss",v.boss);waveWord.text=v.boss?"BOSS":"WAVE";
   // Numbers are formatted only when they change: the band is bound every frame.
-  if(v.wave!=wantedWave){wantedWave=v.wave;long next=v.wave;if(shownWave<0){shownWave=next;wave.text=next.ToString("00");}else Glitch.Out(wave,()=>{shownWave=next;wave.text=next.ToString("00");Glitch.Slam(wave);if(!Ui.Under(this,SafeAreaRoot.ReducedMotion)){Glitch.Jitter(this);WaveSlammed?.Invoke();}});}if(v.score!=shownScore){shownScore=v.score;score.text=Ui.Compact(v.score);score.tooltip=Ui.Number(v.score);}
-  speed.Text=v.speed==1?"1×":v.speed==2?"2×":v.speed+"×";
+  if(v.wave!=wantedWave){wantedWave=v.wave;long next=v.wave;if(shownWave<0){shownWave=next;wave.text=next.ToString("00");}else Glitch.Out(wave,()=>{shownWave=next;wave.text=next.ToString("00");Glitch.Slam(wave);if(!Ui.Under(this,SafeAreaRoot.ReducedMotion)){Glitch.Jitter(this);WaveSlammed?.Invoke();}});}if(v.score!=shownScore){shownScore=v.score;VbMotion.Count(score,v.score,Ui.Compact);score.tooltip=Ui.Number(v.score);}
+  if(v.speed!=shownSpeed){if(shownSpeed>0)VbMotion.Pop(speed);shownSpeed=v.speed;speed.Text=v.speed==1?"1×":v.speed==2?"2×":v.speed+"×";}
+  if(v.auto!=shownAuto){if(shownAuto.HasValue)VbMotion.Pop(auto);shownAuto=v.auto;}
   auto.EnableInClassList(ClassName+"__auto--on",v.auto);auto.Active=v.auto;auto.tooltip=v.auto?"Autoplay on · tap to disable":"Autoplay off · tap to enable";credits.Set(v.credits);
   float[] marks=null;if(v.queue.Length>0){mark[0]=v.queue[0].cost/(float)Mathf.Max(1,v.maxPower);marks=mark;}
   power.Set(v.power,v.maxPower,v.regen,v.hint,v.previewFrom,v.previewTo,marks);focus.Set(v.focus,v.slow);
@@ -74,7 +75,8 @@ public sealed class QueueList:VisualElement {
  readonly Label title,meta;
  public event Action Back;
  [UxmlAttribute] public string Title {get=>title.text;set=>title.text=(value??"").ToUpperInvariant();}
- [UxmlAttribute] public string Meta {get=>meta.text;set=>meta.text=value??"";}
+ /// <summary>The meta read-out; a change on a shown header swells it once (SAVED, 3 / 4).</summary>
+ [UxmlAttribute] public string Meta {get=>meta.text;set{value??="";if(meta.text==value)return;bool change=meta.text.Length>0;meta.text=value;if(change)VbMotion.Pop(meta,.14f);}}
  public ScreenHeader():this("",""){}
  public ScreenHeader(string title,string meta,string backLabel="Back"){
   AddToClassList(ClassName);new IconButtonComposite("back",backLabel,()=>Back?.Invoke()){name="back"}.Classes(ClassName+"__back").Into(this);

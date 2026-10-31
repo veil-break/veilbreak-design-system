@@ -1,5 +1,35 @@
 # Changelog
 
+## 0.4.0 — 2026-11-01
+
+Every state change in the kit now animates, and the arcade binds package views only.
+
+- **VbMotion** (`Runtime/Core/VbMotion.cs`): real-time show/hide with `MotionKind` (Fade, Rise, Drop, Left, Right, Zoom),
+  `In`, `Out`, `Show` (idempotent), `Stagger`/`StaggerChildren` (50 ms steps), `Swap` (fade out, rebuild, fade in), value
+  cues `Pop`, `Shake` and `Count` (rolls a number over `dur-change`), plus `Finish`, `Shown`, `Displayed` (inline display,
+  else the resolved style, so a UXML `style="display: none"` counts as hidden), `Busy` and `Calm`. Entrances
+  take `dur-ui`, exits `dur-glitch-out`; Reduced Motion turns every movement into a fade and `Count` into a jump. Off-panel
+  elements change at once, so view models still bind synchronously in tests. Detaching an element finishes its animation.
+- **VbShape** cross-fades its fill, edge and glow colours over `dur-ui` when a state class changes (first paint snaps).
+- **Navigator** pages leave (`vb-page--leaving`, fades out, then removed) while the next page rises in; closing fades the
+  screen out. Re-opening the page that is already open swaps it at once. **ModalHost** fades the scrim in and staggers the
+  layer's content; a popped layer is renamed `modal-layer-leaving`, stops taking input and fades out. **Popover** drops
+  or rises in and fades out.
+- **Motion.uss** (imported by `VeilbreakGui.tss`): transitions for text and tint colours, segmented options, the switch knob,
+  press scale, meter widths, power previews and `vb-covered`, all removed under `vb-reduced-motion`.
+- **Animated controls.** HUD score counts, speed and autoplay pop on change, `ScreenHeader.Meta` pops, credits count and pop,
+  a refused `SkillButton` shakes and a skill coming ready pops; meter hints, previews, queue chips, the operative barrier,
+  skills and fallen state, perk check marks, the menu checkpoint card and best badge, and the pause perks frame all
+  show and hide through `VbMotion`.
+- **Views.** `ScreenView.Deal()` (glitch-in for every `GlitchText`, then a staggered rise of `DealItems()`); route, merchant
+  and perk pages deal. New `ActivePerksView` (`ActivePerksViewModel`), `RevivePickView` and `AccessibilityView`
+  (`AccessibilityViewModel`). `PerkDraftView.Perks`, `ResultsView.Squad`, `SquadView`'s inline operative sheet
+  (`operative-details-scroll`, with roster maxima). `BattleHudView` names its bands (`hud`, `battlefield`, `cards`) and the
+  announcer lane (`hud-message`), adds a cancel band (`Aiming`), `Reveal(t)` and `Bands(on)`, and re-binds the boss bar only
+  when a new boss arrives.
+- **Tests.** `MotionTests` (off-panel motion, easing, navigator and modal leaving, same-page reopen, board names, theme import).
+  The form and settings change-event checks moved to `PanelTests`, since change events dispatch only inside a panel.
+
 ## 0.3.0 — 2026-10-31
 
 Everything the GUI Handbook described as partial or proposed now ships, in Unity and on the web. The handbook is

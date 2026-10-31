@@ -80,6 +80,8 @@ public enum RarityTier { None, Blue, Violet, Gold }
  public int focus=-1;
  /// <summary>Per roster index: how to unlock a locked operative ("Pull in rifts"), or empty.</summary>
  public string[] locked=Array.Empty<string>(); public RarityTier[] tiers=Array.Empty<RarityTier>(); public string seed="new seed";
+ /// <summary>Roster maxima the details' attribute bars scale to.</summary>
+ public float maxHp=1580,maxArmor=26,maxStability=140;
 }
 [Serializable] public sealed class SettingsViewModel {
  public float master=.8f,music=.55f,effects=.8f,sensitivity=.5f; public bool haptics=true,reducedMotion; public int camera,quality=1;
@@ -88,6 +90,9 @@ public enum RarityTier { None, Blue, Violet, Gold }
 [Serializable] public sealed class PauseViewModel { public long wave,score; public int standing,squadSize=4; public PerkView[] perks=Array.Empty<PerkView>(); public string seed="",detail=""; }
 [Serializable] public sealed class SquadHealthView { public string code=""; public int hp,maxHp=1; public float stability=1; }
 [Serializable] public sealed class PerkDraftViewModel { public long wave,bonus,score; public PerkView[] choices=Array.Empty<PerkView>(); public int pick; public SquadHealthView[] squad=Array.Empty<SquadHealthView>(); }
+/// <summary>The run's cumulative perks: the picked one explained and the category totals ("DAMAGE", "+20%").</summary>
+[Serializable] public sealed class ActivePerksViewModel { public long wave; public PerkView[] perks=Array.Empty<PerkView>(); public int pick; public LedgerLine[] totals=Array.Empty<LedgerLine>(); }
+[Serializable] public sealed class AccessibilityViewModel { public bool reducedFlashes,largerText,highContrast; }
 [Serializable] public sealed class LedgerLine { public string label="",value=""; }
 [Serializable] public sealed class ResultsViewModel {
  public string cause="SQUAD DOWN",distance="",simTime=""; public long score,wave,bosses; public int rank,of=20;

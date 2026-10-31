@@ -22,7 +22,7 @@ namespace Veilbreak.Gui {
  }
  public PauseOverlayView Bind(PauseViewModel v){
   wave.Set(v.wave.ToString("00"));score.Set(Ui.Number(v.score));standing.Set(v.standing.ToString(),"/"+v.squadSize);
-  perksTitle.text="Active perks · "+v.perks.Length;perks.Show(v.perks.Length>0);chips.Clear();
+  perksTitle.text="Active perks · "+v.perks.Length;VbMotion.Show(perks,v.perks.Length>0);chips.Clear();
   foreach(var p in v.perks)new BadgeComponent(p.name+(p.stack>1?" ×"+p.stack:""),p.icon).Classes(Block+"__chip").Into(chips);
   var line=string.Join(" · ",new[]{string.IsNullOrEmpty(v.seed)?null:"Seed "+v.seed,v.detail}.Where(s=>!string.IsNullOrEmpty(s)));detail.text=line;detail.Show(line.Length>0);return this;
  }

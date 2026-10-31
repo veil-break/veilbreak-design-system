@@ -40,10 +40,10 @@ public sealed class Popover {
   var content=build?.Invoke();if(content==null)return;var scroll=new ScrollView(ScrollViewMode.Vertical);scroll.horizontalScrollerVisibility=ScrollerVisibility.Hidden;scroll.verticalScrollerVisibility=ScrollerVisibility.Auto;scroll.Add(content);shown=scroll;
   active.Add(this);shown.style.maxWidth=Mathf.Max(80,anchor.panel.visualTree.worldBound.width-16);shown.style.maxHeight=Mathf.Max(80,anchor.panel.visualTree.worldBound.height-32);shown.AddToClassList(ClassName);foreach(var c in SafeAreaRoot.RootClasses)if(Ui.Under(anchor,c))shown.AddToClassList(c);shown.pickingMode=PickingMode.Ignore;shown.style.position=Position.Absolute;
   anchor.panel.visualTree.Add(shown);anchor.AddToClassList(OpenClass);
-  shown.RegisterCallback<GeometryChangedEvent>(_=>Place());Place();
+  shown.RegisterCallback<GeometryChangedEvent>(_=>Place());Place();VbMotion.In(shown,placement==PopoverPlacement.Below?MotionKind.Drop:MotionKind.Rise);
  }
 
- public void Close(){active.Remove(this);pinned=false;if(shown==null)return;shown.RemoveFromHierarchy();shown=null;anchor.RemoveFromClassList(OpenClass);}
+ public void Close(){active.Remove(this);pinned=false;if(shown==null)return;var leaving=shown;shown=null;leaving.SetEnabled(false);VbMotion.Out(leaving,MotionKind.Fade,leaving.RemoveFromHierarchy);anchor.RemoveFromClassList(OpenClass);}
 
  void Place(){
   if(shown?.parent==null)return;

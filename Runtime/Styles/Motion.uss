@@ -1,0 +1,77 @@
+/* Motion — real-time transitions for state classes (guideline 4 · Motion).
+ *
+ * Cut shapes cross-fade their --vb-* colours in VbShape (custom properties cannot transition in USS); shows, hides, pages,
+ * modals, pops and counts go through the C# Motion helper. This sheet covers what USS can transition itself: text colour, icon
+ * tint, background, opacity and press scale. Durations mirror the tokens: dur-press 100 ms, dur-change 180 ms, dur-ui 220 ms.
+ *
+ * Never transitioned: skill sweeps and charges (.vb-skill__sweep, .vb-skill__charge), the health ghost and focus drain. They are
+ * simulation data, tick-exact, with no animation of their own.
+ */
+
+/* Labels and glyphs that change colour with their control's state. */
+.vb-button, .vb-icon-button__text, .vb-hud__auto-label, .vb-hud__auto-state, .vb-segmented__label, .vb-segmented__sub,
+.vb-skill__slot, .vb-skill__top, .vb-skill__value, .vb-operative__chip, .vb-operative__name, .vb-header__meta, .vb-tile__name,
+.vb-switch__label, .vb-route__kind, .vb-merchant__price, .vb-queue-chip__skill, .vb-score__score {
+    transition-property: color, scale, translate, opacity;
+    transition-duration: 0.22s, 0.1s, 0.1s, 0.22s;
+    transition-timing-function: ease-out;
+}
+.vb-icon {
+    transition-property: -unity-background-image-tint-color, opacity, scale;
+    transition-duration: 0.22s;
+    transition-timing-function: ease-out;
+}
+
+/* Filled options and knobs. */
+.vb-segmented__option {
+    transition-property: background-color, opacity;
+    transition-duration: 0.22s;
+    transition-timing-function: ease-out;
+}
+.vb-switch__knob {
+    transition-property: left, background-color;
+    transition-duration: 0.22s;
+    transition-timing-function: ease-out;
+}
+
+/* Press feedback on everything tappable that is not a VbButton (which scales in Gui.uss). */
+.vb-icon-button, .vb-tile, .vb-slot, .vb-perk-card, .vb-perk-row, .vb-route__sign, .vb-queue-chip, .vb-merchant__offer, .vb-skill {
+    transition-property: scale, opacity;
+    transition-duration: 0.1s, 0.22s;
+    transition-timing-function: ease-out;
+}
+.vb-icon-button:active, .vb-tile:active, .vb-slot:active, .vb-perk-card:active, .vb-perk-row:active, .vb-route__sign:active,
+.vb-queue-chip:active, .vb-merchant__offer:active {
+    scale: 0.97 0.97;
+}
+
+/* Meters: Power and health settle onto a new value instead of jumping; previews and reserves fade. */
+.vb-meter__fill, .vb-meter__extra, .vb-health__hp .vb-meter__fill, .vb-stat__fill, .vb-focus__fill {
+    transition-property: width;
+    transition-duration: 0.1s;
+    transition-timing-function: ease-out;
+}
+.vb-meter__preview, .vb-power__reserve {
+    transition-property: left, width, opacity;
+    transition-duration: 0.1s;
+    transition-timing-function: ease-out;
+}
+
+/* Covered layers (a page or modal over the board) dim instead of switching. */
+.vb-covered {
+    transition-property: opacity;
+    transition-duration: 0.22s;
+    transition-timing-function: ease-out;
+}
+
+/* Reduced Motion: colour and opacity still settle, nothing scales or slides. */
+.vb-reduced-motion .vb-button, .vb-reduced-motion .vb-icon-button, .vb-reduced-motion .vb-tile, .vb-reduced-motion .vb-slot,
+.vb-reduced-motion .vb-perk-card, .vb-reduced-motion .vb-perk-row, .vb-reduced-motion .vb-route__sign,
+.vb-reduced-motion .vb-queue-chip, .vb-reduced-motion .vb-merchant__offer, .vb-reduced-motion .vb-skill {
+    transition-property: color, opacity;
+}
+.vb-reduced-motion .vb-button:active, .vb-reduced-motion .vb-icon-button:active, .vb-reduced-motion .vb-tile:active,
+.vb-reduced-motion .vb-slot:active, .vb-reduced-motion .vb-perk-card:active, .vb-reduced-motion .vb-perk-row:active,
+.vb-reduced-motion .vb-route__sign:active, .vb-reduced-motion .vb-queue-chip:active, .vb-reduced-motion .vb-merchant__offer:active {
+    scale: 1 1;
+}

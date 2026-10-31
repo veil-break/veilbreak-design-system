@@ -1,6 +1,6 @@
 {
   "name": "com.veilbreak.gui",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "displayName": "Veilbreak GUI",
   "unity": "6000.3",
   "description": "Portable UI Toolkit kit and source of the Veilbreak design system (Veil theme): generated tokens, fonts and icons, cut-corner shapes painted from USS, themed buttons and form controls, Power/focus/health meters, skill buttons, operative and perk cards, hover/tap popovers, a translucent portrait battle HUD, camera gestures, a portrait screen layer (navigator, safe area, dialogs), text/label/badge/tile/card atoms, forms, stack/list/grid/board layouts and the arcade's thirteen screen views. Ships a React web kit (Web~) and the GUI Handbook (docs/). Data-agnostic: bind plain view models from any game.",

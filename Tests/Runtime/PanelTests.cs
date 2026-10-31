@@ -26,5 +26,12 @@ public sealed class PanelTests {
  [UnityTest] public IEnumerator FontDefinitionsResolveFromVariables(){Label text=null;
   yield return Panel("TokenVariables.uss",root=>{var h=new VisualElement();h.AddToClassList("probe-host");root.Add(h);text=new Label("FONT");text.AddToClassList("probe-font");h.Add(text);});
   var font=text.resolvedStyle.unityFontDefinition;Assert.IsTrue(font.font!=null||font.fontAsset!=null,"var() inside -unity-font-definition resolves to the font");}
+ // Change events dispatch only inside a panel: forms and settings views report edits once hosted.
+ [UnityTest] public IEnumerator FormsReportChangesAndSaveState(){ScreenHeader header=null;VbSwitch s=null;int changes=0;
+  yield return Panel("TokenVariables.uss",root=>{header=new ScreenHeader("SETTINGS","").Into(root);var form=new FormComposite(header){SavedMeta="SAVED"}.Into(root);form.Changed+=()=>changes++;s=new VbSwitch("HAPTICS",null,false).Into(form.Fieldset("FEEL"));});
+  s.value=true;Assert.AreEqual(1,changes);Assert.AreEqual("SAVED",header.Meta);}
+ [UnityTest] public IEnumerator SettingsWriteTheModelThenRaiseChanged(){var model=new SettingsViewModel{haptics=false};SettingsViewModel got=null;SettingsView view=null;
+  yield return Panel("TokenVariables.uss",root=>{view=new SettingsView().Into(root);view.Bind(model);view.Changed+=m=>got=m;});
+  view.Q<VbSwitch>().value=true;Assert.AreSame(model,got);Assert.IsTrue(model.haptics);}
 }
 }

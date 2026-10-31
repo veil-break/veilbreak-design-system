@@ -29,9 +29,9 @@ namespace Veilbreak.Gui {
   var chipNow=(mode,mode==ControlMode.Manual?Mathf.RoundToInt(v.manualSeconds*10):0);if(chipNow!=chipKey){chipKey=chipNow;chip.text=mode switch{ControlMode.Manual=>v.manualSeconds>0?"MANUAL "+Ui.Seconds(v.manualSeconds):"MANUAL",ControlMode.Aiming=>"AIMING",ControlMode.Fallen=>"FALLEN",_=>"AUTO"};}
   bool exposed=v.statuses.Contains(StatusKind.Exposed);health.Set(v.Fallen?0:v.hp,v.maxHp,v.barrier,v.Fallen?0:v.stability/(float)Mathf.Max(1,v.maxStability),exposed);
   int shownHp=v.Fallen?0:v.hp;if((shownHp,v.maxHp)!=hpKey){hpKey=(shownHp,v.maxHp);hp.style.fontSize=(v.hp.ToString()+v.maxHp).Length>7?10:11;hp.text=shownHp+"<color="+VbTokens.Hex(VbTokens.Text3)+">/"+v.maxHp+"</color>";}
-  if(v.barrier!=barrierKey){barrierKey=v.barrier;barrier.text=v.barrier>0?"+"+v.barrier:"";}barrier.Show(v.barrier>0);
+  if(v.barrier!=barrierKey){barrierKey=v.barrier;barrier.text=v.barrier>0?"+"+v.barrier:"";}VbMotion.Show(barrier,v.barrier>0,MotionKind.Zoom);
   if(v.Fallen!=statusFallen||!Same(v.statuses,statusKey)){statusFallen=v.Fallen;statusKey=(StatusKind[])v.statuses.Clone();statuses.Clear();if(v.Fallen)Ui.Text(statuses,"OUT",ClassName+"__clear");else if(v.statuses.Length==0)Ui.Text(statuses,"CLEAR",ClassName+"__clear");else foreach(var s in v.statuses.Distinct())new VbIcon(StatusChip.Icon(s),14).Classes(ClassName+"__status",ClassName+"__status--"+Ui.Kebab(s.ToString())).Into(statuses).tooltip=s.ToString();}
-  skills.Show(!v.Fallen);fallen.Show(v.Fallen);
+  VbMotion.Show(skills,!v.Fallen);VbMotion.Show(fallen,v.Fallen,MotionKind.Rise);
   for(int i=0;i<2;i++)if(i<v.skills.Length)buttons[i].Bind(v.skills[i]);
   return this;
  }

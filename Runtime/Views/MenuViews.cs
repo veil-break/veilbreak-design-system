@@ -17,7 +17,7 @@ namespace Veilbreak.Gui {
  }
  /// <param name="checkpoint">Null hides the card.</param><param name="squadLine">"Squad · Aria · Sol · Aegis · Nyra" under PLAY.</param>
  public MenuActionsSectionView Bind(CheckpointView checkpoint,string squadLine,string notice=null){
-  this.checkpoint.Show(checkpoint!=null);
+  VbMotion.Show(this.checkpoint,checkpoint!=null,MotionKind.Rise);
   if(checkpoint!=null){this.checkpoint.Meta="WAVE "+checkpoint.wave.ToString("00");line.text="Wave "+checkpoint.wave.ToString("00")+" next · "+Ui.Number(checkpoint.score);
    detail.text=checkpoint.standing+" of "+checkpoint.squadSize+" standing · "+checkpoint.perks+(checkpoint.perks==1?" perk":" perks")+(string.IsNullOrEmpty(checkpoint.seed)?"":" · seed "+checkpoint.seed);}
   play.Sub=squadLine??"";this.notice.text=notice??"";this.notice.Show(this.notice.text.Length>0);return this;
@@ -39,7 +39,7 @@ namespace Veilbreak.Gui {
   Bind(new MainMenuViewModel());
  }
  public MainMenuView Bind(MainMenuViewModel v){
-  status.text=v.status??"";best.Show(v.best>0);best.Value=Ui.Number(v.best);bestWave.text=v.bestWave>0?"WAVE "+v.bestWave:"";subtitle.text=(v.subtitle??"").ToUpperInvariant();subtitle.Show(subtitle.text.Length>0);
+  status.text=v.status??"";VbMotion.Show(best,v.best>0,MotionKind.Drop);best.Value=Ui.Number(v.best);bestWave.text=v.bestWave>0?"WAVE "+v.bestWave:"";subtitle.text=(v.subtitle??"").ToUpperInvariant();subtitle.Show(subtitle.text.Length>0);
   Actions.Bind(v.checkpoint,v.squad.Length>0?"Squad · "+string.Join(" · ",v.squad):"Choose a squad",v.notice);exit.Show(v.canExit);return this;
  }
 }
