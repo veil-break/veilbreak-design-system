@@ -464,6 +464,7 @@ doc(
 # ── The handbook's atoms, composites, layouts and views (0.3.0) ──────────────
 for name, cs, summary, provide, rules in [
     ('ProgressBar', 'Runtime/Controls/Progress.cs', 'The one progress bar: continuous, or `segments` equal levels.', '`segments` (0 = continuous), `value` (levels, or 0–1), `next` (outline the level a pick adds), `tone` (ally, power, enemy, neutral).', ['Perk levels, stacks and steps are segments; health and progress are continuous.']),
+    ('KeyValueRow', 'Runtime/Controls/Progress.cs', 'One key/value line: a caption key, a value on the right.', '`label`, `value`, `good` (ally colour).', ['Perk details, the results ledger and fact lists use it.']),
     ('ListRow', 'Runtime/Controls/Progress.cs', 'The one list row: glyph, caps title, caption, optional progress bar, trailing value and action.', '`icon`, `title`, `caption`, `bar` (ProgressBar props), `value`, `action`, `selected`, `onPick`.', ['Merchant offers, stack sales and health trades are ListRows; put rows in a ListLayout.']),
     ('TextComponent', 'Runtime/Controls/Text.cs', 'Every run of text: one type style and an optional tone.',
      '`typeStyle` (display, title, label, badge, body, caption, num), `tone` (ally, enemy, power, muted), `text`.',
@@ -647,7 +648,8 @@ export declare function EdgeWarning(props: EdgeWarningProps): React.ReactElement
 type Base = { className?: string; style?: React.CSSProperties };
 export type TypeStyle = 'display' | 'title' | 'label' | 'badge' | 'body' | 'caption' | 'num';
 export type TextTone = 'default' | 'ally' | 'enemy' | 'power' | 'muted';
-export declare function ProgressBar(props: Base & { segments?: number; value?: number; next?: boolean; tone?: 'ally' | 'power' | 'enemy' | 'neutral' }): React.ReactElement;
+export declare function ProgressBar(props: Base & { segments?: number; value?: number; next?: boolean; tint?: string; tone?: 'ally' | 'power' | 'enemy' | 'neutral' }): React.ReactElement;
+export declare function KeyValueRow(props: Base & { label: string; value: string; good?: boolean }): React.ReactElement;
 export declare function ListRow(props: Base & { icon?: KitIconName; title: string; caption?: string; bar?: { segments?: number; value?: number; next?: boolean; tone?: string } | null; value?: string; action?: React.ReactNode; selected?: boolean; onPick?: () => void }): React.ReactElement;
 export declare function TextComponent(props: Base & { text?: React.ReactNode; typeStyle?: TypeStyle; tone?: TextTone; children?: React.ReactNode }): React.ReactElement;
 export declare function LabelComponent(props: Base & { text: string; size?: 'label' | 'badge'; tone?: TextTone }): React.ReactElement;

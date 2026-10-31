@@ -1,4 +1,4 @@
-/* @ds-bundle: {"format":4,"namespace":"Veilbreak","components":[{"name":"GlitchText"},{"name":"CreditsChip"},{"name":"RouteChoice"},{"name":"MerchantScreen"},{"name":"VbFrame"},{"name":"VbIcon"},{"name":"VbMark"},{"name":"VbButton"},{"name":"StatReadout"},{"name":"StatusChip"},{"name":"VbSwitch"},{"name":"VbSlider"},{"name":"VbSegmented"},{"name":"VbMeter"},{"name":"HealthBar"},{"name":"PowerStrip"},{"name":"FocusMeter"},{"name":"SkillButton"},{"name":"QueueChip"},{"name":"HudTop"},{"name":"QueueList"},{"name":"BossBar"},{"name":"ScreenHeader"},{"name":"ScoreRow"},{"name":"OperativeCard"},{"name":"OperativeTile"},{"name":"SquadSlot"},{"name":"OperativeDetails"},{"name":"OperativeStats"},{"name":"SquadResult"},{"name":"PerkCard"},{"name":"PerkDetail"},{"name":"PerkChip"},{"name":"PerkRow"},{"name":"Dialog"},{"name":"Backdrop"},{"name":"ScanLines"},{"name":"HoloFrame"},{"name":"HoloPlatform"},{"name":"RevealCard"},{"name":"RuleRow"},{"name":"WorldHealthBar"},{"name":"CombatText"},{"name":"WorldLabel"},{"name":"WorldMarker"},{"name":"OffscreenIndicator"},{"name":"EdgeWarning"},{"name":"ProgressBar"},{"name":"ListRow"},{"name":"TextComponent"},{"name":"LabelComponent"},{"name":"BadgeComponent"},{"name":"IconButtonComposite"},{"name":"TileComponent"},{"name":"CardComponent"},{"name":"DrawerOverlay"},{"name":"FieldComposite"},{"name":"Fieldset"},{"name":"FormComposite"},{"name":"StackLayout"},{"name":"VbGrid"},{"name":"ListLayout"},{"name":"BoardLayout"},{"name":"MainMenuView"},{"name":"MenuActionsSectionView"},{"name":"SquadView"},{"name":"SettingsView"},{"name":"PauseOverlayView"},{"name":"ConfirmDialogView"},{"name":"GuideDialogView"},{"name":"PerkDraftView"},{"name":"ResultsView"},{"name":"HighScoresView"},{"name":"RouteChoiceView"},{"name":"MerchantScreenView"},{"name":"BattleHudView"},{"name":"ConnectionPill"},{"name":"ConnectionBanner"},{"name":"CombatFeed"},{"name":"Minimap"},{"name":"NavBar"},{"name":"MatchHeader"},{"name":"ItemCell"},{"name":"RailButton"},{"name":"Timeline"},{"name":"FighterPortrait"},{"name":"Telegraph"}]} */
+/* @ds-bundle: {"format":4,"namespace":"Veilbreak","components":[{"name":"GlitchText"},{"name":"CreditsChip"},{"name":"RouteChoice"},{"name":"MerchantScreen"},{"name":"VbFrame"},{"name":"VbIcon"},{"name":"VbMark"},{"name":"VbButton"},{"name":"StatReadout"},{"name":"StatusChip"},{"name":"VbSwitch"},{"name":"VbSlider"},{"name":"VbSegmented"},{"name":"VbMeter"},{"name":"HealthBar"},{"name":"PowerStrip"},{"name":"FocusMeter"},{"name":"SkillButton"},{"name":"QueueChip"},{"name":"HudTop"},{"name":"QueueList"},{"name":"BossBar"},{"name":"ScreenHeader"},{"name":"ScoreRow"},{"name":"OperativeCard"},{"name":"OperativeTile"},{"name":"SquadSlot"},{"name":"OperativeDetails"},{"name":"OperativeStats"},{"name":"SquadResult"},{"name":"PerkCard"},{"name":"PerkDetail"},{"name":"PerkChip"},{"name":"PerkRow"},{"name":"Dialog"},{"name":"Backdrop"},{"name":"ScanLines"},{"name":"HoloFrame"},{"name":"HoloPlatform"},{"name":"RevealCard"},{"name":"RuleRow"},{"name":"WorldHealthBar"},{"name":"CombatText"},{"name":"WorldLabel"},{"name":"WorldMarker"},{"name":"OffscreenIndicator"},{"name":"EdgeWarning"},{"name":"ProgressBar"},{"name":"ListRow"},{"name":"KeyValueRow"},{"name":"TextComponent"},{"name":"LabelComponent"},{"name":"BadgeComponent"},{"name":"IconButtonComposite"},{"name":"TileComponent"},{"name":"CardComponent"},{"name":"DrawerOverlay"},{"name":"FieldComposite"},{"name":"Fieldset"},{"name":"FormComposite"},{"name":"StackLayout"},{"name":"VbGrid"},{"name":"ListLayout"},{"name":"BoardLayout"},{"name":"MainMenuView"},{"name":"MenuActionsSectionView"},{"name":"SquadView"},{"name":"SettingsView"},{"name":"PauseOverlayView"},{"name":"ConfirmDialogView"},{"name":"GuideDialogView"},{"name":"PerkDraftView"},{"name":"ResultsView"},{"name":"HighScoresView"},{"name":"RouteChoiceView"},{"name":"MerchantScreenView"},{"name":"BattleHudView"},{"name":"ConnectionPill"},{"name":"ConnectionBanner"},{"name":"CombatFeed"},{"name":"Minimap"},{"name":"NavBar"},{"name":"MatchHeader"},{"name":"ItemCell"},{"name":"RailButton"},{"name":"Timeline"},{"name":"FighterPortrait"},{"name":"Telegraph"}]} */
 (function () {
   'use strict';
   var R = window.React;
@@ -1168,7 +1168,7 @@
           L(cx('vb-contribution__fell', c.fellWave <= 0 && 'vb-contribution__fell--alive'), c.fellWave > 0 ? 'FELL WAVE ' + c.fellWave : 'STANDING'))),
       h('div', { className: 'vb-contribution__share' },
         h('div', { className: 'vb-contribution__share-line' }, L('vb-contribution__share-label', 'Share of squad damage'), L('vb-contribution__share-value', Math.round(c.share * 100) + '%')),
-        h('div', { className: 'vb-contribution__share-track' }, h('div', { className: 'vb-contribution__share-fill', style: { width: pct(c.share), backgroundColor: v.kit } }))),
+        h(ProgressBar, { value: c.share, tint: v.kit, className: 'vb-contribution__share-bar' })),
       h('div', { className: 'vb-contribution__grid' }, cells.map(function (kv, i) { return h('div', { key: i, className: 'vb-contribution__cell' }, L('vb-contribution__key', kv[0]), L('vb-contribution__value', kv[1])); })));
   }
 
@@ -1193,9 +1193,11 @@
   function ProgressBar(p) {
     var n = p.segments || 0, v = p.value || 0, filled = Math.round(v);
     return h('div', { className: cx('vb-progress', st('vb-progress', p.tone || 'ally'), n > 0 && 'vb-progress--segmented', p.className), style: p.style, role: 'progressbar', 'aria-valuenow': n ? filled : Math.round(clamp01(v) * 100), 'aria-valuemax': n || 100 },
-      n > 0 ? Array.apply(null, Array(n)).map(function (_, i) { return h('div', { key: i, className: cx('vb-progress__cell', i < filled && 'vb-progress__cell--on', p.next && i === filled && 'vb-progress__cell--next') }); })
-        : h('div', { className: 'vb-progress__fill', style: { width: pct(v) } }));
+      n > 0 ? Array.apply(null, Array(n)).map(function (_, i) { return h('div', { key: i, className: cx('vb-progress__cell', i < filled && 'vb-progress__cell--on', p.next && i === filled && 'vb-progress__cell--next'), style: p.tint && i < filled ? { backgroundColor: p.tint } : null }); })
+        : h('div', { className: 'vb-progress__fill', style: { width: pct(v), backgroundColor: p.tint } }));
   }
+  /** KeyValueRow (Progress.cs): a caption key on the left, a value on the right; `good` reads in ally colour. */
+  function KeyValueRow(p) { return h('div', { className: cx('vb-kv', p.className), style: p.style }, L('vb-t-caption vb-kv__key', p.label), L(cx('vb-kv__value', p.good && 'vb-kv__value--good'), p.value)); }
   /** ListRow (Progress.cs): glyph, caps title, caption, optional `bar` (ProgressBar props), trailing `value` and `action`. */
   function ListRow(p) {
     return h(Shape, Object.assign({ className: cx('vb-list-row', p.selected && 'vb-list-row--selected', p.className), style: p.style }, p.onPick ? clickable(p.onPick) : null),
@@ -1225,8 +1227,7 @@
         h('div', { className: 'vb-perk-detail__head-text' }, L('vb-perk-detail__name', upper(v.name)), L('vb-perk-detail__tag', upper(v.category + ' · ' + v.tag)))),
       L('vb-perk-detail__effect', v.effect),
       h('div', { className: 'vb-perk-detail__rows' }, rows.map(function (r, i) {
-        return h('div', { key: i, className: cx('vb-perk-detail__row', i === rows.length - 1 && 'vb-perk-detail__row--last') },
-          L('vb-perk-detail__key', r[0]), L(cx('vb-perk-detail__value', r[2] && 'vb-perk-detail__value' + r[2]), r[1]));
+        return h(KeyValueRow, { key: i, label: r[0], value: r[1], good: r[2] === '--good', className: cx('vb-perk-detail__row', i === rows.length - 1 && 'vb-perk-detail__row--last') });
       })));
   }
 
@@ -1626,7 +1627,7 @@
         h(LabelComponent, { text: v.cause + ' · wave ' + v.wave, tone: 'enemy' }), L('vb-t-display', 'RUN OVER'),
         h(Shape, { className: 'vb-panel vb-frame--slim vb-frame--solid vb-results__score' },
           h('div', { className: 'vb-row vb-row--between' }, h('div', null, h(LabelComponent, { text: 'Score' }), L('vb-results__value', num(v.score))), v.rank > 0 ? L('vb-results__rank', '#' + v.rank + ' OF ' + v.of) : null),
-          h('div', { className: 'vb-results__ledger' }, v.ledger.map(function (l, i) { return h('div', { key: i, className: 'vb-row vb-row--between' }, L('vb-t-caption', l.label), L('vb-results__points', l.value)); })),
+          h('div', { className: 'vb-results__ledger' }, v.ledger.map(function (l, i) { return h(KeyValueRow, { key: i, label: l.label, value: l.value }); })),
           h('div', { className: 'vb-row vb-results__stats' }, h(StatReadout, { label: 'WAVES', value: String(v.wave) }), h(StatReadout, { label: 'BOSSES', value: String(v.bosses) }),
             v.distance ? h(StatReadout, { label: 'DISTANCE', value: d[0], unit: d[1] }) : null, v.simTime ? h(StatReadout, { label: 'SIM TIME', value: v.simTime }) : null)),
         h(LabelComponent, { text: 'Squad · hover or tap for contribution', className: 'vb-page__label' }),
@@ -1668,7 +1669,7 @@
     OperativeStats: OperativeStats, SquadResult: SquadResult, PerkCard: PerkCard, PerkDetail: PerkDetail, PerkChip: PerkChip, PerkRow: PerkRow,
     Dialog: Dialog, Backdrop: Backdrop, ScanLines: ScanLines, HoloFrame: HoloFrame, HoloPlatform: HoloPlatform, RevealCard: RevealCard, RuleRow: RuleRow,
     WorldHealthBar: WorldHealthBar, CombatText: CombatText, WorldLabel: WorldLabel, WorldMarker: WorldMarker, OffscreenIndicator: OffscreenIndicator, EdgeWarning: EdgeWarning,
-    ProgressBar: ProgressBar, ListRow: ListRow, TextComponent: TextComponent, LabelComponent: LabelComponent, BadgeComponent: BadgeComponent, IconButtonComposite: IconButtonComposite, TileComponent: TileComponent, CardComponent: CardComponent,
+    ProgressBar: ProgressBar, ListRow: ListRow, KeyValueRow: KeyValueRow, TextComponent: TextComponent, LabelComponent: LabelComponent, BadgeComponent: BadgeComponent, IconButtonComposite: IconButtonComposite, TileComponent: TileComponent, CardComponent: CardComponent,
     DrawerOverlay: DrawerOverlay, FieldComposite: FieldComposite, Fieldset: Fieldset, FormComposite: FormComposite, StackLayout: StackLayout, VbGrid: VbGrid, ListLayout: ListLayout, BoardLayout: BoardLayout,
     MainMenuView: MainMenuView, MenuActionsSectionView: MenuActionsSectionView, SquadView: SquadView, SettingsView: SettingsView, PauseOverlayView: PauseOverlayView, ConfirmDialogView: ConfirmDialogView,
     GuideDialogView: GuideDialogView, PerkDraftView: PerkDraftView, ResultsView: ResultsView, HighScoresView: HighScoresView, RouteChoiceView: RouteChoiceView, MerchantScreenView: MerchantScreenView, BattleHudView: BattleHudView,

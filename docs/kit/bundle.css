@@ -885,8 +885,7 @@ html:has(> body.vbl-stage) { background: var(--ground); }
 .vb-contribution__share-line { flex-direction: row; justify-content: space-between; margin-bottom: 4px; }
 .vb-contribution__share-label { font-size: 11px; color: var(--text-3); }
 .vb-contribution__share-value { font-family: var(--font-body); font-weight: 500; font-size: 11px; }
-.vb-contribution__share-track { height: 6px; background-color: rgba(250, 238, 244, 0.10); }
-.vb-contribution__share-fill { height: 100%; }
+.vb-contribution__share-bar { height: 6px; }
 .vb-contribution__grid { flex-direction: row; flex-wrap: wrap; padding-top: 8px; border-top-width: 1px; border-top-color: var(--line); }
 .vb-contribution__cell { width: 50%; margin-bottom: 8px; }
 .vb-contribution__key { font-family: var(--font-body); font-weight: 500; font-weight: 700; font-size: 9px; letter-spacing: 0.1em; color: var(--text-3); }
@@ -1283,6 +1282,10 @@ html:has(> body.vbl-stage) { background: var(--ground); }
 .vb-merchant__head { flex-direction: row; justify-content: space-between; align-items: center; margin-bottom: 8px; }
 .vb-merchant__section { margin-top: 10px; }
 .vb-merchant__leave { flex-shrink: 0; margin-top: 8px; }
+.vb-kv { flex-direction: row; justify-content: space-between; align-items: center; min-height: 22px; }
+.vb-kv__key { flex-shrink: 1; margin-right: 8px; }
+.vb-kv__value { font-family: var(--font-body); font-weight: 500; font-size: 12px; color: var(--text); flex-shrink: 0; }
+.vb-kv__value--good { color: var(--ally-text); }
 /* Layout.uss */
 .vb-root { flex-grow: 1; }
 .vb-grow { flex-grow: 1; }

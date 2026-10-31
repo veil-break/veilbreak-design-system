@@ -44,7 +44,7 @@ static class PerkArt {
   rows.Clear();
   var lines=draft?new[]{("Now",p.now,""),("After pick",p.next,"--good"),("Stacks",p.max>0?$"{p.stack} → {p.stack+1} / {p.max}":PerkArt.Stacks(p,true),"")}
                  :new[]{("Active",p.now,"--good"),("Stacks",p.max>0?$"{p.stack} / {p.max}":PerkArt.Stacks(p,false),""),("Picked",p.waves.Length>0?string.Join(", ",p.waves.Select(w=>"wave "+w)):"—","")};
-  foreach(var (k,v,tone) in lines){var r=Ui.Box(rows,ClassName+"__row");Ui.Text(r,k,ClassName+"__key");Ui.Text(r,v,ClassName+"__value",tone.Length>0?ClassName+"__value"+tone:null);}
+  foreach(var (k,v,tone) in lines)new KeyValueRow(k,v,tone=="--good").Classes(ClassName+"__row").Into(rows);
   rows[rows.childCount-1].AddToClassList(ClassName+"__row--last"); // UI Toolkit has no :last-child
   return this;
  }

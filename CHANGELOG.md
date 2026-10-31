@@ -10,7 +10,9 @@
 - **Minimal PerkCard**: tier word, glyph, name, effect, levels as a segmented ProgressBar, the value after the pick. The art
   band, badge, category, pips and shimmer are gone (and their USS).
 - **Minimal MerchantScreen**: one ListLayout of ListRows (rare finds, stack sales, health trades) and LEAVE MARKET.
-- Web: `ProgressBar`, `ListRow` and the same minimal PerkCard and MerchantScreen.
+- **KeyValueRow** (`vb-kv`): one key/value line; PerkDetail rows and the results ledger use it. `ProgressBar.Tint(colour)`;
+  the contribution card's damage-share bar is a tinted ProgressBar.
+- Web: `ProgressBar`, `ListRow`, `KeyValueRow` and the same minimal PerkCard and MerchantScreen.
 
 ## 0.3.1 — 2026-10-31
 

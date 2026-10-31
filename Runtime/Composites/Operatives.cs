@@ -95,16 +95,16 @@ namespace Veilbreak.Gui {
 /// <summary>Post-run contribution for one operative (popover content).</summary>
 [UxmlElement] public partial class OperativeStats:VisualElement {
  public const string ClassName="vb-contribution";
- readonly VisualElement portrait,shareFill,grid;readonly Label title,fell,share;
+ readonly VisualElement portrait,grid;readonly ProgressBar shareBar;readonly Label title,fell,share;
  public OperativeStats(){
   AddToClassList(ClassName);VbShape.Attach(this);pickingMode=PickingMode.Ignore;
   var head=Ui.Box(this,ClassName+"__head");portrait=VbShape.Attach(Ui.Box(head,ClassName+"__portrait"));var h=Ui.Box(head,ClassName+"__head-text");title=Ui.Text(h,"",ClassName+"__name");fell=Ui.Text(h,"",ClassName+"__fell");
   var s=Ui.Box(this,ClassName+"__share");var line=Ui.Box(s,ClassName+"__share-line");Ui.Text(line,"Share of squad damage",ClassName+"__share-label");share=Ui.Text(line,"",ClassName+"__share-value");
-  shareFill=Ui.Box(Ui.Box(s,ClassName+"__share-track"),ClassName+"__share-fill");grid=Ui.Box(this,ClassName+"__grid");
+  shareBar=new ProgressBar().Classes(ClassName+"__share-bar").Into(s);grid=Ui.Box(this,ClassName+"__grid");
  }
  public OperativeStats Bind(ContributionView c){
   var v=c.operative;Ui.Image(Ui.Crop(portrait),v.portrait);title.text=v.name.ToUpperInvariant();fell.text=c.fellWave>0?"FELL WAVE "+c.fellWave:"STANDING";fell.EnableInClassList(ClassName+"__fell--alive",c.fellWave<=0);
-  share.text=Mathf.RoundToInt(c.share*100)+"%";Ui.Fill(shareFill,c.share);shareFill.style.backgroundColor=v.kit;
+  share.text=Mathf.RoundToInt(c.share*100)+"%";shareBar.Tint(v.kit).Value=c.share;
   grid.Clear();
   foreach(var (k,value) in new[]{("DAMAGE",Ui.Number(c.damage)),("KILLS",Ui.Number(c.kills)),("SKILLS CAST",Ui.Number(c.casts)),("POWER SPENT",Ui.Number(c.power)),(c.extraLabel.ToUpperInvariant(),c.extraValue),("WAVES SURVIVED",c.fellWave>0?(c.fellWave-1).ToString():"ALL")}){var cell=Ui.Box(grid,ClassName+"__cell");Ui.Text(cell,k,ClassName+"__key");Ui.Text(cell,value,ClassName+"__value");}
   return this;

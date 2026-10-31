@@ -693,6 +693,9 @@ var ROSTER = ['aria', 'sol', 'aegis', 'nyra', 'rook', 'mira', 'hex', 'echo'].map
 card('ProgressBar', C, 140, 'Continuous, or segmented by levels with the next one outlined', r"""
 render(col([h(V.ProgressBar, { value: 0.62, style: { width: 300 }, key: 0 }), h(V.ProgressBar, { segments: 5, value: 2, next: true, style: { width: 300 }, key: 1 }), h(V.ProgressBar, { segments: 3, value: 3, tone: 'power', style: { width: 300 }, key: 2 })], 14));
 """)
+card('KeyValueRow', C, 120, 'Key on the left, value on the right; good values in ally colour', r"""
+render(col([h(V.KeyValueRow, { label: 'Now', value: '+16% damage', key: 0 }), h(V.KeyValueRow, { label: 'After pick', value: '+24% damage', good: true, key: 1 }), h(V.KeyValueRow, { label: 'Creep kills', value: '9,640', key: 2 })], 2, { width: 320 }));
+""")
 card('ListRow', C, 220, 'Glyph, title, caption, levels, and a trailing action', r"""
 render(col([h(V.ListRow, { title: 'Sharpened Output', caption: '+8% damage', icon: 'burst', bar: { segments: 5, value: 2 }, action: h(V.VbButton, { title: 'BUY 80' }), style: { width: 358 }, key: 0 }),
   h(V.ListRow, { title: 'Aria', caption: '800 → 550 HP', icon: 'health', bar: { value: 0.8 }, action: h(V.VbButton, { title: '+30', variant: 'danger' }), style: { width: 358 }, key: 1 })], 6));

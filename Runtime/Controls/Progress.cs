@@ -8,7 +8,7 @@ public enum ProgressTone { Ally, Power, Enemy, Neutral }
 /// stacks, steps). Segments fill up to <see cref="Value"/>; <see cref="Next"/> outlines the cell a pick or purchase would add.</summary>
 [UxmlElement] public partial class ProgressBar:VisualElement {
  public const string ClassName="vb-progress";
- readonly VisualElement fill;readonly List<VisualElement> cells=new List<VisualElement>();int segments;float value;bool next;
+ readonly VisualElement fill;readonly List<VisualElement> cells=new List<VisualElement>();int segments;float value;bool next;Color tint;
  /// <summary>0 = continuous; otherwise the number of levels.</summary>
  [UxmlAttribute] public int Segments {get=>segments;set{segments=Mathf.Max(0,value);Refresh();}}
  /// <summary>Filled amount: levels when segmented, 0–1 when continuous.</summary>
@@ -17,10 +17,12 @@ public enum ProgressTone { Ally, Power, Enemy, Neutral }
  [UxmlAttribute] public ProgressTone Tone {set=>Ui.State(this,ClassName,value);}
  public ProgressBar():this(0,0){}
  public ProgressBar(int segments,float value,ProgressTone tone=ProgressTone.Ally){AddToClassList(ClassName);pickingMode=PickingMode.Ignore;fill=Ui.Box(this,ClassName+"__fill");Tone=tone;this.segments=segments;Value=value;}
+ /// <summary>Colours the fill and filled cells (an operative's kit colour); <c>default</c> returns to the tone.</summary>
+ public ProgressBar Tint(Color c){tint=c;Refresh();return this;}
  public ProgressBar Set(float value,int segments=-1,bool next=false){if(segments>=0)this.segments=segments;this.next=next;Value=value;return this;}
- void Refresh(){bool seg=segments>0;EnableInClassList(ClassName+"--segmented",seg);fill.Show(!seg);if(!seg){Ui.Fill(fill,value);}
+ void Refresh(){bool seg=segments>0;EnableInClassList(ClassName+"--segmented",seg);fill.Show(!seg);if(!seg){Ui.Fill(fill,value);}fill.style.backgroundColor=tint.a>0?new StyleColor(tint):new StyleColor(StyleKeyword.Null);
   for(int i=0;i<Mathf.Max(segments,cells.Count);i++){if(i>=cells.Count)cells.Add(Ui.Box(this,ClassName+"__cell"));var c=cells[i];c.Show(i<segments);
-   c.EnableInClassList(ClassName+"__cell--on",i<Mathf.RoundToInt(value));c.EnableInClassList(ClassName+"__cell--next",next&&i==Mathf.RoundToInt(value));}}
+   c.EnableInClassList(ClassName+"__cell--on",i<Mathf.RoundToInt(value));c.EnableInClassList(ClassName+"__cell--next",next&&i==Mathf.RoundToInt(value));c.style.backgroundColor=tint.a>0&&i<Mathf.RoundToInt(value)?new StyleColor(tint):new StyleColor(StyleKeyword.Null);}}
 }
 
 /// <summary>The one list row: an optional leading glyph, a caps title with a caption under it, an optional progress bar, and a trailing
@@ -88,5 +90,18 @@ public enum ProgressTone { Ally, Power, Enemy, Neutral }
   Title="THEN "+(v.action??"")+(string.IsNullOrEmpty(v.actionRest)?"":" "+v.actionRest);Value=v.cost>0?"−"+v.cost:"";Caption=v.note;
   EnableInClassList(ClassName+"--off",!v.enabled);EnableInClassList(ClassName+"--warning",v.warning);EnableInClassList(ClassName+"--draft",v.draft);toggle.SetValueWithoutNotify(v.enabled);toggle.tooltip=v.enabled?"Turn rule off":"Turn rule on";return this;}
  public void Toggle(){if(View==null)return;View.enabled=!View.enabled;Bind(View);Toggled?.Invoke(View.enabled);}
+}
+
+/// <summary>One key/value line: a caption key on the left, a value on the right (<c>good</c> reads in ally colour). Perk details, the
+/// results ledger and any fact list use it.</summary>
+[UxmlElement] public partial class KeyValueRow:VisualElement {
+ public const string ClassName="vb-kv";
+ readonly Label key,value;
+ [UxmlAttribute] public string Key {get=>key.text;set=>key.text=value??"";}
+ [UxmlAttribute] public string Value {get=>value.text;set=>this.value.text=value??"";}
+ [UxmlAttribute] public bool Good {get=>value.ClassListContains(ClassName+"__value--good");set=>value.EnableInClassList(ClassName+"__value--good",value);}
+ public Label KeyLabel=>key;public Label ValueLabel=>value;
+ public KeyValueRow():this("",""){}
+ public KeyValueRow(string key,string value,bool good=false){AddToClassList(ClassName);pickingMode=PickingMode.Ignore;this.key=Ui.Text(this,"","vb-t-caption",ClassName+"__key");this.value=Ui.Text(this,"",ClassName+"__value");Key=key;Value=value;Good=good;}
 }
 }
