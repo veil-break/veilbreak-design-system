@@ -8,7 +8,7 @@ is painted from, the tokens those rules read, its C# API and a live preview from
 python3 Tools~/handbook/build_handbook.py . docs
 ```
 
-`docs/` is the GitHub Pages site: `index.html`, `kit/` (the page's bundle, styles, tokens and fonts), `web/` (the web
+`docs/` is the GitHub Pages site: `index.html`, `kit/` (the page's bundle, styles, tokens, specimen styles and fonts), `web/` (the web
 kit's `dist/` and the `demo/` app, from `Web~`) and `.nojekyll`. It can also be published with the Artifact tool
 (`root` = docs).
 
@@ -40,3 +40,29 @@ The build runs `Tools~/web/build.sh` and `Tools~/web/package.py`, so the preview
 Statuses: **shipped** (in the package as described), **partial** (exists, contract incomplete), **proposed** (spec
 only). Since 0.3.0 every entry is shipped. When a component changes in C#, update its entry in `catalog.py` alongside
 `kit.js`, `docs.py` and `previews.py`.
+
+## Semantic page structure
+
+The handbook follows the [Semantic Nodes style guide](https://semantic-nodes.vercel.app/style-guide/)
+([source](https://github.com/tuomashatakka/semantic-nodes/blob/main/docs/pdf-generator/document-base.md)):
+HTML elements describe content, CSS describes presentation, and JavaScript handles interactions.
+Keep the Veil palette and font tokens; use the handbook's CSS layers and structural selectors instead of utility
+classes or inline presentation styles. IDs identify unique page regions; `data-*` attributes identify domain data
+such as tokens, specimen indexes and preview types. Use native state attributes (`hidden`, `open`, `aria-current`,
+`aria-selected`, `aria-pressed`) for state styling.
+
+- `shell.html` provides the document, viewport, search, content landmark and native navigation dialog.
+- `app.js` renders navigation lists, document headings, figures, tables and definition lists. Links navigate;
+  buttons act. Documentation tabs support arrow keys, Home and End.
+- `handbook.css` owns the page tokens, elements, layout, components and responsive rules. The mobile breakpoint is
+  860px: the same navigation tree moves into a modal drawer with its own scrolling, Escape/Close/backdrop dismissal
+  and focus containment. Desktop retains the sidebar.
+- `build_handbook.py` generates `kit/specimens.css` for token swatches, type specimens, font samples and preview
+  heights directly from source metadata. Do not reintroduce inline styles for these values.
+- The preview layer and live component mirrors keep the kit's existing `vb-*` / `hb-*` class and rendering contracts.
+  Keep handbook element rules out of `[data-preview]` descendants when they would restyle a showcased component.
+
+After changes, rebuild the site and check phone (320px and 390px), tablet and desktop widths. Verify no page-wide
+horizontal overflow, drawer dismissal and focus return, mobile/desktop resizing while the menu is open, search,
+tab keyboard navigation, copy actions and portrait preview fit/actual-size modes. Run an accessibility audit on
+the handbook interface separately from the component previews.

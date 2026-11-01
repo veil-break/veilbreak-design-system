@@ -208,7 +208,7 @@ def inline(t):
     t = re.sub(r'`([^`]+)`', r'<code>\1</code>', t)
     t = re.sub(r'\*\*([^*]+)\*\*', r'<strong>\1</strong>', t)
     t = re.sub(r'(?<![\w*])\*([^*\s][^*]*)\*(?!\w)', r'<em>\1</em>', t)
-    t = re.sub(r'\[([^\]]+)\]\(([^)]+)\)', r'<span class="ref">\1</span>', t)
+    t = re.sub(r'\[([^\]]+)\]\(([^)]+)\)', r'<span>\1</span>', t)
     return t
 
 
@@ -222,7 +222,7 @@ def md(text):
             j = i + 1
             while j < len(lines) and not lines[j].startswith('```'):
                 j += 1
-            out.append('<pre class="code"><code>' + html.escape('\n'.join(lines[i + 1:j])) + '</code></pre>')
+            out.append('<pre tabindex="0" role="region" aria-label="Code example"><code>' + html.escape('\n'.join(lines[i + 1:j])) + '</code></pre>')
             i = j + 1
             continue
         if ln.startswith('|'):
@@ -231,7 +231,7 @@ def md(text):
                 if not re.match(r'^\|\s*-', lines[i]):
                     rows.append([c.strip() for c in lines[i].strip().strip('|').split('|')])
                 i += 1
-            t = '<div class="tablewrap"><table><thead><tr>' + ''.join(f'<th>{inline(c)}</th>' for c in rows[0]) + '</tr></thead><tbody>'
+            t = '<div data-content="table" tabindex="0" role="region" aria-label="Reference table"><table><thead><tr>' + ''.join(f'<th scope="col">{inline(c)}</th>' for c in rows[0]) + '</tr></thead><tbody>'
             t += ''.join('<tr>' + ''.join(f'<td>{inline(c)}</td>' for c in r) + '</tr>' for r in rows[1:]) + '</tbody></table></div>'
             out.append(t)
             continue
@@ -243,25 +243,25 @@ def md(text):
                 else:
                     items[-1][1] += ' ' + lines[i].strip()
                 i += 1
-            html_list, depth = '', -1
-            stack = []
-            for ind, txt in items:
-                d = ind // 2
-                while depth < d:
-                    html_list += '<ul>'
-                    stack.append(1)
-                    depth += 1
-                while depth > d:
-                    html_list += '</ul>'
+            # Child lists belong inside their parent list item, never beside it.
+            nodes, stack = [], []
+            for indent, text in items:
+                node = {'text': text, 'children': []}
+                while stack and indent <= stack[-1][0]:
                     stack.pop()
-                    depth -= 1
-                html_list += f'<li>{inline(txt)}</li>'
-            html_list += '</ul>' * len(stack)
-            out.append(html_list)
+                (stack[-1][1]['children'] if stack else nodes).append(node)
+                stack.append((indent, node))
+
+            def render_list(nodes):
+                return '<ul>' + ''.join('<li>' + inline(n['text']) +
+                    (render_list(n['children']) if n['children'] else '') + '</li>' for n in nodes) + '</ul>'
+
+            out.append(render_list(nodes))
             continue
         m = re.match(r'^(#{2,4})\s+(.*)', ln)
         if m:
-            out.append(f'<h4>{inline(m.group(2))}</h4>')
+            level = len(m.group(1))
+            out.append(f'<h{level}>{inline(m.group(2))}</h{level}>')
             i += 1
             continue
         if ln.strip() == '---' or not ln.strip():
@@ -309,6 +309,7 @@ def icon_family(n):
 
 
 for ic in ICONS:
+    ic['svg'] = (PKG / 'Runtime' / 'Icons' / ic['file']).read_text().replace('#faeef4', 'currentColor').replace('<svg ', '<svg aria-hidden="true" focusable="false" ', 1)
     ic['family'] = icon_family(ic['name'])
     ic['aliases'] = [a for a, t in ALIASES.items() if t == ic['name']]
 
@@ -353,6 +354,23 @@ DATA = {
     'integration': md((PKG / 'Documentation~' / 'integration.md').read_text().split('\n', 1)[1]),
     'web': md((PKG / 'Web~' / 'README.md').read_text().split('\n', 1)[1]),
 }
+
+# Data-driven swatches and type specimens are generated CSS, not inline styles.
+# Tokens and font metadata remain the only source for these presentation values.
+specimens = ['/* Generated from handbook data. Do not edit. */', '@layer components {']
+for token in TOKENS:
+    if token['family'] == 'color':
+        specimens.append(f'#view [data-color={json.dumps(token["name"])}] {{ background: var(--{token["name"]}); }}')
+for index, style in enumerate(TYPE):
+    family = {'display': 'var(--font-display)', 'body': 'var(--font-body)', 'hud': 'var(--font-hud)'}[style['family']]
+    specimens.append(f'#view [data-specimen="{index}"] {{ font-family: {family}; font-size: {style["fontSize"]}; '
+        f'line-height: {style["lineHeight"]}; font-weight: {style["fontWeight"]}; letter-spacing: {style.get("letterSpacing", "normal")}; }}')
+for index, font in enumerate(FONTS):
+    specimens.append(f'#view [data-font="{index}"] {{ font-family: {json.dumps(font["family"])}; font-weight: {font["weight"]}; }}')
+for entry in ENTRIES:
+    specimens.append(f'[data-preview][data-entry={json.dumps(entry["id"])}] > .hb-free {{ min-height: {min(900, entry["height"] or 200)}px; }}')
+specimens.append('}')
+(KIT / 'specimens.css').write_text('\n'.join(specimens) + '\n')
 
 shell = (HERE / 'shell.html').read_text()
 page = (shell.replace('/*@@DATA@@*/', json.dumps(DATA, ensure_ascii=False).replace('</', '<\\/'))
