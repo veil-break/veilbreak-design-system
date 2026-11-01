@@ -29,6 +29,9 @@ jobs:
       - name: Build handbook and web app
         run: python3 Tools~/handbook/build_handbook.py . "$RUNNER_TEMP/github-pages"
 
+      - name: Test inspector schema
+        run: python3 -m unittest discover -s Tools~/handbook/tests
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
