@@ -70,7 +70,7 @@ clamped inside the panel's edges.
   anchor's root flags (`SafeAreaRoot.RootClasses`), so contrast, larger text and the motion settings reach it.
 - **Notes:** only theme sheets reach the panel root. Keep the kit in the theme (`VeilbreakGui.tss`).
 
-### ModalHost
+### OverlayHost
 
 Nested modal layers over a screen layer.
 
@@ -440,11 +440,11 @@ The portrait battle card.
 
 - **API:** `Bind(OperativeView)`, and `Skill(0 | 1)` returns the A and S `SkillButton`s for the game's manipulators.
 - **View model:** `OperativeView`: `id`, `name`, `code`, `role`, `roleIcon`, `kit`, `portrait`, `hp`, `maxHp`,
-  `barrier`, `armor`, `stability`, `maxStability`, `statuses`, `mode`, `manualSeconds`, `skills`, `passive…`.
+  `barrier`, `armor`, `stability`, `maxStability`, `effects`, `mode`, `manualSeconds`, `skills`, `passive…`.
 - **States:** `vb-operative--auto`, `--manual` (MANUAL with seconds), `--aiming` (brackets and glow), `--fallen`
   (FALLEN, "Revive via perk", the name struck through).
 - **USS:** `__band`, `__portrait`, `__shade`, `__code`, `__chip`, `__kit`, `__body`, `__name`, `__numbers`, `__hp`,
-  `__barrier`, `__statuses`, `__status--{kind}`, `__clear`, `__skills`, `__fallen`.
+  `__barrier`, `__statuses`, `vb-effect-strip`, `__skills`, `__fallen`.
 - **Access:** the mode chip is a word. Statuses are glyphs with tooltips, CLEAR when there are none and OUT when
   fallen.
 
@@ -741,3 +741,10 @@ events; styles are in `Views.uss`.
 and perk pages call it when they open. `BattleHudView` names its bands `hud`, `battlefield` and `cards` and the announcer
 lane `hud-message`. Its cancel band (`cancel-hint`) shows over the cards while a skill is being aimed, `Reveal(t)` slides
 the bands in during deployment and `Bands(on)` shows or hides them. Re-binding the same boss leaves the bar alone.
+
+
+## Shared foundations and live effects
+
+GUI 0.5 groups types by both composition level and family. `ViewBase` owns lifecycle; `OverlayView` owns the overlay contract, `SurfaceView` painting, `CardView` selection and `DetailView` explanations. Native input and scroll bases are retained. `KeyedList`/`Keyed.Bind` preserve repeated child identity. See the [complete audit](reuse-audit.md) and [migration guide](migration-0.5.md).
+
+`EffectDefinition` describes meaning. `EffectInstance` carries a unique ID, optional source/timing, magnitude, stacks and activation (`Active`, `Conditional`, `Ready`, `Spent`, `Expired`). `EffectBadge`, `EffectDetails`, `EffectList` and `EffectStrip` reuse the same models. The compact battle summary is a 44-unit target opening the complete list, with individual hover/focus/touch explanations. Unknown IDs retain a fallback.

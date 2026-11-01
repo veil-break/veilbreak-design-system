@@ -41,12 +41,12 @@ on `:root`; game sheets use them too (`var(--vb-color-ally-text)`, `-unity-font-
 
 | Area | Types |
 | --- | --- |
-| Core | `VbShape` (cut-corner painter driven by `--vb-*` USS properties), `VbFrame`, `Popover` (hover, focus and tap), `ModalHost` (blurred modal layers with focus return), `Navigator` (one page at a time; Back closes the popover, then the modal, then runs the page's back, then the host fallback), `SafeAreaRoot` (safe-area insets in panel units with 48/34 minimums, plus the `vb-compact`, `vb-large-text`, `vb-reduced-motion`, `vb-reduced-flashes` and `vb-contrast` root classes, which popovers copy), `Ui` (fluent builders: `Box`, `Text`, `Panel`, `Section`, `Scroll`, `Spacer`, `Changed`), `VbTokens` (generated colours for code) |
+| Core | `VbShape` (cut-corner painter driven by `--vb-*` USS properties), `VbFrame`, `Popover` (hover, focus and tap), `OverlayHost` (blurred modal layers with focus return), `Navigator` (one page at a time; Back closes the popover, then the modal, then runs the page's back, then the host fallback), `SafeAreaRoot` (safe-area insets in panel units with 48/34 minimums, plus the `vb-compact`, `vb-large-text`, `vb-reduced-motion`, `vb-reduced-flashes` and `vb-contrast` root classes, which popovers copy), `Ui` (fluent builders: `Box`, `Text`, `Panel`, `Section`, `Scroll`, `Spacer`, `Changed`), `VbTokens` (generated colours for code) |
 | Controls | `VbButton` (primary / secondary / light / danger / ghost, blocked-with-reason), `VbIcon` (99 stroke glyphs by name, plus 8 design-system alias names), `VbMark`, `StatReadout`, `StatusChip`, `VbMeter`, `HealthBar`, `PowerStrip` (reserve line, queue chips, legend), `FocusMeter`, `SkillButton`, `QueueChip`, `VbSwitch`, `VbSlider`, `VbSegmented` |
 | Input | `TargetDrag`: one-pointer press, drag and release with capture for aiming and moving; the target carries `vb-dragging`. `GestureSurface`: camera gestures that share a surface with the game's targeting drag. One finger on empty ground or two fingers pan, pinch zooms, twist turns, the wheel zooms, a right drag orbits, a double tap resets and a hovering mouse reports its position. It yields while the game says a drag is busy. |
 | World | `WorldLayer` over a projector you supply (`Func<Vector3,Vector2?>`), advanced on simulation time: `WorldHealthBar` (ghost trail, barrier, elite and boss sizes), merged and capped `CombatText`, `WorldLabel`, `WorldMarker` and `OffscreenIndicator`; `World.uss` |
 | Layout | `Layout.uss`: `vb-row`, `vb-grid4`, `vb-grid2`, `vb-half`, `vb-grow`; Navigator `vb-screen`/`vb-page` (`--headed` under a `ScreenHeader`, `__label`, `__caption`, `__footer`, `__scroll`); `vb-section`; `vb-dialog`; `vb-backdrop`; larger-text sizes |
-| Motion (0.4.0) | `VbMotion`: `Show`/`In`/`Out` with `MotionKind`, `Stagger`, `Swap`, `Pop`, `Shake`, `Count`; animated `Navigator` pages, `ModalHost` layers and `Popover`s; `VbShape` colour cross-fades; `Motion.uss` transitions. All of them become fades under Reduced Motion. |
+| Motion (0.4.0) | `VbMotion`: `Show`/`In`/`Out` with `MotionKind`, `Stagger`, `Swap`, `Pop`, `Shake`, `Count`; animated `Navigator` pages, `OverlayHost` layers and `Popover`s; `VbShape` colour cross-fades; `Motion.uss` transitions. All of them become fades under Reduced Motion. |
 | Atoms (0.3.0) | `TextComponent` (`TypeStyle`, `TextTone`), `LabelComponent`, `BadgeComponent` (+ `Badge` presets), `TileComponent` (`TileState`; `OperativeTile` and `SquadSlot` extend it), `CardComponent`, `VbFrame.Kind` (`FrameKind.Slim`/`Chipped`) |
 | Forms and overlays | `IconButtonComposite`, `FieldComposite`, `FormComposite`, `DrawerOverlay` (bottom drawer; `Push(nav, …)` or docked) |
 | Layouts | `StackLayout`, `VbGrid` (GridLayout), `ListLayout`, `BoardLayout`; `Ui.Stack/Grid/List/Frame` |
@@ -113,16 +113,30 @@ Flashes fall back to fades; transitions cancel cleanly on replacement and detach
 camera hook. The battle top row is pause, icon-only autoplay, wave/score, then speed; Power carries a credits chip.
 
 
-## Python tooling
+## Tooling and GUI 0.5
 
-Install uv and run `uv sync --locked` from this repository root. Python 3.12 is selected by `.python-version`; the generators use only the standard library and Ruff is a locked development dependency. Node 22 is required for JavaScript syntax checks.
+Python generators have no runtime dependencies. Install uv, then run from the repository root:
 
 ```sh
+uv sync --locked
 uv run --frozen ruff check .
 uv run --frozen ruff format --check .
 uv run --frozen python -m unittest discover -s Tools~/handbook/tests
+uv run --frozen python Tools~/motion.py --check
 uv run --frozen python Tools~/tokens.py --check
 uv run --frozen python Tools~/samples.py --check
 uv run --frozen python Tools~/metas.py --check
 uv run --frozen python Tools~/handbook/build_handbook.py . docs
+```
+
+Node 22 is required for generated JavaScript checks. `Tools~/web/build.sh OUT` remains a uv-backed compatibility entry point; Python subprocesses use the active project interpreter. Ruff configuration lives in pyproject.toml. Embedded verbatim JS/Markdown templates are linted without bulk reformatting.
+
+Read the [complete audit](Documentation~/reuse-audit.md), [migration guide](Documentation~/migration-0.5.md), [type inventory](Tokens~/components.json) and [validation evidence](Documentation~/validation.md). Unity is the primary component contract; the web kit documents and demonstrates it. Families (overlays, effects, forms, surfaces, collections, details, screens and world) are independent of composition level.
+
+Browser checks use a separate locked Node project:
+
+```sh
+npm ci --prefix Tools~/browser --ignore-scripts
+Tools~/browser/node_modules/.bin/playwright install chromium
+node Tools~/browser/run.cjs docs
 ```

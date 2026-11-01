@@ -48,7 +48,12 @@ for f in (PKG / 'Runtime' / 'Fonts').iterdir():
 icons = subprocess.run(
     [sys.executable, str(WEB / 'icons_js.py'), str(PKG / 'Runtime')], check=True, capture_output=True, text=True
 ).stdout
-kit = (WEB / 'kit.js').read_text().replace('/*@@ICONS@@*/', icons.rstrip('\n'))
+kit = (
+    (WEB / 'kit.js')
+    .read_text()
+    .replace('/*@@ICONS@@*/', icons.rstrip('\n'))
+    .replace('/*@@MOTION@@*/', (WEB / 'motion-recipes.js').read_text())
+)
 (OUT / 'veilbreak.js').write_text(head + kit)
 api = kit.split('var api = {')[1].split('};')[0]
 names = [n for n in re.findall(r'(\w+): \w+', api) if n[0].isupper()]

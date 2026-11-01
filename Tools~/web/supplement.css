@@ -41,3 +41,13 @@ html:has(> body.vb-stage) { background: var(--ground); }
 /* The pause panel's centring layer spans the screen but only its panel takes input (pickingMode Ignore in Unity). */
 .vb-pause__center { pointer-events: none; }
 .vb-pause__center > * { pointer-events: auto; }
+
+.vb-overlay-covered { filter: blur(3px) brightness(.72); transition: filter 300ms ease-out; }
+.vb-effect-list { list-style: none; margin: 0; }
+.vb-effect-strip__more { background: var(--panel); color: var(--text); border: 1px solid var(--line); font: inherit; cursor: pointer; }
+.vb-effect-detail dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; }
+.vb-effect-detail dt { color: var(--text-3); }
+.vb-effect-detail dd { margin: 0; }
+.vb-effect-detail h3 { margin: 0 0 8px; }
+.vb-effect-badge:focus-visible, .vb-effect-strip__more:focus-visible { outline: 2px solid var(--ally); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .vb-overlay-covered { transition-duration: 80ms; } }

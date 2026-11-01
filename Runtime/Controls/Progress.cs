@@ -27,7 +27,7 @@ public enum ProgressTone { Ally, Power, Enemy, Neutral }
 
 /// <summary>The one list row: an optional leading glyph, a caps title with a caption under it, an optional progress bar, and a trailing
 /// value and/or action. Merchant offers, stack sales, health trades and perk lists are all ListRows.</summary>
-[UxmlElement] public partial class ListRow:VisualElement {
+[UxmlElement] public partial class ListRow:SurfaceView {
  public const string ClassName="vb-list-row";
  readonly VbIcon glyph;readonly Label lead,title,caption,value;readonly VisualElement text,trail;ProgressBar bar;
  public event Action Picked;
@@ -46,7 +46,7 @@ public enum ProgressTone { Ally, Power, Enemy, Neutral }
  public ProgressBar Bar=>bar??=new ProgressBar().Classes(ClassName+"__bar").Into(text);
  public ListRow():this(""){}
  public ListRow(string title,string caption=null,string icon=null,string value=null){
-  AddToClassList(ClassName);VbShape.Attach(this);pickingMode=PickingMode.Ignore;lead=Ui.Text(this,"",ClassName+"__lead");lead.Show(false);glyph=new VbIcon("",20).Classes(ClassName+"__icon").Into(this);
+  AddToClassList(ClassName);lead=Ui.Text(this,"",ClassName+"__lead");lead.Show(false);glyph=new VbIcon("",20).Classes(ClassName+"__icon").Into(this);
   text=Ui.Box(this,ClassName+"__text");this.title=Ui.Text(text,"",ClassName+"__title");this.caption=Ui.Text(text,"","vb-t-caption",ClassName+"__caption");
   this.value=Ui.Text(this,"",ClassName+"__value");trail=Ui.Box(this,ClassName+"__trail");Title=title;Caption=caption;Icon=icon;Value=value;
   RegisterCallback<GeometryChangedEvent>(_=>trail.Show(trail.childCount>0));
@@ -85,8 +85,9 @@ public enum ProgressTone { Ally, Power, Enemy, Neutral }
  public RuleRow(){AddToClassList(ClassName);conditions=Ui.Box(Content,ClassName+"__if");conditions.SendToBack();ValueLabel.AddToClassList(ClassName+"__cost");
   // The shared switch, compact: the row is its label.
   toggle=new VbSwitch("",null,true).Classes(ClassName+"__toggle","vb-switch--compact");toggle.RegisterValueChangedCallback(e=>{if(View!=null&&e.newValue!=View.enabled)Toggle();});WithAction(toggle);Bind(new RuleView());}
- public RuleRow Bind(RuleView v){View=v;Lead=v.index.ToString();conditions.Clear();Ui.Text(conditions,"IF",ClassName+"__keyword");
-  for(int i=0;i<v.conditions.Length;i++){var c=v.conditions[i];if(i>0)Ui.Text(conditions,v.any?"OR":"AND",ClassName+"__join");Ui.Text(conditions,c.text,ClassName+"__text");if(!string.IsNullOrEmpty(c.value))Ui.Text(conditions,c.value,ClassName+"__value");if(!string.IsNullOrEmpty(c.after))Ui.Text(conditions,c.after,ClassName+"__text");}
+ public RuleRow Bind(RuleView v){View=v;Lead=v.index.ToString();var words=new System.Collections.Generic.List<(string id,string text,string cls)>{("if","IF",ClassName+"__keyword")};
+  for(int i=0;i<v.conditions.Length;i++){var c=v.conditions[i];if(i>0)words.Add((i+":join",v.any?"OR":"AND",ClassName+"__join"));words.Add((i+":text",c.text,ClassName+"__text"));if(!string.IsNullOrEmpty(c.value))words.Add((i+":value",c.value,ClassName+"__value"));if(!string.IsNullOrEmpty(c.after))words.Add((i+":after",c.after,ClassName+"__text"));}
+  Keyed.Bind(conditions,words,x=>x.id,x=>new Label{pickingMode=PickingMode.Ignore}.Classes(x.cls),(label,x)=>label.text=x.text);
   Title="THEN "+(v.action??"")+(string.IsNullOrEmpty(v.actionRest)?"":" "+v.actionRest);Value=v.cost>0?"−"+v.cost:"";Caption=v.note;
   EnableInClassList(ClassName+"--off",!v.enabled);EnableInClassList(ClassName+"--warning",v.warning);EnableInClassList(ClassName+"--draft",v.draft);toggle.SetValueWithoutNotify(v.enabled);toggle.tooltip=v.enabled?"Turn rule off":"Turn rule on";return this;}
  public void Toggle(){if(View==null)return;View.enabled=!View.enabled;Bind(View);Toggled?.Invoke(View.enabled);}

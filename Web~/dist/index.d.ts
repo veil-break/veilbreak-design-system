@@ -10,12 +10,12 @@ export type ControlMode = 'auto' | 'manual' | 'aiming' | 'fallen';
 export type PerkTier = 'general' | 'operative' | 'rare' | 'epic';
 export type StatusKind = 'exposed' | 'silenced' | 'rooted' | 'slowed' | 'interrupted' | 'barrier';
 export interface SkillView { label?: string; icon?: KitIconName; slot?: 'A' | 'S' | string; kind?: string; description?: string; fullDescription?: string; cost?: number; state?: SkillState; charged?: number; seconds?: number; cooldownSeconds?: number; need?: number; queue?: number; progress?: number; reason?: string }
-export interface OperativeView { id?: string; name: string; code: string; role?: string; roleIcon?: KitIconName; passive?: string; passiveText?: string; passiveFullText?: string; kit: string; portrait?: string | null; hp: number; maxHp: number; barrier?: number; armor?: number; stability?: number; maxStability?: number; statuses?: StatusKind[]; mode?: ControlMode; manualSeconds?: number; skills?: SkillView[] }
+export interface OperativeView { id?: string; name: string; code: string; role?: string; roleIcon?: KitIconName; passive?: string; passiveText?: string; passiveFullText?: string; kit: string; portrait?: string | null; hp: number; maxHp: number; barrier?: number; armor?: number; stability?: number; maxStability?: number; effects?: EffectInstance[]; mode?: ControlMode; manualSeconds?: number; skills?: SkillView[] }
 export interface PerkView { id?: string; name: string; category?: string; tag?: string; icon?: KitIconName; effect?: string; now?: string; next?: string; tier?: PerkTier; art?: string | null; stack?: number; max?: number; waves?: number[] }
-export interface QueueView { who: string; skill: string; cost: number; eta: string; actor?: number; slot?: number; manual?: boolean; next?: boolean }
+export interface QueueView { id?: string; who: string; skill: string; cost: number; eta: string; actor?: number; slot?: number; manual?: boolean; next?: boolean }
 export interface HudView { credits?: number; speed?: number; wave?: number; score?: number; boss?: boolean; auto?: boolean; slow?: boolean; power?: number; maxPower?: number; regen?: string; hint?: string | null; focus?: number; previewFrom?: number; previewTo?: number; queue?: QueueView[]; queueTitle?: string; queueHint?: string }
-export interface BossView { name: string; health: number; stability: number; detail?: string; shielded?: boolean; interruptible?: boolean; shieldDetail?: string }
-export interface ScoreView { rank: number; score: number; wave: number; bosses: number; squad: string[]; current?: boolean }
+export interface BossView { effects?: EffectInstance[]; name: string; health: number; stability: number; detail?: string; shielded?: boolean; interruptible?: boolean; shieldDetail?: string }
+export interface ScoreView { id?: string; rank: number; score: number; wave: number; bosses: number; squad: string[]; current?: boolean }
 export interface ContributionView { operative: OperativeView; fellWave?: number; damage?: number; kills?: number; casts?: number; power?: number; share?: number; extraLabel?: string; extraValue?: string }
 
 export interface VbFrameProps { kind?: 'slim' | 'chipped'; className?: string; style?: React.CSSProperties; children?: React.ReactNode }
@@ -48,7 +48,7 @@ export interface SkillButtonProps { view: SkillView; dragging?: boolean; flash?:
 export declare function SkillButton(props: SkillButtonProps): React.ReactElement;
 export interface RoadView { kind?: string; title: string; icon?: KitIconName; hint: string }
 export interface RouteView { wave: number; left: RoadView; right: RoadView }
-export interface MerchantOfferView { perk: PerkView; price: number; taken?: boolean; blocked?: string }
+export interface MerchantOfferView { id?: string; perk: PerkView; price: number; taken?: boolean; blocked?: string }
 export interface MerchantStackView { perk: PerkView; payout: number }
 export interface MerchantHealthView { actor: number; name: string; hp: number; maxHp: number; cost: number; payout: number; blocked?: string }
 export interface MerchantView { credits: number; offers: MerchantOfferView[]; stacks: MerchantStackView[]; health: MerchantHealthView[] }
@@ -159,6 +159,20 @@ export declare function ResultsView(props: Base & { view: ResultsViewModel; onMe
 export declare function HighScoresView(props: Base & { ranked: ScoreView[]; historical?: ScoreView[]; caption?: string; onBack?: () => void }): React.ReactElement;
 export declare function RouteChoiceView(props: Base & { view: RouteView; onChoose?: (side: number) => void }): React.ReactElement;
 export declare function MerchantScreenView(props: Base & { view: MerchantView; onBuy?: (index: number) => void; onSellPerk?: (id: string) => void; onSellHealth?: (actor: number) => void; onLeave?: () => void }): React.ReactElement;
-export declare function BattleHudView(props: Base & { hud?: HudView; operatives?: OperativeView[]; boss?: BossView | null; announcement?: string; world?: React.ReactNode; queuePinned?: boolean; onPause?: () => void; onAuto?: () => void; onSpeed?: () => void; onQueueCancel?: (entry: QueueView) => void }): React.ReactElement;
+export declare function BattleHudView(props: Base & { hud?: HudView; shown?: boolean; reveal?: number; operatives?: OperativeView[]; boss?: BossView | null; announcement?: string; world?: React.ReactNode; queuePinned?: boolean; onPause?: () => void; onAuto?: () => void; onSpeed?: () => void; onQueueCancel?: (entry: QueueView) => void }): React.ReactElement;
+
+
+export type EffectActivation = 'active' | 'conditional' | 'ready' | 'spent' | 'expired';
+export interface EffectDefinition { id: string; title: string; description: string; icon?: KitIconName; polarity?: 'neutral' | 'benefit' | 'harm'; scope?: 'actor' | 'squad' | 'run' }
+export interface EffectInstance { id: string; definition: EffectDefinition; source?: string; magnitude?: string; stacks?: number; remainingSeconds?: number | null; totalSeconds?: number | null; activation?: EffectActivation }
+export declare function EffectDetails(props: { view: EffectInstance; className?: string }): React.ReactElement;
+export declare function EffectBadge(props: { view: EffectInstance; pinned?: boolean; onOpenChange?: (open: boolean) => void; className?: string }): React.ReactElement;
+export declare function EffectList(props: { effects: EffectInstance[]; className?: string }): React.ReactElement;
+export declare function EffectStrip(props: { effects: EffectInstance[]; compact?: boolean; pinned?: boolean; className?: string }): React.ReactElement;
+export interface ActivePerksViewModel { wave: number; perks: PerkView[]; totals?: { label: string; value: string }[]; pick?: number }
+export declare function ActivePerksView(props: { view: ActivePerksViewModel; onPick?: (index: number) => void; onBack?: () => void; className?: string }): React.ReactElement;
+export declare function RevivePickView(props: { perk?: string; fallen: OperativeView[]; onPick?: (index: number) => void; onBack?: () => void; className?: string }): React.ReactElement;
+export interface AccessibilityViewModel { reducedFlashes?: boolean; largerText?: boolean; highContrast?: boolean }
+export declare function AccessibilityView(props: { view?: AccessibilityViewModel; onChange?: (key: string, value: boolean) => void; onBack?: () => void; className?: string }): React.ReactElement;
 export declare const Veilbreak: Record<string, unknown>;
 export default Veilbreak;

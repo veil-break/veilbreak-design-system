@@ -15,14 +15,14 @@ function cell(node, caption, key) { return h('div', { key: key, style: { alignIt
 function render(node) { ReactDOM.createRoot(document.getElementById('root')).render(node); }
 function op(o) {
   return Object.assign({ id: 'aria', name: 'Aria', code: 'AR', role: 'Striker', roleIcon: 'striker', kit: 'var(--kit-aria)', hp: 820, maxHp: 1000, barrier: 60, armor: 10, stability: 70, maxStability: 110, mode: 'auto', manualSeconds: 2.4,
-    passive: 'Momentum tax', passiveText: 'Basic kinetic hits slow the target by 2%, stacking to 10%.', statuses: ['barrier'],
+    passive: 'Momentum tax', passiveText: 'Basic kinetic hits slow the target by 2%, stacking to 10%.', effects: [{id:'sample:barrier',definition:{id:'barrier',title:'Barrier',description:'Absorbs damage before health.',icon:'barrier'},remainingSeconds:4}],
     skills: [{ label: 'Needle Storm', icon: 'SkillAriaNeedleStorm', cost: 18, slot: 'A', kind: 'Active', description: 'Piercing fan and armor shred', cooldownSeconds: 4 },
              { label: 'Terminal Vector', icon: 'SkillAriaTerminalVector', cost: 40, slot: 'S', kind: 'Signature', state: 'cooldown', charged: 0.4, seconds: 7.9, description: 'Piercing execution beam', cooldownSeconds: 13.2 }] }, o);
 }
 var PERKS = {  // Samples~/Gallery/GuiGallery.cs
-  general: { name: 'Sharpened Output', category: 'Offense', tag: 'General', tier: 'general', icon: 'burst', effect: '+8% damage', stack: 2, max: 5, now: '+16% damage', next: '+24% damage', waves: [2, 5] },
-  operative: { name: 'Terminal Aperture', category: 'Skill', tag: 'Aria only', tier: 'operative', icon: 'SkillAriaTerminalVector', effect: '+25% Terminal Vector width', stack: 0, max: 3, now: 'None', next: '+25% width', waves: [] },
-  rare: { name: 'Emergency Reassembly', category: 'Defense', tag: 'Rare', tier: 'rare', icon: 'add', effect: 'Revive one fallen fighter at 35% health', stack: 0, max: 0, now: 'Revive at 35%', next: 'Revive at 35%', waves: [] }
+  general: { id: 'damage', name: 'Sharpened Output', category: 'Offense', tag: 'General', tier: 'general', icon: 'burst', effect: '+8% damage', stack: 2, max: 5, now: '+16% damage', next: '+24% damage', waves: [2, 5] },
+  operative: { id: 'aria-width', name: 'Terminal Aperture', category: 'Skill', tag: 'Aria only', tier: 'operative', icon: 'SkillAriaTerminalVector', effect: '+25% Terminal Vector width', stack: 0, max: 3, now: 'None', next: '+25% width', waves: [] },
+  rare: { id: 'rare-core', name: 'Emergency Reassembly', category: 'Defense', tag: 'Rare', tier: 'rare', icon: 'add', effect: 'Revive one fallen fighter at 35% health', stack: 0, max: 0, now: 'Revive at 35%', next: 'Revive at 35%', waves: [] }
 };
 """
 
@@ -309,9 +309,9 @@ card(
     'Portrait battle card in each control mode: auto, manual, aiming, fallen',
     r"""
 render(row([
-  cell(h(V.OperativeCard, { view: op({ name: 'Echo', code: 'EC', kit: 'var(--kit-echo)', hp: 880, maxHp: 1020, barrier: 0, statuses: [], skills: [{ icon: 'SkillEchoClocksplice', cost: 14 }, { slot: 'S', icon: 'SkillEchoOverclock', cost: 35, state: 'cooldown', charged: 0.55, seconds: 3.1 }] }) }), 'AUTO', 0),
-  cell(h(V.OperativeCard, { view: op({ name: 'Sol', code: 'SO', kit: 'var(--kit-sol)', hp: 1010, maxHp: 1220, barrier: 0, statuses: [], mode: 'manual', manualSeconds: 2.9, skills: [{ icon: 'SkillSolZeroLine', cost: 20 }, { slot: 'S', icon: 'SkillSolDeadHorizon', cost: 45, state: 'short', need: 11 }] }) }), 'MANUAL', 1),
-  cell(h(V.OperativeCard, { view: op({ name: 'Mira', code: 'MI', kit: 'var(--kit-mira)', hp: 1300, maxHp: 1420, barrier: 0, statuses: ['exposed', 'barrier'], mode: 'aiming', skills: [{ icon: 'SkillMiraCounterdrive', cost: 16 }, { slot: 'S', icon: 'SkillMiraGravityCage', cost: 30, state: 'aiming' }] }) }), 'AIMING', 2),
+  cell(h(V.OperativeCard, { view: op({ name: 'Echo', code: 'EC', kit: 'var(--kit-echo)', hp: 880, maxHp: 1020, barrier: 0, effects: [], skills: [{ icon: 'SkillEchoClocksplice', cost: 14 }, { slot: 'S', icon: 'SkillEchoOverclock', cost: 35, state: 'cooldown', charged: 0.55, seconds: 3.1 }] }) }), 'AUTO', 0),
+  cell(h(V.OperativeCard, { view: op({ name: 'Sol', code: 'SO', kit: 'var(--kit-sol)', hp: 1010, maxHp: 1220, barrier: 0, effects: [], mode: 'manual', manualSeconds: 2.9, skills: [{ icon: 'SkillSolZeroLine', cost: 20 }, { slot: 'S', icon: 'SkillSolDeadHorizon', cost: 45, state: 'short', need: 11 }] }) }), 'MANUAL', 1),
+  cell(h(V.OperativeCard, { view: op({ name: 'Mira', code: 'MI', kit: 'var(--kit-mira)', hp: 1300, maxHp: 1420, barrier: 0, effects: [{id:'sample:exposed',definition:{id:'exposed',title:'Exposed',description:'Stability is broken.',icon:'exposed',polarity:'harm'},remainingSeconds:2},{id:'sample:barrier',definition:{id:'barrier',title:'Barrier',description:'Absorbs damage.',icon:'barrier'},magnitude:'60'}], mode: 'aiming', skills: [{ icon: 'SkillMiraCounterdrive', cost: 16 }, { slot: 'S', icon: 'SkillMiraGravityCage', cost: 30, state: 'aiming' }] }) }), 'AIMING', 2),
   cell(h(V.OperativeCard, { view: op({ name: 'Hex', code: 'HE', kit: 'var(--kit-hex)', hp: 0, maxHp: 1150, barrier: 0, mode: 'fallen' }) }), 'FALLEN', 3)
 ], 8));
 """,
@@ -677,7 +677,7 @@ render(h(V.Backdrop, { style: { position: 'relative', width: 390, height: 844, b
     field,
     h('div', { style: { padding: '0 10px' } }, h(V.PowerStrip, { value: 22, max: 100, regen: '+12/s', reserve: 25, queue: queue, legend: '┊ autoplay reserve · × cancels' })),
     h('div', { className: 'vb-row vb-row--between', style: { padding: '6px 10px 0' } }, names.map(function (n, i) {
-      return h(V.OperativeCard, { key: n, style: { width: 88, height: 172 }, view: op({ name: n, code: n.slice(0, 2).toUpperCase(), kit: 'var(--kit-' + kits[i] + ')', hp: 600 + i * 90, maxHp: 1000, barrier: 0, statuses: [], mode: i === 2 ? 'manual' : 'auto',
+      return h(V.OperativeCard, { key: n, style: { width: 88, height: 202 }, view: op({ name: n, code: n.slice(0, 2).toUpperCase(), kit: 'var(--kit-' + kits[i] + ')', hp: 600 + i * 90, maxHp: 1000, barrier: 0, effects: [], mode: i === 2 ? 'manual' : 'auto',
         skills: [{ icon: 'projectile', cost: 18, state: i === 2 ? 'queued' : 'ready', queue: 1 }, { slot: 'S', icon: 'burst', cost: 40, state: i === 3 ? 'windup' : 'cooldown', charged: 0.5, seconds: 2.2, progress: 0.6 }] }) });
     })))));
 """,
@@ -786,7 +786,7 @@ card('RouteChoiceView', VW, 844, 'The crossroads screen', BOARD + "render(board(
 card('MerchantScreenView', VW, 844, 'The night market screen (MerchantView)', BOARD + "render(board(h(V.MerchantScreenView, { view: { credits: 120, offers: [{ perk: PERKS.rare, price: 80 }, { perk: PERKS.rare, price: 80, taken: true }, { perk: Object.assign({}, PERKS.rare, { name: 'Surge Engine', tier: 'epic', tag: 'Epic' }), price: 150 }], stacks: [], health: [{ actor: 0, name: 'Aria', hp: 800, maxHp: 1000, cost: 250, payout: 30 }] } }), null, 'merchant'));", width=390, page=True)
 card('BattleHudView', VW, 844, 'The whole battle board on BoardLayout', BOARD + SQUAD + r"""
 var queue = [{ who: 'AE', skill: 'Absolute Wall', cost: 40, eta: '1.2s', manual: true }, { who: 'NY', skill: 'White Noise', cost: 40, eta: '4.1s', manual: true }];
-var ops = ROSTER.slice(0, 4).map(function (o, i) { return Object.assign({}, o, { barrier: 0, statuses: [], mode: i === 2 ? 'manual' : 'auto', skills: [{ icon: 'projectile', cost: 18, state: i === 2 ? 'queued' : 'ready', queue: 1 }, { slot: 'S', icon: 'burst', cost: 40, state: i === 3 ? 'windup' : 'cooldown', charged: 0.5, seconds: 2.2, progress: 0.6 }] }); });
+var ops = ROSTER.slice(0, 4).map(function (o, i) { return Object.assign({}, o, { barrier: 0, effects: [], mode: i === 2 ? 'manual' : 'auto', skills: [{ icon: 'projectile', cost: 18, state: i === 2 ? 'queued' : 'ready', queue: 1 }, { slot: 'S', icon: 'burst', cost: 40, state: i === 3 ? 'windup' : 'cooldown', charged: 0.5, seconds: 2.2, progress: 0.6 }] }); });
 var world = [h('div', { key: 0, style: { position: 'absolute', left: 195, top: 120 } }, h(V.WorldMarker, { kind: 'enemy', size: 44 })), h('div', { key: 1, style: { position: 'absolute', left: 195, top: 88 } }, h(V.WorldHealthBar, { team: 'enemy', rank: 'boss', health: 0.64, ghost: 0.72 })),
   h('div', { key: 2, style: { position: 'absolute', left: 120, top: 260 } }, h(V.WorldMarker, { kind: 'ally', size: 28 })), h('div', { key: 3, style: { position: 'absolute', left: 270, top: 260 } }, h(V.WorldMarker, { kind: 'queued', size: 28 }))];
 render(h('div', { style: { position: 'relative', width: 390, height: 844, margin: -16, background: 'radial-gradient(70% 45% at 50% 20%, var(--scene-neon) 0%, transparent 70%), linear-gradient(180deg, var(--dark-50) 0%, var(--scene-ground) 100%)' } },
@@ -795,6 +795,14 @@ render(h('div', { style: { position: 'relative', width: 390, height: 844, margin
       boss: { name: 'Signal Warden', health: 0.64, stability: 0.35, detail: '64% · enrage at 35%', shielded: true, shieldDetail: '2 pylons', interruptible: true }, world: world }))));
 """, width=390, page=True)
 
+
+card('EffectDetails', 'Views', 320, 'Shared effect meaning, value, source, duration and activation.', "var effects=[{id:'actor:0:barrier',definition:{id:'barrier',title:'Barrier',description:'Absorbs damage before health.',icon:'barrier',polarity:'benefit',scope:'actor'},magnitude:'120',remainingSeconds:4,activation:'active'},{id:'actor:0:haste',definition:{id:'haste',title:'Haste',description:'Movement and windup speed are increased.',icon:'haste',polarity:'benefit',scope:'actor'},magnitude:'+20% speed',remainingSeconds:3,activation:'active'},{id:'run:damage',definition:{id:'perk:damage',title:'Sharpened Output',description:'Increases damage for the whole run.',icon:'burst',scope:'run'},stacks:2,magnitude:'+16% damage',activation:'active'}];render(h(V.EffectDetails,{view:effects[0]}));", width=390)
+card('EffectBadge', 'Views', 200, 'Inspectable touch target for a state modifier.', "var effects=[{id:'actor:0:barrier',definition:{id:'barrier',title:'Barrier',description:'Absorbs damage before health.',icon:'barrier',polarity:'benefit',scope:'actor'},magnitude:'120',remainingSeconds:4,activation:'active'},{id:'actor:0:haste',definition:{id:'haste',title:'Haste',description:'Movement and windup speed are increased.',icon:'haste',polarity:'benefit',scope:'actor'},magnitude:'+20% speed',remainingSeconds:3,activation:'active'},{id:'run:damage',definition:{id:'perk:damage',title:'Sharpened Output',description:'Increases damage for the whole run.',icon:'burst',scope:'run'},stacks:2,magnitude:'+16% damage',activation:'active'}];render(h(V.EffectBadge,{view:effects[0]}));", width=390)
+card('EffectList', 'Views', 320, 'Every modifier, individually inspectable without truncation.', "var effects=[{id:'actor:0:barrier',definition:{id:'barrier',title:'Barrier',description:'Absorbs damage before health.',icon:'barrier',polarity:'benefit',scope:'actor'},magnitude:'120',remainingSeconds:4,activation:'active'},{id:'actor:0:haste',definition:{id:'haste',title:'Haste',description:'Movement and windup speed are increased.',icon:'haste',polarity:'benefit',scope:'actor'},magnitude:'+20% speed',remainingSeconds:3,activation:'active'},{id:'run:damage',definition:{id:'perk:damage',title:'Sharpened Output',description:'Increases damage for the whole run.',icon:'burst',scope:'run'},stacks:2,magnitude:'+16% damage',activation:'active'}];render(h(V.EffectList,{effects:effects}));", width=390)
+card('EffectStrip', 'Views', 200, 'Compact battle status strip with complete overflow.', "var effects=[{id:'actor:0:barrier',definition:{id:'barrier',title:'Barrier',description:'Absorbs damage before health.',icon:'barrier',polarity:'benefit',scope:'actor'},magnitude:'120',remainingSeconds:4,activation:'active'},{id:'actor:0:haste',definition:{id:'haste',title:'Haste',description:'Movement and windup speed are increased.',icon:'haste',polarity:'benefit',scope:'actor'},magnitude:'+20% speed',remainingSeconds:3,activation:'active'},{id:'run:damage',definition:{id:'perk:damage',title:'Sharpened Output',description:'Increases damage for the whole run.',icon:'burst',scope:'run'},stacks:2,magnitude:'+16% damage',activation:'active'}];render(h(V.EffectStrip,{effects:effects}));", width=390)
+card('ActivePerksView', 'Views', 844, 'Owned perk stacks, category totals and selected explanation.', "render(h(V.ActivePerksView,{view:{wave:7,perks:[PERKS.general,PERKS.rare],pick:0,totals:[{label:'Damage',value:'+16%'}]}}));", width=390)
+card('RevivePickView', 'Views', 844, 'Choose one fallen operative to restore.', "render(h(V.RevivePickView,{perk:'Restore',fallen:[op({id:'aria',name:'Aria',hp:0,mode:'fallen'}),op({id:'sol',name:'Sol',hp:0,mode:'fallen'})]}));", width=390)
+card('AccessibilityView', 'Views', 844, 'Shared accessibility controls and saved state.', 'render(h(V.AccessibilityView,{view:{highContrast:true}}));', width=390)
 
 for name, (group, height, subtitle, body, width, page) in P.items():
     d = os.path.join(OUT, name)

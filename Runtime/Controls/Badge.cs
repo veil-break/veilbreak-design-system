@@ -6,7 +6,7 @@ public enum BadgeTone { Neutral, Ally, Enemy, Power, Warn, Inverted }
 /// (the menu's BEST 18,240 and the pause sheet's perk chips are plain badges). Tones recolour fill, word and glyph together.</summary>
 [UxmlElement] public partial class BadgeComponent:VisualElement {
  public const string ClassName="vb-badge";
- readonly VbIcon glyph;readonly Label word,number;BadgeTone tone;
+ protected readonly VbIcon glyph;protected readonly Label word,number;BadgeTone tone;
  [UxmlAttribute] public string Text {get=>word.text;set{word.text=(value??"").ToUpperInvariant();word.Show(word.text.Length>0);}}
  [UxmlAttribute] public string Icon {get=>glyph.Icon;set{glyph.Icon=value;glyph.Show(!string.IsNullOrEmpty(value));}}
  [UxmlAttribute] public string Value {get=>number.text;set{number.text=value??"";number.Show(number.text.Length>0);}}

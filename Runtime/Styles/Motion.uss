@@ -59,8 +59,8 @@
 
 /* Covered layers (a page or modal over the board) dim instead of switching. */
 .vb-covered {
-    transition-property: opacity;
-    transition-duration: 0.22s;
+    transition-property: opacity, filter;
+    transition-duration: 0.3s;
     transition-timing-function: ease-out;
 }
 
@@ -75,3 +75,7 @@
 .vb-reduced-motion .vb-route__sign:active, .vb-reduced-motion .vb-queue-chip:active, .vb-reduced-motion .vb-merchant__offer:active {
     scale: 1 1;
 }
+
+/* The compositor owns these properties while a recipe runs; never ease each sampled frame again. */
+.vb-motion-active { transition-property: none; }
+.vb-motion-pending { visibility: hidden; }

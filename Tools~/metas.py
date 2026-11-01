@@ -14,9 +14,9 @@ import sys
 
 PKG = pathlib.Path(__file__).resolve().parent.parent
 USS = (PKG / 'Runtime/Styles/Gui.uss.meta').read_text().split('\n', 2)[2]
-DEFAULT = 'DefaultImporter:\n  externalObjects: {}\n  userData: \n  assetBundleName: \n  assetBundleVariant: \n'
+DEFAULT = 'DefaultImporter:\n  externalObjects: {}\n  userData:\n  assetBundleName:\n  assetBundleVariant:\n'
 FOLDER = 'folderAsset: yes\n' + DEFAULT
-TEXT = 'TextScriptImporter:\n  externalObjects: {}\n  userData: \n  assetBundleName: \n  assetBundleVariant: \n'
+TEXT = 'TextScriptImporter:\n  externalObjects: {}\n  userData:\n  assetBundleName:\n  assetBundleVariant:\n'
 
 
 def hidden(p):

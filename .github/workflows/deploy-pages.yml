@@ -4,7 +4,6 @@ on:
   push:
     branches: [main]
   pull_request:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -40,6 +39,7 @@ jobs:
           uv run --frozen ruff check .
           uv run --frozen ruff format --check .
           uv run --frozen python -m unittest discover -s Tools~/handbook/tests
+          uv run --frozen python Tools~/motion.py --check
           uv run --frozen python Tools~/tokens.py --check
           uv run --frozen python Tools~/samples.py --check
           uv run --frozen python Tools~/metas.py --check
@@ -49,6 +49,15 @@ jobs:
           uv run --frozen python Tools~/web/package.py
           uv run --frozen python Tools~/handbook/build_handbook.py . "$RUNNER_TEMP/github-pages"
           git diff --exit-code -- Web~/dist Runtime/Styles/Tokens.uss Runtime/Core/VbTokens.cs
+          diff -qr --exclude='*.meta' docs "$RUNNER_TEMP/github-pages"
+
+      - name: Install browser checks
+        run: |
+          npm ci --prefix Tools~/browser --ignore-scripts
+          Tools~/browser/node_modules/.bin/playwright install --with-deps chromium
+
+      - name: Check mobile, inspector and motion interactions
+        run: node Tools~/browser/run.cjs "$RUNNER_TEMP/github-pages"
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

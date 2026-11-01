@@ -191,9 +191,9 @@ e(id='popover', tier='atom', name='PopoverComponent', unity=['Popover'], status=
   spec='**Slim:** the popover body should use `vb-frame--slim vb-frame--solid` instead of today\'s chipped solid panel.',
   preview=r'''render(col([h('div', { className: 'vb-l vb-t-caption' }, 'Hover or tap a chip'), row([h(V.PerkChip, { view: PERKS.general }), h(V.PerkChip, { view: PERKS.rare })], 6)], 10, { alignItems: 'flex-start' }));''', height=300)
 
-e(id='overlay', tier='atom', name='OverlayComponent', unity=['ModalHost', 'vb-modal', 'Navigator.Push'], status='shipped',
+e(id='overlay', tier='atom', name='OverlayComponent', unity=['OverlayHost', 'vb-modal', 'Navigator.Push'], status='shipped',
   summary='A modal layer: dims and disables what is under it, takes focus, and returns focus when it closes.',
-  blocks=['vb-modal', 'vb-covered'], doc='ModalHost',
+  blocks=['vb-modal', 'vb-covered'], doc='OverlayHost',
   csharp='var layer = nav.Push(onClose: Resume);   // vb-modal, bottom-docked\nDialog.Sheet(layer, "LEAVE GAME?", "Your profile is saved.");\nnav.Back();                              // popover → modal → page back → fallback',
   rules=['Back order is fixed: popover, then modal, then the page\'s back, then the host fallback.', 'An overlay is never the only way out: Back always closes it.'],
   preview=r'''render(board(h('div', { className: 'vb-screen vb-screen--pause' }, h('div', { className: 'vb-page' }, h('div', { className: 'vb-l vb-t-display', style: { marginTop: 120, textAlign: 'center' } }, 'PAUSED'))),
@@ -653,6 +653,14 @@ e(id='guide-view', tier='view', name='GuideDialogView', unity=['GuideDialogView'
   csharp='GuideDialogView.Push(nav, "RUN THE BOULEVARD", GuideDialogView.DefaultSteps, ready: () => { settings.tutorialSeen = true; Resume(); });',
   rules=['Numbered steps, one sentence each; READY is the one primary.'],
   preview='GuideDialogView', stage='board')
+
+e(id='effect-details', tier='composite', name='EffectDetails', unity=['EffectDetails'], status="shipped", summary='Shared effect meaning, value, source, duration and activation.', family='effects', uses=[], blocks=['vb-effect-details'], csharp='new EffectDetails();', preview='EffectDetails', height=320)
+e(id='effect-badge', tier='atom', name='EffectBadge', unity=['EffectBadge'], status="shipped", summary='Inspectable touch target for a state modifier.', family='effects', uses=[], blocks=['vb-effect-badge'], csharp='new EffectBadge();', preview='EffectBadge', height=200)
+e(id='effect-list', tier='composite', name='EffectList', unity=['EffectList'], status="shipped", summary='Every modifier, individually inspectable without truncation.', family='effects', uses=[], blocks=['vb-effect-list'], csharp='new EffectList();', preview='EffectList', height=320)
+e(id='effect-strip', tier='composite', name='EffectStrip', unity=['EffectStrip'], status="shipped", summary='Compact battle status strip with complete overflow.', family='effects', uses=[], blocks=['vb-effect-strip'], csharp='new EffectStrip();', preview='EffectStrip', height=200)
+e(id='active-perks-view', tier='view', name='ActivePerksView', unity=['ActivePerksView'], status="shipped", summary='Owned perk stacks, category totals and selected explanation.', family='screens', uses=[], blocks=['vb-active-perks'], csharp='new ActivePerksView();', preview='ActivePerksView', height=844)
+e(id='revive-pick-view', tier='view', name='RevivePickView', unity=['RevivePickView'], status="shipped", summary='Choose one fallen operative to restore.', family='screens', uses=[], blocks=['vb-revive-pick'], csharp='new RevivePickView();', preview='RevivePickView', height=844)
+e(id='accessibility-view', tier='view', name='AccessibilityView', unity=['AccessibilityView'], status="shipped", summary='Shared accessibility controls and saved state.', family='screens', uses=[], blocks=['vb-accessibility'], csharp='new AccessibilityView();', preview='AccessibilityView', height=844)
 
 TIERS = [
     ('atom', 'Atoms', 'Base components. The smallest parts with a look and a contract; atoms may use other atoms.'),

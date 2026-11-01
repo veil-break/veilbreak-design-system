@@ -17,17 +17,18 @@ namespace Veilbreak.Gui {
 /// <summary>A diegetic holographic panel for menus: cut frame with brackets, scanlines, a chromatic caps title and a flicker-in.
 /// Menus only, one in focus per screen; battle panels never use it. Reduced motion or reduced flashes turn the flicker into a fade.
 /// UI Toolkit draws flat, so the pointer tilt of the web version is left to the 3D menu camera.</summary>
-[UxmlElement] public partial class HoloFrame:VisualElement {
+[UxmlElement] public partial class HoloFrame:SurfaceView {
  public const string ClassName="vb-holo";
  readonly VisualElement body,head;readonly Label title,cyan,pink;
  public override VisualElement contentContainer=>body;
  public HoloFrame():this(null){}
- public HoloFrame(string title){AddToClassList(ClassName);VbShape.Attach(this);hierarchy.Add(new ScanLines());head=new VisualElement{pickingMode=PickingMode.Ignore};head.AddToClassList(ClassName+"__head");hierarchy.Add(head);
+ public HoloFrame(string title){AddToClassList(ClassName);hierarchy.Add(new ScanLines());head=new VisualElement{pickingMode=PickingMode.Ignore};head.AddToClassList(ClassName+"__head");hierarchy.Add(head);
   cyan=Ui.Text(head,"",ClassName+"__title",ClassName+"__title--cyan");pink=Ui.Text(head,"",ClassName+"__title",ClassName+"__title--pink");this.title=Ui.Text(head,"",ClassName+"__title");
   body=new VisualElement();body.AddToClassList(ClassName+"__body");hierarchy.Add(body);Title=title;RegisterCallback<AttachToPanelEvent>(_=>FlickerIn());}
  [UxmlAttribute] public string Title {get=>title.text;set{title.text=cyan.text=pink.text=(value??"").ToUpperInvariant();head.Show(title.text.Length>0);}}
  /// <summary>Opacity steps 0 → .7 → .25 → 1 over ~240 ms, or a plain fade under reduced motion or reduced flashes.</summary>
- public void FlickerIn(){bool calm=Calm(this)||Ui.Under(this,SafeAreaRoot.ReducedFlashes);float[] steps=calm?new[]{.25f,.5f,.75f,1}:new[]{.7f,.25f,.9f,1};style.opacity=0;for(int i=0;i<steps.Length;i++){float o=steps[i];schedule.Execute(()=>style.opacity=o).StartingIn(60*(i+1));}}
+ public void FlickerIn(){VbMotion.In(this,MotionKind.Fade);}
+
  internal static bool Calm(VisualElement e)=>Ui.Under(e,SafeAreaRoot.ReducedMotion);
 }
 
@@ -35,7 +36,7 @@ public enum PlatformState { Occupied, Selected, Open }
 
 /// <summary>The 2D stand-in for a lineup plinth: a holo plate with a caps name tag, a floating diamond when no 3D fighter
 /// stands on it, lock-on brackets when selected and a dashed OPEN SLOT when empty. The 3D menu draws the real plate.</summary>
-[UxmlElement] public partial class HoloPlatform:VisualElement {
+[UxmlElement] public partial class HoloPlatform:ViewBase {
  public const string ClassName="vb-platform";
  readonly VisualElement plate;readonly VbIcon marker;readonly Label label,sub;
  public event Action Picked;
@@ -48,7 +49,7 @@ public enum PlatformState { Occupied, Selected, Open }
 
 /// <summary>A rift result: a holographic back that flips to a tier-framed front. Tier words travel with the colour
 /// (RARE, EPIC, LEGENDARY; items MAGIC, RARE, UNIQUE ITEM). Duplicates show their resonance gain instead of NEW; a Legendary glows gold.</summary>
-[UxmlElement] public partial class RevealCard:VisualElement {
+[UxmlElement] public partial class RevealCard:ViewBase {
  public const string ClassName="vb-reveal";
  readonly VisualElement back,front;readonly Label tierWord,heading,line,badge;
  public bool Flipped {get;private set;}
@@ -63,8 +64,8 @@ public enum PlatformState { Occupied, Selected, Open }
   tierWord.text=tierLabel??TierWord(tier,item);heading.text=(title??"").ToUpperInvariant();line.text=detail??"";badge.text=!string.IsNullOrEmpty(dupe)?dupe.ToUpperInvariant():isNew?"NEW":"";badge.Show(badge.text.Length>0);badge.EnableInClassList(ClassName+"__badge--dupe",!string.IsNullOrEmpty(dupe));
   Face(flipped);return this;}
  /// <summary>Turns the card face up: a quick edge-on squash (higher tiers wait a beat), or at once under reduced motion.</summary>
- public void Flip(){if(Flipped)return;Flipping?.Invoke();if(HoloFrame.Calm(this)){Face(true);return;}int wait=ClassListContains(ClassName+"--gold")?180:ClassListContains(ClassName+"--violet")?90:0;
-  schedule.Execute(()=>style.scale=new Scale(new Vector3(.05f,1,1))).StartingIn(wait);schedule.Execute(()=>{Face(true);style.scale=new Scale(new Vector3(.05f,1,1));}).StartingIn(wait+110);schedule.Execute(()=>style.scale=new Scale(Vector3.one)).StartingIn(wait+130);}
+ public void Flip(){if(Flipped)return;Flipping?.Invoke();VbMotion.Out(back,MotionKind.Zoom,()=>{Face(true);VbMotion.In(front,new MotionRecipe(320,0,12,-4,.8f));});}
+
  void Face(bool up){Flipped=up;back.Show(!up);front.Show(up);EnableInClassList(ClassName+"--flipped",up);}
 }
 
