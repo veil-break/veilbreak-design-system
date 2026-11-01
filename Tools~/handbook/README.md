@@ -66,3 +66,43 @@ After changes, rebuild the site and check phone (320px and 390px), tablet and de
 horizontal overflow, drawer dismissal and focus return, mobile/desktop resizing while the menu is open, search,
 tab keyboard navigation, copy actions and portrait preview fit/actual-size modes. Run an accessibility audit on
 the handbook interface separately from the component previews.
+
+## Interactive preview inspector
+
+Use **Inspect** beside a preview, then pick a component on the canvas or choose an instance from the component list.
+The outline follows the component's viewport bounds, including portrait scaling; the inspector also reports the
+unscaled layout size. On desktop the inspector replaces the facts column beside the canvas. On phones it follows
+the canvas; **Show component** returns to the selection.
+
+The attribute editor is generated from all public component declarations in `Web~/dist/index.d.ts`, including
+nested view models, lists, union types, nullable objects and every declared enum value. It also includes properties
+used by the runtime when the declarations omit them. Edit a value to render it immediately, use **Default** to
+restore an example value, **Unset** to remove an optional prop, or **Reset component** to restore the whole instance. Callback props and rendered React
+content keep their behavior and can be explored through their child component instances.
+
+The inspector exposes rendered HTML attributes, matching CSS definitions with source/condition context, computed
+styles, `--vb-*` property overrides, CSS modifier classes and forced hover/active/focus states. Forced states simulate
+CSS appearance; callbacks stay intact. While picking, pointer actions select components rather than activate them.
+**Done inspecting** or Escape hides the inspector; edits remain in the current preview until reset or navigation.
+**Copy props** copies serializable prop values. A render error stays inside its preview so values can be corrected.
+
+`inspector.js` uses public React Context/ref APIs and a build-time adapter in the handbook bundle. It adds no DOM
+layout wrappers and does not patch React or the distributable web kit. `inspection_schema.py` derives the controls;
+`inspector.css` owns presentation, and the generator derives pseudo-state rules from the kit stylesheet while
+preserving media/support conditions. Inspector state is temporary, per instance, and is not stored or deployed.
+
+Validation:
+
+```sh
+python3 -m unittest discover -s Tools~/handbook/tests
+python3 Tools~/handbook/build_handbook.py . /tmp/veilbreak-handbook
+python3 -m http.server 8766 --directory /tmp/veilbreak-handbook
+# In another terminal, with Playwright installed in the Node environment:
+node Tools~/handbook/tests/inspector.browser.cjs http://127.0.0.1:8766/
+```
+
+The optional browser suite checks picking, all skill states, nested model edits, prop reset/copy, native attributes,
+CSS state/variable previews, scaled bounds, every entry route, and phone/desktop overflow. Set `CHROMIUM_PATH` to
+use an installed Chromium. For offline checks, `PREVIEW_RUNTIME_DIR` can contain the page's React 18.3.1 and React DOM
+18.3.1 UMD files (`react.production.min.js`, `react-dom.production.min.js`) plus `axe.min.js`; this also enables the
+open-inspector accessibility audits. None of these browser test dependencies are required by the Pages build.

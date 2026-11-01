@@ -9,6 +9,8 @@
   <link rel="stylesheet" href="kit/bundle.css">
   <link rel="stylesheet" href="kit/handbook.css">
   <link rel="stylesheet" href="kit/specimens.css">
+  <link rel="stylesheet" href="kit/inspector.css">
+  <link rel="stylesheet" href="kit/inspection-states.css">
 </head>
 <body>
 <a href="#main" id="skip-link">Skip to content</a>
@@ -38,11 +40,18 @@
   </header>
 </dialog>
 <p id="toast" role="status" aria-live="polite" aria-atomic="true"></p>
+<svg id="inspection-overlay" aria-hidden="true" hidden>
+  <rect id="inspection-hover" visibility="hidden"></rect>
+  <rect id="inspection-selection" visibility="hidden"></rect>
+  <text id="inspection-caption"></text>
+</svg>
 <noscript><p>This handbook needs JavaScript for its navigation and live previews.</p></noscript>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="kit/inspector.js"></script>
 <script src="kit/bundle.js"></script>
 <script type="application/json" id="hb-data">/*@@DATA@@*/</script>
+<script type="application/json" id="inspection-data">/*@@INSPECTION@@*/</script>
 <script>
 var PREVIEWS = {};
 /*@@PRELUDE@@*/

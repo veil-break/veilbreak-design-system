@@ -51,7 +51,7 @@
   });
 
   /* ── previews ── */
-  function unmount() { roots.forEach(function (r) { try { r.unmount(); } catch (e) { } }); roots = []; }
+  function unmount() { window.VeilbreakInspector.detach(); roots.forEach(function (r) { try { r.unmount(); } catch (e) { } }); roots = []; }
   function mountPreview(host, x) {
     var fn = PREVIEWS[x.id]; if (!fn) return;
     var phone = x.stage === 'board';
@@ -64,11 +64,12 @@
     host.setAttribute('data-entry', x.id);
     applyFlags();
     var root = ReactDOM.createRoot(el); roots.push(root);
+    var inspection = window.VeilbreakInspector.attach(host, x);
     try {
       fn(function (node) {
         var isBoard = node && node.props && node.props.className === 'hb-phone';
         if (phone && !isBoard) node = h('div', { className: 'hb-phone hb-phone--raw' }, h('div', { className: 'vb-root hb-phone__root' }, node));
-        root.render(node);
+        root.render(window.VeilbreakInspector.wrap(node, inspection));
       });
     } catch (err) { el.textContent = 'Preview failed: ' + err.message; }
   }
@@ -137,6 +138,19 @@
   function heads(labels) { return '<thead><tr>' + labels.map(function (label) { return '<th scope="col">' + label + '</th>'; }).join('') + '</tr></thead>'; }
   function render(html, page) { view.innerHTML = html; view.setAttribute('data-page', page); }
 
+  function inspectorPanel() {
+    return '<section id="preview-inspector" aria-labelledby="inspection-title" hidden>' +
+      '<header><h2 id="inspection-title">Preview inspector</h2><div>' +
+      '<button type="button" id="inspection-show">Show component</button><button type="button" id="inspection-refresh">Refresh styles</button>' +
+      '<button type="button" id="inspection-reset">Reset component</button>' +
+      '<button type="button" id="inspection-copy">Copy props</button>' +
+      '<button type="button" id="inspection-done">Done inspecting</button></div></header>' +
+      '<p>Pick a component on the canvas or use the component list. Changes are temporary and stay in this preview until reset or navigation.</p>' +
+      '<p id="inspection-status" role="status" aria-live="polite"></p>' +
+      '<div><label for="inspection-tree">Component instances</label><select id="inspection-tree"></select></div>' +
+      '<div id="inspection-detail"></div><datalist id="inspection-icons"></datalist></section>';
+  }
+
   function overview() {
     var totals = { shipped: 0, partial: 0, proposed: 0 };
     D.entries.forEach(function (entry) { totals[entry.status]++; });
@@ -156,7 +170,7 @@
       step('Root and safe area', 'Class <code>vb-root</code> on the root, then <code>new SafeAreaRoot(root, settings, screenLayer)</code>; call <code>Refresh()</code> each frame.') +
       step('Bind, don\'t rebuild', 'Create components once and call <code>Bind(view)</code> every frame. They reuse their children.') + '</ol></section>';
     html += '<section><h2>How to read an entry</h2><ul><li><strong>Unity today</strong> names the type or USS hook that implements it now. The <a href="#name-map">name map</a> lists both design names and Unity types.</li><li><strong>Built from / used by</strong> show the composition: atoms build composites, composites build views.</li><li><strong>USS</strong> is extracted from the package; <strong>Tokens read</strong> lists the variables those rules use.</li><li>Previews are the web mirror, which builds the same element tree and classes as the C#.</li></ul></section>';
-    render(html, 'overview');
+    render(html + inspectorPanel(), 'overview');
     PREVIEWS.__ov = function (draw) {
       draw(h('div', { 'data-frame-comparison': '' },
         h(V.VbFrame, { kind: 'chipped', className: 'vb-panel' }, h('p', null, 'CHIPPED · ACT ON IT'), h(V.VbSwitch, { text: 'HAPTICS', detail: 'Light pulse on accept', value: true })),
@@ -179,7 +193,7 @@
       var color = name.indexOf('--vb-color-') === 0 ? name.slice(11) : '';
       return '<li><button type="button" data-copy="var(' + name + ')"><span data-color="' + color + '" aria-hidden="true"></span><code>' + esc(name) + '</code></button></li>';
     }).join('') + '</ul>' + (item.tokens.length > 18 ? '<p>+' + (item.tokens.length - 18) + ' more in the USS tab</p>' : '') + '</dd></div>';
-    html += '</dl></aside></div>';
+    html += '</dl></aside>' + inspectorPanel() + '</div>';
     var tabs = [['unity', 'Unity']];
     if (item.spec) tabs.push(['spec', item.status === 'proposed' ? 'Proposal' : 'Spec']);
     if (item.rules || item.doc) tabs.push(['guide', 'Guidelines']);
@@ -270,7 +284,7 @@
   function fontsPage() {
     render(lead('Assets', 'Fonts & mark', 'Font files live in <code>Runtime/Fonts/</code>. The kit\'s font primer fills every face\'s dynamic atlas on the first layout pass.') +
       table(heads(['Family', 'Weight', 'File', 'USS variable']) + '<tbody>' + D.fonts.map(function (font, index) { return '<tr><th scope="row" data-font="' + index + '">' + esc(font.family) + '</th><td>' + esc(font.weight) + '</td><td><code>Runtime/' + esc(font.file.replace(/^fonts\//, 'Fonts/')) + '</code></td><td><code>' + esc(font.uss || '—') + '</code></td></tr>'; }).join('') + '</tbody>', 'Bundled fonts') +
-      '<section><h2>The mark</h2><p><code>VbMark</code> draws the VEIL/BREAK mark from <code>MarkGeometry</code>. Open <a href="#e-mark">MarkComponent</a> for usage.</p><div id="mark-host" data-preview></div></section>', 'fonts');
+      '<section><h2>The mark</h2><p><code>VbMark</code> draws the VEIL/BREAK mark from <code>MarkGeometry</code>. Open <a href="#e-mark">MarkComponent</a> for usage.</p><div id="mark-host" data-preview></div></section>' + inspectorPanel(), 'fonts');
     mountPreview(document.getElementById('mark-host'), E.mark);
   }
   function setupPage() {
