@@ -249,8 +249,8 @@ doc(
 doc(
     'OperativeCard',
     'Runtime/Composites/Operatives.cs (OperativeCard)',
-    'The 88 × 172 portrait battle card: face, control mode, health/barrier/stability, statuses and two skills, or FALLEN once out.',
-    '`view`: an OperativeView `{name, code, kit (CSS colour, e.g. var(--kit-aria)), portrait (image URL), hp, maxHp, barrier, stability, maxStability, statuses: [kind…], mode ("auto"|"manual"|"aiming"|"fallen"), manualSeconds, skills: [SkillView, SkillView]}`. Optional `dragging` (skill index), `onSkillPointerDown(index, event)`.',
+    'The 88 × 202 portrait battle card: face, control mode, health/barrier/stability, statuses and two skills, or FALLEN once out.',
+    '`view`: an OperativeView `{name, code, kit (CSS colour, e.g. var(--kit-aria)), portrait (image URL), hp, maxHp, barrier, stability, maxStability, effects: EffectInstance[], mode ("auto"|"manual"|"aiming"|"fallen"), manualSeconds, skills: [SkillView, SkillView]}`. Optional `dragging` (skill index), `onSkillPointerDown(index, event)`.',
     [
         '`portrait` is a 2:3 bust render; the band crops it to the face. Without one the band shows `scene-fog`.',
         'Mode chip: AUTO (teal on dark), MANUAL 2.9s (white), AIMING (teal fill; the card gets a 2 px teal frame and brackets), FALLEN.',
@@ -526,6 +526,14 @@ for name, cs, summary, provide, rules in [
 ]:
     doc(name, cs, summary, provide, rules)
 
+doc('EffectDetails', 'Runtime/Composites/Effects.cs', 'Shared effect meaning, value, source, duration and activation.', '`view` or `effects`; callbacks report intent.', ['Unity owns the contract; React mirrors it.'])
+doc('EffectBadge', 'Runtime/Composites/Effects.cs', 'Inspectable touch target for a state modifier.', '`view` or `effects`; callbacks report intent.', ['Unity owns the contract; React mirrors it.'])
+doc('EffectList', 'Runtime/Composites/Effects.cs', 'Every modifier, individually inspectable without truncation.', '`view` or `effects`; callbacks report intent.', ['Unity owns the contract; React mirrors it.'])
+doc('EffectStrip', 'Runtime/Composites/Effects.cs', 'Compact battle status strip with complete overflow.', '`view` or `effects`; callbacks report intent.', ['Unity owns the contract; React mirrors it.'])
+doc('ActivePerksView', 'Runtime/Views', 'Owned perk stacks, category totals and selected explanation.', '`view` or `effects`; callbacks report intent.', ['Unity owns the contract; React mirrors it.'])
+doc('RevivePickView', 'Runtime/Views', 'Choose one fallen operative to restore.', '`view` or `effects`; callbacks report intent.', ['Unity owns the contract; React mirrors it.'])
+doc('AccessibilityView', 'Runtime/Views', 'Shared accessibility controls and saved state.', '`view` or `effects`; callbacks report intent.', ['Unity owns the contract; React mirrors it.'])
+
 DTS = r"""
 import type * as React from 'react';
 
@@ -538,12 +546,12 @@ export type ControlMode = 'auto' | 'manual' | 'aiming' | 'fallen';
 export type PerkTier = 'general' | 'operative' | 'rare' | 'epic';
 export type StatusKind = 'exposed' | 'silenced' | 'rooted' | 'slowed' | 'interrupted' | 'barrier';
 export interface SkillView { label?: string; icon?: KitIconName; slot?: 'A' | 'S' | string; kind?: string; description?: string; fullDescription?: string; cost?: number; state?: SkillState; charged?: number; seconds?: number; cooldownSeconds?: number; need?: number; queue?: number; progress?: number; reason?: string }
-export interface OperativeView { id?: string; name: string; code: string; role?: string; roleIcon?: KitIconName; passive?: string; passiveText?: string; passiveFullText?: string; kit: string; portrait?: string | null; hp: number; maxHp: number; barrier?: number; armor?: number; stability?: number; maxStability?: number; statuses?: StatusKind[]; mode?: ControlMode; manualSeconds?: number; skills?: SkillView[] }
+export interface OperativeView { id?: string; name: string; code: string; role?: string; roleIcon?: KitIconName; passive?: string; passiveText?: string; passiveFullText?: string; kit: string; portrait?: string | null; hp: number; maxHp: number; barrier?: number; armor?: number; stability?: number; maxStability?: number; effects?: EffectInstance[]; mode?: ControlMode; manualSeconds?: number; skills?: SkillView[] }
 export interface PerkView { id?: string; name: string; category?: string; tag?: string; icon?: KitIconName; effect?: string; now?: string; next?: string; tier?: PerkTier; art?: string | null; stack?: number; max?: number; waves?: number[] }
-export interface QueueView { who: string; skill: string; cost: number; eta: string; actor?: number; slot?: number; manual?: boolean; next?: boolean }
+export interface QueueView { id?: string; who: string; skill: string; cost: number; eta: string; actor?: number; slot?: number; manual?: boolean; next?: boolean }
 export interface HudView { credits?: number; speed?: number; wave?: number; score?: number; boss?: boolean; auto?: boolean; slow?: boolean; power?: number; maxPower?: number; regen?: string; hint?: string | null; focus?: number; previewFrom?: number; previewTo?: number; queue?: QueueView[]; queueTitle?: string; queueHint?: string }
-export interface BossView { name: string; health: number; stability: number; detail?: string; shielded?: boolean; interruptible?: boolean; shieldDetail?: string }
-export interface ScoreView { rank: number; score: number; wave: number; bosses: number; squad: string[]; current?: boolean }
+export interface BossView { effects?: EffectInstance[]; name: string; health: number; stability: number; detail?: string; shielded?: boolean; interruptible?: boolean; shieldDetail?: string }
+export interface ScoreView { id?: string; rank: number; score: number; wave: number; bosses: number; squad: string[]; current?: boolean }
 export interface ContributionView { operative: OperativeView; fellWave?: number; damage?: number; kills?: number; casts?: number; power?: number; share?: number; extraLabel?: string; extraValue?: string }
 
 export interface VbFrameProps { kind?: 'slim' | 'chipped'; className?: string; style?: React.CSSProperties; children?: React.ReactNode }
@@ -576,7 +584,7 @@ export interface SkillButtonProps { view: SkillView; dragging?: boolean; flash?:
 export declare function SkillButton(props: SkillButtonProps): React.ReactElement;
 export interface RoadView { kind?: string; title: string; icon?: KitIconName; hint: string }
 export interface RouteView { wave: number; left: RoadView; right: RoadView }
-export interface MerchantOfferView { perk: PerkView; price: number; taken?: boolean; blocked?: string }
+export interface MerchantOfferView { id?: string; perk: PerkView; price: number; taken?: boolean; blocked?: string }
 export interface MerchantStackView { perk: PerkView; payout: number }
 export interface MerchantHealthView { actor: number; name: string; hp: number; maxHp: number; cost: number; payout: number; blocked?: string }
 export interface MerchantView { credits: number; offers: MerchantOfferView[]; stacks: MerchantStackView[]; health: MerchantHealthView[] }
@@ -687,12 +695,28 @@ export declare function ResultsView(props: Base & { view: ResultsViewModel; onMe
 export declare function HighScoresView(props: Base & { ranked: ScoreView[]; historical?: ScoreView[]; caption?: string; onBack?: () => void }): React.ReactElement;
 export declare function RouteChoiceView(props: Base & { view: RouteView; onChoose?: (side: number) => void }): React.ReactElement;
 export declare function MerchantScreenView(props: Base & { view: MerchantView; onBuy?: (index: number) => void; onSellPerk?: (id: string) => void; onSellHealth?: (actor: number) => void; onLeave?: () => void }): React.ReactElement;
-export declare function BattleHudView(props: Base & { hud?: HudView; operatives?: OperativeView[]; boss?: BossView | null; announcement?: string; world?: React.ReactNode; queuePinned?: boolean; onPause?: () => void; onAuto?: () => void; onSpeed?: () => void; onQueueCancel?: (entry: QueueView) => void }): React.ReactElement;
+export declare function BattleHudView(props: Base & { hud?: HudView; shown?: boolean; reveal?: number; operatives?: OperativeView[]; boss?: BossView | null; announcement?: string; world?: React.ReactNode; queuePinned?: boolean; onPause?: () => void; onAuto?: () => void; onSpeed?: () => void; onQueueCancel?: (entry: QueueView) => void }): React.ReactElement;
 """
 # The legacy web kit's declarations move into a Legacy namespace; the components the package does not replace stay
 # reachable at the top level too (window.Veilbreak.MatchHeader === window.Veilbreak.Legacy.MatchHeader).
 legacy = pathlib.Path(sys.argv[2]).read_text().rstrip('\n').replace("import type * as React from 'react';\n", '')
 legacy = '\n'.join(('  ' + line) if line else line for line in legacy.replace('export declare ', 'export ').split('\n'))
+DTS += '''
+
+export type EffectActivation = 'active' | 'conditional' | 'ready' | 'spent' | 'expired';
+export interface EffectDefinition { id: string; title: string; description: string; icon?: KitIconName; polarity?: 'neutral' | 'benefit' | 'harm'; scope?: 'actor' | 'squad' | 'run' }
+export interface EffectInstance { id: string; definition: EffectDefinition; source?: string; magnitude?: string; stacks?: number; remainingSeconds?: number | null; totalSeconds?: number | null; activation?: EffectActivation }
+export declare function EffectDetails(props: { view: EffectInstance; className?: string }): React.ReactElement;
+export declare function EffectBadge(props: { view: EffectInstance; pinned?: boolean; onOpenChange?: (open: boolean) => void; className?: string }): React.ReactElement;
+export declare function EffectList(props: { effects: EffectInstance[]; className?: string }): React.ReactElement;
+export declare function EffectStrip(props: { effects: EffectInstance[]; compact?: boolean; pinned?: boolean; className?: string }): React.ReactElement;
+export interface ActivePerksViewModel { wave: number; perks: PerkView[]; totals?: { label: string; value: string }[]; pick?: number }
+export declare function ActivePerksView(props: { view: ActivePerksViewModel; onPick?: (index: number) => void; onBack?: () => void; className?: string }): React.ReactElement;
+export declare function RevivePickView(props: { perk?: string; fallen: OperativeView[]; onPick?: (index: number) => void; onBack?: () => void; className?: string }): React.ReactElement;
+export interface AccessibilityViewModel { reducedFlashes?: boolean; largerText?: boolean; highContrast?: boolean }
+export declare function AccessibilityView(props: { view?: AccessibilityViewModel; onChange?: (key: string, value: boolean) => void; onBack?: () => void; className?: string }): React.ReactElement;
+'''
+
 LEGACY = (
     '\n/* ── Legacy web (deprecated): the landscape and online kit, kept for reference; classes are vbl- ── */\n'
     'export declare namespace Legacy {\n'

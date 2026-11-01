@@ -104,8 +104,8 @@ const base = process.argv[2] || 'http://127.0.0.1:8766/';
       }
     }
     // Representative open-inspector accessibility audit, excluding component mirrors.
-    if(process.env.PREVIEW_RUNTIME_DIR) {
-      await page.addScriptTag({path:path.join(process.env.PREVIEW_RUNTIME_DIR,'axe.min.js')});
+    {
+      await page.addScriptTag({path:process.env.PREVIEW_RUNTIME_DIR?path.join(process.env.PREVIEW_RUNTIME_DIR,'axe.min.js'):require.resolve('axe-core/axe.min.js')});
       for(const width of [390,1280]) {
         await page.setViewportSize({width,height:900}); await route('e-button'); await inspect();
         const violations=await page.evaluate(async()=>{

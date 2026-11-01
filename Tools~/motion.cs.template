@@ -1,0 +1,16 @@
+using UnityEngine;
+namespace Veilbreak.Gui {
+/// <summary>Portable motion data. Milliseconds and logical UI units, independent of the simulation clock.</summary>
+public readonly struct MotionRecipe {
+ public readonly int milliseconds;public readonly float x,y,rotation,scale;
+ public MotionRecipe(int milliseconds,float x=0,float y=0,float rotation=0,float scale=1){this.milliseconds=milliseconds;this.x=x;this.y=y;this.rotation=rotation;this.scale=scale;}
+}
+public static class MotionRecipes {
+/*@@RECIPES@@*/
+ public static MotionRecipe For(MotionKind kind,bool enter=true)=>kind switch {
+  MotionKind.Deal=>Deal,MotionKind.Rise=>new MotionRecipe(enter?320:180,0,12),MotionKind.Drop=>new MotionRecipe(enter?320:180,0,-12),
+  MotionKind.Left=>new MotionRecipe(enter?320:180,-12),MotionKind.Right=>new MotionRecipe(enter?320:180,12),MotionKind.Zoom=>new MotionRecipe(enter?320:180,0,0,0,.94f),
+  _=>new MotionRecipe(enter?320:180)
+ };
+}
+}

@@ -40,31 +40,29 @@ namespace Veilbreak.Gui {
 /// <summary>Upcoming casts in firing order. With a cancel callback, manual entries are tappable and leave the list when tapped.</summary>
 public sealed class QueueList:VisualElement {
  public const string ClassName="vb-queue";
- Action<QueueView> cancel;readonly System.Collections.Generic.List<(VisualElement row,QueueView view)> rows=new System.Collections.Generic.List<(VisualElement,QueueView)>();
- public QueueList(){AddToClassList(ClassName);VbShape.Attach(this);pickingMode=PickingMode.Ignore;}
- public QueueList Bind(QueueView[] queue,string title="AUTOPLAY QUEUE",string hint="Fires as Power reaches each cost",Action<QueueView> cancel=null){
-  Clear();rows.Clear();this.cancel=cancel;var head=Ui.Box(this,ClassName+"__head");Ui.Text(head,title+" · "+queue.Length,ClassName+"__title");Ui.Text(head,hint,ClassName+"__hint");
-  for(int i=0;i<queue.Length;i++){var q=queue[i];var row=VbShape.Attach(Ui.Box(this,ClassName+"__row",i==0?ClassName+"__row--next":null));
-   Ui.Text(row,q.next?"›":(i+1).ToString(),ClassName+"__index");var t=Ui.Box(row,ClassName+"__text");Ui.Text(t,q.skill.ToUpperInvariant(),ClassName+"__skill");Ui.Text(t,q.who,ClassName+"__who");
-   Ui.Text(row,q.cost.ToString(),ClassName+"__cost");Ui.Text(row,q.eta,ClassName+"__eta");
-   rows.Add((row,q));if(q.manual&&cancel!=null){row.AddToClassList(ClassName+"__row--manual");row.tooltip="Cancel queued cast";new VbIcon("cancel",14).Classes(ClassName+"__cancel").Into(row);int index=i;row.Clickable(()=>CancelRow(index));}}
-  return this;
- }
- /// <summary>Cancels the manual entry shown at <paramref name="index"/> (what a tap does); autoplay estimates cannot be cancelled.</summary>
- public bool CancelRow(int index){if(cancel==null||index<0||index>=rows.Count||!rows[index].view.manual||rows[index].row.parent==null)return false;rows[index].row.RemoveFromHierarchy();cancel(rows[index].view);return true;}
+ Action<QueueView> cancel;readonly Label title,hint;readonly VisualElement body;readonly System.Collections.Generic.List<QueueChip> rows=new System.Collections.Generic.List<QueueChip>();
+ public QueueList(){AddToClassList(ClassName);VbShape.Attach(this);pickingMode=PickingMode.Ignore;var head=Ui.Box(this,ClassName+"__head");title=Ui.Text(head,"",ClassName+"__title");hint=Ui.Text(head,"",ClassName+"__hint");body=Ui.Box(this);}
+ public QueueList Bind(QueueView[] queue,string title="AUTOPLAY QUEUE",string hint="Fires as Power reaches each cost",Action<QueueView> cancel=null){this.cancel=cancel;this.title.text=title+" · "+queue.Length;this.hint.text=hint;
+  Keyed.Bind(body,System.Linq.Enumerable.Select(queue,(q,i)=>(view:q,index:i)),x=>string.IsNullOrEmpty(x.view.id)?x.view.actor+":"+x.view.slot+":"+x.view.who+":"+x.view.skill:x.view.id,x=>{var chip=new QueueChip().Classes(ClassName+"__row");chip.Cancelled+=()=>{if(this.cancel!=null){chip.RemoveFromHierarchy();this.cancel(chip.View);}};return chip;},(chip,x)=>{chip.Bind(x.view,x.index+1);chip.EnableInClassList(ClassName+"__row--manual",x.view.manual);});
+  rows.Clear();rows.AddRange(body.Query<QueueChip>().ToList());return this;}
+ public bool CancelRow(int index){if(cancel==null||index<0||index>=rows.Count||rows[index].parent==null)return false;return rows[index].Cancel();}
+
 }
 
 /// <summary>Boss read-out: name, health over stability, shield and interrupt markers.</summary>
 [UxmlElement] public partial class BossBar:VisualElement {
  public const string ClassName="vb-boss";
- readonly Label title,detail;readonly HealthBar health;readonly VisualElement chips;string chipKey;
+ readonly Label title,detail;readonly HealthBar health;readonly EffectStrip effects;
  public BossBar(){
   AddToClassList(ClassName);VbShape.Attach(this);pickingMode=PickingMode.Ignore;var head=Ui.Box(this,ClassName+"__head");new VbIcon("marker",14).Classes(ClassName+"__icon").Into(head);
-  title=Ui.Text(head,"",ClassName+"__name");detail=Ui.Text(head,"",ClassName+"__detail");health=new HealthBar().Classes(ClassName+"__health").Into(this);chips=Ui.Box(this,ClassName+"__chips");
+  title=Ui.Text(head,"",ClassName+"__name");detail=Ui.Text(head,"",ClassName+"__detail");health=new HealthBar().Classes(ClassName+"__health").Into(this);effects=new EffectStrip().Classes(ClassName+"__chips").Into(this);
  }
  public BossBar Bind(BossView b){
   title.text=b.name.ToUpperInvariant();detail.text=b.detail;health.Set(b.health,1,0,b.stability,b.stability<=0,true);
-  var key=b.shielded+b.shieldDetail+b.interruptible;if(key!=chipKey){chipKey=key;chips.Clear();if(b.shielded)new StatusChip(StatusKind.Barrier,"Shielded",b.shieldDetail).Into(chips);if(b.interruptible)new StatusChip(StatusKind.Interrupted,"Interruptible").Into(chips);chips.Show(b.shielded||b.interruptible);}
+  var all=new System.Collections.Generic.List<EffectInstance>(b.effects??Array.Empty<EffectInstance>());
+  if(b.shielded&&!all.Exists(e=>e.definition?.id=="boss-protection"))all.Add(new EffectInstance{id="boss:shield",definition=new EffectDefinition{id="shielded",title="Shielded",description=b.shieldDetail,icon="barrier",polarity=EffectPolarity.Benefit},magnitude=b.shieldDetail});
+  if(b.interruptible&&!all.Exists(e=>e.definition?.id=="interruptible"))all.Add(new EffectInstance{id="boss:interruptible",definition=new EffectDefinition{id="interruptible",title="Interruptible",description="This action can be interrupted.",icon="warning"}});
+  effects.Bind(all);
   return this;
  }
 }

@@ -11,21 +11,22 @@ namespace Veilbreak.Gui {
 [UxmlElement] public partial class SkillButton:VisualElement {
  public const string ClassName="vb-skill";
  readonly Label slot,top,value;readonly VbIcon glyph;readonly VisualElement charge,sweep,slash;
+ SkillState? previousState;IVisualElementScheduledItem rejected;
  public SkillView View {get;private set;}
  public SkillButton(){
   AddToClassList(ClassName);focusable=true;VbShape.Attach(this);
   charge=Ui.Box(this,ClassName+"__charge");sweep=Ui.Box(this,ClassName+"__sweep");slot=Ui.Text(this,"A",ClassName+"__slot");glyph=new VbIcon("projectile",20).Classes(ClassName+"__icon").Into(this);
   slash=Ui.Box(this,ClassName+"__slash");var foot=Ui.Box(this,ClassName+"__foot");top=Ui.Text(foot,"",ClassName+"__top");value=Ui.Text(foot,"",ClassName+"__value");
-  Bind(new SkillView());
+  RegisterCallback<DetachFromPanelEvent>(_=>{rejected?.Pause();rejected=null;RemoveFromClassList(ClassName+"--flash");});Bind(new SkillView());
  }
  static readonly string[] Hashes={"#0","#1","#2","#3","#4","#5","#6","#7","#8"};
  // The tooltip is rebuilt only when what it says changes; buttons are bound every frame.
  (string,int,SkillState,int,string) tipKey;
  public SkillButton Bind(SkillView v){
-  if(v.state==SkillState.Rejected&&View?.state!=SkillState.Rejected){AddToClassList(ClassName+"--flash");schedule.Execute(()=>RemoveFromClassList(ClassName+"--flash")).StartingIn(400);VbMotion.Shake(this);}
+  if(v.state==SkillState.Rejected&&previousState!=SkillState.Rejected){AddToClassList(ClassName+"--flash");rejected?.Pause();rejected=schedule.Execute(()=>RemoveFromClassList(ClassName+"--flash")).StartingIn(MotionRecipes.Deal.milliseconds);VbMotion.Shake(this);}
   // Coming ready after a recharge, a silence or a windup swells once; the state colours cross-fade in VbShape.
-  else if(v.state==SkillState.Ready&&View!=null&&View.state!=SkillState.Ready&&View.state!=SkillState.Aiming&&View.state!=SkillState.Rejected)VbMotion.Pop(this,.08f);
-  View=v;Ui.State(this,ClassName,v.state);slot.text=v.slot;glyph.Icon=v.state==SkillState.Fallen?"lock":v.state==SkillState.Invalid?"no-target":v.icon;
+  else if(v.state==SkillState.Ready&&previousState.HasValue&&previousState!=SkillState.Ready&&previousState!=SkillState.Aiming&&previousState!=SkillState.Rejected)VbMotion.Pop(this,.08f);
+  previousState=v.state;View=v;Ui.State(this,ClassName,v.state);slot.text=v.slot;glyph.Icon=v.state==SkillState.Fallen?"lock":v.state==SkillState.Invalid?"no-target":v.icon;
   charge.Show(v.state==SkillState.Cooldown);Ui.Fill(charge,v.charged,true);sweep.Show(v.state==SkillState.Windup);Ui.Fill(sweep,v.progress);slash.Show(v.state==SkillState.Silenced||v.state==SkillState.Invalid);
   switch(v.state){
    case SkillState.Casting:top.text="";value.text="CAST";break;

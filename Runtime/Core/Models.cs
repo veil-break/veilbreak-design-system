@@ -25,7 +25,7 @@ public enum RarityTier { None, Blue, Violet, Gold }
  public string id="",name="",code="",role="",roleIcon="striker",passive="",passiveText="",passiveFullText="";
  public Color kit=Color.white; public Texture2D portrait;
  public int hp,maxHp=1,barrier,armor,stability=100,maxStability=100;
- public StatusKind[] statuses=Array.Empty<StatusKind>(); public ControlMode mode; public float manualSeconds;
+ public EffectInstance[] effects=Array.Empty<EffectInstance>(); public ControlMode mode; public float manualSeconds;
  public SkillView[] skills={new SkillView(),new SkillView{slot="S",kind="Signature"}};
  public bool Fallen=>mode==ControlMode.Fallen||hp<=0;
 }
@@ -35,9 +35,9 @@ public enum RarityTier { None, Blue, Violet, Gold }
  public PerkTier tier; public Texture2D art; public int stack,max; public long[] waves=Array.Empty<long>();
 }
 
-[Serializable] public sealed class ScoreView { public int rank; public long score,wave,bosses; public string[] squad=Array.Empty<string>(); public bool current; }
+[Serializable] public sealed class ScoreView { public string id=""; public int rank; public long score,wave,bosses; public string[] squad=Array.Empty<string>(); public bool current; }
 /// <summary>One upcoming cast. Manual entries name their operative and slot so the HUD can cancel them; <see cref="next"/> marks a buffered cast that fires as soon as its operative is ready.</summary>
-[Serializable] public sealed class QueueView { public string who="",skill="",eta=""; public int cost,actor=-1,slot; public bool manual,next; }
+[Serializable] public sealed class QueueView { public string id=""; public string who="",skill="",eta=""; public int cost,actor=-1,slot; public bool manual,next; }
 
 [Serializable] public sealed class ContributionView {
  public OperativeView operative=new OperativeView(); public long fellWave,damage,kills,casts,power; public float share; public string extraLabel="Basics",extraValue="0";
@@ -50,7 +50,7 @@ public enum RarityTier { None, Blue, Violet, Gold }
 
 [Serializable] public sealed class RoadView { public string kind="combat",title="Combat",icon="battle",hint="Common cache · occasional rare"; }
 [Serializable] public sealed class RouteView { public long wave; public RoadView left=new RoadView(),right=new RoadView(); }
-[Serializable] public sealed class MerchantOfferView { public PerkView perk=new PerkView(); public int price; public bool taken; public string blocked=""; }
+[Serializable] public sealed class MerchantOfferView { public string id=""; public PerkView perk=new PerkView(); public int price; public bool taken; public string blocked=""; }
 [Serializable] public sealed class MerchantStackView { public PerkView perk=new PerkView(); public int payout; }
 [Serializable] public sealed class MerchantHealthView { public int actor,hp,maxHp,cost,payout; public string name="",blocked=""; }
 [Serializable] public sealed class MerchantView { public int credits; public MerchantOfferView[] offers=Array.Empty<MerchantOfferView>(); public MerchantStackView[] stacks=Array.Empty<MerchantStackView>(); public MerchantHealthView[] health=Array.Empty<MerchantHealthView>(); }
@@ -62,7 +62,7 @@ public enum RarityTier { None, Blue, Violet, Gold }
 }
 [Serializable] public sealed class RuleCondition { public string text="",value="",after=""; }
 
-[Serializable] public sealed class BossView { public string name=""; public float health=1,stability=1; public string detail=""; public bool shielded,interruptible; public string shieldDetail=""; }
+[Serializable] public sealed class BossView { public EffectInstance[] effects=Array.Empty<EffectInstance>(); public string name=""; public float health=1,stability=1; public string detail=""; public bool shielded,interruptible; public string shieldDetail=""; }
 
 // ── view models for the screen views (Runtime/Views) ────────────────────────
 /// <summary>A run that can resume: the wave it resumes at, its score, who stands and what it carries.</summary>

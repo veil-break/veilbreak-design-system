@@ -16,16 +16,24 @@ public sealed class Popover {
  static readonly System.Collections.Generic.List<Popover> active=new System.Collections.Generic.List<Popover>();
  public static bool CloseAll(){bool any=active.Count>0;foreach(var p in active.ToArray())p.Close();return any;}
  readonly VisualElement anchor;readonly Func<VisualElement> build;readonly PopoverPlacement placement;readonly bool alignEnd;
- VisualElement shown;bool pinned;
+ sealed class Popup:OverlayView {public readonly ScrollView scroll=new ScrollView(ScrollViewMode.Vertical);public Action closing;public Popup(){hierarchy.Add(scroll);}public override void Dismiss(Action done=null){closing?.Invoke();base.Dismiss(done);}}
+ VisualElement eventRoot;Popup shown;bool pinned,hovered,suppressFocus;IVisualElementScheduledItem pending;
+ VisualElement Root=>anchor.panel?.visualTree;
+ public static bool CloseWithin(VisualElement root){bool any=false;foreach(var p in active.ToArray())if(root==p.anchor||root.Contains(p.anchor)){p.Close();any=true;}return any;}
+ bool ChildOpen(){if(shown==null)return false;foreach(var child in active)if(child!=this&&child.IsOpen&&shown.Contains(child.anchor))return true;return false;}
+ void Later(){pending?.Pause();pending=anchor.schedule.Execute(()=>{if(!pinned&&!hovered&&!ChildOpen()&&!(shown?.Contains(anchor.panel?.focusController?.focusedElement as VisualElement)??false))Close();}).StartingIn(160);}
+ void Outside(PointerDownEvent e){var target=e.target as VisualElement;if(target?.GetFirstAncestorOfType<Popup>()!=null)return;if(target==null||anchor==target||anchor.Contains(target)||shown==target||(shown?.Contains(target)??false))return;Close();}
+ void Key(KeyDownEvent e){if(e.keyCode==KeyCode.Escape&&active.Count>0&&active[active.Count-1]==this){Close();suppressFocus=true;anchor.Focus();suppressFocus=false;e.StopPropagation();}}
+
  public bool IsOpen=>shown!=null;
 
  Popover(VisualElement anchor,Func<VisualElement> build,PopoverPlacement placement,bool alignEnd){
   this.anchor=anchor;this.build=build;this.placement=placement;this.alignEnd=alignEnd;
-  anchor.RegisterCallback<PointerEnterEvent>(e=>{if(e.pointerType==UnityEngine.UIElements.PointerType.mouse)Open();});
-  anchor.RegisterCallback<PointerLeaveEvent>(e=>{if(e.pointerType==UnityEngine.UIElements.PointerType.mouse&&!pinned)Close();});
-  anchor.RegisterCallback<PointerDownEvent>(e=>{if(e.pointerType!=UnityEngine.UIElements.PointerType.mouse){if(IsOpen)Close();else Open();}});
-  anchor.RegisterCallback<FocusInEvent>(_=>Open());
-  anchor.RegisterCallback<FocusOutEvent>(_=>{if(!pinned)Close();});
+  anchor.RegisterCallback<PointerEnterEvent>(e=>{if(e.pointerType==UnityEngine.UIElements.PointerType.mouse){pending?.Pause();Open();}});
+  anchor.RegisterCallback<PointerLeaveEvent>(e=>{if(e.pointerType==UnityEngine.UIElements.PointerType.mouse&&!pinned)Later();});
+  anchor.RegisterCallback<PointerDownEvent>(e=>{if(e.pointerType!=UnityEngine.UIElements.PointerType.mouse){if(IsOpen)Close();else{Open();pinned=true;}e.StopPropagation();}});
+  anchor.RegisterCallback<FocusInEvent>(_=>{if(!suppressFocus)Open();});
+  anchor.RegisterCallback<FocusOutEvent>(_=>{if(!pinned)Later();});
   anchor.RegisterCallback<DetachFromPanelEvent>(_=>Close());
   anchor.RegisterCallback<GeometryChangedEvent>(_=>Place());
  }
@@ -37,13 +45,18 @@ public sealed class Popover {
 
  public void Open(){
   if(shown!=null||anchor.panel==null)return;
-  var content=build?.Invoke();if(content==null)return;var scroll=new ScrollView(ScrollViewMode.Vertical);scroll.horizontalScrollerVisibility=ScrollerVisibility.Hidden;scroll.verticalScrollerVisibility=ScrollerVisibility.Auto;scroll.Add(content);shown=scroll;
-  active.Add(this);shown.style.maxWidth=Mathf.Max(80,anchor.panel.visualTree.worldBound.width-16);shown.style.maxHeight=Mathf.Max(80,anchor.panel.visualTree.worldBound.height-32);shown.AddToClassList(ClassName);foreach(var c in SafeAreaRoot.RootClasses)if(Ui.Under(anchor,c))shown.AddToClassList(c);shown.pickingMode=PickingMode.Ignore;shown.style.position=Position.Absolute;
-  anchor.panel.visualTree.Add(shown);anchor.AddToClassList(OpenClass);
-  shown.RegisterCallback<GeometryChangedEvent>(_=>Place());Place();VbMotion.In(shown,placement==PopoverPlacement.Below?MotionKind.Drop:MotionKind.Rise);
+  var content=build?.Invoke();if(content==null)return;var popup=new Popup();var scroll=popup.scroll;scroll.horizontalScrollerVisibility=ScrollerVisibility.Hidden;scroll.verticalScrollerVisibility=ScrollerVisibility.Auto;scroll.Add(content);shown=popup;popup.closing=()=>{if(shown==popup)Close();};
+  active.Add(this);shown.style.maxWidth=Mathf.Max(80,anchor.panel.visualTree.worldBound.width-16);shown.style.maxHeight=Mathf.Max(80,anchor.panel.visualTree.worldBound.height-32);shown.AddToClassList(ClassName);foreach(var c in SafeAreaRoot.RootClasses)if(Ui.Under(anchor,c))shown.AddToClassList(c);shown.pickingMode=PickingMode.Position;shown.style.position=Position.Absolute;
+  shown.RegisterCallback<PointerEnterEvent>(_=>{hovered=true;pending?.Pause();});shown.RegisterCallback<PointerLeaveEvent>(_=>{hovered=false;Later();});shown.RegisterCallback<FocusOutEvent>(_=>Later());
+  eventRoot=Root;eventRoot.RegisterCallback<PointerDownEvent>(Outside,TrickleDown.TrickleDown);eventRoot.RegisterCallback<KeyDownEvent>(Key,TrickleDown.TrickleDown);
+  OverlayHost.For(anchor).AddPopup(shown);anchor.AddToClassList(OpenClass);
+  shown.RegisterCallback<GeometryChangedEvent>(_=>Place());Place();
  }
 
- public void Close(){active.Remove(this);pinned=false;if(shown==null)return;var leaving=shown;shown=null;leaving.SetEnabled(false);VbMotion.Out(leaving,MotionKind.Fade,leaving.RemoveFromHierarchy);anchor.RemoveFromClassList(OpenClass);}
+ public void Close(){pending?.Pause();pending=null;active.Remove(this);pinned=hovered=false;if(shown==null)return;var leaving=shown;shown=null;
+  eventRoot?.UnregisterCallback<PointerDownEvent>(Outside,TrickleDown.TrickleDown);eventRoot?.UnregisterCallback<KeyDownEvent>(Key,TrickleDown.TrickleDown);
+  leaving.Owner?.RemovePopup(leaving);anchor.RemoveFromClassList(OpenClass);foreach(var parent in active.ToArray())if(parent.shown!=null&&parent.shown.Contains(anchor))parent.Later();}
+
 
  void Place(){
   if(shown?.parent==null)return;

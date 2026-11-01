@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.5.0 — 2026-11-01
+
+- Shared view/surface/card/detail foundations and OverlayView/OverlayHost lifecycle; closing overlays retain coverage and focus ownership.
+- Stable keyed collection binding across market, route, queue, draft, results, revive, details and perk consumers; fixed merchant deal discovery and cached boss/skill updates.
+- Complete effect definition/instance model with touch/hover details, compact HUD summaries and untruncated lists. Battle cards grow to 202 units for a full status touch target.
+- Generated shared motion recipes, separate presence/feedback/count channels, ordered theatrical deals, HUD scrubbing and cancellable drawers; reduced-motion handling throughout.
+- React effect components and missing screen mirrors, family-based handbook catalog, source inventory and a complete 50-finding audit.
+- Root pyproject, uv.lock, Python selector, locked Ruff and reproducible build checks. See Documentation~/migration-0.5.md and Documentation~/validation.md.
+
 ## 0.4.0 — 2026-11-01
 
 Every state change in the kit now animates, and the arcade binds package views only.

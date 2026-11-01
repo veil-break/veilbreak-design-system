@@ -384,6 +384,14 @@ def md(text):
     return '\n'.join(out)
 
 
+CONTRACTS = json.loads((PKG / 'Tokens~/components.json').read_text())
+BY_TYPE = {item['name']: item for item in CONTRACTS['types']}
+for entry in catalog.ENTRIES:
+    contract = next((BY_TYPE[name] for name in entry['unity'] if name in BY_TYPE), None)
+    entry['contract'] = contract
+    entry['family'] = contract['family'] if contract else 'recipes'
+    entry['kind'] = contract['kind'] if contract else 'recipe'
+
 # ── 8. previews ───────────────────────────────────────────────────────────────
 spec = importlib.util.spec_from_file_location('previews', WEB / 'previews.py')
 pv = importlib.util.module_from_spec(spec)
@@ -505,6 +513,9 @@ for x in catalog.ENTRIES:
         PREVIEW_JS.append(f'PREVIEWS[{json.dumps(x["id"])}] = function (render) {{\n{body.strip()}\n}};')
     ENTRIES.append({
         'id': x['id'],
+        'family': x['family'],
+        'kind': x['kind'],
+        'contract': x['contract'],
         'tier': x['tier'],
         'name': x['name'],
         'unity': x['unity'],
@@ -535,6 +546,7 @@ DATA = {
     'fonts': FONTS,
     'icons': ICONS,
     'aliases': ALIASES,
+    'contracts': CONTRACTS,
     'slimUss': catalog.SLIM_USS,
     'slimMigration': catalog.SLIM_MIGRATION,
     'package': json.loads((PKG / 'package.json').read_text()),

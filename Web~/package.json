@@ -1,6 +1,6 @@
 {
   "name": "@veilbreak/gui",
-  "version": "0.3.2",
+  "version": "0.5.0",
   "description": "The Veilbreak design system for the web: React 18 ports of com.veilbreak.gui (the Unity UI Toolkit kit), with the same element trees, classes, tokens, fonts and icons.",
   "license": "SEE LICENSE IN ../LICENSE.md",
   "author": "tuomashatakka",
@@ -9,15 +9,40 @@
   "module": "./dist/veilbreak.mjs",
   "types": "./dist/index.d.ts",
   "exports": {
-    ".": { "types": "./dist/index.d.ts", "import": "./dist/veilbreak.mjs", "default": "./dist/veilbreak.js" },
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/veilbreak.mjs",
+      "default": "./dist/veilbreak.js"
+    },
     "./veilbreak.css": "./dist/veilbreak.css",
     "./tokens.css": "./dist/tokens.css",
     "./fonts/*": "./dist/fonts/*"
   },
-  "files": ["dist", "README.md"],
-  "sideEffects": ["*.css", "./dist/veilbreak.js"],
-  "peerDependencies": { "react": ">=18", "react-dom": ">=18" },
-  "scripts": { "build": "python3 ../Tools~/web/package.py dist" },
-  "keywords": ["veilbreak", "design-system", "react", "ui-toolkit", "hud"],
-  "repository": { "type": "git", "url": "https://github.com/veil-break/veilbreak-design-system.git", "directory": "Web~" }
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "sideEffects": [
+    "*.css",
+    "./dist/veilbreak.js"
+  ],
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
+  "scripts": {
+    "build": "python3 ../Tools~/web/package.py dist"
+  },
+  "keywords": [
+    "veilbreak",
+    "design-system",
+    "react",
+    "ui-toolkit",
+    "hud"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/veil-break/veilbreak-design-system.git",
+    "directory": "Web~"
+  }
 }

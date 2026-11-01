@@ -25,13 +25,13 @@ portrait arcade. The landscape rail, minimap, combat feed and match header are n
 | --- | --- | --- |
 | HUD band (under the top inset) | `HudTop`: WAVE or BOSS and score, AUTO toggle, speed, pause. Under them the resources panel: `PowerStrip` (value, regen, live hint, a mark at the next queued cost) and `FocusMeter`. `BossBar` hangs below in boss waves. | Translucent and short. It is read-only apart from its three toggles. Tap, hover or focus on the resources panel opens the full `QueueList`, where a manual entry cancels on tap. A standalone `PowerStrip` can also carry the reserve line, queue chips with × and a legend, as in the BattleHud sample. |
 | Battlefield (the rest) | The 3D view. Over it, `WorldLayer` draws bars, combat text, labels, markers and off-screen chips. `TargetDrag` and `GestureSurface` take input on it. | At least half the board. No panel floats over it during play. The camera frames the squad inside this band (see [the camera's safe band](#the-cameras-safe-band)). |
-| Cards (above the bottom inset) | Four `OperativeCard`s (88 × 172; compact: equal shares, 220 tall). Each has portrait, mode chip, health over stability, statuses and two `SkillButton`s (44 × 56). | The thumb zone. Every target is at least 44 × 44. Skill drags start here and end on the battlefield. |
+| Cards (above the bottom inset) | Four `OperativeCard`s (88 × 202; compact: equal shares, 250 tall). Each has portrait, mode chip, health over stability, statuses and two `SkillButton`s (44 × 56). | The thumb zone. Every target is at least 44 × 44. Skill drags start here and end on the battlefield. |
 | Cancel band (arcade) | "RELEASE HERE TO CANCEL · NO POWER SPENT", just above the cards while an aim is live. | A release over it cancels without spending; it only shows during a drag. |
 
 ## Screen layer
 
 `Navigator` owns one absolute screen layer (`vb-screen`) above the board, inset like the root. A page
-(`vb-page vb-page--{name}`) replaces the screen's content. `ModalHost` layers (`vb-modal`) stack over the page, blur it
+(`vb-page vb-page--{name}`) replaces the screen's content. `OverlayHost` layers (`vb-modal`) stack over the page, blur it
 and return focus when they close. Pages opened during a run cover the HUD, cards and world layer with `vb-covered`, so
 nothing behind a page takes input. Combat itself only stops when the game pauses, and settings in a run open from Pause.
 

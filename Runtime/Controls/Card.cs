@@ -3,9 +3,9 @@ namespace Veilbreak.Gui {
 /// <summary>The base card: a slim container with an optional media band, a head (caps title and a meta), a body and a foot of
 /// right-aligned actions. One frame, one padding rhythm (12 / 14) and one selected state (edge + brackets) for every card.
 /// Children added in UXML or with <c>Add</c> go to the body.</summary>
-[UxmlElement] public partial class CardComponent:VisualElement {
+[UxmlElement] public partial class CardComponent:CardView {
  public const string ClassName="vb-card";
- readonly VisualElement media,head,body,foot;readonly LabelComponent title;readonly Label meta;bool selected;
+ readonly VisualElement media,head,body,foot;readonly LabelComponent title;readonly Label meta;
  public override VisualElement contentContainer=>body;
  /// <summary>An optional band above the head for art, a crop or a backdrop; hidden until something is added.</summary>
  public VisualElement Media=>media;
@@ -14,10 +14,11 @@ namespace Veilbreak.Gui {
  public VisualElement Foot=>foot;
  [UxmlAttribute] public string Title {get=>title.text;set{title.text=value;Refresh();}}
  [UxmlAttribute] public string Meta {get=>meta.text;set{meta.text=value??"";meta.Show(meta.text.Length>0);Refresh();}}
- [UxmlAttribute] public bool Selected {get=>selected;set{selected=value;EnableInClassList(ClassName+"--selected",value);}}
+ [UxmlAttribute] public new bool Selected {get=>base.Selected;set=>base.Selected=value;}
+ protected override string SelectionClass=>ClassName+"--selected";
  public CardComponent():this(null){}
  public CardComponent(string title,string meta=null){
-  AddToClassList(ClassName);VbShape.Attach(this);pickingMode=PickingMode.Ignore;
+  AddToClassList(ClassName);
   media=Part(ClassName+"__media");head=Part(ClassName+"__head");this.title=new LabelComponent("").Classes(ClassName+"__title").Into(head);this.meta=Ui.Text(head,"","vb-t-badge",ClassName+"__meta");
   body=Part(ClassName+"__body");foot=Part(ClassName+"__foot");
   Title=title;Meta=meta;RegisterCallback<GeometryChangedEvent>(_=>Refresh());

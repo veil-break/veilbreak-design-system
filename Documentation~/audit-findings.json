@@ -1,0 +1,302 @@
+[
+  {
+    "id": "A01",
+    "title": "Existing inheritance already works",
+    "evidence": "LabelComponent extends TextComponent, OperativeTile/SquadSlot extend TileComponent, and specialized rows extend ListRow. Preserve these useful contracts instead of introducing a universal widget superclass.",
+    "resolution": "Retained; SurfaceView adds common painting without replacing native control bases."
+  },
+  {
+    "id": "A02",
+    "title": "Card selection and surface behavior were isolated",
+    "evidence": "CardComponent supplied slots and selection while PerkCard and specialized surfaces reimplemented the same frame and selected state.",
+    "resolution": "CardView centralizes selection and SurfaceView centralizes painting; CardComponent retains optional slots and PerkCard uses CardView without extra layout wrappers."
+  },
+  {
+    "id": "A03",
+    "title": "Detail and holographic surfaces duplicated construction",
+    "evidence": "OperativeDetails, OperativeStats, PerkDetail and HoloFrame independently initialized shape and picking behavior.",
+    "resolution": "DetailView and SurfaceView now supply shared behavior; SkillSummary and FactCell are reused across detail consumers."
+  },
+  {
+    "id": "A04",
+    "title": "Badge families were parallel implementations",
+    "evidence": "StatusChip, CreditsChip and PerkChip did not share BadgeComponent slots; changes could drift.",
+    "resolution": "CreditsChip and EffectBadge now extend BadgeComponent. StatusChip remains a labelled static status recipe and PerkChip retains its authored art layout; neither is the live battle effect model."
+  },
+  {
+    "id": "A05",
+    "title": "Collection patterns were reimplemented",
+    "evidence": "QueueList built its own row tree, while route choices and merchant offers had unrelated discovery and binding paths.",
+    "resolution": "QueueList now consumes QueueChip; route signs are persistent specialized surfaces; merchant variants consume ListRow and keyed reconciliation."
+  },
+  {
+    "id": "A06",
+    "title": "Some different bases are necessary",
+    "evidence": "Buttons, sliders, labels, scrolls, world projections and painted meshes have distinct native behavior.",
+    "resolution": "Keep native control bases and WorldLayer projection/pooling. Reuse view data, motion and composition without a deep inheritance chain."
+  },
+  {
+    "id": "A07",
+    "title": "Folder taxonomy mixed type families and composition levels",
+    "evidence": "Controls, Composites and Views did not distinguish overlays, effects, details, forms, collections and surfaces consistently.",
+    "resolution": "Tokens~/components.json records kind, family, level, base, source and web availability. Handbook navigation uses families while retaining level metadata."
+  },
+  {
+    "id": "A08",
+    "title": "Catalog recipes and services looked like concrete components",
+    "evidence": "ScreenView is abstract; Popover/Announcer/Navigator are services; fieldsets/root recipes are not all instantiable component types.",
+    "resolution": "Catalog entries expose explicit kind and base metadata; the complete type inventory distinguishes services, foundations and concrete components."
+  },
+  {
+    "id": "A09",
+    "title": "Three Unity views lacked React mirrors",
+    "evidence": "ActivePerksView, RevivePickView and AccessibilityView were missing from the exported web kit.",
+    "resolution": "Added mirrors, declarations, inspectable properties and previews for all three."
+  },
+  {
+    "id": "A10",
+    "title": "Overlay inheritance was fragmented",
+    "evidence": "Pause derived from ScreenView, confirmation/guide/drawer derived directly from VisualElement, and Popover built an unrelated scroll.",
+    "resolution": "OverlayView is the shared abstract lifecycle. Typed dialogs, pause, drawer, dialog surfaces and popup/layer implementations inherit it; OverlayHost owns presentation."
+  },
+  {
+    "id": "A11",
+    "title": "Modal exit restored input too early",
+    "evidence": "ModalHost.Pop enabled the underlying layer, removed coverage and restored focus before the exit animation finished.",
+    "resolution": "OverlayHost keeps coverage and a pickable blocker until completion, then restores prior enabled/focus state."
+  },
+  {
+    "id": "A12",
+    "title": "Drawer timing had independent owners",
+    "evidence": "A fixed 240 ms timer, delayed open and an additional delayed modal pop could disagree on completion or reversal.",
+    "resolution": "Drawer uses shared entrance/exit recipes; the host waits for its actual close callback. Drag/snap height remains independent."
+  },
+  {
+    "id": "A13",
+    "title": "Popover interaction was fragile",
+    "evidence": "Pointer leave immediately closed it; PickingMode.Ignore prevented interaction with its content.",
+    "resolution": "Added a hover-transfer grace period, interactive scroll content, focus transfer, outside dismissal, touch pin/toggle and Escape handling."
+  },
+  {
+    "id": "A14",
+    "title": "Popover ownership was global",
+    "evidence": "Global CloseAll could dismiss unrelated panels; detached anchors could leave ownership unclear.",
+    "resolution": "OverlayHost scopes overlays and popup cleanup; navigation closes popovers within its scope. CloseAll remains an explicit application-wide teardown operation."
+  },
+  {
+    "id": "A15",
+    "title": "Coverage could dim a layer more than once",
+    "evidence": "Covered opacity .55 combined with modal and drawer scrims.",
+    "resolution": "Covered UI keeps full opacity and uses blur; scrims own UI dimming. World coverage has one bounded dim/blur weight."
+  },
+  {
+    "id": "A16",
+    "title": "UI blur did not affect the 3D world",
+    "evidence": "vb-covered only affected UI Toolkit; existing CinematicPulse is an impact effect, not an overlay blur.",
+    "resolution": "Arcade has a dedicated Render Graph world blur after world grading and before GammaUiFeature; zero weight bypasses it. Standard/Low use bounded downsampling."
+  },
+  {
+    "id": "A17",
+    "title": "Bind cleared and rebuilt live UI",
+    "evidence": "Merchant, route, queue, result grids/perks/ledger, score lists, revive tiles, operative skills/stats, perk detail rows and totals rebuilt children.",
+    "resolution": "Shared KeyedList/Keyed reconciliation updates existing instances; changed values preserve row identity, focus and enclosing scroll."
+  },
+  {
+    "id": "A18",
+    "title": "Existing reuse was not generalized",
+    "evidence": "Squad tiles and draft choices already reused slots, but other lists did not.",
+    "resolution": "Keyed reconciliation is now used by draft choices, active perks, revive tiles and list/detail consumers."
+  },
+  {
+    "id": "A19",
+    "title": "Merchant dealing queried a missing class",
+    "evidence": "MerchantScreenView queried vb-merchant__offer, but constructed rows lacked that class.",
+    "resolution": "Offers now have the class and Market.Choices exposes the actual registered items directly."
+  },
+  {
+    "id": "A20",
+    "title": "Boss binding depended on object identity",
+    "evidence": "BattleHudView skipped Boss.Bind when a cached BossView instance changed fields.",
+    "resolution": "Boss values are read on every bind; host caches may still avoid model allocation."
+  },
+  {
+    "id": "A21",
+    "title": "Item identity was implicit",
+    "evidence": "Rows often used array positions or freshly built nodes, with no stable host IDs.",
+    "resolution": "Effects require unique IDs; offers/queues/scores accept IDs; perk and operative IDs key their respective collections. Fixed left/right road slots have explicit identities."
+  },
+  {
+    "id": "A22",
+    "title": "Live effects were a six-value status enum",
+    "evidence": "StatusKind could not represent arbitrary buffs, conditional passives, run modifiers or unknown statuses.",
+    "resolution": "EffectDefinition/EffectInstance separate authored meaning from live stacks, value, scope, activation and optional timing/source."
+  },
+  {
+    "id": "A23",
+    "title": "Battle statuses were tooltip-only icons",
+    "evidence": "14-unit glyphs had no persistent touch explanation.",
+    "resolution": "EffectBadge has a 44-unit target and shared EffectDetails; EffectStrip offers full individual overflow via EffectList."
+  },
+  {
+    "id": "A24",
+    "title": "Arcade silently dropped effects",
+    "evidence": "A whitelist and Math.Min(4, count) excluded unrecognized statuses and overflow.",
+    "resolution": "The read-only adapter retains every live status, including unknown IDs, and projects the full modifier set."
+  },
+  {
+    "id": "A25",
+    "title": "Explicit actor modifiers were omitted",
+    "evidence": "Barrier/plating/cadence/stagger/knockback and emergency-barrier eligibility existed outside StatusState.",
+    "resolution": "Adapter projects these fields with authoritative remaining simulation ticks and appropriate activation state."
+  },
+  {
+    "id": "A26",
+    "title": "Passives and lasting perk modifiers were absent",
+    "evidence": "Battle presentation omitted canonical character passives and owned run/character perks.",
+    "resolution": "Every operative gets its passive and applicable lasting perk entries; instant consumed rewards are excluded. Conditional effects remain explicitly conditional."
+  },
+  {
+    "id": "A27",
+    "title": "Perk values were inferred from prose",
+    "evidence": "A regular expression multiplied the first number of a description, potentially changing a radius or timing instead of a contribution.",
+    "resolution": "The adapter reads PerkDefinition.value/Stat, stacks and ArcadeRun.Bonus. Cost/cooldown caps and Surge's two contributions are explicit; narrative text is not rewritten."
+  },
+  {
+    "id": "A28",
+    "title": "Sources and original durations were not recorded",
+    "evidence": "StatusState aggregates by ID and stores remaining ticks/amount/age, without attribution or original duration.",
+    "resolution": "Nullable timing/source represents missing information. No attacker or total duration is invented; details label missing information."
+  },
+  {
+    "id": "A29",
+    "title": "Complete effects could overwhelm narrow HUD cards",
+    "evidence": "Showing every full badge in an 88-unit card would obscure skills and the field.",
+    "resolution": "A compact first badge plus count opens the complete scrollable list; every item can open details. Focused hostiles and bosses use the same effect presentation."
+  },
+  {
+    "id": "A30",
+    "title": "Existing VbMotion had useful behavior",
+    "evidence": "Real-time scheduling, rest-transform restoration, serial cancellation, off-panel completion and reduced-motion checks were already centralized.",
+    "resolution": "Retained and expanded as a recipe compositor; detached elements finalize presence, feedback and counts."
+  },
+  {
+    "id": "A31",
+    "title": "Feedback interrupted presence",
+    "evidence": "Show/In/Out and Pop/Shake shared a single timer and cancelled each other.",
+    "resolution": "Presence and feedback have separate state on a composited track; value counting has its own lifecycle."
+  },
+  {
+    "id": "A32",
+    "title": "Count cleanup was incomplete",
+    "evidence": "Finish returned when the presence timer was empty and did not finalize the count timer.",
+    "resolution": "Finish now settles the count target, pauses count scheduling and invalidates pending callbacks even without presence motion."
+  },
+  {
+    "id": "A33",
+    "title": "Decorative motion used unrelated schedules",
+    "evidence": "HoloFrame flicker, RevealCard flips and skill-rejection removal scheduled uncancelled work.",
+    "resolution": "Holo/reveal use VbMotion recipes. Rejection feedback owns and cancels its timer on detach; announcement holds remain intentional semantic durations."
+  },
+  {
+    "id": "A34",
+    "title": "HUD reveal bypassed shared motion",
+    "evidence": "BattleHudView.Reveal assigned opacity directly and Bands switched visibility; deployment had a separate real-time progress source.",
+    "resolution": "HUD top and ordered cards scrub shared recipes using host deployment progress; automatic band changes use the same motion service."
+  },
+  {
+    "id": "A35",
+    "title": "Dealing required CSS discovery and manual timing",
+    "evidence": "ScreenView.Deal queried or enumerated children and consumers could miss items; unchanged binds could replay entrances.",
+    "resolution": "Explicit Choices/DealItems registrations and keyed fresh-item motion keep ordering stable. Delay is 80 ms with a 400 ms cap; visible items are selectable immediately."
+  },
+  {
+    "id": "A36",
+    "title": "Web builds omitted Motion.uss",
+    "evidence": "Both build.sh and package.py assembled only Gui/Layout/Views/World sheets.",
+    "resolution": "Both Python build paths now include Motion.uss and share generated recipe configuration with Unity."
+  },
+  {
+    "id": "A37",
+    "title": "USS scale conversion dropped an axis",
+    "evidence": "uss2css took value.split()[0], breaking nonuniform scale and future flip effects.",
+    "resolution": "The converter preserves both axes and has a regression check."
+  },
+  {
+    "id": "A38",
+    "title": "Inspector metadata could drift from Unity",
+    "evidence": "TypeScript plus observed React props were its only schema authority.",
+    "resolution": "The canonical Unity type inventory and inheritance are attached to handbook entries. Typed React models cover new effect states; contract tests validate the inventory and public mirrors."
+  },
+  {
+    "id": "A39",
+    "title": "Tracked web CSS was stale",
+    "evidence": "Eleven rules for build, revive, accessibility, leaving pages, bottom bands and cancel controls differed from source output.",
+    "resolution": "Regenerated Web~/dist; CI compares generated tracked outputs after rebuilding."
+  },
+  {
+    "id": "A40",
+    "title": "Motion evidence was mostly settled frames/off-panel tests",
+    "evidence": "Prior checks did not establish interrupted animations, nested modal timing or phone GPU cost.",
+    "resolution": "Added attached-panel lifecycle tests, deterministic clock control and browser interaction/motion checks. Unity execution and physical-device measurements remain required and are not claimed."
+  },
+  {
+    "id": "A41",
+    "title": "Arcade embeds the GUI package",
+    "evidence": "Independent copying risks drift and symlink/GUID loss; Arcade held additional runtime tests.",
+    "resolution": "Sync tooling copies the canonical package with SHA256 provenance and retains package symlinks; all runtime tests are kept in the design-system source."
+  },
+  {
+    "id": "A42",
+    "title": "No root Python project existed",
+    "evidence": "There was no pyproject.toml, uv.lock or .python-version.",
+    "resolution": "Added a non-packaged Python >=3.12 tooling project, managed Python 3.12 selector, pinned Ruff and committed uv.lock."
+  },
+  {
+    "id": "A43",
+    "title": "Generators are stdlib tools",
+    "evidence": "There are no Python runtime dependencies; tests use unittest. Browser tooling is Node-based.",
+    "resolution": "Runtime dependencies stay empty; Ruff is a locked development dependency and browser packages remain in a separate Node tool project."
+  },
+  {
+    "id": "A44",
+    "title": "Ruff depended on a sibling project",
+    "evidence": "Tools~/web/README used uv run --project ../../../tools, despite a copied local Ruff config.",
+    "resolution": "Moved Ruff policy to the root pyproject and documented self-contained uv commands; verbatim embedded templates are excluded from formatting."
+  },
+  {
+    "id": "A45",
+    "title": "Subprocess interpreters were inconsistent",
+    "evidence": "The shell builder used python3 repeatedly and the handbook invoked that shell.",
+    "resolution": "An import-safe Python build driver uses sys.executable throughout. build.sh is a thin uv compatibility entry point."
+  },
+  {
+    "id": "A46",
+    "title": "Pages CI used an unlocked environment",
+    "evidence": "Actions set up Python directly and ran builders/tests with python3.",
+    "resolution": "CI pins uv, uses locked sync, explicit Node, lint/format/unit/generator checks, a reproducible build and the existing Pages deployment boundary."
+  },
+  {
+    "id": "A47",
+    "title": "Build verification silently weakened",
+    "evidence": "Node absence skipped syntax checks; screenshot harness defaulted to a macOS binary and ignored failures.",
+    "resolution": "Node is required; CHROME is discovered or supplied explicitly; failed/missing screenshots fail the harness."
+  },
+  {
+    "id": "A48",
+    "title": "Generated output drift had no gate",
+    "evidence": "Generators wrote tracked files without a standard clean-diff verification step.",
+    "resolution": "Generator --check commands plus rebuilt tracked web/token output comparison form the CI gate."
+  },
+  {
+    "id": "A49",
+    "title": "Meta traversal entered virtual environments",
+    "evidence": "rglob traversed .git/.venv before filtering hidden paths.",
+    "resolution": "os.walk prunes hidden, tilde, work and node_modules directories before descent."
+  },
+  {
+    "id": "A50",
+    "title": "Cached skill state suppressed transition feedback",
+    "evidence": "SkillButton compared View.state with the same mutable SkillView instance just passed by the host.",
+    "resolution": "A separate previousState value detects ready/rejected transitions even when the model is reused."
+  }
+]

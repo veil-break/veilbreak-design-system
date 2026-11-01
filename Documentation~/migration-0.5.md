@@ -1,0 +1,15 @@
+# Migrating to GUI 0.5
+
+Update the GUI package and its host consumers together. This release deliberately changes the live effect and overlay APIs. Existing .meta GUIDs and native control bases stay stable.
+
+- `Navigator.Modals` now exposes `OverlayHost`; the old ModalHost type is removed. `Count` is the number of open/opening layers; `Coverage` includes closing layers. The underlying input blocker, blur and focus ownership remain until exit completion. `Navigator.Closed` fires after the screen's exit completes.
+- All rendered overlays extend abstract `OverlayView`, including pause, confirmation, guide, drawer, dialog surfaces and popovers. Use `DrawerOverlay.Push` for a modal drawer. `Backdrop=false` is the explicit inline/docked policy. Do not schedule your own pop after a drawer delay.
+- Replace `OperativeView.statuses` with `EffectInstance[] effects`. Each instance requires a stable, unique `id` and an authored `EffectDefinition` or `EffectDefinition.Unknown(id)`. Supply remaining seconds from the simulation clock. Omit source/total duration when they are unavailable. Do not infer those values from prose.
+- Use `EffectStrip` in narrow HUDs (`Compact=true` for a single combined touch target), `EffectList` for complete lists and `EffectDetails` for explanations. No source effects are dropped. The battle card is now 202 units tall (250 in the narrow compact layout) to accommodate a 44-unit status target; hosts should measure the board's actual world rectangle, as Arcade already does.
+- Supply stable perk/operative identities to keyed collections. Merchant offers, queues and score records accept an explicit `id`; fallback identity is documented by their binding code. Do not reuse one ID for two siblings. Missing or duplicate required keys fail before mutating the tree.
+- Derive painted specializations from `SurfaceView`, selected cards from `CardView`, and explanations from `DetailView`. Use `CardComponent` when its media/head/body/footer slots fit. Keep Button, Slider, Label and ScrollView native bases. Use `Keyed.Bind` instead of Clear/rebuild in repeated bind paths.
+- Author shared motion in `Tokens~/motion.json`, then run `uv run --frozen python Tools~/motion.py`. `MotionRecipe` overloads compose presence with independent Pop/Shake feedback and Count. `VbMotion.Clock` can be replaced in deterministic tests; always restore it afterwards.
+- `ScreenView.Deal` uses registered item elements. Merchant/route views expose `Choices`; do not query a guessed class name. A delayed choice is enabled on its first visible frame; choosing one cancels pending deal work when navigation removes its view.
+- The React kit mirrors effects and all concrete screen views. Motion is generated from the same recipes and uses browser lifecycle cancellation. Keep React and browser testing dependencies in Node; they are not Python runtime dependencies.
+
+From a clean checkout, install uv and run `uv sync --locked`. See the root README for checks. There is no sibling-project Python dependency and no Python wheel to publish.

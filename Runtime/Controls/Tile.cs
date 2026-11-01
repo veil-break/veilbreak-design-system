@@ -8,14 +8,14 @@ namespace Veilbreak.Gui {
 /// <summary>A square-ish, pickable cell: a picture or a glyph, a short name, a caption with its own glyph, a state.
 /// Rosters, squad slots and inventories extend it (<see cref="OperativeTile"/>, <see cref="SquadSlot"/>).
 /// Tiles are chipped (something you pick); focused = brackets + glow; locked tiles stay visible and say how to unlock.</summary>
-[UxmlElement] public partial class TileComponent:VisualElement {
+[UxmlElement] public partial class TileComponent:SurfaceView {
  public const string ClassName="vb-tile";
  protected readonly string Block;
  readonly VisualElement band,portrait,kit,body;readonly VbIcon glyph,captionIcon;readonly Label order,title,caption;VisualElement empty;Label emptyLabel;TileState state;bool hasPicture;
  public event Action Picked;
  public TileComponent():this(ClassName){}
  protected TileComponent(string block){
-  Block=block;AddToClassList(block);VbShape.Attach(this);this.Clickable(()=>Picked?.Invoke());
+  Block=block;AddToClassList(block);this.Clickable(()=>Picked?.Invoke());
   band=Ui.Box(this,block+"__band");portrait=Ui.Box(band,block+"__portrait");Ui.Box(band,block+"__shade");glyph=new VbIcon("",32).Classes(block+"__glyph").Into(band);glyph.Show(false);order=Ui.Text(band,"",block+"__order");order.Show(false);
   kit=Ui.Box(this,block+"__kit");body=Ui.Box(this,block+"__body");title=Ui.Text(body,"",block+"__name");
   var r=Ui.Box(body,block+"__role");captionIcon=new VbIcon("",12).Into(r);captionIcon.Show(false);caption=Ui.Text(r,"",block+"__role-text");

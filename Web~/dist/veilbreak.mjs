@@ -13,6 +13,9 @@ const window = new Proxy({ React, ReactDOM, Veilbreak: {} }, { get: (t, k) => (k
   var useIsoLayout = typeof document !== 'undefined' ? R.useLayoutEffect : R.useEffect;
   var ICONS = {"add":"<path d=\"M12 4v16 M4 12h16\"/>","armor":"<path d=\"M8 2h8l2 4 4 2-3 6-3-1v9H8v-9l-3 1-3-6 4-2Z\"/>","arrow":"<path d=\"M6 18L18 6M10 6H18V14\"/>","automation":"<path d=\"M19 6a8 8 0 1 0 1 10 M19 2v5h-5\"/>","autopilot":"<path d=\"M19 12A7 7 0 1 1 16.95 7.05M17 3V7.05H13\"/>","back":"<path d=\"M15 4 7 12l8 8\"/>","barrier":"<path d=\"M12 2 21 6v7l-9 9-9-9V6Z M7 11l4 4 6-7\"/>","bastion":"<path d=\"M3 4h18v10l-9 8-9-8Z M12 4v18\"/>","battle":"<path d=\"M4 3 20 19 M20 3 4 19 M3 15l6 6 M15 21l6-6 M4 3v5 M20 3v5\"/>","beam":"<path d=\"M2 8h20 M2 16h20 M5 12h14 M17 5l5 7-5 7\"/>","breaker":"<path d=\"M3 4h8v7H3Z M14 4h7v7h-7Z M3 14h8v7H3Z M17 14l4 7 M14 17l7-3\"/>","burst":"<g stroke-linecap=\"butt\" stroke-linejoin=\"miter\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M5 15L15 5M7 18L18 7M10 20L20 10M4 11L11 4\"/></g>","burst-role":"<path d=\"M15.2 12A3.2 3.2 0 1 1 8.8 12A3.2 3.2 0 1 1 15.2 12M12 2V6M12 18V22M2 12H6M18 12H22M5 5L7.8 7.8M16.2 16.2L19 19M19 5L16.2 7.8M7.8 16.2L5 19\"/>","charm":"<path d=\"M12 4L20 12L12 20L4 12ZM12 9L15 12L12 15L9 12Z\"/>","check":"<path d=\"M3 12l6 6L21 5\"/>","chevron":"<path d=\"M8 4l8 8-8 8\"/>","chevron-left":"<path d=\"M15 6L9 12L15 18\"/>","circle":"<path d=\"M20 12A8 8 0 1 1 4 12A8 8 0 1 1 20 12\"/>","cleanse":"<path d=\"M12 2l3 7 7 3-7 3-3 7-3-7-7-3 7-3Z\"/>","close":"<path d=\"M5 5l14 14 M19 5 5 19\"/>","cone":"<path d=\"M12 21 2 5Q12-1 22 5Z\"/>","connection":"<path d=\"M2 7a15 15 0 0 1 20 0 M5 11a10 10 0 0 1 14 0 M8 15a5 5 0 0 1 8 0\"/><circle cx=\"12\" cy=\"19\" r=\"1\"/>","cooldown":"<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M12 5v7l5 3\"/>","core":"<path d=\"M12 3L20 7.5V16.5L12 21L4 16.5V7.5ZM14.6 12A2.6 2.6 0 1 1 9.4 12A2.6 2.6 0 1 1 14.6 12\"/>","counter":"<path d=\"M5 7h10a6 6 0 0 1 0 12h-4 M9 2 4 7l5 5\"/>","currency":"<path d=\"M12 2 21 7v10l-9 5-9-5V7Z M8 9l4-2 4 2v6l-4 2-4-2Z\"/>","dash":"<path d=\"M2 6h8 M2 12h12 M2 18h8 M13 3l9 9-9 9\"/>","debuffer":"<path d=\"M12 3L20 12L12 21L4 12ZM12 8V15M9 12L12 15L15 12\"/>","diamond":"<path d=\"M12 4L20 12L12 20L4 12Z\"/>","disruptor":"<path d=\"M13 3L6 13H12L10 21L18 10H12Z\"/>","exposed":"<path d=\"M12 2 21 6v7l-9 9-9-9V6Z M13 4 9 10l6 3-4 7\"/>","fan":"<path d=\"M12 21V3 M12 21 3 6 M12 21 21 6 M8 6l4-3 4 3\"/>","fullscreen":"<path d=\"M3 9V3h6 M15 3h6v6 M21 15v6h-6 M9 21H3v-6\"/>","haste":"<path d=\"M2 5l8 7-8 7 M12 5l8 7-8 7\"/>","healer":"<path d=\"M10 4H14V10H20V14H14V20H10V14H4V10H10Z\"/>","health":"<path d=\"M9 3h6v6h6v6h-6v6H9v-6H3V9h6Z\"/>","info":"<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M12 11v7 M12 6v1\"/>","interrupted":"<path d=\"M13 3L7 12H11.5M12.5 12H17L11 21\"/>","invalid":"<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M6 6l12 12\"/>","inventory":"<path d=\"M3 7l9-5 9 5v13H3Z M3 7h18 M8 11h8v5H8Z\"/>","key":"<circle cx=\"8\" cy=\"8\" r=\"5\"/><path d=\"M12 12l9 9 M16 16l3-3 M19 19l3-3\"/>","lock":"<path d=\"M5 10h14v11H5Z M8 10V6a4 4 0 0 1 8 0v4 M12 14v3\"/>","marker":"<path d=\"M12 2 22 12 12 22 2 12Z\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/>","menu":"<path d=\"M4 7H20M4 12H20M4 17H20\"/>","next":"<path d=\"M6 6L14 12L6 18ZM18 6V18\"/>","no-target":"<path d=\"M18 12A6 6 0 1 1 6 12A6 6 0 1 1 18 12M12 3V8M12 16V21M3 12H8M16 12H21M4 4L20 20\"/>","offline":"<path d=\"M2 7a15 15 0 0 1 20 0 M5 11a10 10 0 0 1 14 0 M3 3l18 18\"/>","operator":"<circle cx=\"12\" cy=\"12\" r=\"4\"/><circle cx=\"4\" cy=\"4\" r=\"2\"/><circle cx=\"20\" cy=\"4\" r=\"2\"/><circle cx=\"12\" cy=\"21\" r=\"2\"/><path d=\"M6 6l3 3 M18 6l-3 3 M12 16v3\"/>","optic":"<path d=\"M2 12C5 7 8.5 5 12 5C15.5 5 19 7 22 12C19 17 15.5 19 12 19C8.5 19 5 17 2 12ZM14.6 12A2.6 2.6 0 1 1 9.4 12A2.6 2.6 0 1 1 14.6 12\"/>","pause":"<path d=\"M8 5v14 M16 5v14\"/>","pierce":"<path d=\"M4 12H20M15 7L20 12L15 17M4 8L7 12L4 16\"/>","plating":"<path d=\"M12 3L19 6V12C19 16 16 19 12 21C8 19 5 16 5 12V6ZM5 11H19\"/>","play":"<path d=\"M7 4v16l12-8z\"/>","power":"<path d=\"M14 2 5 14h6l-1 8 9-13h-6Z\"/>","prev":"<path d=\"M18 6L10 12L18 18ZM6 6V18\"/>","projectile":"<path d=\"M3 9h10V5l8 7-8 7v-4H3\"/>","protector":"<path d=\"M12 3L19 6V12C19 16 16 19 12 21C8 19 5 16 5 12V6Z\"/>","queue":"<path d=\"M3 4h18 M3 10h12 M3 16h8 M16 13l6 5-6 5\"/>","ranged":"<path d=\"M18 12A6 6 0 1 1 6 12A6 6 0 1 1 18 12M12 3V8M12 16V21M3 12H8M16 12H21\"/>","ranked":"<path d=\"M5 3h14v9l-7 5-7-5Z M12 17v4 M7 21h10 M2 4v5l3 2 M22 4v5l-3 2\"/>","remove":"<path d=\"m5 5 14 14 M19 5 5 19\"/>","replays":"<path d=\"M9 5v14l11-7Z M3 5v14\"/>","rifts":"<path d=\"M12 2 20 7 18 18 12 22 4 17 6 6Z M13 5 9 11 15 13 11 19\"/>","root":"<path d=\"M12 2v11 M5 7l7 6 7-6 M12 13l-7 8 M12 13l7 8 M12 13v9\"/>","set":"<path d=\"M3 3h7v7H3Z M14 3h7v7h-7Z M3 14h7v7H3Z M14 14h7v7h-7Z\"/>","settings":"<circle cx=\"12\" cy=\"12\" r=\"4\"/><path d=\"M12 1v3 M12 20v3 M1 12h3 M20 12h3 M4 4l2 2 M18 18l2 2 M4 20l2-2 M18 6l2-2\"/>","signal":"<path d=\"M5 19V16M10 19V12M15 19V8M20 19V4\"/>","silence":"<path d=\"M9 4h6v10H9Z M5 10v4a7 7 0 0 0 14 0v-4 M12 21v2 M2 2l20 20\"/>","skill-aegis-absolute-wall":"<path d=\"M4 3v18 M20 3v18 M4 6h16 M4 12h16 M4 18h16 M9 6v6 M15 12v6\"/>","skill-aegis-intercept-field":"<path d=\"M12 2 21 6v7l-9 9-9-9V6Z M7 11l4 4 6-7\"/>","skill-aria-needle-storm":"<path d=\"M19 5 5 12l14 7 M6 12h13\"/>","skill-aria-terminal-vector":"<path d=\"M3 8h18v8H3z M7 9l-3 6 M13 9l-4 6 M19 9l-4 6\"/>","skill-echo-clocksplice":"<path d=\"M2 5l8 7-8 7 M12 5l8 7-8 7\"/>","skill-echo-overclock":"<circle cx=\"12\" cy=\"12\" r=\"9\"/><circle cx=\"12\" cy=\"12\" r=\"5\"/><circle cx=\"12\" cy=\"12\" r=\"1\"/>","skill-hex-black-signal":"<path d=\"M12 2 22 12 12 22 2 12Z\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/>","skill-hex-contagion":"<path d=\"M12 1v5 M12 18v5 M1 12h5 M18 12h5 M4 4l4 4 M16 16l4 4 M4 20l4-4 M16 8l4-4\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/>","skill-mira-counterdrive":"<path d=\"M2 6h8 M2 12h12 M2 18h8 M13 3l9 9-9 9\"/>","skill-mira-gravity-cage":"<circle cx=\"12\" cy=\"12\" r=\"9\"/><circle cx=\"12\" cy=\"12\" r=\"5\"/><circle cx=\"12\" cy=\"12\" r=\"1\"/>","skill-nyra-reconstruct":"<path d=\"M9 3h6v6h6v6h-6v6H9v-6H3V9h6Z\"/>","skill-nyra-white-noise":"<path d=\"M12 2l3 7 7 3-7 3-3 7-3-7-7-3 7-3Z\"/>","skill-rook-crash-pulse":"<path d=\"M12 21 2 5Q12-1 22 5Z\"/>","skill-rook-system-seizure":"<circle cx=\"12\" cy=\"12\" r=\"9\"/><circle cx=\"12\" cy=\"12\" r=\"5\"/><circle cx=\"12\" cy=\"12\" r=\"1\"/>","skill-sol-dead-horizon":"<path d=\"M2 8h20 M2 16h20 M5 12h14 M17 5l5 7-5 7\"/>","skill-sol-zero-line":"<path d=\"M3 9h10V5l8 7-8 7v-4H3\"/>","skirmisher":"<path d=\"M5 6L11 12L5 18M12 6L18 12L12 18\"/>","slow":"<path d=\"M3 7l6 5-6 5 M10 7l6 5-6 5 M21 3v18\"/>","striker":"<circle cx=\"12\" cy=\"12\" r=\"4\"/><path d=\"M12 1v3 M12 20v3 M1 12h3 M20 12h3 M4 4l2 2 M18 18l2 2 M4 20l2-2 M18 6l2-2\"/>","studio":"<path d=\"M5 20 3 15 15 3 21 9 9 21Z M12 6l6 6 M3 15l6 6\"/>","support":"<path d=\"M3 12H7L9.5 6L14 18L16 12H21\"/>","surrender":"<path d=\"M6 21V4M6 4H18L15 8.5L18 13H6\"/>","target":"<circle cx=\"12\" cy=\"12\" r=\"6\"/><path d=\"M12 1v7 M12 16v7 M1 12h7 M16 12h7\"/>","team":"<circle cx=\"8\" cy=\"7\" r=\"3\"/><circle cx=\"17\" cy=\"9\" r=\"2\"/><path d=\"M2 21v-4a6 6 0 0 1 12 0v4 M16 15h2a4 4 0 0 1 4 4v2\"/>","training":"<circle cx=\"12\" cy=\"12\" r=\"7\"/><circle cx=\"12\" cy=\"12\" r=\"2\"/><path d=\"M12 1v4 M12 19v4 M1 12h4 M19 12h4\"/>","volume":"<path d=\"M3 9h5l6-6v18l-6-6H3Z M18 7a8 8 0 0 1 0 10\"/>","wall":"<path d=\"M4 3v18 M20 3v18 M4 6h16 M4 12h16 M4 18h16 M9 6v6 M15 12v6\"/>","warning":"<path d=\"M12 2 23 21H1Z M12 8v6 M12 17v1\"/>","weapon":"<path d=\"M4 20L16 8M13 4H20V11M7 13L11 17\"/>","windup":"<path d=\"M6 2h12 M6 22h12 M7 2v5l10 10v5 M17 2v5L7 17v5\"/>","zone":"<circle cx=\"12\" cy=\"12\" r=\"9\"/><circle cx=\"12\" cy=\"12\" r=\"5\"/><circle cx=\"12\" cy=\"12\" r=\"1\"/>","plus":"<path d=\"M12 4v16 M4 12h16\"/>","silenced":"<path d=\"M9 4h6v10H9Z M5 10v4a7 7 0 0 0 14 0v-4 M12 21v2 M2 2l20 20\"/>","rooted":"<path d=\"M12 2v11 M5 7l7 6 7-6 M12 13l-7 8 M12 13l7 8 M12 13v9\"/>","slowed":"<path d=\"M3 7l6 5-6 5 M10 7l6 5-6 5 M21 3v18\"/>","replay":"<path d=\"M9 5v14l11-7Z M3 5v14\"/>","cancel":"<path d=\"M5 5l14 14 M19 5 5 19\"/>","chevron-right":"<path d=\"M8 4l8 8-8 8\"/>","rift":"<path d=\"M12 2 20 7 18 18 12 22 4 17 6 6Z M13 5 9 11 15 13 11 19\"/>"};
   var MARK = "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"64 245 513 259\" width=\"513\" height=\"259\"> <g transform=\"translate(-2.5 0)\" fill=\"#ff40a0\" fill-opacity=\".55\"> <g> <g> <path d=\"M172.445 491.288 L210.995 421.197 L210.995 428.692 Z\"/> <path d=\"M231.395 401.288 L231.395 364.8 L249.539 364.8 C250.183 364.8 250.81 364.826 251.421 364.877 L251.421 364.877 L248.69 369.843 C248.589 369.841 248.488 369.84 248.387 369.84 L237.227 369.84 L237.227 386.4 L239.583 386.4 Z\"/> <path d=\"M510.899 410.216 L510.899 359.816 L516.731 359.816 L516.731 375.512 L516.731 386.384 L516.875 386.384 L525.083 377.672 L541.859 359.816 L548.915 359.816 L529.979 379.976 L550.859 410.288 L543.947 410.216 L525.659 384.152 L516.731 393.44 L516.731 410.216 Z\"/> <path d=\"M432.707 410.216 L454.163 359.816 L460.571 359.816 L482.027 410.216 L475.763 410.216 L470.147 396.824 L444.587 396.824 L438.971 410.216 Z M457.259 366.512 C457.187 366.584 454.235 373.712 452.363 378.248 L446.819 391.496 L467.915 391.496 L462.371 378.32 C460.427 373.712 457.475 366.584 457.403 366.512 Z\"/> <path d=\"M371.795 410.216 L371.795 359.816 L405.707 359.816 L405.707 365.288 L377.627 365.288 L377.627 381.128 L399.515 381.128 L399.515 386.6 L377.627 386.6 L377.627 404.744 L405.851 404.744 L405.851 410.216 Z\"/> <path d=\"M306.851 410.216 L306.851 359.816 L322.259 359.816 C334.067 359.816 341.051 365.648 341.051 375.512 C341.051 383.288 336.659 387.824 329.531 389.336 L341.987 410.216 L334.931 410.216 L323.483 390.416 C322.403 390.488 319.955 390.488 318.875 390.488 L312.683 390.488 L312.683 410.216 Z M312.683 365.216 L312.683 385.592 L322.835 385.592 C330.179 385.592 335.075 383 335.075 375.728 C335.075 368.6 330.323 365.216 322.475 365.216 Z\"/> <path d=\"M262.98 365.899 L265.743 361.112 C270.686 363.107 273.587 367.224 273.587 372.2 C273.587 378.824 269.339 382.208 265.667 383.072 L265.667 383.288 C270.419 384.08 277.115 387.608 277.115 396.176 C277.115 404.672 270.995 410.216 259.907 410.216 L240.395 410.216 L240.395 403.799 L246.227 394.329 L246.227 405.176 L259.619 405.176 C266.387 405.176 270.995 402.08 270.995 395.888 C270.995 389.552 265.667 386.024 259.475 386.024 L251.341 386.024 L251.729 385.395 L254.025 381.416 L257.963 381.416 C263.579 381.416 267.683 378.536 267.683 373.064 C267.683 369.768 266.003 367.233 262.98 365.899 Z\"/> <path d=\"M228.29 389.752 L231.021 384.786 C232.985 384.95 234.768 385.37 236.344 386.006 L233.581 390.793 L224.626 406.309 L222.329 410.288 L221.942 410.917 L216.827 419.222 L210.995 428.692 L210.995 421.197 L219.184 406.309 Z\"/> <path d=\"M274.439 322.579 L307.445 279.288 L256.865 366.928 L250.047 366.928 Z\"/> <path d=\"M240.704 383.965 L253.726 360.288 L260.395 360.288 L246.026 385.184 C244.45 384.549 242.667 384.128 240.704 383.965 Z\"/> <path d=\"M271.302 322.76 L274.311 317.288 L281.129 317.288 L298.445 317.288 L298.445 322.76 L277.971 322.76 Z\"/> <g> <path d=\"M267.773 320.4 L267.773 270 L273.605 270 L273.605 314.928 L276.039 314.928 L273.03 320.4 Z\"/> <path d=\"M229.253 320.4 L229.253 270 L235.085 270 L235.085 320.4 Z\"/> <path d=\"M164.453 320.4 L164.453 270 L198.365 270 L198.365 275.472 L170.285 275.472 L170.285 291.312 L192.173 291.312 L192.173 296.784 L170.285 296.784 L170.285 314.928 L198.509 314.928 L198.509 320.4 Z\"/> <path d=\"M109.157 320.4 L89.141 270 L95.693 270 L105.989 296.424 C110.093 306.936 112.613 313.632 112.685 313.848 L112.829 313.848 C112.901 313.632 115.349 307.008 119.381 296.784 L129.821 270 L136.157 270 L116.141 320.4 Z\"/> </g> </g> </g> </g> <g transform=\"translate(2.5 0)\" fill=\"#1dd9a0\" fill-opacity=\".55\"> <g> <g> <path d=\"M172.445 491.288 L210.995 421.197 L210.995 428.692 Z\"/> <path d=\"M231.395 401.288 L231.395 364.8 L249.539 364.8 C250.183 364.8 250.81 364.826 251.421 364.877 L251.421 364.877 L248.69 369.843 C248.589 369.841 248.488 369.84 248.387 369.84 L237.227 369.84 L237.227 386.4 L239.583 386.4 Z\"/> <path d=\"M510.899 410.216 L510.899 359.816 L516.731 359.816 L516.731 375.512 L516.731 386.384 L516.875 386.384 L525.083 377.672 L541.859 359.816 L548.915 359.816 L529.979 379.976 L550.859 410.288 L543.947 410.216 L525.659 384.152 L516.731 393.44 L516.731 410.216 Z\"/> <path d=\"M432.707 410.216 L454.163 359.816 L460.571 359.816 L482.027 410.216 L475.763 410.216 L470.147 396.824 L444.587 396.824 L438.971 410.216 Z M457.259 366.512 C457.187 366.584 454.235 373.712 452.363 378.248 L446.819 391.496 L467.915 391.496 L462.371 378.32 C460.427 373.712 457.475 366.584 457.403 366.512 Z\"/> <path d=\"M371.795 410.216 L371.795 359.816 L405.707 359.816 L405.707 365.288 L377.627 365.288 L377.627 381.128 L399.515 381.128 L399.515 386.6 L377.627 386.6 L377.627 404.744 L405.851 404.744 L405.851 410.216 Z\"/> <path d=\"M306.851 410.216 L306.851 359.816 L322.259 359.816 C334.067 359.816 341.051 365.648 341.051 375.512 C341.051 383.288 336.659 387.824 329.531 389.336 L341.987 410.216 L334.931 410.216 L323.483 390.416 C322.403 390.488 319.955 390.488 318.875 390.488 L312.683 390.488 L312.683 410.216 Z M312.683 365.216 L312.683 385.592 L322.835 385.592 C330.179 385.592 335.075 383 335.075 375.728 C335.075 368.6 330.323 365.216 322.475 365.216 Z\"/> <path d=\"M262.98 365.899 L265.743 361.112 C270.686 363.107 273.587 367.224 273.587 372.2 C273.587 378.824 269.339 382.208 265.667 383.072 L265.667 383.288 C270.419 384.08 277.115 387.608 277.115 396.176 C277.115 404.672 270.995 410.216 259.907 410.216 L240.395 410.216 L240.395 403.799 L246.227 394.329 L246.227 405.176 L259.619 405.176 C266.387 405.176 270.995 402.08 270.995 395.888 C270.995 389.552 265.667 386.024 259.475 386.024 L251.341 386.024 L251.729 385.395 L254.025 381.416 L257.963 381.416 C263.579 381.416 267.683 378.536 267.683 373.064 C267.683 369.768 266.003 367.233 262.98 365.899 Z\"/> <path d=\"M228.29 389.752 L231.021 384.786 C232.985 384.95 234.768 385.37 236.344 386.006 L233.581 390.793 L224.626 406.309 L222.329 410.288 L221.942 410.917 L216.827 419.222 L210.995 428.692 L210.995 421.197 L219.184 406.309 Z\"/> <path d=\"M274.439 322.579 L307.445 279.288 L256.865 366.928 L250.047 366.928 Z\"/> <path d=\"M240.704 383.965 L253.726 360.288 L260.395 360.288 L246.026 385.184 C244.45 384.549 242.667 384.128 240.704 383.965 Z\"/> <path d=\"M271.302 322.76 L274.311 317.288 L281.129 317.288 L298.445 317.288 L298.445 322.76 L277.971 322.76 Z\"/> <g> <path d=\"M267.773 320.4 L267.773 270 L273.605 270 L273.605 314.928 L276.039 314.928 L273.03 320.4 Z\"/> <path d=\"M229.253 320.4 L229.253 270 L235.085 270 L235.085 320.4 Z\"/> <path d=\"M164.453 320.4 L164.453 270 L198.365 270 L198.365 275.472 L170.285 275.472 L170.285 291.312 L192.173 291.312 L192.173 296.784 L170.285 296.784 L170.285 314.928 L198.509 314.928 L198.509 320.4 Z\"/> <path d=\"M109.157 320.4 L89.141 270 L95.693 270 L105.989 296.424 C110.093 306.936 112.613 313.632 112.685 313.848 L112.829 313.848 C112.901 313.632 115.349 307.008 119.381 296.784 L129.821 270 L136.157 270 L116.141 320.4 Z\"/> </g> </g> </g> </g> <g fill=\"#faeef4\"> <g> <g> <path d=\"M172.445 491.288 L210.995 421.197 L210.995 428.692 Z\"/> <path d=\"M231.395 401.288 L231.395 364.8 L249.539 364.8 C250.183 364.8 250.81 364.826 251.421 364.877 L251.421 364.877 L248.69 369.843 C248.589 369.841 248.488 369.84 248.387 369.84 L237.227 369.84 L237.227 386.4 L239.583 386.4 Z\"/> <path d=\"M510.899 410.216 L510.899 359.816 L516.731 359.816 L516.731 375.512 L516.731 386.384 L516.875 386.384 L525.083 377.672 L541.859 359.816 L548.915 359.816 L529.979 379.976 L550.859 410.288 L543.947 410.216 L525.659 384.152 L516.731 393.44 L516.731 410.216 Z\"/> <path d=\"M432.707 410.216 L454.163 359.816 L460.571 359.816 L482.027 410.216 L475.763 410.216 L470.147 396.824 L444.587 396.824 L438.971 410.216 Z M457.259 366.512 C457.187 366.584 454.235 373.712 452.363 378.248 L446.819 391.496 L467.915 391.496 L462.371 378.32 C460.427 373.712 457.475 366.584 457.403 366.512 Z\"/> <path d=\"M371.795 410.216 L371.795 359.816 L405.707 359.816 L405.707 365.288 L377.627 365.288 L377.627 381.128 L399.515 381.128 L399.515 386.6 L377.627 386.6 L377.627 404.744 L405.851 404.744 L405.851 410.216 Z\"/> <path d=\"M306.851 410.216 L306.851 359.816 L322.259 359.816 C334.067 359.816 341.051 365.648 341.051 375.512 C341.051 383.288 336.659 387.824 329.531 389.336 L341.987 410.216 L334.931 410.216 L323.483 390.416 C322.403 390.488 319.955 390.488 318.875 390.488 L312.683 390.488 L312.683 410.216 Z M312.683 365.216 L312.683 385.592 L322.835 385.592 C330.179 385.592 335.075 383 335.075 375.728 C335.075 368.6 330.323 365.216 322.475 365.216 Z\"/> <path d=\"M262.98 365.899 L265.743 361.112 C270.686 363.107 273.587 367.224 273.587 372.2 C273.587 378.824 269.339 382.208 265.667 383.072 L265.667 383.288 C270.419 384.08 277.115 387.608 277.115 396.176 C277.115 404.672 270.995 410.216 259.907 410.216 L240.395 410.216 L240.395 403.799 L246.227 394.329 L246.227 405.176 L259.619 405.176 C266.387 405.176 270.995 402.08 270.995 395.888 C270.995 389.552 265.667 386.024 259.475 386.024 L251.341 386.024 L251.729 385.395 L254.025 381.416 L257.963 381.416 C263.579 381.416 267.683 378.536 267.683 373.064 C267.683 369.768 266.003 367.233 262.98 365.899 Z\"/> <path d=\"M228.29 389.752 L231.021 384.786 C232.985 384.95 234.768 385.37 236.344 386.006 L233.581 390.793 L224.626 406.309 L222.329 410.288 L221.942 410.917 L216.827 419.222 L210.995 428.692 L210.995 421.197 L219.184 406.309 Z\"/> <path d=\"M274.439 322.579 L307.445 279.288 L256.865 366.928 L250.047 366.928 Z\"/> <path d=\"M240.704 383.965 L253.726 360.288 L260.395 360.288 L246.026 385.184 C244.45 384.549 242.667 384.128 240.704 383.965 Z\"/> <path d=\"M271.302 322.76 L274.311 317.288 L281.129 317.288 L298.445 317.288 L298.445 322.76 L277.971 322.76 Z\"/> <g> <path d=\"M267.773 320.4 L267.773 270 L273.605 270 L273.605 314.928 L276.039 314.928 L273.03 320.4 Z\"/> <path d=\"M229.253 320.4 L229.253 270 L235.085 270 L235.085 320.4 Z\"/> <path d=\"M164.453 320.4 L164.453 270 L198.365 270 L198.365 275.472 L170.285 275.472 L170.285 291.312 L192.173 291.312 L192.173 296.784 L170.285 296.784 L170.285 314.928 L198.509 314.928 L198.509 320.4 Z\"/> <path d=\"M109.157 320.4 L89.141 270 L95.693 270 L105.989 296.424 C110.093 306.936 112.613 313.632 112.685 313.848 L112.829 313.848 C112.901 313.632 115.349 307.008 119.381 296.784 L129.821 270 L136.157 270 L116.141 320.4 Z\"/> </g> </g> </g> </g> </svg>";
+/* Generated by Tools~/motion.py. */
+var MOTION = {"stagger": 80, "maxDealDelay": 400, "recipes": {"viewIn": {"milliseconds": 320, "y": 12}, "viewOut": {"milliseconds": 180, "y": -8}, "deal": {"milliseconds": 420, "y": 24, "rotation": -6, "scale": 0.96}, "drawerIn": {"milliseconds": 460, "y": 80}, "drawerOut": {"milliseconds": 300, "y": 80}, "hudTop": {"milliseconds": 320, "y": -24}, "hudCard": {"milliseconds": 360, "y": 32, "rotation": -2, "scale": 0.98}}};
+
 
   function cx() { return Array.prototype.filter.call(arguments, Boolean).join(' '); }
   function clamp01(n) { n = Number(n); return isNaN(n) ? 0 : Math.max(0, Math.min(1, n)); }
@@ -145,11 +148,47 @@ const window = new Proxy({ React, ReactDOM, Veilbreak: {} }, { get: (t, k) => (k
   });
 
   var ROOT_FLAGS = ['vb-compact', 'vb-large-text', 'vb-reduced-motion', 'vb-reduced-flashes', 'vb-contrast'];  // SafeAreaRoot.RootClasses
+  // Recipes are generated from the same contract as Unity MotionRecipes.
+  function reducedMotion(node) { return !!(node && node.closest('.vb-reduced-motion')) || (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); }
+  var runningMotion = new WeakMap();
+  function playMotion(node, recipeName, index, leaving) {
+    if (!node || !node.animate) return Promise.resolve();
+    var recipe = MOTION.recipes[recipeName], calm = reducedMotion(node), old = runningMotion.get(node);
+    if (old) old.cancel();
+    var delay = calm ? 0 : Math.min((index || 0) * MOTION.stagger, MOTION.maxDealDelay);
+    var origin = { opacity: 0, translate: calm ? '0 0' : (recipe.x || 0) + 'px ' + (recipe.y || 0) + 'px', rotate: calm ? '0deg' : (recipe.rotation || 0) + 'deg', scale: calm ? 1 : (recipe.scale || 1) };
+    var rest = { opacity: 1, translate: '0 0', rotate: '0deg', scale: 1 };
+    var animation = node.animate(leaving ? [rest, origin] : [origin, rest], { duration: calm ? 80 : recipe.milliseconds, delay: delay, fill: 'both', easing: 'cubic-bezier(.16,1,.3,1)' });
+    runningMotion.set(node, animation);
+    var previousInert = node.inert; if (delay) node.inert = true;
+    var timer = delay ? setTimeout(function () { node.inert = previousInert; }, delay) : null;
+    function cleanup() { clearTimeout(timer); node.inert = previousInert; if (runningMotion.get(node) === animation) { runningMotion.delete(node); animation.cancel(); } }
+    var query = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)');
+    function settle() { if (reducedMotion(node)) animation.finish(); }
+    if (query) query.addEventListener('change', settle);
+    var observer = new MutationObserver(settle);observer.observe(document.documentElement, { attributes: true, subtree: true, attributeFilter: ['class'] });
+    return animation.finished.then(function(){return true;},function(){return false;}).then(function (completed) { observer.disconnect();if(query)query.removeEventListener('change',settle);cleanup();return completed; });
+  }
+  function MotionSurface(p) {
+    var ref = R.useRef(null), seen = R.useRef(new WeakSet());
+    useIsoLayout(function () { if (!ref.current) return; var fresh = Array.from(ref.current.querySelectorAll('[data-motion-item]')).filter(function (node) { return !seen.current.has(node); });fresh.forEach(function (node, i) { seen.current.add(node);playMotion(node, 'deal', i); }); });
+    useIsoLayout(function () { var node=ref.current;playMotion(node, 'viewIn');return function(){if(node){[node].concat(Array.from(node.querySelectorAll('[data-motion-item]'))).forEach(function(e){var a=runningMotion.get(e);if(a)a.cancel();});}}; }, []);
+    return h('section', { ref: ref, className: p.className, style: p.style, 'aria-label': p.label }, p.children);
+  }
+  // Modal ownership is reference-counted: nested overlays restore only their own siblings after exit.
+  var coverage = new WeakMap();
+  function coverSiblings(node) { var held=[],boundary=node.closest('[data-preview]')||document.body;for(var parent=node.parentElement;parent;parent=parent.parentElement){Array.from(parent.children).forEach(function(sibling){if(sibling===node||sibling.contains(node)||sibling.matches('script,style,link,svg')||sibling.matches('[data-overlay-root]')&&(node.compareDocumentPosition(sibling)&Node.DOCUMENT_POSITION_FOLLOWING))return;var old=coverage.get(sibling);if(old)old.count++;else {old={count:1,inert:sibling.inert};coverage.set(sibling,old);sibling.inert=true;sibling.classList.add('vb-overlay-covered');}held.push(sibling);});node=parent;if(parent===boundary)break;}
+    return function(){held.forEach(function(sibling){var old=coverage.get(sibling);if(!old)return;if(--old.count===0){sibling.inert=old.inert;sibling.classList.remove('vb-overlay-covered');coverage.delete(sibling);}});};
+  }
   /* ── Popover (Popover.cs): hover on a mouse, tap toggles on touch, focus opens; kept inside the viewport ── */
+  var popoverStack=[];
   function usePopover(build, placement, alignEnd, pinned) {
-    var anchor = R.useRef(null), pop = R.useRef(null);
+    var anchor = R.useRef(null), pop = R.useRef(null), closeTimer = R.useRef(null), touchPinned = R.useRef(false), skipFocus=R.useRef(false);
+    function cancelClose(){clearTimeout(closeTimer.current);}
+    function later(){cancelClose();closeTimer.current=setTimeout(function(){var child=popoverStack.some(function(a){return a!==anchor&&pop.current&&pop.current.contains(a.current);});var hovered=anchor.current&&anchor.current.matches(':hover')||pop.current&&pop.current.matches(':hover');if(!pinned&&!touchPinned.current&&!child&&!hovered&&!(pop.current&&pop.current.contains(document.activeElement)))setOpen(false);},160);}
     var s = R.useState(false), open = s[0] || !!pinned, setOpen = s[1];
     var pos = R.useState(null), at = pos[0], setAt = pos[1], tick = R.useState(0)[1];
+    R.useEffect(function(){if(!open)return;popoverStack.push(anchor);function outside(e){if(e.target.closest&&e.target.closest('.vb-popover'))return;if(anchor.current&&anchor.current.contains(e.target)||pop.current&&pop.current.contains(e.target))return;touchPinned.current=false;setOpen(false);}function key(e){if(e.key==='Escape'&&popoverStack[popoverStack.length-1]===anchor){e.stopImmediatePropagation();touchPinned.current=false;skipFocus.current=true;setOpen(false);if(anchor.current)anchor.current.focus();setTimeout(function(){skipFocus.current=false;},0);}}document.addEventListener('pointerdown',outside,true);document.addEventListener('keydown',key,true);document.addEventListener('vb-popover-closed',later);return function(){popoverStack=popoverStack.filter(function(a){return a!==anchor;});cancelClose();document.removeEventListener('pointerdown',outside,true);document.removeEventListener('keydown',key,true);document.removeEventListener('vb-popover-closed',later);document.dispatchEvent(new Event('vb-popover-closed'));};},[open]);
     // Popover.Place runs on every geometry change; re-place on resize, scroll and anchor resize.
     R.useEffect(function () {
       if (!open) return;
@@ -169,17 +208,18 @@ const window = new Proxy({ React, ReactDOM, Veilbreak: {} }, { get: (t, k) => (k
       if (!at || Math.abs(at[0] - x) > 0.5 || Math.abs(at[1] - y) > 0.5) setAt([x, y]);
     });
     var handlers = {
-      onPointerEnter: function (e) { if (e.pointerType === 'mouse') setOpen(true); },
-      onPointerLeave: function (e) { if (e.pointerType === 'mouse') setOpen(false); },
-      onPointerDown: function (e) { if (e.pointerType !== 'mouse') setOpen(function (o) { return !o; }); },
-      onFocus: function () { setOpen(true); }, onBlur: function () { setOpen(false); }
+      onPointerEnter: function (e) { if (e.pointerType === 'mouse') {cancelClose();setOpen(true);} },
+      onPointerLeave: function (e) { if (e.pointerType === 'mouse') later(); },
+      onPointerDown: function (e) { if (e.pointerType !== 'mouse') {e.stopPropagation();touchPinned.current=!open;setOpen(!open);} },
+      onFocus: function () { if(skipFocus.current)return;cancelClose();setOpen(true); }, onBlur: later,
+      onKeyDown: function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();setOpen(!open);}}
     };
     var content = open ? build() : null, a = content && anchor.current;
     // Popover.Open: the layer sits outside the board, so it copies the anchor's root flags and theme.
     var flags = a ? ROOT_FLAGS.filter(function (c) { return a.closest('.' + c); }) : [], themed = a && a.closest('[data-theme]');
     var layer = content ? window.ReactDOM.createPortal(h('div', {
-      ref: pop, className: cx('vb-root vb-popover', flags.join(' ')), 'data-theme': themed ? themed.getAttribute('data-theme') : undefined,
-      style: { position: 'fixed', left: at ? at[0] : -9999, top: at ? at[1] : -9999, maxWidth: Math.max(80, window.innerWidth - 16), maxHeight: Math.max(80, window.innerHeight - 32), overflowY: 'auto', zIndex: 50, pointerEvents: 'none' }
+      ref: pop, role: 'region', 'aria-label': 'Details', onPointerEnter:cancelClose, onPointerLeave:later, onFocus:cancelClose, onBlur:later, className: cx('vb-root vb-popover', flags.join(' ')), 'data-theme': themed ? themed.getAttribute('data-theme') : undefined,
+      style: { position: 'fixed', left: at ? at[0] : -9999, top: at ? at[1] : -9999, maxWidth: Math.max(80, window.innerWidth - 16), maxHeight: Math.max(80, window.innerHeight - 32), overflowY: 'auto', zIndex: 50, pointerEvents: 'auto' }
     }, content), document.body) : null;
     return { ref: anchor, open: !!content, handlers: handlers, layer: layer };
   }
@@ -369,15 +409,7 @@ const window = new Proxy({ React, ReactDOM, Veilbreak: {} }, { get: (t, k) => (k
     var q = p.queue || [];
     return h(Shape, { className: cx('vb-queue', p.className) },
       h('div', { className: 'vb-queue__head' }, L('vb-queue__title', (p.title || 'AUTOPLAY QUEUE') + ' · ' + q.length), L('vb-queue__hint', p.hint == null ? 'Fires as Power reaches each cost' : p.hint)),
-      q.map(function (e, i) {
-        var manual = !!e.manual && !!p.onCancel;
-        return h(Shape, Object.assign({ key: i, className: cx('vb-queue__row', i === 0 && 'vb-queue__row--next', manual && 'vb-queue__row--manual') },
-          manual ? Object.assign(clickable(function () { p.onCancel(e); }), { title: 'Cancel queued cast' }) : null),
-          L('vb-queue__index', e.next ? '›' : String(i + 1)),
-          h('div', { className: 'vb-queue__text' }, L('vb-queue__skill', upper(e.skill)), L('vb-queue__who', e.who)),
-          L('vb-queue__cost', String(e.cost || 0)), L('vb-queue__eta', e.eta || ''),
-          manual ? h(VbIcon, { icon: 'cancel', size: 14, className: 'vb-queue__cancel' }) : null);
-      }));
+      q.map(function(e,i){return h(QueueChip,{key:e.id||(e.actor+':'+e.slot+':'+e.who+':'+e.skill),view:e,position:i+1,onCancel:p.onCancel,className:cx('vb-queue__row',e.manual&&'vb-queue__row--manual')});}));
   }
 
   var HUD = { speed: 1, wave: 1, score: 0, boss: false, auto: true, slow: false, power: 0, maxPower: 100, regen: '+12/s', hint: null, focus: 100, previewFrom: -1, previewTo: -1, queue: [], queueTitle: 'AUTOPLAY QUEUE', queueHint: 'Fires as Power reaches each cost' };
@@ -399,12 +431,11 @@ const window = new Proxy({ React, ReactDOM, Veilbreak: {} }, { get: (t, k) => (k
 
   function BossBar(p) {
     var b = Object.assign({ name: '', health: 1, stability: 1, detail: '', shielded: false, interruptible: false, shieldDetail: '' }, p.view);
+    var effects=(b.effects||[]).slice();if(b.shielded&&!effects.some(function(e){return e.definition.id==='boss-protection';}))effects.push({id:'boss:shield',definition:{id:'shielded',title:'Shielded',description:b.shieldDetail,icon:'barrier',polarity:'benefit'}});if(b.interruptible&&!effects.some(function(e){return e.definition.id==='interruptible';}))effects.push({id:'boss:interruptible',definition:{id:'interruptible',title:'Interruptible',description:'This action can be interrupted.',icon:'warning'}});
     return h(Shape, { className: cx('vb-boss', p.className) },
       h('div', { className: 'vb-boss__head' }, h(VbIcon, { icon: 'marker', size: 14, className: 'vb-boss__icon' }), L('vb-boss__name', upper(b.name)), L('vb-boss__detail', b.detail)),
       h(HealthBar, { className: 'vb-boss__health', hp: b.health, max: 1, barrier: 0, stability: b.stability, exposed: b.stability <= 0, enemy: true }),
-      h('div', { className: 'vb-boss__chips', style: show(b.shielded || b.interruptible) },
-        b.shielded ? h(StatusChip, { kind: 'barrier', text: 'Shielded', detail: b.shieldDetail }) : null,
-        b.interruptible ? h(StatusChip, { kind: 'interrupted', text: 'Interruptible' }) : null));
+      h(EffectStrip, {className:'vb-boss__chips',effects:effects}));
   }
 
   /* ── Screens ──────────────────────────────────────────────────────────── */
@@ -423,16 +454,21 @@ const window = new Proxy({ React, ReactDOM, Veilbreak: {} }, { get: (t, k) => (k
 
 
   /* ── Operatives ───────────────────────────────────────────────────────── */
-  var OPERATIVE = { id: '', name: '', code: '', role: '', roleIcon: 'striker', passive: '', passiveText: '', passiveFullText: '', kit: '#ffffff', portrait: null, hp: 0, maxHp: 1, barrier: 0, armor: 0, stability: 100, maxStability: 100, statuses: [], mode: 'auto', manualSeconds: 0, skills: [{}, { slot: 'S', kind: 'Signature' }] };
+  var OPERATIVE = { id: '', name: '', code: '', role: '', roleIcon: 'striker', passive: '', passiveText: '', passiveFullText: '', kit: '#ffffff', portrait: null, hp: 0, maxHp: 1, barrier: 0, armor: 0, stability: 100, maxStability: 100, effects: [], mode: 'auto', manualSeconds: 0, skills: [{}, { slot: 'S', kind: 'Signature' }] };
   function operative(v) { return Object.assign({}, OPERATIVE, v); }
   function fallenOf(v) { return kebab(v.mode) === 'fallen' || v.hp <= 0; }
   function img(url) { return url ? { backgroundImage: 'url("' + url + '")' } : null; }
   function Strike(on, text) { return on ? h('s', null, text) : text; }
 
+  function effectModel(v){return Object.assign({id:'unknown',definition:{title:'Unknown effect',description:'No authored description is available.',icon:'info',scope:'actor'},stacks:1,activation:'active'},v);}
+  function EffectDetails(p){var e=effectModel(p.view),d=e.definition;return h('article',{className:cx('vb-effect-detail',p.className)},h('h3',{className:'vb-t-title'},d.title),h('p',null,d.description),h('dl',null,h('dt',null,'Source'),h('dd',null,e.source||'Unavailable'),h('dt',null,'Value'),h('dd',null,(e.magnitude||'—')+(e.stacks>1?' · ×'+e.stacks:'')),h('dt',null,'Duration'),h('dd',null,e.remainingSeconds!=null?seconds(e.remainingSeconds)+' remaining':'Unavailable or persistent'),h('dt',null,'State'),h('dd',null,(d.scope||'actor')+' · '+e.activation)));}
+  function EffectBadge(p){var e=effectModel(p.view),d=e.definition,pop=usePopover(function(){return h(EffectDetails,{view:e});},'above',false,p.pinned);R.useEffect(function(){if(p.onOpenChange)p.onOpenChange(pop.open);},[pop.open]);return h(R.Fragment,null,h(Shape,Object.assign({as:'button',type:'button',ref:pop.ref,className:cx('vb-badge',st('vb-badge',d.polarity==='harm'?'enemy':d.polarity==='benefit'?'ally':'neutral'),'vb-effect-badge',st('vb-effect',e.activation),p.className),'data-effect-state':e.activation,'aria-label':d.title,'aria-expanded':pop.open},pop.handlers),h(VbIcon,{icon:d.icon||'info',size:14}),e.stacks>1?h('span',null,'×'+e.stacks):null),pop.layer);}
+  function EffectList(p){var cache=R.useRef(new Map()),held=R.useState(new Set()),open=held[0],setOpen=held[1];var effects=p.effects||[],current=new Set(effects.map(function(e){return e.id;}));effects.forEach(function(e){cache.current.set(e.id,e);});var shown=effects.slice();cache.current.forEach(function(e,id){if(!current.has(id)){if(open.has(id))shown.push(Object.assign({},e,{activation:'expired',remainingSeconds:0}));else cache.current.delete(id);}});return h('ul',{className:cx('vb-effect-list',p.className)},shown.map(function(e){return h('li',{className:'vb-effect-row',key:e.id},h(EffectBadge,{view:e,onOpenChange:function(on){setOpen(function(previous){var next=new Set(previous);if(on)next.add(e.id);else next.delete(e.id);return next;});}}),h('span',null,e.definition.title+' · '+(e.magnitude||e.activation||'active')));}));}
+  function EffectStrip(p){var last=R.useRef([]),wasOpen=R.useRef(false),all=p.effects||[];if(all.length)last.current=all;var visible=all.length?all:wasOpen.current?last.current.map(function(e){return Object.assign({},e,{activation:'expired',remainingSeconds:0});}):[];var pop=usePopover(function(){return h(EffectList,{effects:visible});},'above',false,p.pinned);if(!all.length&&!pop.open)visible=[];wasOpen.current=pop.open;if(!visible.length)return null;return h('div',{className:cx('vb-effect-strip',p.className)},!p.compact?h(EffectBadge,{view:visible[0]}):null,visible.length>(p.compact?0:1)?h('button',Object.assign({type:'button',ref:pop.ref,className:'vb-effect-strip__more','aria-label':'All effects · '+all.length,'aria-expanded':pop.open},pop.handlers),p.compact?h(VbIcon,{icon:visible[0].definition.icon||'info',size:14}):null,(p.compact?'':'+')+(p.compact?all.length:Math.max(0,all.length-1))):null,pop.layer);}
   function OperativeCard(p) {
     var v = operative(p.view), fallen = fallenOf(v), mode = fallen ? 'fallen' : kebab(v.mode);
     var chip = mode === 'manual' ? (v.manualSeconds > 0 ? 'MANUAL ' + seconds(v.manualSeconds) : 'MANUAL') : mode === 'aiming' ? 'AIMING' : mode === 'fallen' ? 'FALLEN' : 'AUTO';
-    var statuses = (v.statuses || []).map(kebab).filter(function (s, i, a) { return a.indexOf(s) === i; });
+    var effects = v.effects || [], statuses = effects.map(function(e){return e.definition.id;});
     var hp = fallen ? 0 : v.hp;
     return h(Shape, { className: cx('vb-operative', st('vb-operative', mode), p.className), style: p.style },
       h('div', { className: 'vb-operative__band' }, h('div', { className: 'vb-operative__portrait', style: img(v.portrait) }), h('div', { className: 'vb-operative__shade' }),
@@ -444,9 +480,7 @@ const window = new Proxy({ React, ReactDOM, Veilbreak: {} }, { get: (t, k) => (k
         h('div', { className: 'vb-operative__numbers' },
           h('div', { className: 'vb-l vb-operative__hp', style: { fontSize: (String(v.hp) + v.maxHp).length > 7 ? 10 : 11 } }, String(hp), h('span', { style: { color: '#b6aeb9' } }, '/' + v.maxHp)),
           L('vb-operative__barrier', v.barrier > 0 ? '+' + v.barrier : '', show(v.barrier > 0))),
-        h('div', { className: 'vb-operative__statuses' },
-          fallen ? L('vb-operative__clear', 'OUT') : statuses.length === 0 ? L('vb-operative__clear', 'CLEAR') :
-            statuses.map(function (s) { return h(VbIcon, { key: s, icon: statusIcon(s), size: 14, title: s.charAt(0).toUpperCase() + s.slice(1), className: cx('vb-operative__status', 'vb-operative__status--' + s) }); }))),
+        h(EffectStrip, { className: 'vb-operative__statuses', compact:true, effects: effects })),
       h('div', { className: 'vb-operative__skills', style: show(!fallen) }, [0, 1].map(function (i) {
         return h(SkillButton, { key: i, view: v.skills[i] || OPERATIVE.skills[i], dragging: p.dragging === i, onPointerDown: p.onSkillPointerDown ? function (e) { p.onSkillPointerDown(i, e); } : null });
       })),
@@ -546,7 +580,7 @@ const window = new Proxy({ React, ReactDOM, Veilbreak: {} }, { get: (t, k) => (k
   function KeyValueRow(p) { return h('div', { className: cx('vb-kv', p.className), style: p.style }, L('vb-t-caption vb-kv__key', p.label), L(cx('vb-kv__value', p.good && 'vb-kv__value--good'), p.value)); }
   /** ListRow (Progress.cs): glyph, caps title, caption, optional `bar` (ProgressBar props), trailing `value` and `action`. */
   function ListRow(p) {
-    return h(Shape, Object.assign({ className: cx('vb-list-row', p.selected && 'vb-list-row--selected', p.className), style: p.style }, p.onPick ? clickable(p.onPick) : null),
+    return h(Shape, Object.assign({ 'data-motion-item': p.motionId, className: cx('vb-list-row', p.selected && 'vb-list-row--selected', p.className), style: p.style }, p.onPick ? clickable(p.onPick) : null),
       p.lead ? L(cx('vb-list-row__lead', p.leadClass), p.lead) : null, p.icon ? h(VbIcon, { icon: p.icon, size: 20, className: 'vb-list-row__icon' }) : null,
       h('div', { className: 'vb-list-row__text' }, p.children, L('vb-list-row__title', upper(p.title)), p.caption ? L('vb-t-caption vb-list-row__caption', p.caption) : null,
         p.bar ? h(ProgressBar, Object.assign({ className: 'vb-list-row__bar' }, p.bar)) : null),
@@ -555,7 +589,7 @@ const window = new Proxy({ React, ReactDOM, Veilbreak: {} }, { get: (t, k) => (k
   /** PerkCard, minimal: tier word, glyph, name, effect, its levels as a segmented ProgressBar and the value after the pick. */
   function PerkCard(p) {
     var v = perk(p.view);
-    return h(Shape, Object.assign({ className: cx('vb-perk-card', tier(v), p.selected && 'vb-perk-card--selected', p.className), style: p.style, title: v.name + ' · ' + stacks(v, true) }, clickable(p.onPick)),
+    return h(Shape, Object.assign({ 'data-motion-item': v.id, className: cx('vb-perk-card', tier(v), p.selected && 'vb-perk-card--selected', p.className), style: p.style, title: v.name + ' · ' + stacks(v, true) }, clickable(p.onPick)),
       L('vb-t-badge vb-perk-card__tag', upper(v.tag)), h(VbIcon, { icon: v.icon, size: 28, className: 'vb-perk-card__glyph' }),
       L('vb-perk-card__name', upper(v.name)), L('vb-t-caption vb-perk-card__effect', v.effect), h('div', { className: 'vb-grow' }),
       v.max > 0 ? h(ProgressBar, { segments: v.max, value: v.stack, next: v.stack < v.max, className: 'vb-perk-card__levels' }) : null,
@@ -725,7 +759,7 @@ const window = new Proxy({ React, ReactDOM, Veilbreak: {} }, { get: (t, k) => (k
   function RouteChoice(p) {
     var v = p.view || {}, locked = R.useRef(false); R.useEffect(function () { locked.current = false; }, [v.wave]);
     return h('div', { className: cx('vb-route', p.className), style: p.style }, L('vb-t-label vb-route__eyebrow', 'CROSSROADS · WAVE ' + pad2(v.wave)), h(GlitchText, { text: 'CHOOSE YOUR ROAD', className: 'vb-t-display vb-route__title' }), L('vb-t-caption', 'Two roads. One choice. Your build carries forward.'),
-      h('div', { className: 'vb-route__roads' }, [v.left || {}, v.right || {}].map(function (road, side) { return h(Shape, Object.assign({ key: side, className: 'vb-route__sign vb-route__sign--' + (road.kind || 'combat') }, clickable(function () { if (!locked.current && p.onChoose) { locked.current = true; p.onChoose(side); } })), L('vb-t-badge vb-route__direction', side ? 'RIGHT ROAD →' : '← LEFT ROAD'), h(VbIcon, { icon: road.icon || 'battle', size: 36, className: 'vb-route__glyph' }), L('vb-route__kind', upper(road.title)), L('vb-route__hint', road.hint), h('div', { className: 'vb-grow' }), L('vb-route__confirm', 'TAKE THIS ROAD')); })));
+      h('div', { className: 'vb-route__roads' }, [v.left || {}, v.right || {}].map(function (road, side) { return h(Shape, Object.assign({ key: side, 'data-motion-item': side, className: 'vb-route__sign vb-route__sign--' + (road.kind || 'combat') }, clickable(function () { if (!locked.current && p.onChoose) { locked.current = true; p.onChoose(side); } })), L('vb-t-badge vb-route__direction', side ? 'RIGHT ROAD →' : '← LEFT ROAD'), h(VbIcon, { icon: road.icon || 'battle', size: 36, className: 'vb-route__glyph' }), L('vb-route__kind', upper(road.title)), L('vb-route__hint', road.hint), h('div', { className: 'vb-grow' }), L('vb-route__confirm', 'TAKE THIS ROAD')); })));
   }
   /** MerchantScreen, minimal: one list of ListRows (rare finds, stack sales, health trades) and LEAVE MARKET. */
   function MerchantScreen(p) {
@@ -735,9 +769,9 @@ const window = new Proxy({ React, ReactDOM, Veilbreak: {} }, { get: (t, k) => (k
     return h('div', { className: cx('vb-merchant', p.className), style: p.style },
       h('div', { className: 'vb-merchant__head' }, L('vb-t-title', 'NIGHT MARKET'), h(CreditsChip, { credits: v.credits })),
       h(ListLayout, { className: 'vb-merchant__scroll' },
-        section('Rare finds'), v.offers.map(function (o, i) { return h(ListRow, { key: 'o' + i, className: tier(o.perk), title: o.perk.name, caption: o.perk.effect, icon: o.perk.icon, bar: bar(o.perk),
+        section('Rare finds'), v.offers.map(function (o, i) { return h(ListRow, { key: o.id || o.perk.id+':'+i, motionId:o.id || o.perk.id+':'+i, className: cx('vb-merchant__offer',tier(o.perk)), title: o.perk.name, caption: o.perk.effect, icon: o.perk.icon, bar: bar(o.perk),
           action: h(VbButton, { title: o.taken ? 'SOLD' : 'BUY ' + o.price, blocked: o.taken ? 'Sold' : v.credits < o.price ? 'Need ' + (o.price - v.credits) : o.blocked, className: 'vb-merchant__buy', onClick: function () { call(p.onBuy)(i); } }) }); }),
-        section('Sell stacks'), v.stacks.length ? v.stacks.map(function (k, i) { return h(ListRow, { key: 'k' + i, title: k.perk.name, caption: k.perk.now, icon: k.perk.icon, bar: bar(k.perk), action: h(VbButton, { title: '+' + k.payout, className: 'vb-merchant__sell', onClick: function () { call(p.onSellPerk)(k.perk.id); } }) }); }) : h('div', { key: 'e', className: 'vb-l vb-t-caption vb-list__empty' }, 'Nothing to sell yet.'),
+        section('Sell stacks'), v.stacks.length ? v.stacks.map(function (k, i) { return h(ListRow, { key: k.perk.id, title: k.perk.name, caption: k.perk.now, icon: k.perk.icon, bar: bar(k.perk), action: h(VbButton, { title: '+' + k.payout, className: 'vb-merchant__sell', onClick: function () { call(p.onSellPerk)(k.perk.id); } }) }); }) : h('div', { key: 'e', className: 'vb-l vb-t-caption vb-list__empty' }, 'Nothing to sell yet.'),
         section('Trade health · 25% max HP'), v.health.map(function (x) { return h(ListRow, { key: 'h' + x.actor, title: x.name, caption: x.hp + ' / ' + x.maxHp + ' HP → ' + Math.max(0, x.hp - x.cost) + ' HP', icon: 'health', bar: { value: x.hp / Math.max(1, x.maxHp) },
           action: h(VbButton, { title: '+' + x.payout, variant: 'danger', blocked: x.blocked, className: 'vb-merchant__sell', onClick: function () { call(p.onSellHealth)(x.actor); } }) }); })),
       h(VbButton, { title: 'LEAVE MARKET', variant: 'primary', icon: 'chevron', className: 'vb-merchant__leave', onClick: p.onLeave }));
@@ -811,10 +845,10 @@ const window = new Proxy({ React, ReactDOM, Veilbreak: {} }, { get: (t, k) => (k
       p.empty && !kids.length ? L('vb-t-caption vb-list__empty', p.empty) : null, h('div', { className: 'vb-list' }, kids));
   }
   function VbGrid(p) { var n = p.columns <= 2 ? 2 : p.columns >= 4 || p.columns == null ? 4 : 3; return h('div', { className: cx('vb-grid', 'vb-grid--' + n, p.wrap && 'vb-grid--wrap', p.className), style: p.style }, p.children); }
-  function BoardLayout(p) {
-    return h('div', { className: cx('vb-board', p.className), style: p.style },
+  var BoardLayout=R.forwardRef(function BoardLayout(p,ref) {
+    return h('div', { ref:ref, className: cx('vb-board', p.className), style: p.style },
       h('div', { className: 'vb-board__top' }, p.top), h('div', { className: 'vb-board__world' }, p.world), h('div', { className: 'vb-board__bottom' }, p.bottom));
-  }
+  });
 
   /* ── Bottom drawer (Drawer.cs) ── */
   /** DrawerOverlay: a slim sheet that slides up over a backdrop to half the screen. Drag the grip or head: up snaps to full screen,
@@ -826,11 +860,12 @@ const window = new Proxy({ React, ReactDOM, Veilbreak: {} }, { get: (t, k) => (k
     var dh = R.useState(null), dragH = dh[0], setDragH = dh[1], live = R.useState(want), mounted = live[0], setMounted = live[1];
     var root = R.useRef(null), sheet = R.useRef(null), d = R.useRef(null);
     function setSnap(v) { setSnapState(v); if (p.onSnap) p.onSnap(v); }
-    R.useEffect(function () {
-      if (want) { setMounted(true); setSnapState(p.snap || 'half'); var id = requestAnimationFrame(function () { requestAnimationFrame(function () { setShown(true); }); }); return function () { cancelAnimationFrame(id); }; }
-      setShown(false); var t = setTimeout(function () { setMounted(false); setDragH(null); }, 240); return function () { clearTimeout(t); };
-    }, [want]);
-    function dismiss() { if (!dismissible || !shown) return false; setShown(false); if (p.onDismiss) p.onDismiss(); return true; }
+    var closing=R.useRef(false),release=R.useRef(null),focusBefore=R.useRef(null),serial=R.useRef(0);
+    function exit(){if(closing.current)return;closing.current=true;var id=++serial.current;playMotion(sheet.current,'drawerOut',0,true).then(function(){if(id!==serial.current)return;setShown(false);setMounted(false);setDragH(null);closing.current=false;if(release.current){release.current();release.current=null;}if(focusBefore.current&&focusBefore.current.isConnected)focusBefore.current.focus();});}
+    useIsoLayout(function(){if(!mounted||!root.current)return;if(!release.current&&hasBackdrop){release.current=coverSiblings(root.current);focusBefore.current=document.activeElement;}var id=++serial.current;closing.current=false;setShown(true);playMotion(sheet.current,'drawerIn');if(hasBackdrop&&sheet.current)sheet.current.focus();return function(){if(id===serial.current)serial.current++;};},[mounted]);
+    R.useEffect(function(){if(want){serial.current++;closing.current=false;setMounted(true);setSnapState(p.snap||'half');if(mounted){setShown(true);playMotion(sheet.current,'drawerIn');}}else if(mounted)exit();},[want]);
+    R.useEffect(function(){return function(){serial.current++;if(release.current)release.current();var a=sheet.current&&runningMotion.get(sheet.current);if(a)a.cancel();};},[]);
+    function dismiss(){if(!dismissible||closing.current)return false;exit();if(p.onDismiss)p.onDismiss();return true;}
     function drag(isGrip) {
       return {
         onPointerDown: function (e) { if (!shown) return; d.current = { y: e.clientY, h: sheet.current.offsetHeight, moved: false, grip: isGrip }; e.currentTarget.setPointerCapture(e.pointerId); },
@@ -850,9 +885,9 @@ const window = new Proxy({ React, ReactDOM, Veilbreak: {} }, { get: (t, k) => (k
     }
     if (!mounted && !want) return null;
     var dragging = dragH != null && !!d.current, head = p.title || p.meta || closeButton, foot = [].concat(p.actions || []).filter(Boolean);
-    return h('div', { ref: root, className: cx('vb-drawer', shown && 'vb-drawer--open', snap === 'full' && 'vb-drawer--full', dragging && 'vb-drawer--dragging', !hasBackdrop && 'vb-drawer--inline', p.className), style: Object.assign({ pointerEvents: hasBackdrop && shown ? 'auto' : 'none' }, p.style) },
+    return h('div', { ref: root, 'data-overlay-root': '', className: cx('vb-drawer', shown && 'vb-drawer--open', snap === 'full' && 'vb-drawer--full', dragging && 'vb-drawer--dragging', !hasBackdrop && 'vb-drawer--inline', p.className), style: Object.assign({ pointerEvents: hasBackdrop && mounted ? 'auto' : 'none' }, p.style) },
       hasBackdrop ? h('div', { className: 'vb-drawer__backdrop', onPointerDown: dismiss }) : null,
-      h(Shape, { ref: sheet, className: 'vb-drawer__sheet', role: 'dialog', 'aria-modal': hasBackdrop || undefined, 'aria-label': p.title || p.label, style: Object.assign({ pointerEvents: 'auto' }, dragH != null ? { height: dragH } : null) },
+      h(Shape, { ref: sheet, className: 'vb-drawer__sheet', role: 'dialog', tabIndex: -1, onKeyDown:function(e){if(e.key==='Escape'){e.stopPropagation();dismiss();}if(e.key==='Tab'&&hasBackdrop){var nodes=Array.from(sheet.current.querySelectorAll('button:not(:disabled),input,select,textarea,[tabindex="0"]'));if(!nodes.length){e.preventDefault();return;}var first=nodes[0],last=nodes[nodes.length-1];if(e.shiftKey&&(document.activeElement===first||document.activeElement===sheet.current)){e.preventDefault();last.focus();}else if(!e.shiftKey&&(document.activeElement===last||document.activeElement===sheet.current)){e.preventDefault();first.focus();}}}, 'aria-modal': hasBackdrop || undefined, 'aria-label': p.title || p.label, style: Object.assign({ pointerEvents: 'auto' }, dragH != null ? { height: dragH } : null) },
         h('div', Object.assign({ className: 'vb-drawer__grip', role: 'button', tabIndex: 0, 'aria-label': snap === 'full' ? 'Half screen' : 'Full screen', title: 'Drag up for full screen, down to close', style: { touchAction: 'none', cursor: 'grab' },
           onKeyDown: function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSnap(snap === 'full' ? 'half' : 'full'); } } }, drag(true)), h('div', { className: 'vb-drawer__handle' })),
         head ? h('div', Object.assign({ className: 'vb-drawer__head', style: { touchAction: 'none' } }, drag(false)),
@@ -863,7 +898,7 @@ const window = new Proxy({ React, ReactDOM, Veilbreak: {} }, { get: (t, k) => (k
   }
 
   /* ── Views (Runtime/Views) ── */
-  function View(block, p, kids, headed) { return h('div', { className: cx('vb-view', block, headed && 'vb-view--headed', p.className), style: p.style }, kids); }
+  function View(block, p, kids, headed) { return h(MotionSurface, { className: cx('vb-view', block, headed && 'vb-view--headed', p.className), style: p.style }, kids); }
   function call(fn) { return function () { if (fn) fn.apply(null, arguments); }; }
   /** MenuActionsSectionView: checkpoint card (when there is one), PLAY, then HIGH SCORES and SETTINGS. */
   function MenuActionsSectionView(p) {
@@ -897,7 +932,7 @@ const window = new Proxy({ React, ReactDOM, Veilbreak: {} }, { get: (t, k) => (k
       h(LabelComponent, { key: 'l1', text: 'Squad · tap a slot for details', className: 'vb-page__label' }),
       h('div', { key: 's', className: 'vb-grid4' }, [0, 1, 2, 3].map(function (i) { var r = v.selected[i]; return h(SquadSlot, { key: i, slot: i + 1, view: r >= 0 ? v.roster[r] : null, onPick: function () { call(p.onSlotPick)(i); } }); })),
       h(LabelComponent, { key: 'l2', text: unlocked === v.roster.length ? 'Roster · all ' + v.roster.length + ' unlocked' : 'Roster · ' + unlocked + ' of ' + v.roster.length + ' unlocked', className: 'vb-page__label' }),
-      h('div', { key: 'r', className: 'vb-grid4 vb-grid4--wrap' }, v.roster.map(function (o, i) { return h(OperativeTile, { key: i, view: o, slot: v.selected.indexOf(i) + 1, focused: i === v.focus, tier: v.tiers[i], locked: v.locked[i], onPick: function () { call(p.onPick)(i); } }); })),
+      h('div', { key: 'r', className: 'vb-grid4 vb-grid4--wrap' }, v.roster.map(function (o, i) { return h(OperativeTile, { key: o.id, view: o, slot: v.selected.indexOf(i) + 1, focused: i === v.focus, tier: v.tiers[i], locked: v.locked[i], onPick: function () { call(p.onPick)(i); } }); })),
       h('div', { key: 'g', className: 'vb-grow' }),
       h(VbButton, { key: 'go', title: 'START RUN', variant: 'primary', icon: 'chevron', className: 'vb-squad-view__start', sub: n ? picked.map(function (i) { return v.roster[i].name; }).join(' · ') + (v.seed ? ' · ' + v.seed : '') : '', blocked: n < 4 ? 'Pick ' + (4 - n) + ' more' : '', onClick: call(p.onStart) }),
       h(DrawerOverlay, { key: 'd', open: open, closeButton: false, className: 'vb-squad-view__drawer', label: 'Operative details', onDismiss: p.onClose },
@@ -956,7 +991,7 @@ const window = new Proxy({ React, ReactDOM, Veilbreak: {} }, { get: (t, k) => (k
       h('div', { key: 's', className: 'vb-page__scroll vb-draft__scroll', style: { overflowY: 'auto' } },
         h(LabelComponent, { text: 'Wave ' + pad2(v.wave) + ' cleared', tone: 'ally' }), L('vb-t-display', 'CHOOSE A PERK'),
         L('vb-t-caption vb-page__caption', '+' + num(v.bonus) + ' wave bonus · score ' + num(v.score) + ' · perks last the whole run'),
-        h('div', { className: 'vb-draft__cards' }, v.choices.map(function (c, i) { return h(PerkCard, { key: i, view: c, selected: i === v.pick, onPick: function () { call(p.onPick)(i); } }); })),
+        h('div', { className: 'vb-draft__cards' }, v.choices.map(function (c, i) { return h(PerkCard, { key: c.id, view: c, selected: i === v.pick, onPick: function () { call(p.onPick)(i); } }); })),
         pick ? h(PerkDetail, { className: 'vb-draft__detail', view: pick, draft: true }) : null,
         h(Shape, { className: 'vb-panel vb-frame--slim vb-draft__squad' }, h(LabelComponent, { text: 'Carries forward · no healing between waves', size: 'badge' }),
           h('div', { className: 'vb-grid4' }, v.squad.map(function (a, i) {
@@ -977,9 +1012,9 @@ const window = new Proxy({ React, ReactDOM, Veilbreak: {} }, { get: (t, k) => (k
           h('div', { className: 'vb-row vb-results__stats' }, h(StatReadout, { label: 'WAVES', value: String(v.wave) }), h(StatReadout, { label: 'BOSSES', value: String(v.bosses) }),
             v.distance ? h(StatReadout, { label: 'DISTANCE', value: d[0], unit: d[1] }) : null, v.simTime ? h(StatReadout, { label: 'SIM TIME', value: v.simTime }) : null)),
         h(LabelComponent, { text: 'Squad · hover or tap for contribution', className: 'vb-page__label' }),
-        h('div', { className: 'vb-grid4' }, v.squad.map(function (c, i) { return h(SquadResult, { key: i, view: c }); })),
+        h('div', { className: 'vb-grid4' }, v.squad.map(function (c, i) { return h(SquadResult, { key: c.operative.id, view: c }); })),
         v.perks.length ? h(LabelComponent, { text: 'Perks · ' + v.perks.length, className: 'vb-page__label' }) : null,
-        h('div', { className: 'vb-row vb-row--wrap vb-results__perks' }, v.perks.map(function (k, i) { return h(PerkChip, { key: i, view: k }); }))),
+        h('div', { className: 'vb-row vb-row--wrap vb-results__perks' }, v.perks.map(function (k, i) { return h(PerkChip, { key: k.id, view: k }); }))),
       h('div', { key: 'r', className: 'vb-row vb-results__row' }, h(VbButton, { title: 'MENU', className: 'vb-results__menu', onClick: call(p.onMenu) }), h(VbButton, { title: 'RUN AGAIN', variant: 'primary', icon: 'chevron', className: 'vb-results__again', onClick: call(p.onAgain) }))]);
   }
   /** HighScoresView: up to 20 ranked runs (current framed) and older-rules runs after a label, in a ListLayout. */
@@ -988,25 +1023,35 @@ const window = new Proxy({ React, ReactDOM, Veilbreak: {} }, { get: (t, k) => (k
     return View('vb-scores', p, [
       h(ScreenHeader, { key: 'h', title: 'HIGH SCORES', meta: 'TOP ' + ranked.length, onBack: p.onBack }),
       h('div', { key: 'c', className: 'vb-l vb-t-caption vb-page__caption' }, p.caption || 'On this device. Ties break by wave, then shortest sim time.'),
-      h(ListLayout, { key: 'l', empty: 'No runs yet. Your first run lands here.' }, ranked.map(function (s, i) { return h(ScoreRow, { key: 'r' + i, view: s }); }),
+      h(ListLayout, { key: 'l', empty: 'No runs yet. Your first run lands here.' }, ranked.map(function (s, i) { return h(ScoreRow, { key: 'r:'+(s.id||s.rank), view: s }); }),
         old.length ? h(LabelComponent, { key: 'o', text: 'Older rules', className: 'vb-scores__older' }) : null,
-        old.map(function (s, i) { return h(ScoreRow, { key: 'h' + i, view: s, className: 'vb-scores__historical' }); })),
+        old.map(function (s, i) { return h(ScoreRow, { key: 'h:'+(s.id||s.rank), view: s, className: 'vb-scores__historical' }); })),
       h('div', { key: 'f', className: 'vb-l vb-t-caption vb-page__footer' }, 'Local scores only · not an online ranking')], true);
   }
   function RouteChoiceView(p) { return View('vb-route-view', p, h(RouteChoice, { view: p.view, onChoose: p.onChoose })); }
   function MerchantScreenView(p) { return View('vb-merchant-view', p, h(MerchantScreen, { view: p.view, onBuy: p.onBuy, onSellPerk: p.onSellPerk, onSellHealth: p.onSellHealth, onLeave: p.onLeave })); }
   /** BattleHudView: BoardLayout with the HUD band, boss bar and announcer on top, `world` in the middle and four cards at the bottom. */
   function BattleHudView(p) {
-    var ops = p.operatives || [];
-    return h(BoardLayout, { className: cx('vb-battle', p.className), style: p.style,
+    var ops = p.operatives || [],boardRef=R.useRef(null),generation=R.useRef(0);
+    useIsoLayout(function(){var board=boardRef.current;if(!board)return;var nodes=[board.querySelector('.vb-board__top')].concat(Array.from(board.querySelectorAll('.vb-battle__card'))),id=++generation.current;
+      nodes.forEach(function(node,i){if(!node)return;var recipeName=i?'hudCard':'hudTop';node.style.visibility='';if(p.reveal!=null){var v=clamp01(p.reveal),recipe=MOTION.recipes[recipeName],away=1-v;node.style.opacity=v;node.style.translate=reducedMotion(node)?'0 0':(recipe.x||0)*away+'px '+(recipe.y||0)*away+'px';node.style.rotate=reducedMotion(node)?'0deg':(recipe.rotation||0)*away+'deg';node.inert=v<=0;return;}node.style.opacity='';node.style.translate='';node.style.rotate='';node.inert=p.shown===false;playMotion(node,recipeName,i?i-1:0,p.shown===false).then(function(done){if(done&&id===generation.current&&p.shown===false)node.style.visibility='hidden';});});
+      return function(){generation.current++;nodes.forEach(function(node){var animation=node&&runningMotion.get(node);if(animation)animation.cancel();});};
+    },[p.shown,p.reveal]);
+    return h(BoardLayout, { ref:boardRef, className: cx('vb-battle', p.className), style: p.style,
       top: [h(HudTop, { key: 'h', view: p.hud, onPauseClick: p.onPause, onAutoClick: p.onAuto, onSpeedClick: p.onSpeed, onQueueCancel: p.onQueueCancel, queuePinned: p.queuePinned }),
         p.boss ? h(BossBar, { key: 'b', view: p.boss, className: 'vb-battle__boss' }) : null,
         h('div', { key: 'a', className: 'vb-battle__announcer vb-announcement' }, p.announcement ? h(GlitchText, { key: p.announcement, text: p.announcement }) : null)],
       world: p.world,
-      bottom: h('div', { className: 'vb-battle__cards' }, ops.slice(0, 4).map(function (o, i) { return o ? h(OperativeCard, { key: i, view: o, className: 'vb-battle__card' }) : null; })) });
+      bottom: h('div', { className: 'vb-battle__cards' }, ops.slice(0, 4).map(function (o, i) { return o ? h(OperativeCard, { key: o.id||i, view: o, className: 'vb-battle__card' }) : null; })) });
   }
 
+  function ActivePerksView(p){var v=Object.assign({wave:1,perks:[],totals:[],pick:0},p.view);return View('vb-build',p,[h(ScreenHeader,{key:'h',title:'ACTIVE PERKS',meta:'WAVE '+pad2(v.wave),onBack:p.onBack}),h('dl',{key:'t',className:'vb-build__summary'},v.totals.map(function(t){return h(R.Fragment,{key:t.label},h('dt',null,t.label),h('dd',null,t.value));})),h(ListLayout,{key:'l',empty:'No perks yet.'},v.perks.map(function(e,i){return h(PerkRow,{key:e.id,view:e,selected:i===v.pick,onPick:function(){call(p.onPick)(i);}});})),v.perks[v.pick]?h(PerkDetail,{key:'d',view:v.perks[v.pick]}):null],true);}
+  function RevivePickView(p){var fallen=p.fallen||[];return View('vb-revive',p,[h(ScreenHeader,{key:'h',title:'RESTORE',meta:'CHOOSE ONE',onBack:p.onBack}),h('p',{key:'c',className:'vb-page__caption'},(p.perk||'Restore')+' revives one fallen operative at 35% health.'),h('div',{key:'g',className:'vb-grid4 vb-grid4--wrap'},fallen.map(function(e,i){return h(OperativeTile,{key:e.id,view:e,onPick:function(){call(p.onPick)(i);}});}))],true);}
+  function AccessibilityView(p){var v=Object.assign({reducedFlashes:false,largerText:false,highContrast:false},p.view);return View('vb-accessibility',p,[h(ScreenHeader,{key:'h',title:'ACCESSIBILITY',meta:'SAVED',onBack:p.onBack}),h(FormComposite,{key:'f'},['reducedFlashes','largerText','highContrast'].map(function(key){return h(VbSwitch,{key:key,text:{reducedFlashes:'Reduced flashes',largerText:'Larger text',highContrast:'High contrast'}[key],value:v[key],onChange:function(value){call(p.onChange)(key,value);}});}))],true);}
+
   var api = {
+    EffectDetails: EffectDetails, EffectBadge: EffectBadge, EffectList: EffectList, EffectStrip: EffectStrip,
+    ActivePerksView: ActivePerksView, RevivePickView: RevivePickView, AccessibilityView: AccessibilityView,
     GlitchText: GlitchText, CreditsChip: CreditsChip, RouteChoice: RouteChoice, MerchantScreen: MerchantScreen,
     VbFrame: VbFrame, VbIcon: VbIcon, VbMark: VbMark, VbButton: VbButton, StatReadout: StatReadout, StatusChip: StatusChip,
     VbSwitch: VbSwitch, VbSlider: VbSlider, VbSegmented: VbSegmented, VbMeter: VbMeter, HealthBar: HealthBar, PowerStrip: PowerStrip,
@@ -1025,6 +1070,13 @@ const window = new Proxy({ React, ReactDOM, Veilbreak: {} }, { get: (t, k) => (k
 })(window);
 export const Veilbreak = window.Veilbreak;
 export default Veilbreak;
+export const EffectDetails = Veilbreak.EffectDetails;
+export const EffectBadge = Veilbreak.EffectBadge;
+export const EffectList = Veilbreak.EffectList;
+export const EffectStrip = Veilbreak.EffectStrip;
+export const ActivePerksView = Veilbreak.ActivePerksView;
+export const RevivePickView = Veilbreak.RevivePickView;
+export const AccessibilityView = Veilbreak.AccessibilityView;
 export const GlitchText = Veilbreak.GlitchText;
 export const CreditsChip = Veilbreak.CreditsChip;
 export const RouteChoice = Veilbreak.RouteChoice;

@@ -1,0 +1,968 @@
+{
+  "schema": 1,
+  "types": [
+    {
+      "name": "AccessibilityView",
+      "base": "ScreenView",
+      "kind": "component",
+      "family": "screens",
+      "level": "view",
+      "source": "Runtime/Views/SettingsView.cs",
+      "web": true
+    },
+    {
+      "name": "ActivePerksView",
+      "base": "ScreenView",
+      "kind": "component",
+      "family": "screens",
+      "level": "view",
+      "source": "Runtime/Views/RunViews.cs",
+      "web": true
+    },
+    {
+      "name": "Announcer",
+      "base": "IDisposable",
+      "kind": "component",
+      "family": "motion",
+      "level": "composite",
+      "source": "Runtime/Composites/Announcer.cs",
+      "web": false
+    },
+    {
+      "name": "Backdrop",
+      "base": "VisualElement",
+      "kind": "component",
+      "family": "controls",
+      "level": "composite",
+      "source": "Runtime/Composites/Dialogs.cs",
+      "web": true
+    },
+    {
+      "name": "Badge",
+      "base": "",
+      "kind": "service",
+      "family": "controls",
+      "level": "atom",
+      "source": "Runtime/Controls/Badge.cs",
+      "web": false
+    },
+    {
+      "name": "BadgeComponent",
+      "base": "VisualElement",
+      "kind": "component",
+      "family": "badges",
+      "level": "atom",
+      "source": "Runtime/Controls/Badge.cs",
+      "web": true
+    },
+    {
+      "name": "BattleHudView",
+      "base": "BoardLayout",
+      "kind": "component",
+      "family": "screens",
+      "level": "view",
+      "source": "Runtime/Views/BattleViews.cs",
+      "web": true
+    },
+    {
+      "name": "BoardLayout",
+      "base": "VisualElement",
+      "kind": "component",
+      "family": "layouts",
+      "level": "layout",
+      "source": "Runtime/Layouts/Layouts.cs",
+      "web": true
+    },
+    {
+      "name": "BossBar",
+      "base": "VisualElement",
+      "kind": "component",
+      "family": "controls",
+      "level": "composite",
+      "source": "Runtime/Composites/Hud.cs",
+      "web": true
+    },
+    {
+      "name": "CardComponent",
+      "base": "CardView",
+      "kind": "component",
+      "family": "surfaces",
+      "level": "atom",
+      "source": "Runtime/Controls/Card.cs",
+      "web": true
+    },
+    {
+      "name": "CardView",
+      "base": "SurfaceView",
+      "kind": "foundation",
+      "family": "surfaces",
+      "level": "view",
+      "source": "Runtime/Core/ViewBase.cs",
+      "web": false
+    },
+    {
+      "name": "CombatText",
+      "base": "Label",
+      "kind": "component",
+      "family": "world",
+      "level": "atom",
+      "source": "Runtime/World/WorldElements.cs",
+      "web": true
+    },
+    {
+      "name": "ConfirmDialogView",
+      "base": "OverlayView",
+      "kind": "component",
+      "family": "overlays",
+      "level": "view",
+      "source": "Runtime/Views/OverlayViews.cs",
+      "web": true
+    },
+    {
+      "name": "CreditsChip",
+      "base": "BadgeComponent",
+      "kind": "component",
+      "family": "badges",
+      "level": "composite",
+      "source": "Runtime/Composites/RouteMerchant.cs",
+      "web": true
+    },
+    {
+      "name": "DetailView",
+      "base": "SurfaceView",
+      "kind": "foundation",
+      "family": "controls",
+      "level": "view",
+      "source": "Runtime/Core/ViewBase.cs",
+      "web": false
+    },
+    {
+      "name": "Dialog",
+      "base": "",
+      "kind": "service",
+      "family": "overlays",
+      "level": "composite",
+      "source": "Runtime/Composites/Dialogs.cs",
+      "web": true
+    },
+    {
+      "name": "DialogSurface",
+      "family": "overlays",
+      "level": "composite",
+      "web": false,
+      "base": "OverlayView",
+      "source": "Runtime/Composites/Dialogs.cs",
+      "kind": "component"
+    },
+    {
+      "name": "DrawerOverlay",
+      "base": "OverlayView",
+      "kind": "component",
+      "family": "overlays",
+      "level": "composite",
+      "source": "Runtime/Composites/Drawer.cs",
+      "web": true
+    },
+    {
+      "name": "EdgeWarning",
+      "base": "VisualElement",
+      "kind": "component",
+      "family": "world",
+      "level": "atom",
+      "source": "Runtime/World/WorldElements.cs",
+      "web": true
+    },
+    {
+      "name": "FactCell",
+      "base": "ViewBase",
+      "kind": "component",
+      "family": "collections",
+      "level": "composite",
+      "source": "Runtime/Composites/DataRows.cs",
+      "web": false
+    },
+    {
+      "name": "FieldComposite",
+      "base": "VisualElement",
+      "kind": "component",
+      "family": "forms",
+      "level": "composite",
+      "source": "Runtime/Composites/Forms.cs",
+      "web": true
+    },
+    {
+      "name": "FocusMeter",
+      "base": "VisualElement",
+      "kind": "component",
+      "family": "controls",
+      "level": "atom",
+      "source": "Runtime/Controls/Meters.cs",
+      "web": true
+    },
+    {
+      "name": "FontPrimer",
+      "base": "",
+      "kind": "service",
+      "family": "controls",
+      "level": "atom",
+      "source": "Runtime/Core/FontPrimer.cs",
+      "web": false
+    },
+    {
+      "name": "FormComposite",
+      "base": "VisualElement",
+      "kind": "component",
+      "family": "forms",
+      "level": "composite",
+      "source": "Runtime/Composites/Forms.cs",
+      "web": true
+    },
+    {
+      "name": "GestureSurface",
+      "base": "PointerManipulator",
+      "kind": "component",
+      "family": "input",
+      "level": "atom",
+      "source": "Runtime/Input/GestureSurface.cs",
+      "web": false
+    },
+    {
+      "name": "Glitch",
+      "base": "",
+      "kind": "service",
+      "family": "motion",
+      "level": "atom",
+      "source": "Runtime/Controls/GlitchText.cs",
+      "web": false
+    },
+    {
+      "name": "GlitchText",
+      "base": "VisualElement",
+      "kind": "component",
+      "family": "controls",
+      "level": "atom",
+      "source": "Runtime/Controls/GlitchText.cs",
+      "web": true
+    },
+    {
+      "name": "GuideDialogView",
+      "base": "OverlayView",
+      "kind": "component",
+      "family": "overlays",
+      "level": "view",
+      "source": "Runtime/Views/OverlayViews.cs",
+      "web": true
+    },
+    {
+      "name": "HealthBar",
+      "base": "VisualElement",
+      "kind": "component",
+      "family": "controls",
+      "level": "atom",
+      "source": "Runtime/Controls/Meters.cs",
+      "web": true
+    },
+    {
+      "name": "HighScoresView",
+      "base": "ScreenView",
+      "kind": "component",
+      "family": "screens",
+      "level": "view",
+      "source": "Runtime/Views/RunViews.cs",
+      "web": true
+    },
+    {
+      "name": "HoloFrame",
+      "base": "SurfaceView",
+      "kind": "component",
+      "family": "surfaces",
+      "level": "composite",
+      "source": "Runtime/Composites/Holo.cs",
+      "web": true
+    },
+    {
+      "name": "HoloPlatform",
+      "base": "ViewBase",
+      "kind": "component",
+      "family": "surfaces",
+      "level": "composite",
+      "source": "Runtime/Composites/Holo.cs",
+      "web": true
+    },
+    {
+      "name": "HudTop",
+      "base": "VisualElement",
+      "kind": "component",
+      "family": "controls",
+      "level": "composite",
+      "source": "Runtime/Composites/Hud.cs",
+      "web": true
+    },
+    {
+      "name": "IconButtonComposite",
+      "base": "VisualElement",
+      "kind": "component",
+      "family": "controls",
+      "level": "atom",
+      "source": "Runtime/Controls/IconButton.cs",
+      "web": true
+    },
+    {
+      "name": "KeyValueRow",
+      "base": "VisualElement",
+      "kind": "component",
+      "family": "collections",
+      "level": "atom",
+      "source": "Runtime/Controls/Progress.cs",
+      "web": true
+    },
+    {
+      "name": "Keyed",
+      "base": "",
+      "kind": "service",
+      "family": "collections",
+      "level": "atom",
+      "source": "Runtime/Core/KeyedList.cs",
+      "web": false
+    },
+    {
+      "name": "KeyedList",
+      "base": "",
+      "kind": "service",
+      "family": "collections",
+      "level": "atom",
+      "source": "Runtime/Core/KeyedList.cs",
+      "web": false
+    },
+    {
+      "name": "LabelComponent",
+      "base": "TextComponent",
+      "kind": "component",
+      "family": "controls",
+      "level": "atom",
+      "source": "Runtime/Controls/Text.cs",
+      "web": true
+    },
+    {
+      "name": "ListLayout",
+      "base": "ScrollView",
+      "kind": "component",
+      "family": "layouts",
+      "level": "layout",
+      "source": "Runtime/Layouts/Layouts.cs",
+      "web": true
+    },
+    {
+      "name": "ListRow",
+      "base": "SurfaceView",
+      "kind": "component",
+      "family": "collections",
+      "level": "atom",
+      "source": "Runtime/Controls/Progress.cs",
+      "web": true
+    },
+    {
+      "name": "MainMenuView",
+      "base": "ScreenView",
+      "kind": "component",
+      "family": "screens",
+      "level": "view",
+      "source": "Runtime/Views/MenuViews.cs",
+      "web": true
+    },
+    {
+      "name": "MarkGeometry",
+      "base": "",
+      "kind": "service",
+      "family": "controls",
+      "level": "atom",
+      "source": "Runtime/Core/MarkGeometry.cs",
+      "web": false
+    },
+    {
+      "name": "MenuActionsSectionView",
+      "base": "VisualElement",
+      "kind": "component",
+      "family": "screens",
+      "level": "view",
+      "source": "Runtime/Views/MenuViews.cs",
+      "web": true
+    },
+    {
+      "name": "MerchantScreen",
+      "base": "ViewBase",
+      "kind": "component",
+      "family": "controls",
+      "level": "composite",
+      "source": "Runtime/Composites/RouteMerchant.cs",
+      "web": true
+    },
+    {
+      "name": "MerchantScreenView",
+      "base": "ScreenView",
+      "kind": "component",
+      "family": "screens",
+      "level": "view",
+      "source": "Runtime/Views/BattleViews.cs",
+      "web": true
+    },
+    {
+      "name": "MotionRecipes",
+      "base": "",
+      "kind": "service",
+      "family": "motion",
+      "level": "atom",
+      "source": "Runtime/Core/MotionRecipes.cs",
+      "web": false
+    },
+    {
+      "name": "Navigator",
+      "base": "",
+      "kind": "service",
+      "family": "controls",
+      "level": "atom",
+      "source": "Runtime/Core/Navigator.cs",
+      "web": false
+    },
+    {
+      "name": "OffscreenIndicator",
+      "base": "VisualElement",
+      "kind": "component",
+      "family": "world",
+      "level": "atom",
+      "source": "Runtime/World/WorldElements.cs",
+      "web": true
+    },
+    {
+      "name": "OperativeCard",
+      "base": "SurfaceView",
+      "kind": "component",
+      "family": "surfaces",
+      "level": "composite",
+      "source": "Runtime/Composites/Operatives.cs",
+      "web": true
+    },
+    {
+      "name": "OperativeDetails",
+      "base": "DetailView",
+      "kind": "component",
+      "family": "details",
+      "level": "composite",
+      "source": "Runtime/Composites/Operatives.cs",
+      "web": true
+    },
+    {
+      "name": "OperativeStats",
+      "base": "DetailView",
+      "kind": "component",
+      "family": "details",
+      "level": "composite",
+      "source": "Runtime/Composites/Operatives.cs",
+      "web": true
+    },
+    {
+      "name": "OperativeTile",
+      "base": "TileComponent",
+      "kind": "component",
+      "family": "surfaces",
+      "level": "composite",
+      "source": "Runtime/Composites/Operatives.cs",
+      "web": true
+    },
+    {
+      "name": "OverlayHost",
+      "base": "",
+      "kind": "service",
+      "family": "overlays",
+      "level": "atom",
+      "source": "Runtime/Core/OverlayHost.cs",
+      "web": false
+    },
+    {
+      "name": "OverlayView",
+      "base": "ViewBase",
+      "kind": "foundation",
+      "family": "overlays",
+      "level": "view",
+      "source": "Runtime/Core/ViewBase.cs",
+      "web": false
+    },
+    {
+      "name": "PauseOverlayView",
+      "base": "OverlayView",
+      "kind": "component",
+      "family": "overlays",
+      "level": "view",
+      "source": "Runtime/Views/OverlayViews.cs",
+      "web": true
+    },
+    {
+      "name": "PerkCard",
+      "base": "CardView",
+      "kind": "component",
+      "family": "surfaces",
+      "level": "composite",
+      "source": "Runtime/Composites/Perks.cs",
+      "web": true
+    },
+    {
+      "name": "PerkChip",
+      "base": "VisualElement",
+      "kind": "component",
+      "family": "badges",
+      "level": "composite",
+      "source": "Runtime/Composites/Perks.cs",
+      "web": true
+    },
+    {
+      "name": "PerkDetail",
+      "base": "DetailView",
+      "kind": "component",
+      "family": "details",
+      "level": "composite",
+      "source": "Runtime/Composites/Perks.cs",
+      "web": true
+    },
+    {
+      "name": "PerkDraftView",
+      "base": "ScreenView",
+      "kind": "component",
+      "family": "screens",
+      "level": "view",
+      "source": "Runtime/Views/RunViews.cs",
+      "web": true
+    },
+    {
+      "name": "PerkRow",
+      "base": "ListRow",
+      "kind": "component",
+      "family": "collections",
+      "level": "atom",
+      "source": "Runtime/Controls/Progress.cs",
+      "web": true
+    },
+    {
+      "name": "Popover",
+      "base": "",
+      "kind": "service",
+      "family": "overlays",
+      "level": "atom",
+      "source": "Runtime/Core/Popover.cs",
+      "web": false
+    },
+    {
+      "name": "PowerStrip",
+      "base": "VisualElement",
+      "kind": "component",
+      "family": "controls",
+      "level": "atom",
+      "source": "Runtime/Controls/Meters.cs",
+      "web": true
+    },
+    {
+      "name": "ProgressBar",
+      "base": "VisualElement",
+      "kind": "component",
+      "family": "controls",
+      "level": "atom",
+      "source": "Runtime/Controls/Progress.cs",
+      "web": true
+    },
+    {
+      "name": "QueueChip",
+      "base": "VisualElement",
+      "kind": "component",
+      "family": "controls",
+      "level": "atom",
+      "source": "Runtime/Controls/QueueChip.cs",
+      "web": true
+    },
+    {
+      "name": "QueueList",
+      "base": "VisualElement",
+      "kind": "component",
+      "family": "collections",
+      "level": "composite",
+      "source": "Runtime/Composites/Hud.cs",
+      "web": true
+    },
+    {
+      "name": "ResultsView",
+      "base": "ScreenView",
+      "kind": "component",
+      "family": "screens",
+      "level": "view",
+      "source": "Runtime/Views/RunViews.cs",
+      "web": true
+    },
+    {
+      "name": "RevealCard",
+      "base": "ViewBase",
+      "kind": "component",
+      "family": "surfaces",
+      "level": "composite",
+      "source": "Runtime/Composites/Holo.cs",
+      "web": true
+    },
+    {
+      "name": "RevivePickView",
+      "base": "ScreenView",
+      "kind": "component",
+      "family": "screens",
+      "level": "view",
+      "source": "Runtime/Views/RunViews.cs",
+      "web": true
+    },
+    {
+      "name": "RouteChoice",
+      "base": "ViewBase",
+      "kind": "component",
+      "family": "controls",
+      "level": "composite",
+      "source": "Runtime/Composites/RouteMerchant.cs",
+      "web": true
+    },
+    {
+      "name": "RouteChoiceView",
+      "base": "ScreenView",
+      "kind": "component",
+      "family": "screens",
+      "level": "view",
+      "source": "Runtime/Views/BattleViews.cs",
+      "web": true
+    },
+    {
+      "name": "RuleRow",
+      "base": "ListRow",
+      "kind": "component",
+      "family": "collections",
+      "level": "atom",
+      "source": "Runtime/Controls/Progress.cs",
+      "web": true
+    },
+    {
+      "name": "SafeAreaRoot",
+      "base": "",
+      "kind": "service",
+      "family": "controls",
+      "level": "atom",
+      "source": "Runtime/Core/SafeAreaRoot.cs",
+      "web": false
+    },
+    {
+      "name": "ScanLines",
+      "base": "VisualElement",
+      "kind": "component",
+      "family": "controls",
+      "level": "composite",
+      "source": "Runtime/Composites/Holo.cs",
+      "web": true
+    },
+    {
+      "name": "ScoreRow",
+      "base": "ListRow",
+      "kind": "component",
+      "family": "collections",
+      "level": "atom",
+      "source": "Runtime/Controls/Progress.cs",
+      "web": true
+    },
+    {
+      "name": "ScreenHeader",
+      "base": "VisualElement",
+      "kind": "component",
+      "family": "controls",
+      "level": "composite",
+      "source": "Runtime/Composites/Hud.cs",
+      "web": true
+    },
+    {
+      "name": "ScreenView",
+      "base": "ViewBase",
+      "kind": "foundation",
+      "family": "screens",
+      "level": "view",
+      "source": "Runtime/Views/ScreenView.cs",
+      "web": false
+    },
+    {
+      "name": "SettingsView",
+      "base": "ScreenView",
+      "kind": "component",
+      "family": "screens",
+      "level": "view",
+      "source": "Runtime/Views/SettingsView.cs",
+      "web": true
+    },
+    {
+      "name": "SkillButton",
+      "base": "VisualElement",
+      "kind": "component",
+      "family": "controls",
+      "level": "atom",
+      "source": "Runtime/Controls/SkillButton.cs",
+      "web": true
+    },
+    {
+      "name": "SkillSummary",
+      "base": "ViewBase",
+      "kind": "component",
+      "family": "details",
+      "level": "composite",
+      "source": "Runtime/Composites/DataRows.cs",
+      "web": false
+    },
+    {
+      "name": "SquadHealthCell",
+      "base": "ViewBase",
+      "kind": "component",
+      "family": "collections",
+      "level": "composite",
+      "source": "Runtime/Composites/DataRows.cs",
+      "web": false
+    },
+    {
+      "name": "SquadResult",
+      "base": "SurfaceView",
+      "kind": "component",
+      "family": "controls",
+      "level": "composite",
+      "source": "Runtime/Composites/Operatives.cs",
+      "web": true
+    },
+    {
+      "name": "SquadSlot",
+      "base": "TileComponent",
+      "kind": "component",
+      "family": "surfaces",
+      "level": "composite",
+      "source": "Runtime/Composites/Operatives.cs",
+      "web": true
+    },
+    {
+      "name": "SquadView",
+      "base": "ScreenView",
+      "kind": "component",
+      "family": "screens",
+      "level": "view",
+      "source": "Runtime/Views/SquadView.cs",
+      "web": true
+    },
+    {
+      "name": "StackLayout",
+      "base": "VisualElement",
+      "kind": "component",
+      "family": "layouts",
+      "level": "layout",
+      "source": "Runtime/Layouts/Layouts.cs",
+      "web": true
+    },
+    {
+      "name": "StatReadout",
+      "base": "VisualElement",
+      "kind": "component",
+      "family": "controls",
+      "level": "atom",
+      "source": "Runtime/Controls/Basics.cs",
+      "web": true
+    },
+    {
+      "name": "StatusChip",
+      "base": "VisualElement",
+      "kind": "component",
+      "family": "badges",
+      "level": "atom",
+      "source": "Runtime/Controls/Basics.cs",
+      "web": true
+    },
+    {
+      "name": "SurfaceView",
+      "base": "ViewBase",
+      "kind": "foundation",
+      "family": "controls",
+      "level": "view",
+      "source": "Runtime/Core/ViewBase.cs",
+      "web": false
+    },
+    {
+      "name": "TargetDrag",
+      "base": "PointerManipulator",
+      "kind": "component",
+      "family": "input",
+      "level": "atom",
+      "source": "Runtime/Input/TargetDrag.cs",
+      "web": false
+    },
+    {
+      "name": "TextComponent",
+      "base": "Label",
+      "kind": "component",
+      "family": "controls",
+      "level": "atom",
+      "source": "Runtime/Controls/Text.cs",
+      "web": true
+    },
+    {
+      "name": "TileComponent",
+      "base": "SurfaceView",
+      "kind": "component",
+      "family": "surfaces",
+      "level": "atom",
+      "source": "Runtime/Controls/Tile.cs",
+      "web": true
+    },
+    {
+      "name": "Ui",
+      "base": "",
+      "kind": "service",
+      "family": "layouts",
+      "level": "layout",
+      "source": "Runtime/Layouts/Layouts.cs",
+      "web": false
+    },
+    {
+      "name": "VbButton",
+      "base": "Button",
+      "kind": "component",
+      "family": "controls",
+      "level": "atom",
+      "source": "Runtime/Controls/Basics.cs",
+      "web": true
+    },
+    {
+      "name": "VbFrame",
+      "base": "VisualElement",
+      "kind": "component",
+      "family": "controls",
+      "level": "atom",
+      "source": "Runtime/Core/VbShape.cs",
+      "web": true
+    },
+    {
+      "name": "VbGrid",
+      "base": "VisualElement",
+      "kind": "component",
+      "family": "layouts",
+      "level": "layout",
+      "source": "Runtime/Layouts/Layouts.cs",
+      "web": true
+    },
+    {
+      "name": "VbIcon",
+      "base": "VisualElement",
+      "kind": "component",
+      "family": "controls",
+      "level": "atom",
+      "source": "Runtime/Controls/Basics.cs",
+      "web": true
+    },
+    {
+      "name": "VbMark",
+      "base": "VisualElement",
+      "kind": "component",
+      "family": "controls",
+      "level": "atom",
+      "source": "Runtime/Controls/Basics.cs",
+      "web": true
+    },
+    {
+      "name": "VbMeter",
+      "base": "VisualElement",
+      "kind": "component",
+      "family": "controls",
+      "level": "atom",
+      "source": "Runtime/Controls/Meters.cs",
+      "web": true
+    },
+    {
+      "name": "VbMotion",
+      "base": "",
+      "kind": "service",
+      "family": "motion",
+      "level": "atom",
+      "source": "Runtime/Core/VbMotion.cs",
+      "web": false
+    },
+    {
+      "name": "VbSegmented",
+      "base": "VisualElement",
+      "kind": "component",
+      "family": "forms",
+      "level": "atom",
+      "source": "Runtime/Controls/Fields.cs",
+      "web": true
+    },
+    {
+      "name": "VbShape",
+      "base": "",
+      "kind": "service",
+      "family": "controls",
+      "level": "atom",
+      "source": "Runtime/Core/VbShape.cs",
+      "web": true
+    },
+    {
+      "name": "VbSlider",
+      "base": "Slider",
+      "kind": "component",
+      "family": "forms",
+      "level": "atom",
+      "source": "Runtime/Controls/Fields.cs",
+      "web": true
+    },
+    {
+      "name": "VbSwitch",
+      "base": "VisualElement",
+      "kind": "component",
+      "family": "forms",
+      "level": "atom",
+      "source": "Runtime/Controls/Fields.cs",
+      "web": true
+    },
+    {
+      "name": "ViewBase",
+      "base": "VisualElement",
+      "kind": "foundation",
+      "family": "controls",
+      "level": "atom",
+      "source": "Runtime/Core/ViewBase.cs",
+      "web": false
+    },
+    {
+      "name": "WorldHealthBar",
+      "base": "VisualElement",
+      "kind": "component",
+      "family": "world",
+      "level": "atom",
+      "source": "Runtime/World/WorldElements.cs",
+      "web": true
+    },
+    {
+      "name": "WorldLabel",
+      "base": "VisualElement",
+      "kind": "component",
+      "family": "world",
+      "level": "atom",
+      "source": "Runtime/World/WorldElements.cs",
+      "web": true
+    },
+    {
+      "name": "WorldLayer",
+      "base": "VisualElement",
+      "kind": "component",
+      "family": "world",
+      "level": "atom",
+      "source": "Runtime/World/WorldLayer.cs",
+      "web": false
+    },
+    {
+      "name": "WorldMarker",
+      "base": "VisualElement",
+      "kind": "component",
+      "family": "world",
+      "level": "atom",
+      "source": "Runtime/World/WorldElements.cs",
+      "web": true
+    }
+  ]
+}

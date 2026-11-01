@@ -76,7 +76,12 @@ legacy_js = legacy_js.replace(
     'var NS = window.Veilbreak = window.Veilbreak || {};\n  NS.Legacy = api;\n'
     f'  {json.dumps(KEEP)}.forEach(function (n) {{ NS[n] = api[n]; }});',
 )
-kit_js = (WEB / 'kit.js').read_text().replace('/*@@ICONS@@*/', (GEN / 'icons.js').read_text().rstrip('\n'))
+kit_js = (
+    (WEB / 'kit.js')
+    .read_text()
+    .replace('/*@@ICONS@@*/', (GEN / 'icons.js').read_text().rstrip('\n'))
+    .replace('/*@@MOTION@@*/', (WEB / 'motion-recipes.js').read_text())
+)
 api = kit_js.split('var api = {')[1].split('};')[0]
 names = [n for n in re.findall(r'(\w+): \w+', api) if n[0].isupper() and n != 'VbShape']
 header = {'format': 4, 'namespace': 'Veilbreak', 'components': [{'name': n} for n in names + KEEP]}

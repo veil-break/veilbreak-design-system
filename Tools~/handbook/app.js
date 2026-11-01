@@ -86,12 +86,8 @@
     var html = navSection('start', 'Start', navLink('overview', 'Overview') + navLink('setup', 'Unity setup') + navLink('web', 'Web kit') +
       '<li><a href="web/demo/">Web app demo <small aria-hidden="true">↗</small></a></li>' + navLink('name-map', 'Name map', D.entries.length));
     html += navSection('foundations', 'Foundations', navLink('tokens', 'Tokens', D.tokens.length) + navLink('type', 'Type') + navLink('e-frame', 'Frames: slim & chipped'));
-    D.tiers.forEach(function (tier) {
-      var entries = D.entries.filter(function (entry) { return entry.tier === tier.id; });
-      html += navSection(tier.id, tier.name + ' · ' + entries.length, entries.map(function (entry) {
-        return '<li><a href="#e-' + entry.id + '" data-r="e-' + entry.id + '">' + statusDot(entry.status) + esc(entry.name) + '</a></li>';
-      }).join(''));
-    });
+    var families = Array.from(new Set(D.entries.map(function(entry){return entry.family;}))).sort();
+    families.forEach(function(family){var entries=D.entries.filter(function(entry){return entry.family===family;});html+=navSection('family-'+family,family.charAt(0).toUpperCase()+family.slice(1)+' · '+entries.length,entries.map(function(entry){return '<li><a href="#e-'+entry.id+'" data-r="e-'+entry.id+'">'+statusDot(entry.status)+esc(entry.name)+'</a></li>';}).join(''));});
     return html + navSection('assets', 'Assets', navLink('icons', 'Icon pack', D.icons.length) + navLink('fonts', 'Fonts & mark'));
   }
   side.innerHTML = navHtml();
@@ -182,6 +178,7 @@
 
   function entry(item) {
     var html = lead(TIER[item.tier].name, item.name, esc(item.summary));
+    html += '<p>Family · '+esc(item.family)+' · '+esc(item.kind)+(item.contract?' · extends <code>'+esc(item.contract.base||'service')+'</code>':'')+'</p>';
     html += '<p>' + pill(item.status) + '</p><dl id="unity-types"><dt>Unity today</dt>' + item.unity.map(function (type) { return '<dd><code>' + esc(type) + '</code></dd>'; }).join('') + '</dl>';
     html += '<div id="entry-layout"><figure id="entry-preview"><figcaption>' + (item.stage === 'board' ? 'Portrait board · 390 × 844' : 'Preview') + ' · web mirror' +
       (item.stage === 'board' ? '<button type="button" id="actual" aria-pressed="false">Actual size</button>' : '') + '</figcaption><div id="stage-host" data-preview data-stage-kind="' + item.stage + '">' + (item.hasPreview ? '' : '<p>No preview.</p>') + '</div></figure>';

@@ -5,14 +5,14 @@ namespace Veilbreak.Gui {
 /// <summary>The run, frozen: a <see cref="ScreenHeader"/> whose back square resumes (the same control as Settings and High Scores),
 /// then one overlay panel centred on the screen: wave, score and who stands, the active perks (tap for details), the seed line,
 /// RESUME (the one primary), settings, ABANDON (danger, confirms) and EXIT TO MENU (ghost). Back = Resume.</summary>
-[UxmlElement] public partial class PauseOverlayView:ScreenView {
+[UxmlElement] public partial class PauseOverlayView:OverlayView {
  public const string Block="vb-pause";
  readonly ScreenHeader header;readonly StatReadout wave,score,standing;readonly VisualElement perks,chips,panel;readonly LabelComponent perksTitle;readonly Label detail;
  public event Action Resume,Settings,Perks,Abandon,Exit;
  public ScreenHeader Header=>header;
  /// <summary>The centred overlay panel (a slim solid <see cref="Dialog"/> sheet).</summary>
  public VisualElement Panel=>panel;
- public PauseOverlayView():base(Block,true){
+ public PauseOverlayView(){AddToClassList("vb-view");AddToClassList("vb-view--headed");AddToClassList(Block);
   header=new ScreenHeader("PAUSED","","Resume").Into(this);header.Back+=()=>Resume?.Invoke();
   var center=Ui.Box(this,Block+"__center");Ui.Text(center,"Combat, focus and world travel are frozen","vb-t-caption",Block+"__caption");
   panel=Dialog.Sheet(center,null,null,"vb-t-caption",Block+"__panel");
@@ -27,15 +27,14 @@ namespace Veilbreak.Gui {
  }
  public PauseOverlayView Bind(PauseViewModel v){
   header.Meta="WAVE "+v.wave.ToString("00");wave.Set(v.wave.ToString("00"));score.Set(Ui.Number(v.score));standing.Set(v.standing.ToString(),"/"+v.squadSize);
-  perksTitle.text="Active perks · "+v.perks.Length;VbMotion.Show(perks,v.perks.Length>0);chips.Clear();
-  foreach(var p in v.perks)new BadgeComponent(p.name+(p.stack>1?" ×"+p.stack:""),p.icon).Classes(Block+"__chip").Into(chips);
+  perksTitle.text="Active perks · "+v.perks.Length;VbMotion.Show(perks,v.perks.Length>0);Keyed.Bind(chips,v.perks,p=>p.id,_=>new BadgeComponent().Classes(Block+"__chip"),(chip,p)=>{chip.Text=p.name;chip.Icon=p.icon;chip.Value=p.stack>1?"×"+p.stack:"";});
   var line=string.Join(" · ",new[]{string.IsNullOrEmpty(v.seed)?null:"Seed "+v.seed,v.detail}.Where(s=>!string.IsNullOrEmpty(s)));detail.text=line;detail.Show(line.Length>0);return this;
  }
 }
 
 /// <summary>One shape for every confirmation: the question, its consequence, the destructive action and the way back.
 /// <see cref="Push"/> puts it on a modal layer (blurred page under it, focus returns on close); both actions close it first.</summary>
-public sealed class ConfirmDialogView:VisualElement {
+public sealed class ConfirmDialogView:OverlayView {
  public const string ClassName="vb-confirm";
  public VbButton Confirm {get;}
  public VbButton Cancel {get;}
@@ -50,7 +49,7 @@ public sealed class ConfirmDialogView:VisualElement {
 }
 
 /// <summary>The first-run guide: numbered steps (move, aim, cancel, autoplay, speed) and READY.</summary>
-public sealed class GuideDialogView:VisualElement {
+public sealed class GuideDialogView:OverlayView {
  public const string ClassName="vb-guide";
  public GuideDialogView(string title,string[] steps,Action ready){
   AddToClassList(ClassName);pickingMode=PickingMode.Ignore;var sheet=Dialog.Sheet(this,title,null);var list=Ui.Stack(sheet,8,ClassName+"__steps");

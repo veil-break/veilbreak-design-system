@@ -1,0 +1,7 @@
+{
+  "name": "veilbreak-gui-browser-checks",
+  "private": true,
+  "version": "0.5.0",
+  "engines": { "node": ">=22" },
+  "devDependencies": { "playwright": "1.62.1", "axe-core": "4.11.0" }
+}

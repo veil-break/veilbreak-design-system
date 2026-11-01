@@ -10,11 +10,11 @@ public enum DrawerSnap { Half, Full }
 /// screen, down snaps back to half or, from below a quarter, closes it; a tap on the handle toggles half and full. Tapping the
 /// backdrop or the close square dismisses it too (<see cref="Dismissed"/>); Back pops it when it was pushed. Children go to the body.
 /// Inline (<see cref="Backdrop"/> off) it docks inside a view without blocking what is above the sheet.</summary>
-[UxmlElement] public partial class DrawerOverlay:VisualElement {
+[UxmlElement] public partial class DrawerOverlay:OverlayView {
  public const string ClassName="vb-drawer",OpenClass=ClassName+"--open",DraggingClass=ClassName+"--dragging",FullClass=ClassName+"--full";
- const int SlideMs=240;
+
  readonly VisualElement backdrop,sheet,grip,head,foot;readonly ScrollView body;readonly Label title,meta;readonly IconButtonComposite close;
- bool open,dismissible=true,hasBackdrop=true,closeButton=true,moved;float dragFrom,dragStart,dragH;DrawerSnap snap;IVisualElementScheduledItem pending;
+ bool open,dismissible=true,hasBackdrop=true,closeButton=true,moved;float dragFrom,dragStart,dragH;DrawerSnap snap;
  /// <summary>Raised when the player dismisses the drawer (backdrop, close square, drag down). Not raised by <see cref="Close"/>.</summary>
  public event Action Dismissed;
  public override VisualElement contentContainer=>body.contentContainer;
@@ -49,16 +49,16 @@ public enum DrawerSnap { Half, Full }
  void Refresh(){meta.Show(meta.text.Length>0);close.Show(closeButton&&dismissible);head.Show(title.text.Length>0||meta.text.Length>0||(closeButton&&dismissible));foot.Show(foot.childCount>0);}
  /// <summary>Adds actions to the foot and returns the drawer.</summary>
  public DrawerOverlay Actions(params VisualElement[] actions){foreach(var a in actions)foot.Add(a);Refresh();return this;}
- bool Calm=>Ui.Under(this,SafeAreaRoot.ReducedMotion);
- /// <summary>Shows the drawer and slides the sheet up to <paramref name="at"/> (half the screen by default; at once under reduced motion).</summary>
- public DrawerOverlay Open(DrawerSnap at=DrawerSnap.Half){pending?.Pause();open=true;Snap=at;this.Show(true);sheet.style.translate=StyleKeyword.Null;if(Calm||panel==null){pending=null;AddToClassList(OpenClass);}else pending=schedule.Execute(()=>{if(open)AddToClassList(OpenClass);}).StartingIn(16);return this;}
- /// <summary>Slides the sheet down, hides the drawer, then runs <paramref name="done"/>. Raises nothing.</summary>
- public void Close(Action done=null){pending?.Pause();open=false;RemoveFromClassList(OpenClass);RemoveFromClassList(DraggingClass);sheet.style.translate=StyleKeyword.Null;
-  // The sheet slides away at the height it was let go at; it resets once hidden.
-  if(Calm||panel==null){pending=null;Hidden();done?.Invoke();return;}pending=schedule.Execute(()=>{if(!open)Hidden();done?.Invoke();}).StartingIn(SlideMs);}
- void Hidden(){this.Show(false);sheet.style.height=StyleKeyword.Null;}
- /// <summary>What the backdrop, the close square and a drag below a quarter of the screen do: close, then raise <see cref="Dismissed"/>.</summary>
- public bool Dismiss(){if(!open||!dismissible)return false;Close();Dismissed?.Invoke();return true;}
+ public override MotionRecipe Entrance=>MotionRecipes.DrawerIn;
+ public override MotionRecipe Exit=>MotionRecipes.DrawerOut;
+ public override void Present(){Open();}
+ public override void Dismiss(Action done=null){Close(done);}
+ /// <summary>Reversible recipe-driven sheet entrance; inline drawers leave surrounding input available.</summary>
+ public DrawerOverlay Open(DrawerSnap at=DrawerSnap.Half){open=true;Snap=at;this.Show(true);AddToClassList(OpenClass);Phase=OverlayPhase.Opening;
+  VbMotion.In(sheet,Entrance,0,()=>Phase=OverlayPhase.Open);VbMotion.In(backdrop,new MotionRecipe(Entrance.milliseconds));return this;}
+ public void Close(Action done=null){open=false;RemoveFromClassList(DraggingClass);Phase=OverlayPhase.Closing;
+  VbMotion.Out(backdrop,new MotionRecipe(Exit.milliseconds));VbMotion.Out(sheet,Exit,()=>{if(open)return;RemoveFromClassList(OpenClass);this.Show(false);sheet.style.height=StyleKeyword.Null;Phase=OverlayPhase.Closed;done?.Invoke();});}
+ public bool Dismiss(){if(!open||!dismissible)return false;Dismissed?.Invoke();if(Owner==null)Close();return true;}
  /// <summary>The snap a released sheet of height <paramref name="h"/> settles on, in a drawer <paramref name="full"/> tall: below a quarter
  /// closes (null), up to three quarters is half, above is full.</summary>
  public static DrawerSnap? SnapFor(float h,float full)=>h<full*.25f?(DrawerSnap?)null:h<full*.75f?DrawerSnap.Half:DrawerSnap.Full;
@@ -76,7 +76,7 @@ public enum DrawerSnap { Half, Full }
  /// <paramref name="closed"/> runs once whichever way it closes.</summary>
  public static DrawerOverlay Push(Navigator nav,string title=null,Action closed=null){
   var layer=nav.Push(closed);layer.AddToClassList("vb-modal--drawer");var d=new DrawerOverlay{Title=title}.Into(layer);
-  d.Dismissed+=()=>d.schedule.Execute(()=>{if(layer.parent!=null&&nav.Modals.Count>0)nav.Modals.Pop();}).StartingIn(d.Calm?0:SlideMs);
+  d.Owner=nav.Modals;d.Dismissed+=()=>nav.Modals.Pop();
   return d.Open();
  }
 }
