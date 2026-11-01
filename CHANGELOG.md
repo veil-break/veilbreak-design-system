@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.5.1 — 2026-11-01
+
+- `MerchantScreen` names each row's action again (`buy-{index}`, `sell-perk-{id}`, `sell-hp-{actor}`); the 0.5.0 keyed rows
+  had dropped the names, so hosts and the merchant tests could not find the buttons.
+
 ## 0.5.0 — 2026-11-01
 
 - Shared view/surface/card/detail foundations and OverlayView/OverlayHost lifecycle; closing overlays retain coverage and focus ownership.
