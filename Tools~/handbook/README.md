@@ -9,8 +9,25 @@ python3 Tools~/handbook/build_handbook.py . docs
 ```
 
 `docs/` is the GitHub Pages site: `index.html`, `kit/` (the page's bundle, styles, tokens and fonts), `web/` (the web
-kit's `dist/` and the `demo/` app, from `Web~`) and `.nojekyll`. Pages serves it from the branch with no workflow
-(Settings → Pages → Deploy from a branch → `/docs`). It can also be published with the Artifact tool (`root` = docs).
+kit's `dist/` and the `demo/` app, from `Web~`) and `.nojekyll`. It can also be published with the Artifact tool
+(`root` = docs).
+
+## GitHub Pages deployment
+
+In the repository's **Settings → Pages → Build and deployment**, select **GitHub Actions** as the source.
+The [Deploy GitHub Pages workflow](../../.github/workflows/deploy-pages.yml) rebuilds the handbook and demo from
+source on every push to `main`, then publishes the generated site with the official Pages actions. No npm install,
+Unity editor or custom deployment secret is needed. Pull requests targeting `main` build and upload an artifact
+for validation; deployment runs only from `main`. To redeploy manually, open **Actions → Deploy GitHub Pages →
+Run workflow** and select `main`.
+
+The handbook is served at <https://veil-break.github.io/veilbreak-design-system/> and the demo app at
+<https://veil-break.github.io/veilbreak-design-system/web/demo/>. Relative asset paths support the repository subpath.
+The workflow builds into the runner's temporary directory, so committed `docs/` outputs do not need to be refreshed
+for deployment.
+
+## Build sources
+
 The build runs `Tools~/web/build.sh` and `Tools~/web/package.py`, so the previews always match the package. Run
 `python3 Tools~/metas.py` afterwards so Unity has `.meta` files for the site.
 
