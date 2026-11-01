@@ -10,7 +10,7 @@
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function store(k, v) { try { if (v === undefined) return localStorage.getItem('hb.' + k); localStorage.setItem('hb.' + k, v); } catch (e) { return null; } }
-  function toast(t) { var el = document.getElementById('toast'); el.textContent = t; el.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(function () { el.hidden = true; }, 1600); }
+  function toast(t) { var el = document.getElementById('toast'); el.textContent = t;  clearTimeout(toast.t); toast.t = setTimeout(function () { el.textContent = ''; }, 1600); }
   function copy(text, label) {
     function done() { toast('Copied · ' + (label || text.split('\n')[0].slice(0, 60))); }
     try { navigator.clipboard.writeText(text).then(done, function () { toast('Select the text to copy'); }); } catch (e) { toast('Select the text to copy'); }
@@ -19,21 +19,21 @@
   /* ── C#, UXML and USS highlighting (small, safe: escape first) ── */
   function hl(code, lang) {
     var re, kinds;
-    if (lang === 'uss') { re = /(\/\*[\s\S]*?\*\/)|(--vb-[a-z0-9-]+)|(\.[a-z][a-z0-9_-]*)/g; kinds = ['c', 's', 'k']; }
-    else if (lang === 'uxml') { re = /(<\/?[\w:.]+)|([\w-]+)(?==")|("[^"]*")/g; kinds = ['k', 't', 's']; }
-    else { re = /(\/\/[^\n]*|#[^\n]*)|("[^"\n]*")|\b(new|var|void|public|class|static|return|null|true|false|foreach|in|if|float|int|string|bool|readonly|const|event)\b|\b(Vb[A-Z]\w*|Ui|Popover|Dialog|Navigator|SafeAreaRoot|ButtonVariant|StatusKind|RarityTier|WorldTeam|PlatformState|[A-Z]\w*(?:Component|Composite|Layout|View|ViewModel))\b/g; kinds = ['c', 's', 'k', 't']; }
+    if (lang === 'uss') { re = /(\/\*[\s\S]*?\*\/)|(--vb-[a-z0-9-]+)|(\.[a-z][a-z0-9_-]*)/g; kinds = ['comment', 'string', 'keyword']; }
+    else if (lang === 'uxml') { re = /(<\/?[\w:.]+)|([\w-]+)(?==")|("[^"]*")/g; kinds = ['keyword', 'type', 'string']; }
+    else { re = /(\/\/[^\n]*|#[^\n]*)|("[^"\n]*")|\b(new|var|void|public|class|static|return|null|true|false|foreach|in|if|float|int|string|bool|readonly|const|event)\b|\b(Vb[A-Z]\w*|Ui|Popover|Dialog|Navigator|SafeAreaRoot|ButtonVariant|StatusKind|RarityTier|WorldTeam|PlatformState|[A-Z]\w*(?:Component|Composite|Layout|View|ViewModel))\b/g; kinds = ['comment', 'string', 'keyword', 'type']; }
     var out = '', last = 0, m;
     while ((m = re.exec(code))) {
       out += esc(code.slice(last, m.index));
       var k = 0; for (var g = 1; g < m.length; g++) if (m[g] != null) { k = g; break; }
-      out += '<span class="' + kinds[k - 1] + '">' + esc(m[0]) + '</span>'; last = re.lastIndex;
+      out += '<span data-syntax="' + kinds[k - 1] + '">' + esc(m[0]) + '</span>'; last = re.lastIndex;
       if (m[0].length === 0) re.lastIndex++;
     }
     return out + esc(code.slice(last));
   }
   function codebox(label, code, lang) {
     if (!code) return '';
-    return '<div class="codebox slim"><div class="codebox__head"><span>' + esc(label) + '</span><button data-copy="' + esc(code) + '">Copy</button></div><pre>' + hl(code, lang) + '</pre></div>';
+    return '<figure data-content="code"><figcaption><span>' + esc(label) + '</span><button type="button" data-copy="' + esc(code) + '">Copy</button></figcaption><pre tabindex="0" role="region" aria-label="' + esc(label) + ' code"><code>' + hl(code, lang) + '</code></pre></figure>';
   }
 
   /* ── stage flags (global, remembered per viewer) ── */
@@ -60,13 +60,8 @@
     if (phone) {
       var hold = document.createElement('div'); hold.className = 'phone-hold';
       host.appendChild(hold); hold.appendChild(el);
-      var fit = function () {
-        var actual = host.getAttribute('data-actual') === '1';
-        var avail = Math.max(240, host.clientWidth - 24), s = actual ? 1 : Math.min(1, avail / 390, 640 / 844);
-        hold.style.width = (390 * s) + 'px'; hold.style.height = (844 * s) + 'px'; el.style.transform = 'scale(' + s + ')';
-      };
-      fit(); window.addEventListener('resize', fit); host.__fit = fit;
-    } else { host.appendChild(el); el.style.minHeight = Math.min(900, x.height || 200) + 'px'; }
+    } else { host.appendChild(el); }
+    host.setAttribute('data-entry', x.id);
     applyFlags();
     var root = ReactDOM.createRoot(el); roots.push(root);
     try {
@@ -78,217 +73,250 @@
     } catch (err) { el.textContent = 'Preview failed: ' + err.message; }
   }
 
-  /* ── nav ── */
-  function counts(list) { var c = { shipped: 0, partial: 0, proposed: 0 }; list.forEach(function (x) { c[x.status]++; }); return c; }
+  /* Navigation is one DOM tree, moved into a native modal on narrow screens. */
+  function navLink(route, title, count) {
+    return '<li><a href="#' + route + '" data-r="' + route + '">' + esc(title) + (count == null ? '' : '<small>' + count + '</small>') + '</a></li>';
+  }
+  function navSection(id, title, links) {
+    return '<section aria-labelledby="nav-' + id + '"><h2 id="nav-' + id + '">' + esc(title) + '</h2><ul>' + links + '</ul></section>';
+  }
+  function statusDot(status) { return '<span data-status="' + status + '" aria-hidden="true"></span>'; }
   function navHtml() {
-    var o = '<h3>Start</h3>' + link('overview', 'Overview') + link('setup', 'Unity setup') + link('web', 'Web kit') + '<a href="web/demo/">Web app demo<small>↗</small></a>' + link('name-map', 'Name map', D.entries.length) +
-      '<h3>Foundations</h3>' + link('tokens', 'Tokens', D.tokens.length) + link('type', 'Type') + link('e-frame', 'Frames: slim & chipped');
-    D.tiers.forEach(function (t) {
-      var list = D.entries.filter(function (x) { return x.tier === t.id; });
-      o += '<h3><span>' + esc(t.name) + '</span><span>' + list.length + '</span></h3>';
-      list.forEach(function (x) { o += '<a href="#e-' + x.id + '" data-r="e-' + x.id + '"><i class="dot dot--' + x.status + '" title="' + STATUS[x.status] + '"></i>' + esc(x.name) + '</a>'; });
+    var html = navSection('start', 'Start', navLink('overview', 'Overview') + navLink('setup', 'Unity setup') + navLink('web', 'Web kit') +
+      '<li><a href="web/demo/">Web app demo <small aria-hidden="true">↗</small></a></li>' + navLink('name-map', 'Name map', D.entries.length));
+    html += navSection('foundations', 'Foundations', navLink('tokens', 'Tokens', D.tokens.length) + navLink('type', 'Type') + navLink('e-frame', 'Frames: slim & chipped'));
+    D.tiers.forEach(function (tier) {
+      var entries = D.entries.filter(function (entry) { return entry.tier === tier.id; });
+      html += navSection(tier.id, tier.name + ' · ' + entries.length, entries.map(function (entry) {
+        return '<li><a href="#e-' + entry.id + '" data-r="e-' + entry.id + '">' + statusDot(entry.status) + esc(entry.name) + '</a></li>';
+      }).join(''));
     });
-    o += '<h3>Assets</h3>' + link('icons', 'Icon pack', D.icons.length) + link('fonts', 'Fonts & mark');
-    return o;
-    function link(r, t, n) { return '<a href="#' + r + '" data-r="' + r + '">' + esc(t) + (n != null ? '<small>' + n + '</small>' : '') + '</a>'; }
+    return html + navSection('assets', 'Assets', navLink('icons', 'Icon pack', D.icons.length) + navLink('fonts', 'Fonts & mark'));
   }
   side.innerHTML = navHtml();
-  document.getElementById('menu-btn').addEventListener('click', function () { var on = document.body.classList.toggle('nav-open'); this.setAttribute('aria-expanded', on); });
-
-  /* ── pages ── */
-  function pill(st) { return '<span class="pill pill--' + st + '"><i class="dot dot--' + st + '"></i>' + STATUS[st] + '</span>'; }
-  function entryChip(id) { var x = E[id]; return '<a class="chip" href="#e-' + id + '"><i class="dot dot--' + x.status + '"></i>' + esc(x.name) + '</a>'; }
-  function tokenVal(name) {
-    var t = D.tokens.filter(function (k) { return '--vb-color-' + k.name === name || '--vb-' + k.name === name; })[0];
-    return t ? (t.family === 'color' ? t.veil : t.veil) : '';
+  var drawer = document.getElementById('navigation-drawer');
+  var menuButton = document.getElementById('menu-btn');
+  var sidebar = document.getElementById('navigation-sidebar');
+  var mobile = window.matchMedia('(max-width: 860px)');
+  function closeMenu() { if (drawer.open) drawer.close(); }
+  function syncNavigation() {
+    closeMenu();
+    (mobile.matches ? drawer : sidebar).appendChild(side);
+    menuButton.setAttribute('aria-expanded', 'false');
   }
-  function swatch(v) { return /^(#|rgb|var\()/.test(v) ? v.replace(/var\(--([a-z0-9-]+)\)/, 'var(--$1)') : 'transparent'; }
+  menuButton.addEventListener('click', function () {
+    if (!mobile.matches) return;
+    drawer.showModal();
+    menuButton.setAttribute('aria-expanded', 'true');
+    var current = side.querySelector('[aria-current="page"]');
+    if (current) current.scrollIntoView({ block: 'nearest' });
+  });
+  drawer.addEventListener('close', function () { menuButton.setAttribute('aria-expanded', 'false'); });
+  drawer.addEventListener('keydown', function (event) {
+    if (event.key !== 'Tab') return;
+    var controls = drawer.querySelectorAll('button, a[href]');
+    var first = controls[0], last = controls[controls.length - 1];
+    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+  });
+  drawer.addEventListener('click', function (event) {
+    var rect = drawer.getBoundingClientRect();
+    if (event.target === drawer && (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) closeMenu();
+  });
+  side.addEventListener('click', function (event) { if (event.target.closest('a')) closeMenu(); });
+  mobile.addEventListener('change', syncNavigation);
+  syncNavigation();
+
+  /* Shared document primitives. The component mirrors keep their own kit styles. */
+  function lead(group, title, description) {
+    return '<header><p>' + esc(group) + '</p><h1 tabindex="-1">' + esc(title) + '</h1>' + (description ? '<p>' + description + '</p>' : '') + '</header>';
+  }
+  function pill(status) { return '<span data-status-label="' + status + '">' + statusDot(status) + STATUS[status] + '</span>'; }
+  function entryChip(id) { var entry = E[id]; return '<li><a href="#e-' + id + '">' + statusDot(entry.status) + esc(entry.name) + '</a></li>'; }
+  function table(content, caption) { return '<div data-content="table" tabindex="0" role="region" aria-label="' + esc(caption) + '"><table><caption>' + esc(caption) + '</caption>' + content + '</table></div>'; }
+  function heads(labels) { return '<thead><tr>' + labels.map(function (label) { return '<th scope="col">' + label + '</th>'; }).join('') + '</tr></thead>'; }
+  function render(html, page) { view.innerHTML = html; view.setAttribute('data-page', page); }
 
   function overview() {
-    var all = counts(D.entries);
-    var o = '<div class="eyebrow">' + esc(D.package.name) + ' · v' + esc(D.package.version) + ' · Unity ' + esc(D.package.unity) + '</div>' +
-      '<h1>Veilbreak GUI Handbook</h1><p class="lede">The Veil design system as you use it in Unity: every component sorted into atoms, composites, layouts and views, with the UI Toolkit type that implements it, the USS it is painted from, the tokens it reads and a live preview of its web mirror.</p>';
-    o += '<div class="tiers">';
-    D.tiers.forEach(function (t) {
-      var list = D.entries.filter(function (x) { return x.tier === t.id; }), c = counts(list), n = list.length;
-      o += '<section class="tier slim"><div class="tier__n">' + n + '</div><div class="tier__name">' + esc(t.name) + '</div><p>' + esc(t.blurb) + '</p><div class="tier__list">' +
-        list.map(function (x) { return '<a href="#e-' + x.id + '"><i class="dot dot--' + x.status + '"></i><span>' + esc(x.name) + '</span></a>'; }).join('') + '</div>' +
-        '<div class="statusbar" title="' + c.shipped + ' shipped · ' + c.partial + ' partial · ' + c.proposed + ' proposed"><i style="flex:' + c.shipped + ';background:var(--hb-teal)"></i><i style="flex:' + c.partial + ';background:var(--hb-amber)"></i><i style="flex:' + c.proposed + ';background:var(--hb-lav)"></i></div></section>';
+    var totals = { shipped: 0, partial: 0, proposed: 0 };
+    D.entries.forEach(function (entry) { totals[entry.status]++; });
+    var html = lead(D.package.name + ' · v' + D.package.version + ' · Unity ' + D.package.unity, 'Veilbreak GUI Handbook',
+      'The Veil design system as you use it in Unity: every component sorted into atoms, composites, layouts and views, with the UI Toolkit type that implements it, the USS it is painted from, the tokens it reads and a live preview of its web mirror.');
+    html += '<div id="overview-tiers">';
+    D.tiers.forEach(function (tier) {
+      var entries = D.entries.filter(function (entry) { return entry.tier === tier.id; });
+      html += '<section><p><data value="' + entries.length + '">' + entries.length + '</data> components</p><h2>' + esc(tier.name) + '</h2><p>' + esc(tier.blurb) + '</p><ul>' + entries.map(function (entry) { return entryChip(entry.id); }).join('') + '</ul></section>';
     });
-    o += '<section class="tier slim"><div class="tier__n">' + D.icons.length + '</div><div class="tier__name">Assets</div><p>Stroke icons, the mark and the fonts, with their USS classes and files.</p><div class="tier__list"><a href="#icons"><i class="dot dot--shipped"></i><span>Icon pack</span></a><a href="#fonts"><i class="dot dot--shipped"></i><span>Fonts &amp; mark</span></a><a href="#tokens"><i class="dot dot--shipped"></i><span>Tokens · ' + D.tokens.length + '</span></a></div></section></div>';
-    o += '<div class="legend"><span><i class="dot dot--shipped"></i>' + all.shipped + ' shipped · in the package as described</span><span><i class="dot dot--partial"></i>' + all.partial + ' partial · exists, contract incomplete</span><span><i class="dot dot--proposed"></i>' + all.proposed + ' proposed · spec only</span></div>';
-    o += '<div class="callout slim"><div><div class="eyebrow">New in 0.3.0 · everything shipped</div><h3>Two kinds of frame, one kit for Unity and the web</h3><p>Containers sit on the <strong>slim</strong> frame: a 4-unit chamfer and no border. The chipped frame stays for what you act on or what is selected. Text, labels, badges, tiles, cards, forms, stacks, lists, grids, the board and all thirteen screen views now ship in the package, each with a React twin in the <a class="ref" href="#web">web kit</a>.</p><p>Try them together in the <a class="ref" href="web/demo/">web app demo</a>: menu, squad, battle, pause, perks, results.</p><a class="go" href="#e-frame">FrameComponent →</a></div><div id="ov-preview"></div></div>';
-    o += '<h2>From an empty scene to a running board</h2><div class="steps">' +
+    html += '<section><p><data value="' + D.icons.length + '">' + D.icons.length + '</data> icons</p><h2>Assets</h2><p>Stroke icons, the mark and the fonts, with their USS classes and files.</p><ul><li><a href="#icons">Icon pack</a></li><li><a href="#fonts">Fonts &amp; mark</a></li><li><a href="#tokens">Tokens · ' + D.tokens.length + '</a></li></ul></section></div>';
+    html += '<ul id="status-legend">' + Object.keys(totals).map(function (status) { return '<li>' + pill(status) + '<span>' + totals[status] + ' · ' + esc(STATUS_NOTE[status]) + '</span></li>'; }).join('') + '</ul>';
+    html += '<section id="frame-introduction"><header><p>New in 0.3.0 · everything shipped</p><h2>Two kinds of frame, one kit for Unity and the web</h2><p>Containers sit on the <strong>slim</strong> frame: a 4-unit chamfer and no border. The chipped frame stays for what you act on or what is selected. Each component has a React twin in the <a href="#web">web kit</a>.</p><p>Try them together in the <a href="web/demo/">web app demo</a>: menu, squad, battle, pause, perks, results.</p><a href="#e-frame">FrameComponent →</a></header><div id="ov-preview" data-preview></div></section>';
+    html += '<section><h2>From an empty scene to a running board</h2><ol id="setup-steps">' +
       step('Reference the package', '<code>"com.veilbreak.gui": "https://github.com/veil-break/veilbreak-design-system.git"</code> in <code>Packages/manifest.json</code>') +
       step('Use the panel settings', '<code>Runtime/Settings/VeilbreakPortrait.asset</code> · 390 × 844, match width, theme <code>VeilbreakGui.tss</code>') +
       step('Root and safe area', 'Class <code>vb-root</code> on the root, then <code>new SafeAreaRoot(root, settings, screenLayer)</code>; call <code>Refresh()</code> each frame.') +
-      step('Bind, don\'t rebuild', 'Create components once and call <code>Bind(view)</code> every frame. They reuse their children.') + '</div>';
-    o += '<h2>How to read an entry</h2><div class="prose"><ul><li><strong>Unity today</strong> names the type or USS hook that implements it now. The design name (<code>ButtonComponent</code>) is the tier contract; the <a class="ref" href="#name-map">name map</a> lists both.</li><li><strong>Built from / used by</strong> show the composition: atoms build composites, composites build views.</li><li><strong>USS</strong> is extracted from <code>Gui.uss</code>, <code>Layout.uss</code>, <code>World.uss</code> and the arcade\'s <code>Arcade.uss</code>; <strong>Tokens read</strong> lists every <code>--vb-*</code> variable those rules use.</li><li>Previews are the web mirror (<code>Tools~/web/kit.js</code>), which builds the same element tree and classes as the C#.</li></ul></div>';
-    view.innerHTML = o;
-    var host = document.getElementById('ov-preview');
-    PREVIEWS.__ov = function (render) {
-      render(h('div', { style: { display: 'flex', flexDirection: 'row', gap: 10, flexWrap: 'wrap' } },
-        h(V.VbFrame, { kind: 'chipped', className: 'vb-panel', style: { width: 210, padding: '12px 14px' } }, h('div', { className: 'vb-l vb-t-label vb-section__title' }, 'CHIPPED · ACT ON IT'), h(V.VbSwitch, { text: 'HAPTICS', detail: 'Light pulse on accept', value: true })),
-        h(V.VbFrame, { kind: 'slim', className: 'vb-panel vb-section', style: { width: 210 } }, h('div', { className: 'vb-l vb-t-label vb-section__title' }, 'SLIM · CONTAINERS'), h(V.VbSwitch, { text: 'HAPTICS', detail: 'Light pulse on accept', value: true }))));
+      step('Bind, don\'t rebuild', 'Create components once and call <code>Bind(view)</code> every frame. They reuse their children.') + '</ol></section>';
+    html += '<section><h2>How to read an entry</h2><ul><li><strong>Unity today</strong> names the type or USS hook that implements it now. The <a href="#name-map">name map</a> lists both design names and Unity types.</li><li><strong>Built from / used by</strong> show the composition: atoms build composites, composites build views.</li><li><strong>USS</strong> is extracted from the package; <strong>Tokens read</strong> lists the variables those rules use.</li><li>Previews are the web mirror, which builds the same element tree and classes as the C#.</li></ul></section>';
+    render(html, 'overview');
+    PREVIEWS.__ov = function (draw) {
+      draw(h('div', { 'data-frame-comparison': '' },
+        h(V.VbFrame, { kind: 'chipped', className: 'vb-panel' }, h('p', null, 'CHIPPED · ACT ON IT'), h(V.VbSwitch, { text: 'HAPTICS', detail: 'Light pulse on accept', value: true })),
+        h(V.VbFrame, { kind: 'slim', className: 'vb-panel vb-section' }, h('p', null, 'SLIM · CONTAINERS'), h(V.VbSwitch, { text: 'HAPTICS', detail: 'Light pulse on accept', value: true }))));
     };
-    mountPreview(host, { id: '__ov', stage: 'free', height: 150 });
-    function step(t, d) { return '<div class="step slim"><b>' + t + '</b><p>' + d + '</p></div>'; }
+    mountPreview(document.getElementById('ov-preview'), { id: '__ov', stage: 'free' });
+    function step(title, description) { return '<li><h3>' + title + '</h3><p>' + description + '</p></li>'; }
   }
 
-  function entry(x) {
-    var t = TIER[x.tier];
-    var o = '<div class="entry-head"><div class="eyebrow"><a href="#overview" style="text-decoration:none">' + esc(t.name) + '</a> ' + pill(x.status) + '</div><h1>' + esc(x.name) + '</h1><p class="lede">' + esc(x.summary) + '</p>' +
-      '<div class="chips"><span class="chip" style="background:none;padding-left:0">Unity today</span>' + x.unity.map(function (u) { return '<span class="chip chip--code">' + esc(u) + '</span>'; }).join('') + '</div></div>';
-    o += '<div class="entry-grid"><section class="stage slim" aria-label="Preview">' +
-      '<div class="stage__bar"><span>' + (x.stage === 'board' ? 'Portrait board · 390 × 844' : 'Preview') + ' · web mirror</span>' + (x.stage === 'board' ? '<button id="actual">Actual size</button>' : '') + '</div>' +
-      '<div class="stage__body' + (x.stage === 'board' ? '' : ' stage__body--free') + '" id="stage-host">' + (x.hasPreview ? '' : '<p style="padding:16px;color:var(--hb-ink-3)">No preview.</p>') + '</div></section>';
-    o += '<aside class="facts">';
-    o += '<div class="fact slim"><h5>Status</h5><p>' + STATUS_NOTE[x.status] + '</p></div>';
-    if (x.uses.length) o += '<div class="fact slim"><h5>Built from</h5><div class="chips">' + x.uses.map(entryChip).join('') + '</div></div>';
-    if (x.usedBy.length) o += '<div class="fact slim"><h5>Used by</h5><div class="chips">' + x.usedBy.map(entryChip).join('') + '</div></div>';
-    if (x.blocks.length) o += '<div class="fact slim"><h5>USS blocks</h5><div class="chips">' + x.blocks.map(function (b) { return '<button class="chip chip--code" style="border:0;cursor:pointer" data-copy=".' + esc(b) + '">.' + esc(b) + '</button>'; }).join('') + '</div></div>';
-    if (x.tokens.length) o += '<div class="fact slim"><h5>Tokens read · ' + x.tokens.length + '</h5><div class="swatches">' + x.tokens.slice(0, 18).map(function (k) { var v = tokenVal(k); return '<button class="sw" style="background:none;border:0;padding:0;cursor:pointer;text-align:left" data-copy="var(' + k + ')"><i style="background:' + (k.indexOf('--vb-color-') === 0 ? 'var(--' + k.slice(11) + ')' : 'transparent') + '"></i><span>' + esc(k) + '</span></button>'; }).join('') + (x.tokens.length > 18 ? '<p>+' + (x.tokens.length - 18) + ' more in the USS tab</p>' : '') + '</div></div>';
-    o += '</aside></div>';
-    var tabs = [['unity', 'Unity', 1]];
-    if (x.spec) tabs.push(['spec', x.status === 'proposed' ? 'Proposal' : 'Spec', 1]);
-    if (x.rules || x.doc) tabs.push(['guide', 'Guidelines', 1]);
-    if (x.uss.length) tabs.push(['uss', 'USS', x.uss.length]);
-    if (x.api.length) tabs.push(['api', 'C# API', x.api.reduce(function (a, b) { return a + b.members.length; }, 0)]);
-    var cur = store('tab') || 'unity'; if (!tabs.some(function (t) { return t[0] === cur; })) cur = 'unity';
-    o += '<div class="tabs" role="tablist">' + tabs.map(function (t) { return '<button class="tab" role="tab" data-tab="' + t[0] + '" aria-selected="' + (t[0] === cur) + '">' + t[1] + (t[0] === 'uss' || t[0] === 'api' ? '<sup>' + t[2] + '</sup>' : '') + '</button>'; }).join('') + '</div>';
-    o += '<div class="panel" data-panel="unity"' + (cur === 'unity' ? '' : ' hidden') + '>' + codebox('C#', x.csharp, 'cs') + codebox('UXML · xmlns:vb="Veilbreak.Gui"', x.uxml, 'uxml') +
-      '' + '</div>';
-    if (x.spec) o += '<div class="panel prose" data-panel="spec"' + (cur === 'spec' ? '' : ' hidden') + '>' + x.spec + '</div>';
-    if (x.rules || x.doc) o += '<div class="panel prose" data-panel="guide"' + (cur === 'guide' ? '' : ' hidden') + '>' + (x.rules ? '<h4>Rules</h4>' + x.rules : '') + (x.doc ? '<h4>Reference · ' + esc(x.docTitle) + '</h4>' + x.doc : '') + '</div>';
-    if (x.uss.length) o += '<div class="panel" data-panel="uss"' + (cur === 'uss' ? '' : ' hidden') + '><div class="codebox slim"><div class="codebox__head"><span>' + x.uss.length + ' rules · from the package\'s USS</span><button data-copy="' + esc(x.uss.map(function (r) { return r.sel + ' { ' + r.body + ' }'; }).join('\n')) + '">Copy all</button></div><div style="padding:6px 14px">' +
-      x.uss.map(function (r) { return '<div class="rule"><em>' + esc(r.file) + '</em><b>' + esc(r.sel) + '</b><div>' + r.body.split(/;\s*/).filter(Boolean).map(function (d) { return esc(d) + ';'; }).join('<br>').replace(/(--vb-[a-z0-9-]+)/g, '<span class="s">$1</span>') + '</div></div>'; }).join('') + '</div></div></div>';
-    if (x.api.length) o += '<div class="panel" data-panel="api"' + (cur === 'api' ? '' : ' hidden') + '>' + x.api.map(function (a) {
-      return '<div class="codebox slim"><div class="codebox__head"><span>' + esc(a.kind) + ' ' + esc(a.type) + (a.base ? ' : ' + esc(a.base) : '') + '</span><span style="text-transform:none;letter-spacing:0;font-family:var(--hb-mono)">' + esc(a.file) + '</span></div>' +
-        (a.summary ? '<p style="margin:0;padding:10px 14px 0;color:var(--hb-ink-2);font-size:13px">' + esc(a.summary) + '</p>' : '') + '<pre>' + hl(a.members.join('\n'), 'cs') + '</pre></div>';
+  function entry(item) {
+    var html = lead(TIER[item.tier].name, item.name, esc(item.summary));
+    html += '<p>' + pill(item.status) + '</p><dl id="unity-types"><dt>Unity today</dt>' + item.unity.map(function (type) { return '<dd><code>' + esc(type) + '</code></dd>'; }).join('') + '</dl>';
+    html += '<div id="entry-layout"><figure id="entry-preview"><figcaption>' + (item.stage === 'board' ? 'Portrait board · 390 × 844' : 'Preview') + ' · web mirror' +
+      (item.stage === 'board' ? '<button type="button" id="actual" aria-pressed="false">Actual size</button>' : '') + '</figcaption><div id="stage-host" data-preview data-stage-kind="' + item.stage + '">' + (item.hasPreview ? '' : '<p>No preview.</p>') + '</div></figure>';
+    html += '<aside aria-label="Component facts"><dl><div><dt>Status</dt><dd>' + STATUS_NOTE[item.status] + '</dd></div>';
+    if (item.uses.length) html += '<div><dt>Built from</dt><dd><ul data-content="links">' + item.uses.map(entryChip).join('') + '</ul></dd></div>';
+    if (item.usedBy.length) html += '<div><dt>Used by</dt><dd><ul data-content="links">' + item.usedBy.map(entryChip).join('') + '</ul></dd></div>';
+    if (item.blocks.length) html += '<div><dt>USS blocks</dt><dd><ul data-content="links">' + item.blocks.map(function (block) { return '<li><button type="button" data-copy=".' + esc(block) + '"><code>.' + esc(block) + '</code></button></li>'; }).join('') + '</ul></dd></div>';
+    if (item.tokens.length) html += '<div><dt>Tokens read · ' + item.tokens.length + '</dt><dd><ul data-content="swatches">' + item.tokens.slice(0, 18).map(function (name) {
+      var color = name.indexOf('--vb-color-') === 0 ? name.slice(11) : '';
+      return '<li><button type="button" data-copy="var(' + name + ')"><span data-color="' + color + '" aria-hidden="true"></span><code>' + esc(name) + '</code></button></li>';
+    }).join('') + '</ul>' + (item.tokens.length > 18 ? '<p>+' + (item.tokens.length - 18) + ' more in the USS tab</p>' : '') + '</dd></div>';
+    html += '</dl></aside></div>';
+    var tabs = [['unity', 'Unity']];
+    if (item.spec) tabs.push(['spec', item.status === 'proposed' ? 'Proposal' : 'Spec']);
+    if (item.rules || item.doc) tabs.push(['guide', 'Guidelines']);
+    if (item.uss.length) tabs.push(['uss', 'USS · ' + item.uss.length]);
+    if (item.api.length) tabs.push(['api', 'C# API']);
+    var selected = store('tab') || 'unity';
+    if (!tabs.some(function (tab) { return tab[0] === selected; })) selected = 'unity';
+    html += '<div role="tablist" aria-label="Component documentation">' + tabs.map(function (tab) {
+      return '<button type="button" role="tab" id="tab-' + tab[0] + '" aria-controls="panel-' + tab[0] + '" data-tab="' + tab[0] + '" aria-selected="' + (tab[0] === selected) + '" tabindex="' + (tab[0] === selected ? '0' : '-1') + '">' + tab[1] + '</button>';
     }).join('') + '</div>';
-    view.innerHTML = o;
-    view.querySelectorAll('.tab').forEach(function (b) {
-      b.addEventListener('click', function () {
-        var k = b.getAttribute('data-tab'); store('tab', k);
-        view.querySelectorAll('.tab').forEach(function (t) { t.setAttribute('aria-selected', t === b); });
-        view.querySelectorAll('[data-panel]').forEach(function (p) { p.hidden = p.getAttribute('data-panel') !== k; });
+    function panel(id, content) { return '<section role="tabpanel" id="panel-' + id + '" aria-labelledby="tab-' + id + '" tabindex="0"' + (selected === id ? '' : ' hidden') + '>' + content + '</section>'; }
+    html += panel('unity', codebox('C#', item.csharp, 'cs') + codebox('UXML · xmlns:vb="Veilbreak.Gui"', item.uxml, 'uxml'));
+    if (item.spec) html += panel('spec', item.spec);
+    if (item.rules || item.doc) html += panel('guide', (item.rules ? '<h2>Rules</h2>' + item.rules : '') + (item.doc ? '<h2>Reference · ' + esc(item.docTitle) + '</h2>' + item.doc : ''));
+    if (item.uss.length) html += panel('uss', codebox(item.uss.length + ' rules · from the package\'s USS', item.uss.map(function (rule) { return '/* ' + rule.file + ' */\n' + rule.sel + ' {\n  ' + rule.body.split(/;\s*/).filter(Boolean).join(';\n  ') + ';\n}'; }).join('\n\n'), 'uss'));
+    if (item.api.length) html += panel('api', item.api.map(function (api) { return '<section><h2>' + esc(api.kind + ' ' + api.type) + '</h2><p><code>' + esc(api.file) + '</code></p>' + (api.summary ? '<p>' + esc(api.summary) + '</p>' : '') + codebox('C# API' + (api.base ? ' : ' + api.base : ''), api.members.join('\n'), 'cs') + '</section>'; }).join(''));
+    render(html, 'entry');
+    var buttons = Array.from(view.querySelectorAll('[role="tab"]'));
+    function selectTab(button) {
+      var id = button.getAttribute('data-tab'); store('tab', id);
+      buttons.forEach(function (tab) { tab.setAttribute('aria-selected', String(tab === button)); tab.tabIndex = tab === button ? 0 : -1; });
+      view.querySelectorAll('[role="tabpanel"]').forEach(function (panel) { panel.hidden = panel.id !== 'panel-' + id; });
+    }
+    buttons.forEach(function (button, index) {
+      button.addEventListener('click', function () { selectTab(button); });
+      button.addEventListener('keydown', function (event) {
+        var next = event.key === 'ArrowRight' ? (index + 1) % buttons.length : event.key === 'ArrowLeft' ? (index + buttons.length - 1) % buttons.length : event.key === 'Home' ? 0 : event.key === 'End' ? buttons.length - 1 : -1;
+        if (next < 0) return;
+        event.preventDefault(); selectTab(buttons[next]); buttons[next].focus();
       });
     });
     var host = document.getElementById('stage-host');
-    if (x.hasPreview) mountPreview(host, x);
-    var act = document.getElementById('actual');
-    if (act) act.addEventListener('click', function () { var on = host.getAttribute('data-actual') !== '1'; host.setAttribute('data-actual', on ? '1' : '0'); act.textContent = on ? 'Fit' : 'Actual size'; if (host.__fit) host.__fit(); });
+    if (item.hasPreview) mountPreview(host, item);
+    var actual = document.getElementById('actual');
+    if (actual) actual.addEventListener('click', function () { var on = actual.getAttribute('aria-pressed') !== 'true'; actual.setAttribute('aria-pressed', String(on)); host.setAttribute('data-actual', String(on)); actual.textContent = on ? 'Fit to width' : 'Actual size'; });
   }
 
   function nameMap() {
-    var o = '<div class="eyebrow">Start</div><h1>Name map</h1><p class="lede">Every design-system name beside what implements it in Unity today. Use it to find the type you need now, and as the checklist for moving the package onto the four tiers.</p>';
-    D.tiers.forEach(function (t) {
-      var list = D.entries.filter(function (x) { return x.tier === t.id; });
-      o += '<h2>' + esc(t.name) + '</h2><div class="tablewrap"><table><thead><tr><th>Design name</th><th>Unity today</th><th>Status</th><th>Built from</th></tr></thead><tbody>' +
-        list.map(function (x) { return '<tr class="click" data-go="e-' + x.id + '"><td class="mono">' + esc(x.name) + '</td><td>' + x.unity.map(function (u) { return '<code>' + esc(u) + '</code>'; }).join(' ') + '</td><td>' + pill(x.status) + '</td><td>' + x.uses.map(function (u) { return esc(E[u].name.replace(/(Component|Composite|Layout|View)$/, '')); }).join(', ') + '</td></tr>'; }).join('') + '</tbody></table></div>';
+    var html = lead('Start', 'Name map', 'Every design-system name beside what implements it in Unity today. Follow a component link to open its reference.');
+    D.tiers.forEach(function (tier) {
+      html += '<section><h2>' + esc(tier.name) + '</h2>' + table(heads(['Design name', 'Unity today', 'Status', 'Built from']) + '<tbody>' + D.entries.filter(function (entry) { return entry.tier === tier.id; }).map(function (entry) {
+        return '<tr><th scope="row"><a href="#e-' + entry.id + '">' + esc(entry.name) + '</a></th><td>' + entry.unity.map(function (type) { return '<code>' + esc(type) + '</code>'; }).join(' ') + '</td><td>' + pill(entry.status) + '</td><td>' + entry.uses.map(function (id) { return esc(E[id].name.replace(/(Component|Composite|Layout|View)$/, '')); }).join(', ') + '</td></tr>';
+      }).join('') + '</tbody>', tier.name + ' name map') + '</section>';
     });
-    view.innerHTML = o;
+    render(html, 'name-map');
   }
 
   function tokensPage() {
-    var fams = []; D.tokens.forEach(function (t) { if (fams.indexOf(t.family) < 0) fams.push(t.family); });
-    var cur = store('fam') || 'color';
-    var o = '<div class="eyebrow">Foundations</div><h1>Tokens</h1><p class="lede">One source, <code>Tokens~/tokens.json</code>, generated by <code>Tools~/tokens.py</code> into <code>Tokens.uss</code> (variables), <code>TokensContrast.uss</code> and <code>VbTokens.cs</code> (colours for code). Click a row to copy its USS variable.</p>' +
-      '<div class="fams" role="group" aria-label="Family">' + fams.map(function (f) { return '<button class="fam" data-fam="' + f + '" aria-pressed="' + (f === cur) + '">' + f + '</button>'; }).join('') + '</div><div id="tok"></div>';
-    view.innerHTML = o;
+    var families = Array.from(new Set(D.tokens.map(function (token) { return token.family; })));
+    var current = store('fam') || 'color';
+    if (families.indexOf(current) < 0) current = families[0];
+    render(lead('Foundations', 'Tokens', 'One source, <code>Tokens~/tokens.json</code>, generated into USS variables and C# colours. Use each token\'s copy button to copy its USS variable.') +
+      '<fieldset id="token-families"><legend>Token family</legend>' + families.map(function (family) { return '<button type="button" data-family="' + family + '" aria-pressed="' + (family === current) + '">' + family + '</button>'; }).join('') + '</fieldset><div id="token-table"></div>', 'tokens');
     function draw() {
-      var rows = D.tokens.filter(function (t) { return t.family === cur; });
-      var c = cur === 'color';
-      document.getElementById('tok').innerHTML = '<div class="tablewrap"><table><thead><tr>' + (c ? '<th></th>' : '') + '<th>Token</th><th>Veil</th>' + (c ? '<th>Contrast</th>' : '') + '<th>USS</th>' + (c ? '<th>C#</th>' : '') + '<th>Usage</th></tr></thead><tbody>' +
-        rows.map(function (t) {
-          return '<tr class="click" data-copy="' + esc(t.uss ? 'var(' + t.uss + ')' : t.name) + '">' + (c ? '<td><span class="sw"><i style="background:var(--' + esc(t.name) + ')"></i></span></td>' : '') +
-            '<td class="mono">' + esc(t.name) + (t.proposed ? ' <span class="pill pill--proposed" style="padding:3px 6px">proposed</span>' : '') + '</td><td class="mono">' + esc(t.veil) + '</td>' + (c ? '<td class="mono">' + esc(t.contrast || '—') + '</td>' : '') +
-            '<td class="mono">' + esc(t.uss || '—') + '</td>' + (c ? '<td class="mono">' + esc(t.cs || '—') + '</td>' : '') + '<td style="min-width:240px">' + esc(t.usage) + '</td></tr>';
-        }).join('') + '</tbody></table></div>';
+      var color = current === 'color';
+      document.getElementById('token-table').innerHTML = table(heads(['Token', 'Veil'].concat(color ? ['Contrast'] : []).concat(['USS']).concat(color ? ['C#'] : []).concat(['Usage'])) + '<tbody>' + D.tokens.filter(function (token) { return token.family === current; }).map(function (token) {
+        return '<tr><th scope="row"><button type="button" data-copy="' + esc(token.uss ? 'var(' + token.uss + ')' : token.name) + '" aria-label="Copy ' + esc(token.name) + '">' + (color ? '<span data-color="' + esc(token.name) + '" aria-hidden="true"></span>' : '') + '<code>' + esc(token.name) + '</code></button>' + (token.proposed ? pill('proposed') : '') + '</th><td><code>' + esc(token.veil) + '</code></td>' + (color ? '<td><code>' + esc(token.contrast || '—') + '</code></td>' : '') + '<td><code>' + esc(token.uss || '—') + '</code></td>' + (color ? '<td><code>' + esc(token.cs || '—') + '</code></td>' : '') + '<td>' + esc(token.usage) + '</td></tr>';
+      }).join('') + '</tbody>', current + ' tokens');
     }
-    view.querySelectorAll('.fam').forEach(function (b) { b.addEventListener('click', function () { cur = b.getAttribute('data-fam'); store('fam', cur); view.querySelectorAll('.fam').forEach(function (x) { x.setAttribute('aria-pressed', x === b); }); draw(); }); });
+    view.querySelectorAll('[data-family]').forEach(function (button) { button.addEventListener('click', function () { current = button.getAttribute('data-family'); store('fam', current); view.querySelectorAll('[data-family]').forEach(function (item) { item.setAttribute('aria-pressed', String(item === button)); }); draw(); }); });
     draw();
   }
 
   function typePage() {
-    var fam = { display: 'var(--font-display)', body: 'var(--font-body)', hud: 'var(--font-hud)' };
-    var o = '<div class="eyebrow">Foundations</div><h1>Type</h1><p class="lede">TeX Gyre Adventor for titles, names and CTAs; Poppins for everything else; Share Tech Mono for HUD numerals. UI Toolkit has no <code>text-transform</code>: caps are passed in code. Font files are referenced as <code>-unity-font-definition: var(--vb-font-&lt;family&gt;-&lt;weight&gt;)</code>.</p>';
-    o += D.type.map(function (s) {
-      return '<div class="spec-row"><div class="meta"><b>' + esc(s.name) + '</b>' + esc(s.group) + ' · ' + esc(s.fontSize) + ' / ' + esc(s.lineHeight) + ' · ' + esc(s.fontWeight) + (s.letterSpacing ? ' · ' + esc(s.letterSpacing) : '') + (s.uss ? '<br>' + esc(s.uss) : '') + '</div>' +
-        '<div><div class="sample" style="font-family:' + fam[s.family] + ';font-size:' + s.fontSize + ';line-height:' + s.lineHeight + ';font-weight:' + s.fontWeight + ';letter-spacing:' + (s.letterSpacing || 'normal') + '">' + esc(s.sample || s.name) + '</div><div style="font-size:12.5px;color:var(--hb-ink-3);margin-top:4px">' + esc(s.usage || '') + '</div></div></div>';
-    }).join('');
-    view.innerHTML = o;
+    render(lead('Foundations', 'Type', 'TeX Gyre Adventor for titles, names and CTAs; Poppins for everything else; Share Tech Mono for HUD numerals. UI Toolkit has no <code>text-transform</code>: caps are passed in code.') +
+      '<dl id="type-specimens">' + D.type.map(function (style, index) { return '<div><dt><code>' + esc(style.name) + '</code></dt><dd><p>' + esc(style.group + ' · ' + style.fontSize + ' / ' + style.lineHeight + ' · ' + style.fontWeight) + '</p>' + (style.uss ? '<code>' + esc(style.uss) + '</code>' : '') + '</dd><dd><p data-specimen="' + index + '">' + esc(style.sample || style.name) + '</p><p>' + esc(style.usage || '') + '</p></dd></div>'; }).join('') + '</dl>', 'type');
   }
 
   function iconsPage() {
-    var fams = ['All']; D.icons.forEach(function (i) { if (fams.indexOf(i.family) < 0) fams.push(i.family); });
-    var cur = 'All', q = '';
-    var o = '<div class="eyebrow">Assets</div><h1>Icon pack</h1><p class="lede">' + D.icons.length + ' stroke glyphs on a 24 grid (<code>Runtime/Icons/*.svg</code>, imported as vector images) plus ' + Object.keys(D.aliases).length + ' design-system aliases. <code>Icons.uss</code> maps <code>vb-icon--{name}</code> to each file. Click a glyph to copy <code>new VbIcon("name", 16)</code>.</p>' +
-      '<div class="fams">' + fams.map(function (f) { return '<button class="fam" data-f="' + esc(f) + '" aria-pressed="' + (f === cur) + '">' + esc(f) + '</button>'; }).join('') + '</div>' +
-      '<label class="search" style="display:block;max-width:360px;margin-bottom:12px"><input id="iq" type="search" placeholder="Filter icons" aria-label="Filter icons"></label><div class="icons" id="ig"></div>';
-    view.innerHTML = o;
-    var grid = document.getElementById('ig'), root = ReactDOM.createRoot(grid); roots.push(root);
+    var families = ['All'].concat(Array.from(new Set(D.icons.map(function (icon) { return icon.family; }))));
+    var current = 'All', term = '';
+    render(lead('Assets', 'Icon pack', D.icons.length + ' stroke glyphs on a 24 grid, plus ' + Object.keys(D.aliases).length + ' design-system aliases. Activate a glyph to copy its C# usage.') +
+      '<fieldset id="icon-families"><legend>Icon family</legend>' + families.map(function (family) { return '<button type="button" data-family="' + esc(family) + '" aria-pressed="' + (family === current) + '">' + esc(family) + '</button>'; }).join('') + '</fieldset>' +
+      '<search aria-label="Icons"><label for="iq">Filter icons</label><input id="iq" type="search" placeholder="Filter icons"></search><p id="icon-count" role="status"></p><ul id="icon-grid" aria-label="Icons"></ul>', 'icons');
+    var grid = document.getElementById('icon-grid');
     function draw() {
-      var list = D.icons.filter(function (i) { return (cur === 'All' || i.family === cur) && (!q || i.name.indexOf(q) >= 0 || i.aliases.join(' ').indexOf(q) >= 0); });
-      root.render(list.map(function (i) {
-        return h('button', { key: i.name, className: 'ic slim', title: '.vb-icon--' + i.name + ' · ' + i.file, onClick: function () { copy('new VbIcon("' + i.name + '", 16)'); } },
-          h(V.VbIcon, { icon: i.name, size: 28 }), h('span', null, i.name), i.aliases.length ? h('small', null, '= ' + i.aliases.join(', ')) : null);
-      }));
+      var icons = D.icons.filter(function (icon) { return (current === 'All' || icon.family === current) && (!term || (icon.name + ' ' + icon.aliases.join(' ')).indexOf(term) >= 0); });
+      document.getElementById('icon-count').textContent = icons.length + ' icons';
+      grid.innerHTML = icons.map(function (icon) {
+        return '<li><button type="button" title=".vb-icon--' + esc(icon.name) + ' · ' + esc(icon.file) + '" aria-label="Copy ' + esc(icon.name) + ' icon" data-copy="new VbIcon(&quot;' + esc(icon.name) + '&quot;, 16)">' + icon.svg + '<code>' + esc(icon.name) + '</code>' + (icon.aliases.length ? '<small>= ' + esc(icon.aliases.join(', ')) + '</small>' : '') + '</button></li>';
+      }).join('');
     }
-    view.querySelectorAll('.fam').forEach(function (b) { b.addEventListener('click', function () { cur = b.getAttribute('data-f'); view.querySelectorAll('.fam').forEach(function (x) { x.setAttribute('aria-pressed', x === b); }); draw(); }); });
-    document.getElementById('iq').addEventListener('input', function (e) { q = e.target.value.trim().toLowerCase(); draw(); });
+    view.querySelectorAll('[data-family]').forEach(function (button) { button.addEventListener('click', function () { current = button.getAttribute('data-family'); view.querySelectorAll('[data-family]').forEach(function (item) { item.setAttribute('aria-pressed', String(item === button)); }); draw(); }); });
+    document.getElementById('iq').addEventListener('input', function (event) { term = event.target.value.trim().toLowerCase(); draw(); });
     draw();
   }
 
   function fontsPage() {
-    var o = '<div class="eyebrow">Assets</div><h1>Fonts &amp; mark</h1><p class="lede">Font files live in <code>Runtime/Fonts/</code>; <code>FontPrimer</code> fills every face\'s dynamic atlas with the kit\'s glyphs on the first layout pass, so tracking never depends on which characters a session showed first.</p>';
-    o += '<div class="tablewrap"><table><thead><tr><th>Family</th><th>Weight</th><th>File</th><th>USS variable</th></tr></thead><tbody>' + D.fonts.map(function (f) { return '<tr><td style="font-family:\'' + esc(f.family) + '\';font-weight:' + f.weight + ';font-size:16px;color:var(--hb-ink)">' + esc(f.family) + '</td><td class="mono">' + esc(f.weight) + '</td><td class="mono">Runtime/' + esc(f.file.replace(/^fonts\//, 'Fonts/')) + '</td><td class="mono">' + esc(f.uss || '—') + '</td></tr>'; }).join('') + '</tbody></table></div>';
-    o += '<h2>The mark</h2><p class="prose"><code>VbMark</code> draws the VEIL/BREAK mark from <code>MarkGeometry</code> (15 parts) at a width; the splash uses the same data. Open <a class="ref" href="#e-mark">MarkComponent</a> for usage.</p><div class="stage slim" style="max-width:520px"><div class="stage__body stage__body--free" id="mark-host"></div></div>';
-    view.innerHTML = o;
+    render(lead('Assets', 'Fonts & mark', 'Font files live in <code>Runtime/Fonts/</code>. The kit\'s font primer fills every face\'s dynamic atlas on the first layout pass.') +
+      table(heads(['Family', 'Weight', 'File', 'USS variable']) + '<tbody>' + D.fonts.map(function (font, index) { return '<tr><th scope="row" data-font="' + index + '">' + esc(font.family) + '</th><td>' + esc(font.weight) + '</td><td><code>Runtime/' + esc(font.file.replace(/^fonts\//, 'Fonts/')) + '</code></td><td><code>' + esc(font.uss || '—') + '</code></td></tr>'; }).join('') + '</tbody>', 'Bundled fonts') +
+      '<section><h2>The mark</h2><p><code>VbMark</code> draws the VEIL/BREAK mark from <code>MarkGeometry</code>. Open <a href="#e-mark">MarkComponent</a> for usage.</p><div id="mark-host" data-preview></div></section>', 'fonts');
     mountPreview(document.getElementById('mark-host'), E.mark);
   }
-
   function setupPage() {
-    view.innerHTML = '<div class="eyebrow">Start</div><h1>Unity setup</h1><p class="lede">From <code>Documentation~/integration.md</code> in the package.</p><div class="prose">' + D.integration + '</div>' +
-      '<h2>Regenerate</h2>' + codebox('Shell', 'python3 Tools~/tokens.py          # Tokens.uss, TokensContrast.uss, VbTokens.cs, tokens.md\npython3 Tools~/icons.py           # Icons.uss from Runtime/Icons/*.svg\npython3 Tools~/metas.py            # .meta files for new package files\nTools~/web/build.sh OUT           # the design-system artifact\npython3 Tools~/web/package.py     # the web kit (Web~/dist)\npython3 Tools~/handbook/build_handbook.py . docs   # this handbook, the web kit and the demo (GitHub Pages)', 'sh') +
-      '<h2>Slim frame · USS</h2>' + codebox('Gui.uss', D.slimUss, 'uss') + codebox('Layout.uss · the package\'s containers', D.slimMigration, 'uss');
+    render(lead('Start', 'Unity setup', 'From <code>Documentation~/integration.md</code> in the package.') + '<section aria-label="Integration guide">' + D.integration + '</section>' +
+      '<section><h2>Regenerate</h2>' + codebox('Shell', 'python3 Tools~/tokens.py\npython3 Tools~/icons.py\npython3 Tools~/metas.py\nTools~/web/build.sh OUT\npython3 Tools~/web/package.py\npython3 Tools~/handbook/build_handbook.py . docs', 'sh') + '</section><section><h2>Slim frame · USS</h2>' + codebox('Gui.uss', D.slimUss, 'uss') + codebox('Layout.uss · containers', D.slimMigration, 'uss') + '</section>', 'setup');
   }
+  function webPage() { render(lead('Start', 'Web kit', 'React 18 ports with the same names, element trees, classes and view models, generated from the Unity package. Try the <a href="web/demo/">web app demo</a>.') + '<section aria-label="Web kit guide">' + D.web + '</section>', 'web'); }
 
-  function webPage() {
-    view.innerHTML = '<div class="eyebrow">Start</div><h1>Web kit</h1><p class="lede">The same components for web apps: React 18 ports with the same names, element trees, classes and view models, generated from the package. Open the <a class="ref" href="web/demo/">web app demo</a> to see the views chained into a running app.</p><div class="prose">' + D.web + '</div>';
-  }
-
-  /* ── search ── */
-  var q = document.getElementById('q');
+  /* Search results stay in the content landmark; typing retains input focus. */
+  var query = document.getElementById('q');
   function searchPage(term) {
-    term = term.toLowerCase();
-    var hits = D.entries.filter(function (x) { return (x.name + ' ' + x.unity.join(' ') + ' ' + x.summary + ' ' + x.blocks.join(' ')).toLowerCase().indexOf(term) >= 0; });
-    var toks = D.tokens.filter(function (t) { return (t.name + ' ' + (t.uss || '') + ' ' + (t.cs || '')).toLowerCase().indexOf(term) >= 0; }).slice(0, 30);
-    var ics = D.icons.filter(function (i) { return i.name.indexOf(term) >= 0; }).slice(0, 40);
-    var o = '<div class="eyebrow">Search</div><h1>“' + esc(term) + '”</h1>';
-    o += '<h2>Components · ' + hits.length + '</h2>' + (hits.length ? '<div class="tablewrap"><table><tbody>' + hits.map(function (x) { return '<tr class="click" data-go="e-' + x.id + '"><td class="mono">' + esc(x.name) + '</td><td>' + esc(TIER[x.tier].name) + '</td><td>' + x.unity.map(function (u) { return '<code>' + esc(u) + '</code>'; }).join(' ') + '</td><td>' + pill(x.status) + '</td></tr>'; }).join('') + '</tbody></table></div>' : '<p class="prose">No component matches.</p>');
-    if (toks.length) o += '<h2>Tokens · ' + toks.length + '</h2><div class="chips">' + toks.map(function (t) { return '<button class="chip chip--code" style="border:0;cursor:pointer" data-copy="' + esc(t.uss ? 'var(' + t.uss + ')' : t.name) + '">' + esc(t.uss || t.name) + '</button>'; }).join('') + '</div>';
-    if (ics.length) o += '<h2>Icons · ' + ics.length + '</h2><div class="chips">' + ics.map(function (i) { return '<button class="chip chip--code" style="border:0;cursor:pointer" data-copy="new VbIcon(&quot;' + esc(i.name) + '&quot;, 16)">' + esc(i.name) + '</button>'; }).join('') + '</div>';
-    view.innerHTML = o;
+    var normalized = term.toLowerCase();
+    var hits = D.entries.filter(function (entry) { return (entry.name + ' ' + entry.unity.join(' ') + ' ' + entry.summary + ' ' + entry.blocks.join(' ')).toLowerCase().indexOf(normalized) >= 0; });
+    var tokens = D.tokens.filter(function (token) { return (token.name + ' ' + (token.uss || '') + ' ' + (token.cs || '')).toLowerCase().indexOf(normalized) >= 0; }).slice(0, 30);
+    var icons = D.icons.filter(function (icon) { return icon.name.indexOf(normalized) >= 0; }).slice(0, 40);
+    var html = lead('Search', 'Results for “' + term + '”', '');
+    html += '<section><h2>Components · ' + hits.length + '</h2>' + (hits.length ? table(heads(['Component', 'Tier', 'Unity today', 'Status']) + '<tbody>' + hits.map(function (entry) { return '<tr><th scope="row"><a href="#e-' + entry.id + '">' + esc(entry.name) + '</a></th><td>' + esc(TIER[entry.tier].name) + '</td><td>' + entry.unity.map(function (type) { return '<code>' + esc(type) + '</code>'; }).join(' ') + '</td><td>' + pill(entry.status) + '</td></tr>'; }).join('') + '</tbody>', 'Component search results') : '<p>No component matches.</p>') + '</section>';
+    if (tokens.length) html += '<section><h2>Tokens · ' + tokens.length + '</h2><ul data-content="links">' + tokens.map(function (token) { return '<li><button type="button" data-copy="' + esc(token.uss ? 'var(' + token.uss + ')' : token.name) + '"><code>' + esc(token.uss || token.name) + '</code></button></li>'; }).join('') + '</ul></section>';
+    if (icons.length) html += '<section><h2>Icons · ' + icons.length + '</h2><ul data-content="links">' + icons.map(function (icon) { return '<li><button type="button" data-copy="new VbIcon(&quot;' + esc(icon.name) + '&quot;, 16)"><code>' + esc(icon.name) + '</code></button></li>'; }).join('') + '</ul></section>';
+    render(html, 'search');
+    side.querySelectorAll('[aria-current]').forEach(function (link) { link.removeAttribute('aria-current'); });
+    document.title = 'Search · Veilbreak GUI Handbook';
   }
-  q.addEventListener('input', function () { var t = q.value.trim(); if (t.length >= 2) { unmount(); searchPage(t); } else if (!t) route(); });
+  query.addEventListener('input', function () { var term = query.value.trim(); if (term.length >= 2) { unmount(); searchPage(term); } else { route(false, false); } });
 
-  /* ── router ── */
-  function route() {
-    unmount(); document.body.classList.remove('nav-open');
-    var r = (location.hash || '#overview').slice(1);
-    side.querySelectorAll('a').forEach(function (a) { if (a.getAttribute('data-r') === r) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
-    if (r.indexOf('e-') === 0 && E[r.slice(2)]) entry(E[r.slice(2)]);
-    else if (r === 'tokens') tokensPage(); else if (r === 'type') typePage(); else if (r === 'icons') iconsPage(); else if (r === 'fonts') fontsPage();
-    else if (r === 'name-map') nameMap(); else if (r === 'setup') setupPage(); else if (r === 'web') webPage(); else overview();
+  function route(focus, clearQuery) {
+    unmount(); closeMenu();
+    if (clearQuery !== false) query.value = '';
+    var routeName = (location.hash || '#overview').slice(1);
+    side.querySelectorAll('a').forEach(function (link) { if (link.getAttribute('data-r') === routeName) link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current'); });
+    if (routeName.indexOf('e-') === 0 && E[routeName.slice(2)]) entry(E[routeName.slice(2)]);
+    else if (routeName === 'tokens') tokensPage(); else if (routeName === 'type') typePage(); else if (routeName === 'icons') iconsPage(); else if (routeName === 'fonts') fontsPage();
+    else if (routeName === 'name-map') nameMap(); else if (routeName === 'setup') setupPage(); else if (routeName === 'web') webPage(); else overview();
+    var heading = view.querySelector('h1');
+    document.title = heading.textContent + ' · Veilbreak GUI Handbook';
     window.scrollTo(0, 0);
-    var cur = side.querySelector('[aria-current]'); if (cur && cur.scrollIntoView) cur.scrollIntoView({ block: 'nearest' });
+    if (focus !== false) heading.focus({ preventScroll: true });
+    if (!mobile.matches) { var current = side.querySelector('[aria-current]'); if (current) current.scrollIntoView({ block: 'nearest' }); }
   }
-  document.addEventListener('click', function (e) {
-    var c = e.target.closest('[data-copy]'); if (c) { e.preventDefault(); copy(c.getAttribute('data-copy')); return; }
-    var g = e.target.closest('[data-go]'); if (g) { location.hash = g.getAttribute('data-go'); }
+  document.addEventListener('click', function (event) {
+    var button = event.target.closest('[data-copy]');
+    if (button) { event.preventDefault(); copy(button.getAttribute('data-copy')); }
+    var link = event.target.closest('a[href]');
+    if (link && link.hash && link.getAttribute('href') === location.hash && link.hash !== '#main') { event.preventDefault(); route(); }
   });
-  window.addEventListener('hashchange', route);
+  window.addEventListener('hashchange', function () { if (location.hash !== '#main') route(); });
   applyFlags();
-  route();
+  route(false);
 })();
