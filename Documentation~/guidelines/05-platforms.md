@@ -16,7 +16,7 @@ Tokens~/tokens.json ──Tools~/tokens.py──▶ Runtime/Styles/Tokens.uss   
                     ──Tools~/web/build.sh──▶ the design-system artifact (web mirror)
 ```
 
-- `python3 Tools~/tokens.py --check` exits 1 when an output is stale. The EditMode `TokenTests` fail when a sheet
+- `uv run --frozen python Tools~/tokens.py --check` exits 1 when an output is stale. The EditMode `TokenTests` fail when a sheet
   uses a variable `Tokens.uss` does not define, or when the contrast block and `TokensContrast.uss` differ.
 - `--upstream FILE` lists colour differences from another `tokens.json`, such as the sibling design-system copy.
 

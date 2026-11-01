@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build the web package (Web~/dist) from the package sources: the React kit without the legacy landscape kit.
 
-    python3 Tools~/web/package.py [OUT]     (default: Web~/dist)
+    uv run --frozen python Tools~/web/package.py [OUT]     (default: Web~/dist)
 
 dist/veilbreak.js    IIFE: reads window.React (and window.ReactDOM for popovers), sets window.Veilbreak
 dist/veilbreak.mjs   ES module: imports react and react-dom, exports every component by name and `Veilbreak`
@@ -32,7 +32,7 @@ if OUT.exists():
 head = '/* @veilbreak/gui — generated from com.veilbreak.gui by Tools~/web/package.py. Do not edit. */\n'
 kit_css = subprocess.run(
     [sys.executable, str(WEB / 'uss2css.py')]
-    + [str(STYLES / f) for f in ('Gui.uss', 'Layout.uss', 'Views.uss', 'World.uss')],
+    + [str(STYLES / f) for f in ('Gui.uss', 'Layout.uss', 'Views.uss', 'World.uss', 'Motion.uss')],
     check=True,
     capture_output=True,
     text=True,
@@ -80,6 +80,8 @@ dts = (tmp / 'components' / 'index.d.ts').read_text().split('\n/* ── Legacy 
 )
 shutil.rmtree(tmp)
 
+if not shutil.which('node'):
+    sys.exit('Node.js is required to validate the generated JavaScript')
 if shutil.which('node'):
     check = subprocess.run(
         [

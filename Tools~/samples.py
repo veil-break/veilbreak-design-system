@@ -5,8 +5,8 @@ Samples~ is invisible to Unity until a user imports a sample, so the scene is wr
 with a UIDocument on Runtime/Settings/VeilbreakPortrait.asset, the sample's UXML and its MonoBehaviour. GUIDs are
 derived from the file path, so reruns are stable and an imported sample keeps the references.
 
-    python3 Tools~/samples.py           # write
-    python3 Tools~/samples.py --check   # exit 1 when a file would change
+    uv run --frozen python Tools~/samples.py           # write
+    uv run --frozen python Tools~/samples.py --check   # exit 1 when a file would change
 """
 
 import hashlib

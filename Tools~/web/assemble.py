@@ -134,6 +134,8 @@ if re.search(r'(?<![A-Za-z0-9_-])vbl-', uncommented[0]) or re.search(r'(?<![A-Za
     errors.append('bundle.css: the kit and legacy class names meet')
 if re.search(r'</script|<!--', body, re.IGNORECASE):
     errors.append('bundle.js: contains </script or <!--')
+if not shutil.which('node'):
+    sys.exit('Node.js is required to validate the generated JavaScript')
 if shutil.which('node'):
     # bundle.js and every preview's inline script must parse.
     scripts = {'bundle.js': body}

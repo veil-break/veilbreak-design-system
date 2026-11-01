@@ -7,6 +7,7 @@ import json
 import os
 import pathlib
 import re
+import shutil
 import subprocess
 import sys
 
@@ -49,7 +50,9 @@ head = (
     '<script src="https://cdn.jsdelivr.net/npm/react-dom@18.3.1/umd/react-dom.production.min.js"></script>'
     '<script src="file://%s/project/components/bundle.js"></script>'
 ) % (D, D)
-CHROME = os.environ.get('CHROME', '/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary')
+CHROME = os.environ.get('CHROME') or shutil.which('chromium') or shutil.which('google-chrome')
+if not CHROME:
+    sys.exit('Set CHROME to a Chromium executable')
 os.makedirs(D + '/render', exist_ok=True)
 for n in names:
     html = pathlib.Path(f'{D}/project/components/{n}/preview.html').read_text()
@@ -78,9 +81,11 @@ for n in names:
             f'--screenshot={D}/render/{n}.png',
             'file://' + out,
         ],
-        check=False,
+        check=True,
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
         timeout=60,
     )
-    print(n, os.path.exists(f'{D}/render/{n}.png'))
+    if not pathlib.Path(f'{D}/render/{n}.png').is_file():
+        sys.exit('Missing screenshot: ' + n)
+    print(n, 'rendered')

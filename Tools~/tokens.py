@@ -6,9 +6,11 @@ Runtime/Styles/TokensContrast.uss (the same contrast overrides on :root, for Vei
 Runtime/Core/VbTokens.cs (veil-theme colours for code that cannot read USS: rich text, meshes, materials)
 and Documentation~/tokens.md (the reference: every token with its value, USS variable, C# name and usage).
 
-    python3 Tools~/tokens.py                      # write every output
-    python3 Tools~/tokens.py --check              # name the outputs that differ from tokens.json and exit 1
-    python3 Tools~/tokens.py --upstream FILE      # list tokens that differ from another tokens.json (the sibling copy)
+    uv run --frozen python Tools~/tokens.py                      # write every output
+    uv run --frozen python Tools~/tokens.py --check
+    # Name stale outputs and exit 1.
+    uv run --frozen python Tools~/tokens.py --upstream FILE
+    # Compare another token source.
 
 Every family is {"tokens": [{"name", "value", "usage"}]}; colours carry one value per theme ("veil" first, then
 "contrast") or one value for both, and may alias another colour as "{name}". Naming follows the Veilbreak `vb tokens`

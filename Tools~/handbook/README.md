@@ -5,7 +5,7 @@ views) plus assets, each with the type that implements it, what it is built from
 is painted from, the tokens those rules read, its C# API and a live preview from the web mirror (`Tools~/web`).
 
 ```sh
-python3 Tools~/handbook/build_handbook.py . docs
+uv run --frozen python Tools~/handbook/build_handbook.py . docs
 ```
 
 `docs/` is the GitHub Pages site: `index.html`, `kit/` (the page's bundle, styles, tokens, specimen styles and fonts), `web/` (the web
@@ -29,7 +29,7 @@ for deployment.
 ## Build sources
 
 The build runs `Tools~/web/build.sh` and `Tools~/web/package.py`, so the previews always match the package. Run
-`python3 Tools~/metas.py` afterwards so Unity has `.meta` files for the site.
+`uv run --frozen python Tools~/metas.py` afterwards so Unity has `.meta` files for the site.
 
 | File | Role |
 | --- | --- |
@@ -95,7 +95,7 @@ Validation:
 
 ```sh
 python3 -m unittest discover -s Tools~/handbook/tests
-python3 Tools~/handbook/build_handbook.py . /tmp/veilbreak-handbook
+uv run --frozen python Tools~/handbook/build_handbook.py . /tmp/veilbreak-handbook
 python3 -m http.server 8766 --directory /tmp/veilbreak-handbook
 # In another terminal, with Playwright installed in the Node environment:
 node Tools~/handbook/tests/inspector.browser.cjs http://127.0.0.1:8766/
