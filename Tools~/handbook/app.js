@@ -132,7 +132,7 @@
     return '<header><p>' + esc(group) + '</p><h1 tabindex="-1">' + esc(title) + '</h1>' + (description ? '<p>' + description + '</p>' : '') + '</header>';
   }
   function pill(status) { return '<span data-status-label="' + status + '">' + statusDot(status) + STATUS[status] + '</span>'; }
-  function entryChip(id) { var entry = E[id]; return '<li><a href="#e-' + id + '">' + statusDot(entry.status) + esc(entry.name) + '</a></li>'; }
+  function entryChip(id) { var entry = E[id]; return '<li><a href="#e-' + id + '">' + statusDot(entry.status) + '<span>' + esc(entry.name) + '</span></a></li>'; }
   function table(content, caption) { return '<div data-content="table" tabindex="0" role="region" aria-label="' + esc(caption) + '"><table><caption>' + esc(caption) + '</caption>' + content + '</table></div>'; }
   function heads(labels) { return '<thead><tr>' + labels.map(function (label) { return '<th scope="col">' + label + '</th>'; }).join('') + '</tr></thead>'; }
   function render(html, page) { view.innerHTML = html; view.setAttribute('data-page', page); }
