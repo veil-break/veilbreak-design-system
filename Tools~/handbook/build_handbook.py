@@ -12,6 +12,7 @@ USS rules (Gui.uss, Layout.uss, Views.uss, World.uss), public C# API (Runtime/**
 component reference (Documentation~/components.md), the preview scenes (Tools~/web/previews.py) and the web kit
 (Web~, rebuilt by Tools~/web/package.py). The four-tier taxonomy comes from catalog.py next to this script.
 """
+
 import html
 import importlib.util
 import json
@@ -32,11 +33,12 @@ PKG, OUT = pathlib.Path(args[0]).resolve(), pathlib.Path(args[1]).resolve()
 WEB = PKG / 'Tools~' / 'web'
 sys.path.insert(0, str(WEB))
 from tokens_css import colour_value as _colour, tokens_css  # noqa: E402
+
 KIT = OUT / 'kit'
 
 # ── 1. the web kit (the package's own mirror build) ──────────────────────────
 tmp = pathlib.Path(tempfile.mkdtemp())
-subprocess.run(['sh', str(WEB / 'build.sh'), str(tmp)], check=True, stdout=subprocess.DEVNULL)
+subprocess.run([sys.executable, str(WEB / 'build.py'), str(tmp)], check=True, stdout=subprocess.DEVNULL)
 if KIT.exists():
     shutil.rmtree(KIT)
 (KIT / 'fonts').mkdir(parents=True)
@@ -63,13 +65,16 @@ script = (KIT / 'bundle.js').read_text()
 factory = 'var h = R.createElement;'
 export = 'window.Veilbreak = Object.assign(window.Veilbreak || {}, api);'
 assert factory in script and script.count(export) == 1
-script = script.replace(export, 'window.VeilbreakInspector.install(api, function (factory) { h = factory; }, schedule);\n  ' + export)
+script = script.replace(
+    export, 'window.VeilbreakInspector.install(api, function (factory) { h = factory; }, schedule);\n  ' + export
+)
 (KIT / 'bundle.js').write_text(script)
 # Native pseudo-states can also be previewed without moving keyboard focus.
 css = (KIT / 'bundle.css').read_text()
 state = r':(focus-visible|focus-within|hover|active|focus)(?![\w-])'
 # Keep media/support conditions and copy only rules with emulated pseudo-states.
-from inspection_schema import block_end, split_top
+from inspection_schema import block_end, split_top  # noqa: E402
+
 
 def emulate_styles(text):
     text = re.sub(r'/\*.*?\*/', '', text, flags=re.S)
@@ -79,7 +84,7 @@ def emulate_styles(text):
         if start < 0:
             break
         end = block_end(text, start)
-        selector, body = text[cursor:start].strip(), text[start + 1:end]
+        selector, body = text[cursor:start].strip(), text[start + 1 : end]
         if selector.startswith(('@media', '@supports', '@layer')):
             nested = emulate_styles(body)
             if nested:
@@ -97,6 +102,7 @@ def emulate_styles(text):
                 output.append(', '.join(selectors) + ' {' + body + '}')
         cursor = end + 1
     return '\n'.join(output)
+
 
 (KIT / 'inspection-states.css').write_text(emulate_styles(css) + '\n')
 
@@ -128,7 +134,9 @@ def rules_for(block):
 
 # ── 5. token reference (USS and C# names) ────────────────────────────────────
 uss_vars = set(re.findall(r'(--vb-[a-z0-9-]+)\s*:', (STYLES / 'Tokens.uss').read_text()))
-cs_names = set(re.findall(r'public static readonly Color (\w+)=', (PKG / 'Runtime' / 'Core' / 'VbTokens.cs').read_text()))
+cs_names = set(
+    re.findall(r'public static readonly Color (\w+)=', (PKG / 'Runtime' / 'Core' / 'VbTokens.cs').read_text())
+)
 
 
 def pascal(n):
@@ -138,21 +146,46 @@ def pascal(n):
 TOKENS = []
 for t in tokens['color']['tokens']:
     v = t['value']
-    TOKENS.append({'family': 'color', 'name': t['name'], 'veil': colour_value(v, themes[0]), 'contrast': colour_value(v, themes[-1]) if isinstance(v, dict) else None,
-                   'uss': f"--vb-color-{t['name']}" if f"--vb-color-{t['name']}" in uss_vars else None,
-                   'cs': f"VbTokens.{pascal(t['name'])}" if pascal(t['name']) in cs_names else None, 'usage': t.get('usage', '')})
+    TOKENS.append({
+        'family': 'color',
+        'name': t['name'],
+        'veil': colour_value(v, themes[0]),
+        'contrast': colour_value(v, themes[-1]) if isinstance(v, dict) else None,
+        'uss': f'--vb-color-{t["name"]}' if f'--vb-color-{t["name"]}' in uss_vars else None,
+        'cs': f'VbTokens.{pascal(t["name"])}' if pascal(t['name']) in cs_names else None,
+        'usage': t.get('usage', ''),
+    })
 for fam, body in tokens.items():
     if fam in ('name', 'version', 'color', 'type') or not isinstance(body, dict):
         continue
     for t in body.get('tokens', []):
         val = t['value'] if not isinstance(t['value'], dict) else t['value'].get(themes[0])
-        TOKENS.append({'family': fam, 'name': t['name'], 'veil': val, 'contrast': None,
-                       'uss': f"--vb-{t['name']}" if f"--vb-{t['name']}" in uss_vars else None, 'cs': None, 'usage': t.get('usage', '')})
+        TOKENS.append({
+            'family': fam,
+            'name': t['name'],
+            'veil': val,
+            'contrast': None,
+            'uss': f'--vb-{t["name"]}' if f'--vb-{t["name"]}' in uss_vars else None,
+            'cs': None,
+            'usage': t.get('usage', ''),
+        })
 TYPE = []
 for g in tokens['type']['groups']:
     for s in g['styles']:
-        TYPE.append(dict(s, group=g['name'], family=s.get('family', g['family']), uss=f"--vb-font-size-{s['name']}" if f"--vb-font-size-{s['name']}" in uss_vars else None))
-font_vars = {pathlib.Path(file).name: var for var, file in re.findall(r'(--vb-font-[a-z0-9-]+)\s*:\s*url\("[^"]*?([^/"]+)"\)', (STYLES / 'Tokens.uss').read_text())}
+        TYPE.append(
+            dict(
+                s,
+                group=g['name'],
+                family=s.get('family', g['family']),
+                uss=f'--vb-font-size-{s["name"]}' if f'--vb-font-size-{s["name"]}' in uss_vars else None,
+            )
+        )
+font_vars = {
+    pathlib.Path(file).name: var
+    for var, file in re.findall(
+        r'(--vb-font-[a-z0-9-]+)\s*:\s*url\("[^"]*?([^/"]+)"\)', (STYLES / 'Tokens.uss').read_text()
+    )
+}
 FONTS = [dict(f, uss=font_vars.get(pathlib.Path(f['file']).name)) for f in tokens['type']['fonts']]
 
 # ── 6. public C# API by type ─────────────────────────────────────────────────
@@ -161,14 +194,19 @@ SRC = {p: re.sub(r'(?<![/:])//(?!/)[^\n]*', '', p.read_text()) for p in (PKG / '
 
 def class_body(name):
     for path, text in SRC.items():
-        m = re.search(r'(?:\[UxmlElement\]\s*)?public\s+(?:sealed\s+|static\s+|abstract\s+)*(?:partial\s+)?(class|struct|enum)\s+' + re.escape(name) + r'\b([^{]*)\{', text)
+        m = re.search(
+            r'(?:\[UxmlElement\]\s*)?public\s+(?:sealed\s+|static\s+|abstract\s+)*(?:partial\s+)?(class|struct|enum)\s+'
+            + re.escape(name)
+            + r'\b([^{]*)\{',
+            text,
+        )
         if not m:
             continue
         i, depth = m.end(), 1
         while depth and i < len(text):
             depth += {'{': 1, '}': -1}.get(text[i], 0)
             i += 1
-        return path, m.group(1), m.group(2).strip(), text[m.end():i - 1], text[max(0, m.start() - 4000):m.start()]
+        return path, m.group(1), m.group(2).strip(), text[m.end() : i - 1], text[max(0, m.start() - 4000) : m.start()]
     return None
 
 
@@ -226,7 +264,14 @@ def api_for(name):
         out.append(m[:220])
     if kind == 'enum':
         out = ['enum ' + name + ' { ' + ' '.join(body.split()) + ' }']
-    return {'type': name, 'kind': kind, 'base': base.lstrip(':').strip(), 'file': str(path.relative_to(PKG)), 'summary': summary, 'members': out}
+    return {
+        'type': name,
+        'kind': kind,
+        'base': base.lstrip(':').strip(),
+        'file': str(path.relative_to(PKG)),
+        'summary': summary,
+        'members': out,
+    }
 
 
 # ── 7. components.md sections ────────────────────────────────────────────────
@@ -266,7 +311,11 @@ def md(text):
             j = i + 1
             while j < len(lines) and not lines[j].startswith('```'):
                 j += 1
-            out.append('<pre tabindex="0" role="region" aria-label="Code example"><code>' + html.escape('\n'.join(lines[i + 1:j])) + '</code></pre>')
+            out.append(
+                '<pre tabindex="0" role="region" aria-label="Code example"><code>'
+                + html.escape('\n'.join(lines[i + 1 : j]))
+                + '</code></pre>'
+            )
             i = j + 1
             continue
         if ln.startswith('|'):
@@ -275,13 +324,22 @@ def md(text):
                 if not re.match(r'^\|\s*-', lines[i]):
                     rows.append([c.strip() for c in lines[i].strip().strip('|').split('|')])
                 i += 1
-            t = '<div data-content="table" tabindex="0" role="region" aria-label="Reference table"><table><thead><tr>' + ''.join(f'<th scope="col">{inline(c)}</th>' for c in rows[0]) + '</tr></thead><tbody>'
-            t += ''.join('<tr>' + ''.join(f'<td>{inline(c)}</td>' for c in r) + '</tr>' for r in rows[1:]) + '</tbody></table></div>'
+            t = (
+                '<div data-content="table" tabindex="0" role="region" aria-label="Reference table"><table><thead><tr>'
+                + ''.join(f'<th scope="col">{inline(c)}</th>' for c in rows[0])
+                + '</tr></thead><tbody>'
+            )
+            t += (
+                ''.join('<tr>' + ''.join(f'<td>{inline(c)}</td>' for c in r) + '</tr>' for r in rows[1:])
+                + '</tbody></table></div>'
+            )
             out.append(t)
             continue
         if re.match(r'^\s*- ', ln):
             items = []
-            while i < len(lines) and (re.match(r'^\s*- ', lines[i]) or (lines[i].startswith('  ') and lines[i].strip())):
+            while i < len(lines) and (
+                re.match(r'^\s*- ', lines[i]) or (lines[i].startswith('  ') and lines[i].strip())
+            ):
                 if re.match(r'^\s*- ', lines[i]):
                     items.append([len(lines[i]) - len(lines[i].lstrip()), lines[i].strip()[2:]])
                 else:
@@ -297,8 +355,14 @@ def md(text):
                 stack.append((indent, node))
 
             def render_list(nodes):
-                return '<ul>' + ''.join('<li>' + inline(n['text']) +
-                    (render_list(n['children']) if n['children'] else '') + '</li>' for n in nodes) + '</ul>'
+                return (
+                    '<ul>'
+                    + ''.join(
+                        '<li>' + inline(n['text']) + (render_list(n['children']) if n['children'] else '') + '</li>'
+                        for n in nodes
+                    )
+                    + '</ul>'
+                )
 
             out.append(render_list(nodes))
             continue
@@ -326,7 +390,9 @@ pv = importlib.util.module_from_spec(spec)
 sys.argv, saved = ['previews.py', str(tmp / 'prev')], sys.argv
 spec.loader.exec_module(pv)
 sys.argv = saved
-PRELUDE = re.sub(r'function render\(node\)[^\n]*\n', '', pv.PRELUDE).replace("var V = window.Veilbreak, h = React.createElement;\n", '')
+PRELUDE = re.sub(r'function render\(node\)[^\n]*\n', '', pv.PRELUDE).replace(
+    'var V = window.Veilbreak, h = React.createElement;\n', ''
+)
 
 # ── 9. icons ──────────────────────────────────────────────────────────────────
 icons_uss = (STYLES / 'Icons.uss').read_text()
@@ -341,19 +407,66 @@ for name, file in re.findall(r'\.vb-icon--([a-z0-9-]+)\s*\{[^}]*Icons/([A-Za-z0-
 def icon_family(n):
     if n.startswith('skill-'):
         return 'Skills'
-    if n in ('striker', 'ranged', 'burst-role', 'disruptor', 'debuffer', 'protector', 'skirmisher', 'support', 'healer', 'bastion', 'breaker', 'operator'):
+    if n in (
+        'striker',
+        'ranged',
+        'burst-role',
+        'disruptor',
+        'debuffer',
+        'protector',
+        'skirmisher',
+        'support',
+        'healer',
+        'bastion',
+        'breaker',
+        'operator',
+    ):
         return 'Roles'
-    if n in ('exposed', 'silence', 'root', 'slow', 'interrupted', 'barrier', 'haste', 'cleanse', 'armor', 'health', 'counter'):
+    if n in (
+        'exposed',
+        'silence',
+        'root',
+        'slow',
+        'interrupted',
+        'barrier',
+        'haste',
+        'cleanse',
+        'armor',
+        'health',
+        'counter',
+    ):
         return 'Statuses'
     if n in ('optic', 'core', 'plating', 'weapon', 'charm', 'set'):
         return 'Gear'
-    if n in ('projectile', 'fan', 'cone', 'burst', 'zone', 'beam', 'dash', 'wall', 'arrow', 'pierce', 'circle', 'diamond', 'marker', 'target', 'no-target', 'invalid'):
+    if n in (
+        'projectile',
+        'fan',
+        'cone',
+        'burst',
+        'zone',
+        'beam',
+        'dash',
+        'wall',
+        'arrow',
+        'pierce',
+        'circle',
+        'diamond',
+        'marker',
+        'target',
+        'no-target',
+        'invalid',
+    ):
         return 'Shapes & targeting'
     return 'Interface'
 
 
 for ic in ICONS:
-    ic['svg'] = (PKG / 'Runtime' / 'Icons' / ic['file']).read_text().replace('#faeef4', 'currentColor').replace('<svg ', '<svg aria-hidden="true" focusable="false" ', 1)
+    ic['svg'] = (
+        (PKG / 'Runtime' / 'Icons' / ic['file'])
+        .read_text()
+        .replace('#faeef4', 'currentColor')
+        .replace('<svg ', '<svg aria-hidden="true" focusable="false" ', 1)
+    )
     ic['family'] = icon_family(ic['name'])
     ic['aliases'] = [a for a, t in ALIASES.items() if t == ic['name']]
 
@@ -363,7 +476,7 @@ used_by = {i: [] for i in ids}
 for x in catalog.ENTRIES:
     for u in x['uses']:
         if u not in ids:
-            raise SystemExit(f"{x['id']} uses unknown {u}")
+            raise SystemExit(f'{x["id"]} uses unknown {u}')
         used_by[u].append(x['id'])
 PREVIEW_JS = []
 ENTRIES = []
@@ -372,7 +485,15 @@ for x in catalog.ENTRIES:
     for b in x['blocks']:
         r += [rr for rr in rules_for(b) if rr not in r]
     tok = sorted(set(re.findall(r'var\((--vb-[a-z0-9-]+)\)', ' '.join(rr['body'] for rr in r))))
-    apis = [a for a in (api_for(re.sub(r'[^A-Za-z0-9_].*$', '', u)) for u in x['unity'] if re.match(r'^[A-Z][A-Za-z0-9]+$', re.sub(r'[ (].*$', '', u)) and '.' not in u.split(' ')[0]) if a]
+    apis = [
+        a
+        for a in (
+            api_for(re.sub(r'[^A-Za-z0-9_].*$', '', u))
+            for u in x['unity']
+            if re.match(r'^[A-Z][A-Za-z0-9]+$', re.sub(r'[ (].*$', '', u)) and '.' not in u.split(' ')[0]
+        )
+        if a
+    ]
     pv_key = x.get('preview')
     if pv_key in pv.P:
         body = pv.P[pv_key][3]
@@ -381,19 +502,41 @@ for x in catalog.ENTRIES:
     else:
         body, stage, height = pv_key or '', x['stage'], x['height']
     if body:
-        PREVIEW_JS.append(f"PREVIEWS[{json.dumps(x['id'])}] = function (render) {{\n{body.strip()}\n}};")
+        PREVIEW_JS.append(f'PREVIEWS[{json.dumps(x["id"])}] = function (render) {{\n{body.strip()}\n}};')
     ENTRIES.append({
-        'id': x['id'], 'tier': x['tier'], 'name': x['name'], 'unity': x['unity'], 'status': x['status'], 'summary': x['summary'],
-        'uses': x['uses'], 'usedBy': used_by[x['id']], 'blocks': x['blocks'], 'stage': stage, 'height': height, 'hasPreview': bool(body),
-        'csharp': x.get('csharp', ''), 'uxml': x.get('uxml', ''), 'rules': md('\n'.join('- ' + r for r in x['rules'])),
-        'spec': md(x.get('spec', '')), 'doc': md(doc_section(x['doc'])) if x.get('doc') else '', 'docTitle': x.get('doc', ''),
-        'uss': r, 'tokens': tok, 'api': apis,
+        'id': x['id'],
+        'tier': x['tier'],
+        'name': x['name'],
+        'unity': x['unity'],
+        'status': x['status'],
+        'summary': x['summary'],
+        'uses': x['uses'],
+        'usedBy': used_by[x['id']],
+        'blocks': x['blocks'],
+        'stage': stage,
+        'height': height,
+        'hasPreview': bool(body),
+        'csharp': x.get('csharp', ''),
+        'uxml': x.get('uxml', ''),
+        'rules': md('\n'.join('- ' + r for r in x['rules'])),
+        'spec': md(x.get('spec', '')),
+        'doc': md(doc_section(x['doc'])) if x.get('doc') else '',
+        'docTitle': x.get('doc', ''),
+        'uss': r,
+        'tokens': tok,
+        'api': apis,
     })
 
 DATA = {
     'tiers': [{'id': a, 'name': b, 'blurb': c} for a, b, c in catalog.TIERS],
-    'entries': ENTRIES, 'tokens': TOKENS, 'type': TYPE, 'fonts': FONTS, 'icons': ICONS, 'aliases': ALIASES,
-    'slimUss': catalog.SLIM_USS, 'slimMigration': catalog.SLIM_MIGRATION,
+    'entries': ENTRIES,
+    'tokens': TOKENS,
+    'type': TYPE,
+    'fonts': FONTS,
+    'icons': ICONS,
+    'aliases': ALIASES,
+    'slimUss': catalog.SLIM_USS,
+    'slimMigration': catalog.SLIM_MIGRATION,
     'package': json.loads((PKG / 'package.json').read_text()),
     'integration': md((PKG / 'Documentation~' / 'integration.md').read_text().split('\n', 1)[1]),
     'web': md((PKG / 'Web~' / 'README.md').read_text().split('\n', 1)[1]),
@@ -407,23 +550,43 @@ for token in TOKENS:
         specimens.append(f'#view [data-color={json.dumps(token["name"])}] {{ background: var(--{token["name"]}); }}')
 for index, style in enumerate(TYPE):
     family = {'display': 'var(--font-display)', 'body': 'var(--font-body)', 'hud': 'var(--font-hud)'}[style['family']]
-    specimens.append(f'#view [data-specimen="{index}"] {{ font-family: {family}; font-size: {style["fontSize"]}; '
-        f'line-height: {style["lineHeight"]}; font-weight: {style["fontWeight"]}; letter-spacing: {style.get("letterSpacing", "normal")}; }}')
+    specimens.append(
+        f'#view [data-specimen="{index}"] {{ font-family: {family}; font-size: {style["fontSize"]}; '
+        f'line-height: {style["lineHeight"]}; font-weight: {style["fontWeight"]}; letter-spacing: {style.get("letterSpacing", "normal")}; }}'
+    )
 for index, font in enumerate(FONTS):
-    specimens.append(f'#view [data-font="{index}"] {{ font-family: {json.dumps(font["family"])}; font-weight: {font["weight"]}; }}')
+    specimens.append(
+        f'#view [data-font="{index}"] {{ font-family: {json.dumps(font["family"])}; font-weight: {font["weight"]}; }}'
+    )
 for entry in ENTRIES:
-    specimens.append(f'[data-preview][data-entry={json.dumps(entry["id"])}] > .hb-free {{ min-height: {min(900, entry["height"] or 200)}px; }}')
+    specimens.append(
+        f'[data-preview][data-entry={json.dumps(entry["id"])}] > .hb-free {{ min-height: {min(900, entry["height"] or 200)}px; }}'
+    )
 specimens.append('}')
 (KIT / 'specimens.css').write_text('\n'.join(specimens) + '\n')
 
 shell = (HERE / 'shell.html').read_text()
-page = (shell.replace('/*@@DATA@@*/', json.dumps(DATA, ensure_ascii=False).replace('</', '<\\/'))
-        .replace('/*@@PRELUDE@@*/', (PRELUDE + '\n' + (HERE / 'helpers.js').read_text()).replace('h = React.createElement', 'h = window.VeilbreakInspector.createElement'))
-        .replace('/*@@PREVIEWS@@*/', '\n'.join(PREVIEW_JS))
-        .replace('/*@@INSPECTION@@*/', json.dumps(build_schema((PKG / 'Web~' / 'dist' / 'index.d.ts').read_text(), (WEB / 'kit.js').read_text())).replace('</', '<\\/'))
-        .replace('/*@@APP@@*/', (HERE / 'app.js').read_text()))
+page = (
+    shell.replace('/*@@DATA@@*/', json.dumps(DATA, ensure_ascii=False).replace('</', '<\\/'))
+    .replace(
+        '/*@@PRELUDE@@*/',
+        (PRELUDE + '\n' + (HERE / 'helpers.js').read_text()).replace(
+            'h = React.createElement', 'h = window.VeilbreakInspector.createElement'
+        ),
+    )
+    .replace('/*@@PREVIEWS@@*/', '\n'.join(PREVIEW_JS))
+    .replace(
+        '/*@@INSPECTION@@*/',
+        json.dumps(
+            build_schema((PKG / 'Web~' / 'dist' / 'index.d.ts').read_text(), (WEB / 'kit.js').read_text())
+        ).replace('</', '<\\/'),
+    )
+    .replace('/*@@APP@@*/', (HERE / 'app.js').read_text())
+)
 (OUT / 'index.html').write_text(page)
 shutil.rmtree(tmp, ignore_errors=True)
 # The site lives inside the Unity package: give its files .meta files (stable GUIDs) so Unity imports it quietly.
 subprocess.run([sys.executable, str(PKG / 'Tools~' / 'metas.py')], check=True, stdout=subprocess.DEVNULL)
-print(f"{len(ENTRIES)} entries · {len(TOKENS)} tokens · {len(ICONS)} icons · {len(RULES)} USS rules · {len(PREVIEW_JS)} previews → {OUT}")
+print(
+    f'{len(ENTRIES)} entries · {len(TOKENS)} tokens · {len(ICONS)} icons · {len(RULES)} USS rules · {len(PREVIEW_JS)} previews → {OUT}'
+)

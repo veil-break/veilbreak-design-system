@@ -58,7 +58,7 @@ report with `on*` callbacks; the app owns state.
 ## Build
 
 ```bash
-python3 Tools~/web/package.py
+uv run --frozen python Tools~/web/package.py
 ```
 
 from the repository root. It ports the USS with `Tools~/web/uss2css.py`, inlines the icons and writes `dist/`.

@@ -72,7 +72,7 @@ def decl(prop, value, selector):
     if prop.startswith('--vb-'):
         return [(prop, tokens(value))]
     if prop == 'scale':
-        return [('scale', value.split()[0])]
+        return [('scale', value)]
     return [(prop, value)]
 
 

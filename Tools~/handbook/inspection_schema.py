@@ -3,6 +3,7 @@
 This deliberately supports the declaration grammar used by the generated kit;
 unknown types fail the build instead of silently dropping controls.
 """
+
 import ast
 import re
 
@@ -18,7 +19,7 @@ def split_top(text, separator):
             elif char == quote:
                 quote = None
             continue
-        if char in "\"'`":
+        if char in '"\'`':
             quote = char
         elif char in '{[(':
             stack.append(char)
@@ -42,7 +43,7 @@ def block_end(text, start):
                 escaped = True
             elif char == quote:
                 quote = None
-        elif char in "\"'`":
+        elif char in '"\'`':
             quote = char
         elif char == '{':
             depth += 1
@@ -58,9 +59,9 @@ def build_schema(declarations, kit_source):
     types = {}
     for match in re.finditer(r'(?:export\s+)?interface\s+(\w+)\s*\{', text):
         start = match.end() - 1
-        types[match[1]] = text[start:block_end(text, start) + 1]
+        types[match[1]] = text[start : block_end(text, start) + 1]
     for match in re.finditer(r'(?:export\s+)?type\s+(\w+)\s*=\s*', text):
-        types[match[1]] = split_top(text[match.end():], ';')[0]
+        types[match[1]] = split_top(text[match.end() :], ';')[0]
 
     def parse(expression, depth=0):
         expression = expression.strip()
@@ -115,7 +116,9 @@ def build_schema(declarations, kit_source):
     components = {}
     for match in re.finditer(r'export declare function (\w+)\(props\??:\s*(.*?)\): React.ReactElement;', text, re.S):
         components[match[1]] = parse(match[2])
-    components['VbShape'] = parse("{ as?: string; className?: string; style?: React.CSSProperties; children?: React.ReactNode }")
+    components['VbShape'] = parse(
+        '{ as?: string; className?: string; style?: React.CSSProperties; children?: React.ReactNode }'
+    )
     exports = kit_source.split('var api = {', 1)[1].split('};', 1)[0]
     exported = re.findall(r'(\w+): \w+', exports)
     for name in exported:
@@ -127,7 +130,9 @@ def build_schema(declarations, kit_source):
         function = re.search(r'function ' + re.escape(name) + r'\(p\)\s*\{', kit_source)
         if function:
             start = function.end() - 1
-            body = kit_source[start:block_end(kit_source, start) + 1]
+            body = kit_source[start : block_end(kit_source, start) + 1]
             for prop in sorted(set(re.findall(r'\bp\.(\w+)', body))):
-                components[name]['properties'].setdefault(prop, {'kind': 'runtime', 'optional': True, 'type': 'Runtime property'})
+                components[name]['properties'].setdefault(
+                    prop, {'kind': 'runtime', 'optional': True, 'type': 'Runtime property'}
+                )
     return {'components': components}

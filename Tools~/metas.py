@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """Write missing Unity .meta files for the package (immutable packages ignore assets without one).
 
-    python3 Tools~/metas.py [--check]
+    uv run --frozen python Tools~/metas.py [--check]
 
 GUIDs are an MD5 of the package-relative path, so reruns are stable. Folders ending in ~, dotfiles and docs/ site files
 that already have metas are left as they are. --check lists missing metas and exits 1 when there are any.
 """
 
 import hashlib
+import os
 import pathlib
 import sys
 
@@ -40,7 +41,17 @@ def body(p):
 
 
 missing = []
-for p in sorted(PKG.rglob('*')):
+
+
+def assets():
+    for root, dirs, files in os.walk(PKG):
+        dirs[:] = sorted(
+            d for d in dirs if not d.startswith('.') and not d.endswith('~') and d not in {'node_modules', 'work'}
+        )
+        yield from (pathlib.Path(root) / name for name in sorted(dirs + files))
+
+
+for p in assets():
     if hidden(p) or p.parent == PKG and p.name == 'package.json' and (PKG / 'package.json.meta').exists():
         continue
     meta = p.with_name(p.name + '.meta')

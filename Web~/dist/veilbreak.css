@@ -124,7 +124,7 @@
 .vb-button, .vb-button:hover, .vb-button:active, .vb-button:hover:active, .vb-button:focus, .vb-button:disabled { background-color: rgba(0, 0, 0, 0); border-width: 0; border-radius: 0; opacity: 1; }
 .vb-button { flex-direction: row; align-items: center; min-height: 48px; margin: 0; padding: 8px 16px; color: var(--text); display: flex; align-items: center; justify-content: flex-start; text-align: left; white-space: normal; transition-duration: 0.1s; transition-property: scale; --vb-cut: 10; --vb-fill: var(--panel); --vb-edge: var(--line-strong); }
 .vb-button:hover { --vb-edge: rgba(250, 238, 244, 0.70); }
-.vb-button:active { scale: 0.97; }
+.vb-button:active { scale: 0.97 0.97; }
 .vb-button:focus { --vb-bracket: var(--text); }
 .vb-button__text { flex-grow: 1; flex-shrink: 1; }
 .vb-button__label { font-family: var(--font-body); font-weight: 500; font-weight: 700; font-size: 12px; letter-spacing: 0.1667em; color: var(--text); }
@@ -869,6 +869,17 @@
 .vb-compact .vb-battle__card .vb-skill__icon { margin-top: 6px; width: 16px; height: 16px; }
 .vb-compact .vb-battle__card .vb-operative__band { height: 36px; }
 .vb-compact .vb-battle__card .vb-operative__name { font-size: 10px; letter-spacing: 0em; }
+.vb-build__summary { flex-direction: row; flex-wrap: wrap; padding: 8px 12px; margin-top: 6px; margin-bottom: 3px; flex-shrink: 0; }
+.vb-build__bonus { flex-direction: row; align-items: center; margin-right: 12px; }
+.vb-build__bonus-value { margin-left: 6px; font-family: var(--font-body); font-weight: 500; font-size: 13px; color: var(--ally-text); }
+.vb-build__list { flex-grow: 0; flex-shrink: 1; max-height: 348px; margin-bottom: 10px; }
+.vb-build__detail { margin-top: 12px; flex-shrink: 0; }
+.vb-revive .vb-grid4 { margin-top: 8px; }
+.vb-accessibility > .vb-form { margin-left: 12px; margin-right: 12px; }
+.vb-page--leaving { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
+.vb-battle__bottom { position: relative; }
+.vb-board__bottom { position: relative; }
+.vb-battle__cancel { position: absolute; left: 10px; right: 10px; bottom: 100%; height: 40px; margin-bottom: 8px; border-width: 1px; border-color: var(--line-strong); background-color: rgba(5, 2, 8, 0.70); display: flex; align-items: center; justify-content: center; text-align: center; font-family: var(--font-body); font-weight: 500; font-weight: 700; font-size: 11px; letter-spacing: 0.1273em; color: var(--text-2); }
 /* World.uss */
 .vb-world { position: absolute; left: 0; right: 0; top: 0; bottom: 0; overflow: hidden; }
 .vb-world-health { position: absolute; width: 36px; height: 4px; translate: -50% 0; background-color: #110f18; border-width: 1px; border-color: rgba(250, 238, 244, 0.25); }
@@ -920,6 +931,18 @@
 .vb-edge-warning__caption { font-family: var(--font-body); font-weight: 700; font-size: 9px; letter-spacing: 0.12em; color: var(--enemy-text); padding: 0; margin: 0; }
 .vb-edge-warning--hot { background-color: rgba(110, 8, 36, 0.55); border-color: var(--enemy-text); }
 .vb-edge-warning--hot .vb-edge-warning__chevron { color: var(--text); }
+/* Motion.uss */
+.vb-button, .vb-icon-button__text, .vb-hud__auto-label, .vb-hud__auto-state, .vb-segmented__label, .vb-segmented__sub, .vb-skill__slot, .vb-skill__top, .vb-skill__value, .vb-operative__chip, .vb-operative__name, .vb-header__meta, .vb-tile__name, .vb-switch__label, .vb-route__kind, .vb-merchant__price, .vb-queue-chip__skill, .vb-score__score { transition-property: color, scale, translate, opacity; transition-duration: 0.22s, 0.1s, 0.1s, 0.22s; transition-timing-function: ease-out; }
+.vb-icon { transition-property: -unity-background-image-tint-color, opacity, scale; transition-duration: 0.22s; transition-timing-function: ease-out; }
+.vb-segmented__option { transition-property: background-color, opacity; transition-duration: 0.22s; transition-timing-function: ease-out; }
+.vb-switch__knob { transition-property: left, background-color; transition-duration: 0.22s; transition-timing-function: ease-out; }
+.vb-icon-button, .vb-tile, .vb-slot, .vb-perk-card, .vb-perk-row, .vb-route__sign, .vb-queue-chip, .vb-merchant__offer, .vb-skill { transition-property: scale, opacity; transition-duration: 0.1s, 0.22s; transition-timing-function: ease-out; }
+.vb-icon-button:active, .vb-tile:active, .vb-slot:active, .vb-perk-card:active, .vb-perk-row:active, .vb-route__sign:active, .vb-queue-chip:active, .vb-merchant__offer:active { scale: 0.97 0.97; }
+.vb-meter__fill, .vb-meter__extra, .vb-health__hp .vb-meter__fill, .vb-stat__fill, .vb-focus__fill { transition-property: width; transition-duration: 0.1s; transition-timing-function: ease-out; }
+.vb-meter__preview, .vb-power__reserve { transition-property: left, width, opacity; transition-duration: 0.1s; transition-timing-function: ease-out; }
+.vb-covered { transition-property: opacity; transition-duration: 0.22s; transition-timing-function: ease-out; }
+.vb-reduced-motion .vb-button, .vb-reduced-motion .vb-icon-button, .vb-reduced-motion .vb-tile, .vb-reduced-motion .vb-slot, .vb-reduced-motion .vb-perk-card, .vb-reduced-motion .vb-perk-row, .vb-reduced-motion .vb-route__sign, .vb-reduced-motion .vb-queue-chip, .vb-reduced-motion .vb-merchant__offer, .vb-reduced-motion .vb-skill { transition-property: color, opacity; }
+.vb-reduced-motion .vb-button:active, .vb-reduced-motion .vb-icon-button:active, .vb-reduced-motion .vb-tile:active, .vb-reduced-motion .vb-slot:active, .vb-reduced-motion .vb-perk-card:active, .vb-reduced-motion .vb-perk-row:active, .vb-reduced-motion .vb-route__sign:active, .vb-reduced-motion .vb-queue-chip:active, .vb-reduced-motion .vb-merchant__offer:active { scale: 1 1; }
 /* Unity's default theme lays out the BaseSlider parts; the kit's rules above only restyle them. */
 .vb-slider { flex-direction: row; }
 .vb-slider .vb-u-base-field__label { display: flex; align-items: center; }

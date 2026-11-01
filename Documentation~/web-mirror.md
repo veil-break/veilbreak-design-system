@@ -8,8 +8,8 @@ The same sources produce three web outputs:
 
 | Output | Command | Where |
 | --- | --- | --- |
-| The web kit `@veilbreak/gui` for web apps | `python3 Tools~/web/package.py` | `Web~/dist` (`Web~/README.md`) |
-| The GUI Handbook, the web kit and the demo app, for GitHub Pages | `python3 Tools~/handbook/build_handbook.py . docs` | `docs/` |
+| The web kit `@veilbreak/gui` for web apps | `uv run --frozen python Tools~/web/package.py` | `Web~/dist` (`Web~/README.md`) |
+| The GUI Handbook, the web kit and the demo app, for GitHub Pages | `uv run --frozen python Tools~/handbook/build_handbook.py . docs` | `docs/` |
 | The design-system artifact | `Tools~/web/build.sh OUT` | `OUT/project` |
 
 ## GitHub Pages
@@ -96,7 +96,7 @@ The rename is done at build time by `(?<![A-Za-z0-9_])vb(?![A-Za-z0-9_])` → `v
 ```sh
 OUT=$(mktemp -d)
 Tools~/web/build.sh "$OUT"                                   # also checks the output (see below)
-python3 Tools~/web/harness.py "$OUT" Tokens~/tokens.json VbButton BattleHUD   # optional: renders into OUT/render/
+uv run --frozen python Tools~/web/harness.py "$OUT" Tokens~/tokens.json VbButton BattleHUD   # optional: renders into OUT/render/
 ```
 
 `build.sh` fails when:

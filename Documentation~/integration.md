@@ -178,7 +178,7 @@ what happened.
 
 | Check | How |
 | --- | --- |
-| Tokens and generated files | `python3 Tools~/tokens.py --check`, `python3 Tools~/samples.py --check` |
+| Tokens and generated files | `uv run --frozen python Tools~/tokens.py --check`, `uv run --frozen python Tools~/samples.py --check` |
 | EditMode | `Tests/Editor`: navigation, world layer, ports, tokens, icons |
 | PlayMode | `Tests/Runtime/FitTests` renders the kit at widths 320–430 |
 | Clean consumer | The repository's `tools/verify-packages.py` copies the package and both samples into an empty project and compiles them |

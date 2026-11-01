@@ -1,0 +1,33 @@
+[project]
+name = "veilbreak-design-system-tools"
+version = "0.5.0"
+description = "Generators and validation for the Veilbreak GUI package and handbook"
+requires-python = ">=3.12"
+dependencies = []
+
+[tool.uv]
+package = false
+
+[dependency-groups]
+dev = ["ruff==0.14.3"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 120
+indent-width = 4
+
+[tool.ruff.lint]
+preview = true
+extend-select = ["E", "W"]
+
+[tool.ruff.lint.per-file-ignores]
+"Tools~/web/docs.py" = ["E501"]
+"Tools~/web/previews.py" = ["E501"]
+"Tools~/handbook/catalog.py" = ["E501"]
+"Tools~/handbook/build_handbook.py" = ["E501"]
+"Tools~/handbook/inspection_schema.py" = ["E501"]
+
+[tool.ruff.format]
+exclude = ["Tools~/web/docs.py", "Tools~/web/previews.py", "Tools~/handbook/catalog.py"]
+preview = true
+quote-style = "single"

@@ -21,10 +21,10 @@ stay the same components. Folders ending in `~` are not imported by Unity. The w
 ```sh
 OUT=$(mktemp -d)
 Tools~/web/build.sh "$OUT"
-python3 Tools~/web/harness.py "$OUT" Tokens~/tokens.json BattleHUD SkillButton LandscapeHUD
+uv run --frozen python Tools~/web/harness.py "$OUT" Tokens~/tokens.json BattleHUD SkillButton LandscapeHUD
 ```
 
 To publish, use the Artifact tool. The steps are in `Documentation~/web-mirror.md`: read first, upload icons as
 assets, send one files publish with `design-system.json` last.
 
-To lint, run `uv run --project ../../../tools ruff check .` from `Tools~`. The settings are in `Tools~/ruff.toml`.
+To lint, run `uv run --project .. --frozen ruff check .` from `Tools~`. The settings are in the root `pyproject.toml`. Run `uv sync --locked` at the repository root first.

@@ -29,9 +29,9 @@ this folder.
 
 | Check | Command |
 | --- | --- |
-| Generated tokens and sample scaffolding are current | `python3 Tools~/tokens.py --check`, `python3 Tools~/samples.py --check` |
+| Generated tokens and sample scaffolding are current | `uv run --frozen python Tools~/tokens.py --check`, `uv run --frozen python Tools~/samples.py --check` |
 | EditMode tests | `Tests/Editor` |
 | PlayMode fit tests at widths 320–430 | `Tests/Runtime` |
 | Web mirror | `Tools~/web/build.sh OUT` |
-| Web kit and handbook | `python3 Tools~/handbook/build_handbook.py . docs` (also rebuilds `Web~/dist`) |
-| Meta files for new package files | `python3 Tools~/metas.py --check` |
+| Web kit and handbook | `uv run --frozen python Tools~/handbook/build_handbook.py . docs` (also rebuilds `Web~/dist`) |
+| Meta files for new package files | `uv run --frozen python Tools~/metas.py --check` |

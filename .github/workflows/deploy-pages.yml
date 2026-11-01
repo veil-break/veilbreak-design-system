@@ -21,16 +21,34 @@ jobs:
       - name: Check out source
         uses: actions/checkout@v6
 
-      - name: Set up Python
-        uses: actions/setup-python@v6
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v7
         with:
-          python-version: '3.12'
+          version: '0.13.6'
+          enable-cache: true
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+
+      - name: Install locked Python tools
+        run: uv sync --locked
+
+      - name: Validate tooling
+        run: |
+          uv run --frozen ruff check .
+          uv run --frozen ruff format --check .
+          uv run --frozen python -m unittest discover -s Tools~/handbook/tests
+          uv run --frozen python Tools~/tokens.py --check
+          uv run --frozen python Tools~/samples.py --check
+          uv run --frozen python Tools~/metas.py --check
 
       - name: Build handbook and web app
-        run: python3 Tools~/handbook/build_handbook.py . "$RUNNER_TEMP/github-pages"
-
-      - name: Test inspector schema
-        run: python3 -m unittest discover -s Tools~/handbook/tests
+        run: |
+          uv run --frozen python Tools~/web/package.py
+          uv run --frozen python Tools~/handbook/build_handbook.py . "$RUNNER_TEMP/github-pages"
+          git diff --exit-code -- Web~/dist Runtime/Styles/Tokens.uss Runtime/Core/VbTokens.cs
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

@@ -80,14 +80,14 @@ camera.Pinched += f => rig.ZoomBy(f);                // events carry panel units
 
 ## Regenerating
 
-- `python3 Tools~/icons.py` rebuilds `Styles/Icons.uss` from `Runtime/Icons/*.svg` (kebab-case class per file).
-- `python3 Tools~/tokens.py` rebuilds `Styles/Tokens.uss`, `Styles/TokensContrast.uss`, `Core/VbTokens.cs` and
+- `uv run --frozen python Tools~/icons.py` rebuilds `Styles/Icons.uss` from `Runtime/Icons/*.svg` (kebab-case class per file).
+- `uv run --frozen python Tools~/tokens.py` rebuilds `Styles/Tokens.uss`, `Styles/TokensContrast.uss`, `Core/VbTokens.cs` and
   `Documentation~/tokens.md` from `Tokens~/tokens.json`, the design tokens this package owns (`--check` reports stale
   outputs; `--upstream FILE` lists differences from another `tokens.json`).
-- `python3 Tools~/samples.py` rewrites each sample's scene, UXML and asmdef scaffolding (`--check` reports drift).
+- `uv run --frozen python Tools~/samples.py` rewrites each sample's scene, UXML and asmdef scaffolding (`--check` reports drift).
 - `Tools~/web/build.sh OUT` rebuilds the design-system artifact's files (see `Documentation~/web-mirror.md`).
-- `python3 Tools~/handbook/build_handbook.py . docs` rebuilds the web kit (`Web~/dist`) and the GitHub Pages site (`docs/`).
-- `python3 Tools~/metas.py` writes `.meta` files (stable GUIDs) for new files; `--check` lists missing ones.
+- `uv run --frozen python Tools~/handbook/build_handbook.py . docs` rebuilds the web kit (`Web~/dist`) and the GitHub Pages site (`docs/`).
+- `uv run --frozen python Tools~/metas.py` writes `.meta` files (stable GUIDs) for new files; `--check` lists missing ones.
 
 ## Samples
 
@@ -111,3 +111,18 @@ or mutate game state. Map confirmed transactions onto their events and rebind af
 Use `GlitchText` with `Glitch.In/Out/Pulse`, and `Announcer` for short heads-up notices. Reduced Motion / Reduced
 Flashes fall back to fades; transitions cancel cleanly on replacement and detach. `HudTop.WaveSlammed` is an optional
 camera hook. The battle top row is pause, icon-only autoplay, wave/score, then speed; Power carries a credits chip.
+
+
+## Python tooling
+
+Install uv and run `uv sync --locked` from this repository root. Python 3.12 is selected by `.python-version`; the generators use only the standard library and Ruff is a locked development dependency. Node 22 is required for JavaScript syntax checks.
+
+```sh
+uv run --frozen ruff check .
+uv run --frozen ruff format --check .
+uv run --frozen python -m unittest discover -s Tools~/handbook/tests
+uv run --frozen python Tools~/tokens.py --check
+uv run --frozen python Tools~/samples.py --check
+uv run --frozen python Tools~/metas.py --check
+uv run --frozen python Tools~/handbook/build_handbook.py . docs
+```
