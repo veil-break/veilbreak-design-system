@@ -1,7 +1,9 @@
 # Changelog
 
 
-## unreleased
+## 0.7.0 — 2026-11-02
+
+- `VbFocus` (veilbreak-main's `MenuKit`, M5/3.4.6): keyboard focus across in-place redraws. `Keep(root, redraw, fallback)` remembers the focused element's name and focuses the new element of that name after the redraw; `Soon(root, name, fallback)` focuses a named element now or after a fresh layout and scrolls it into its list; `Read(element, name)` makes plain text a focus stop so the keyboard can scroll read-only lists. Pure UI Toolkit, no host types. Unit tests: `FocusTests`.
 
 - `Tools~/screen_kit.py` (from veilbreak-main's `vb screens build`): generates the screen kit's 57 reference vectors (frames, ability states, markers, telegraphs, decals) from the veil tokens into `Tools~/references/screen-kit/`; `--check` is part of CI's tooling validation. Unity does not import them. The 72-icon reference render and the original wordmark were not carried over: `Runtime/Icons` and branding's mark are the shipped sources.
 - `Tools~/references/atlases/` holds the VEIL_BREAK tactical-icon and rarity-badge atlases (moved from veilbreak-main's `assets/`), the reference art for gui's icons and badges. Unity does not import them.

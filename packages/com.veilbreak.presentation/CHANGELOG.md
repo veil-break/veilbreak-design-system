@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.0 — 2026-11-02
+
+- Tested version of `com.veilbreak.gui` moves to 0.7.0 (`VbFocus`, the screen-kit generator and vendor pack). The other three stay.
+
 ## 1.1.0 — 2026-11-02
 
 - Tested versions move to `com.veilbreak.feedback` 1.5.0 (`CueStage`), `com.veilbreak.branding` 1.2.0 (the intro's `ended` callback)
