@@ -13,6 +13,10 @@ unchanged; the package references the `Veilbreak.Gui` assembly and needs gui 0.6
   `ar-shape` class are read exactly as before, and `Outline`, `Linear` and `Attach` keep their signatures. `HudFrame` and `HudButton`
   stay here as the UXML elements. `HudPress` is an adapter over `VbPressGlow` with the `--neon` property, the `kbd` class and
   `HudFx.Reduced`.
+- `HudNavigation` is deliberately unchanged. It is the keyboard and gamepad focus engine (geometric and routed focus, Tab, Input
+  System hotkeys, remembered focus across rebuilt screens, modal flags with `OwnInput` and `Block`), none of which gui's
+  `Navigator` and `OverlayHost` have, and the touch-only arcade has no use for. Its screen animation already runs through gui via
+  `HudMotion`.
 ## 3.0.0
 
 - Depends on `com.veilbreak.gui`, the design-token authority.
