@@ -1,9 +1,5 @@
 # Changelog
 
-## unreleased
-
-- `vendor~/veilbreak-screen-assets`: the original screen asset pack (about 30 MB: 34 glb meshes, 14 PNG plates, 130 SVG icons and kit vectors, metadata, previews) moved from veilbreak-main's `assets/source-packs`, with its README. Source for main's city and menu generators (`vb-assets screens build|images`), not a Unity asset: `vendor~` is never imported. Binaries are plain git blobs, so the repository grows by about 30 MB.
-
 ## 0.3.0 — 2026-11-02
 
 - `FireLight` from veilbreak-main (same GUID): flickers a fire's point light around its authored intensity, low frequency

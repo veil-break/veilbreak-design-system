@@ -61,10 +61,6 @@ reflect only the painted sky.
 
 ## Assets
 
-- **Vendor pack.** `vendor~/veilbreak-screen-assets` is the original menu and courtyard asset pack from veilbreak-main
-  (`assets/source-packs`, about 30 MB): project-authored procedural vectors and meshes, AI-generated raster plates (prompts in
-  `metadata/image-prompts.json`), created 11 October 2026 from the specification v2. It is source material, never imported by
-  Unity (`~`). veilbreak-main's generators read its plates and compare against it; see its README for the contents.
 - **Models.** The `Models~` GLBs come from the Veilbreak source project's city kit and are project-authored. Their
   provenance is recorded in the repository's `docs/presentation-provenance.json`.
 - **Textures.** `T_MenuSky_BC` and `T_MenuSkyline_BC` are AI-generated plates from the same project, and

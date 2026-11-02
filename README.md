@@ -44,4 +44,4 @@ dotnet run --project packages/com.veilbreak.ar-hud/Tests~/InputChecks/Veilbreak.
 See the [multi-repo architecture](https://github.com/veil-break/.github-private/blob/main/docs/architecture/multi-repo-refactoring.md)
 for the package plan (gui, rendering, feedback, environment, branding, presentation, ar-hud).
 
-`packages/com.veilbreak.environment/vendor~/veilbreak-screen-assets` (about 30 MB, plain git blobs) is the original screen asset pack from veilbreak-main's `assets/source-packs`: project-authored procedural vectors and meshes plus AI-generated plates, kept as source for the games' generators with its README and metadata. The `~` suffix keeps Unity from importing it.
+`vendor~/veilbreak-screen-assets` (about 30 MB, plain git blobs) is the original screen asset pack from veilbreak-main's `assets/source-packs`: project-authored procedural vectors and meshes plus AI-generated plates, kept as source for the games' generators with its README and metadata. It sits outside `packages/` so no game's package cache copies it, and the `~` suffix keeps Unity from importing it even if it is ever opened as part of a project.
