@@ -1,11 +1,17 @@
 # Changelog
 
-## unreleased
+## 1.3.0
 
-- Moved from `veilbreak-arcade/packages` to `veilbreak-design-system/packages` with every file and GUID unchanged. Consume it from git at `?path=/packages/com.veilbreak.branding`.
+- The slash-cut mark moved here from veilbreak-main with its GUIDs unchanged:
+  - `Runtime/Vectors/Mark.svg` is the menu and loader mark, the final broken pose of the intro;
+  - `Runtime/Icons/Mark.svg` is the `mark` glyph, the fallback icon in a `HudIcons` library;
+  - `Tools~/source/veilbreak-mark.svg` and `veilbreak-mark-dark.svg` are the light- and dark-ground sources.
+- `Tools~/logo.py` writes `Runtime/Vectors/Mark.svg` from the dark-ground source (`--check` names a stale output). It
+  replaces main's `vb logo`. The deprecated VEIL/BREAK wordmark generator is gone.
 
 ## 1.2.0 — 2026-11-02
 
+- Moved from `veilbreak-arcade/packages` to `veilbreak-design-system/packages` with every file and GUID unchanged. Consume it from git at `?path=/packages/com.veilbreak.branding`.
 - `IntroSplash.Play` takes an optional `ended` callback, called once when the intro finishes, is skipped through, stopped or
   detached. veilbreak-main hosts the splash in its navigation's own-input modal and closes the modal from it; main's own copy
   of the intro is retired.

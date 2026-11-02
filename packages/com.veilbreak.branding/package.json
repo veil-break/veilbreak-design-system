@@ -1,13 +1,14 @@
 {
   "name": "com.veilbreak.branding",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "displayName": "Veilbreak Branding",
-  "description": "Original Veilbreak splash with independent UI Toolkit hosting and its slicing sound.",
+  "description": "Original Veilbreak splash with independent UI Toolkit hosting and its slicing sound, and the slash-cut mark (vector and icon) generated from its source.",
   "unity": "6000.3",
   "dependencies": {
     "com.unity.inputsystem": "1.20.1",
     "com.unity.modules.audio": "1.0.0",
     "com.unity.modules.uielements": "1.0.0",
+    "com.unity.modules.vectorgraphics": "1.0.0",
     "com.veilbreak.gui": "0.5.0"
   },
   "license": "SEE LICENSE.md",
