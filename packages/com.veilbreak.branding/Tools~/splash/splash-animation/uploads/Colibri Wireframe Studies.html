@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COLIBRI — Kinetic Wireframe Studies</title>
+<link rel="stylesheet" href="mono/colors_and_type.css">
+<link rel="stylesheet" href="studies.css">
+</head>
+<body>
+<div class="aurora"></div>
+
+<div class="wrap">
+
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <div>
+      <div class="brand"><span class="dot"></span>MONO</div>
+    </div>
+    <div class="title-block">
+      <span class="eyebrow">— Specimen · Colibri</span>
+      <h1>Kinetic <b>Wireframe</b> Study</h1>
+    </div>
+    <div class="specs">
+      <div><b id="spec-faces">24</b>Facets</div>
+      <div><b>6</b>Parts</div>
+      <div><b>12</b>Sequences</div>
+    </div>
+  </header>
+
+  <!-- PART KEY -->
+  <section class="panel">
+    <div class="key">
+      <div class="key-stage" id="keyStage"></div>
+      <div>
+        <div class="key-head">
+          <span class="eyebrow">— Anatomy</span>
+          <h2>Six structural parts</h2>
+          <p>The mesh resolves into six moving assemblies. Sequences below drive these
+             parts independently — wings hinge at the shoulders, the tail steers from the
+             lower body, the beak and head lead the form.</p>
+        </div>
+        <div class="legend" id="legend"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STUDIES -->
+  <div class="section-label">
+    <span class="eyebrow">— Sequences · 12</span>
+    <span class="rule"></span>
+    <span class="eyebrow" style="color:var(--fg4)">Looping</span>
+  </div>
+  <div class="grid" id="grid"></div>
+
+</div>
+
+<script src="hummingbird.js"></script>
+<script>
+(function () {
+  const NS = 'http://www.w3.org/2000/svg';
+
+  const PARTS = [
+    { key: 'beak',     name: 'Beak',      color: 'var(--accent-turquoise)' },
+    { key: 'head',     name: 'Head',      color: 'var(--info)' },
+    { key: 'body',     name: 'Body',      color: 'var(--accent-violet)' },
+    { key: 'wingFar',  name: 'Far Wing',  color: 'var(--accent-crimson)' },
+    { key: 'wingNear', name: 'Near Wing', color: 'var(--success)' },
+    { key: 'tail',     name: 'Tail',      color: 'var(--warning)' },
+  ];
+
+  const counts = HB.partCounts();
+  document.getElementById('spec-faces').textContent = HB.faceCount;
+
+  /* ── KEY: colored mesh + numbered markers ───────────────── */
+  const keyStage = document.getElementById('keyStage');
+  const keySvg = HB.buildMesh();
+  keySvg.querySelectorAll('.hb-face').forEach(p => {
+    const part = p.getAttribute('data-part');
+    const meta = PARTS.find(x => x.key === part);
+    p.style.stroke = meta.color;
+    p.style.fill = meta.color;
+    p.style.fillOpacity = '.12';
+    p.style.opacity = '.92';
+  });
+  // numbered markers at part centroids
+  const tagG = document.createElementNS(NS, 'g');
+  tagG.setAttribute('class', 'key-tag');
+  PARTS.forEach((meta, i) => {
+    const c = HB.partCentroid(meta.key);
+    const circ = document.createElementNS(NS, 'circle');
+    circ.setAttribute('cx', c[0]); circ.setAttribute('cy', c[1]);
+    circ.setAttribute('r', 26);
+    circ.style.fill = meta.color;
+    const t = document.createElementNS(NS, 'text');
+    t.setAttribute('x', c[0]); t.setAttribute('y', c[1]);
+    t.setAttribute('text-anchor', 'middle');
+    t.setAttribute('dominant-baseline', 'central');
+    t.textContent = (i + 1);
+    tagG.appendChild(circ); tagG.appendChild(t);
+  });
+  keySvg.appendChild(tagG);
+  keyStage.appendChild(keySvg);
+
+  /* ── LEGEND ──────────────────────────────────────────────── */
+  const legend = document.getElementById('legend');
+  PARTS.forEach((meta, i) => {
+    const row = document.createElement('div');
+    row.className = 'legend-row';
+    row.innerHTML =
+      '<span class="ix">' + (i + 1) + '</span>' +
+      '<span class="sw" style="background:' + meta.color + ';color:' + meta.color + '"></span>' +
+      '<span class="nm">' + meta.name + '</span>' +
+      '<span class="ct">' + (counts[meta.key] || 0) + ' facets</span>';
+    legend.appendChild(row);
+  });
+
+  /* ── 12 STUDIES ─────────────────────────────────────────── */
+  const STUDIES = [
+    ['flap',          'Wingbeat',      'Primary flight cycle'],
+    ['trace',         'Vector Trace',  'Sequential edge plot'],
+    ['assemble',      'Assembly',      'Facet convergence'],
+    ['hover',         'Station-Keep',  'Idle hover · micro-trim'],
+    ['scan',          'Scan',          'Top-down telemetry sweep'],
+    ['pulse',         'Resonance',     'Radial breath wave'],
+    ['spectrum',      'Spectrum',      'Accent traversal'],
+    ['spin',          'Orbit',         'Rotation · axis Y'],
+    ['glitch',        'Signal Loss',   'Channel split · jitter'],
+    ['current',       'Current',       'Charge along the edges'],
+    ['constellation', 'Triangulation', 'Vertices → mesh'],
+    ['dart',          'Dart',          'Transit · afterimage'],
+  ];
+
+  const grid = document.getElementById('grid');
+
+  STUDIES.forEach((s, idx) => {
+    const [anim, name, desc] = s;
+    const card = document.createElement('article');
+    card.className = 'study';
+    card.setAttribute('data-anim', anim);
+
+    const stage = document.createElement('div');
+    stage.className = 'stage';
+
+    if (anim === 'current') {
+      const base = HB.buildMesh();  base.classList.add('hb-base');
+      const comet = HB.buildMesh(); comet.classList.add('hb-comet');
+      stage.appendChild(base); stage.appendChild(comet);
+    } else if (anim === 'constellation') {
+      stage.appendChild(HB.buildMesh({ vertices: true }));
+    } else if (anim === 'dart') {
+      const g2 = HB.buildMesh(); g2.classList.add('ghost', 'ghost2');
+      const g1 = HB.buildMesh(); g1.classList.add('ghost', 'ghost1');
+      stage.appendChild(g2); stage.appendChild(g1);
+      stage.appendChild(HB.buildMesh());
+    } else {
+      stage.appendChild(HB.buildMesh());
+    }
+
+    if (anim === 'scan') {
+      const bar = document.createElement('div');
+      bar.className = 'scanbar';
+      stage.appendChild(bar);
+    }
+
+    const foot = document.createElement('div');
+    foot.className = 'study-foot';
+    const ix = String(idx + 1).padStart(2, '0');
+    foot.innerHTML =
+      '<span class="ix">' + ix + '</span>' +
+      '<span class="meta">' +
+        '<div class="nm">' + name + '</div>' +
+        '<div class="desc">' + desc + '</div>' +
+      '</span>' +
+      '<span class="live">Live</span>';
+
+    card.appendChild(stage);
+    card.appendChild(foot);
+    grid.appendChild(card);
+  });
+})();
+</script>
+</body>
+</html>

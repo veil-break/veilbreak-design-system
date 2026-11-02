@@ -1,5 +1,9 @@
 # Changelog
 
+
+## unreleased
+
+- `Tools~/references/atlases/` holds the VEIL_BREAK tactical-icon and rarity-badge atlases (moved from veilbreak-main's `assets/`), the reference art for gui's icons and badges. Unity does not import them.
 ## 0.6.0 — 2026-11-02
 
 Primitives that `com.veilbreak.ar-hud` used to carry alone now live here (veilbreak-design-system#13); ar-hud keeps its API as a

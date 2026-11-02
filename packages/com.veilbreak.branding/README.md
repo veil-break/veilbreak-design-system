@@ -4,6 +4,8 @@ Call IntroSplash.Play(host, reducedMotionOrFlashes, volume, ended). It consumes 
 
 The mark: `Runtime/Vectors/Mark.svg` (menu and loader mark, the intro's final pose) and `Runtime/Icons/Mark.svg` (the `mark` glyph for a `HudIcons` library). `Tools~/logo.py` regenerates the vector from `Tools~/source/veilbreak-mark-dark.svg`; run it with `--check` in CI.
 
+Authoring sources (not imported by Unity): `Tools~/source/logo/` holds the slash-cut logo keyframes (`logo-start`, `logo-25-`, `logo-50-`, `logo-Artboard-4`) and the vectorcraft project, and `Tools~/splash/` holds the splash keyframes and the animation prototypes the intro was ported from. Both moved from veilbreak-main's `assets/logo/`.
+
 Assemblies: `Veilbreak.Branding`. Unity 6000.3.
 
 Install from git with a reviewed commit, `"com.veilbreak.branding": "https://github.com/veil-break/veilbreak-design-system.git?path=/packages/com.veilbreak.branding#<full-reviewed-commit>"`, plus the git sources of its first-party dependencies (Unity does not resolve git dependencies declared inside packages). Veilbreak games get these entries from `vb packages remote`; use `vb packages local --package com.veilbreak.branding` to edit this folder from a game. Moved here from veilbreak-arcade with its GUIDs unchanged.

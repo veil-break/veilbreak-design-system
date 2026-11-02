@@ -1,0 +1,750 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>MONO · Wireframe Extension</title>
+<link rel="stylesheet" href="../styles/components.css" />
+<link rel="stylesheet" href="../styles/mono-wireframe.css" />
+<style>
+  /* Showcase chrome */
+  body { padding: 0; }
+  .page { max-width: 1280px; margin: 0 auto; padding: var(--sp-12) var(--sp-8) var(--sp-20); position: relative; }
+  .hero { position: relative; padding: var(--sp-20) var(--sp-8) var(--sp-12); overflow: hidden; }
+  .hero .ico-stage {
+    position: absolute; right: -120px; top: 40px; width: 520px; height: 520px;
+    display: grid; place-items: center; opacity: 0.85; pointer-events: none;
+  }
+  .hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(48px, 7vw, 96px);
+    line-height: 1;
+    color: var(--fg1);
+    letter-spacing: -0.03em;
+    font-weight: 300;
+    margin: 0 0 var(--sp-4);
+    max-width: 18ch;
+  }
+  .hero h1 em { font-style: normal; color: var(--accent-turquoise); }
+  .hero .eyebrow { color: var(--accent-turquoise); margin-bottom: var(--sp-4); }
+  .hero p.lede {
+    font-size: 18px; color: var(--fg2); max-width: 56ch; line-height: 1.5;
+    margin: var(--sp-4) 0 var(--sp-8);
+  }
+  .hero .specs { display: flex; gap: var(--sp-6); flex-wrap: wrap; }
+  .hero .spec { font-size: var(--text-xs); color: var(--fg3); letter-spacing: var(--tracking-widest); text-transform: uppercase; }
+  .hero .spec b { color: var(--fg1); font-weight: 400; display: block; font-family: var(--font-mono); font-size: 13px; letter-spacing: 0; }
+
+  /* Section */
+  section { padding: var(--sp-16) 0; border-top: 1px solid var(--border-hairline); }
+  section > header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: var(--sp-8); gap: var(--sp-6); }
+  section > header h2 { margin: 0; font-family: var(--font-sans); font-weight: 100; font-size: 40px; letter-spacing: -0.02em; color: var(--fg1); }
+  section > header .meta { color: var(--fg3); font-size: 12px; letter-spacing: 0.24em; text-transform: uppercase; }
+  section > header .meta b { font-family: var(--font-mono); color: var(--fg1); font-weight: 400; letter-spacing: 0; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-6); }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-6); }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--sp-4); }
+  .grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--sp-4); }
+  @media (max-width: 900px) { .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; } .grid-5 { grid-template-columns: repeat(2, 1fr); } }
+
+  /* Aurora bg */
+  .aurora-host { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .aurora-host > div { position: absolute; }
+  .aurora-1 { width: 760px; height: 760px; left: -20%; top: -10%; background: radial-gradient(closest-side, rgba(0,229,209,0.18), transparent 70%); filter: blur(80px); animation: drift1 18s var(--ease-cinematic) infinite alternate; }
+  .aurora-2 { width: 620px; height: 620px; right: -10%; top: 40%; background: radial-gradient(closest-side, rgba(255,46,126,0.14), transparent 70%); filter: blur(80px); animation: drift2 24s var(--ease-cinematic) infinite alternate; }
+  .aurora-3 { width: 700px; height: 700px; left: 30%; bottom: -20%; background: radial-gradient(closest-side, rgba(200,182,255,0.12), transparent 70%); filter: blur(80px); animation: drift3 22s var(--ease-cinematic) infinite alternate; }
+  @keyframes drift1 { to { transform: translate(80px, 60px) scale(1.1); } }
+  @keyframes drift2 { to { transform: translate(-60px, -40px) scale(1.15); } }
+  @keyframes drift3 { to { transform: translate(40px, -80px) scale(1.05); } }
+
+  /* Tile w/ label strip */
+  .tile-label {
+    display: flex; justify-content: space-between; gap: var(--sp-3);
+    margin-top: var(--sp-3);
+    font-size: 10px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--fg3);
+    font-family: var(--font-sans);
+  }
+  .tile-label b { color: var(--fg1); font-family: var(--font-mono); letter-spacing: 0; font-weight: 400; font-size: 11px; }
+
+  .stat {
+    display: flex; flex-direction: column; gap: var(--sp-3);
+    padding: var(--sp-6);
+  }
+  .stat .num { font-family: var(--font-display); font-size: 56px; line-height: 1; color: var(--fg1); letter-spacing: -0.04em; font-weight: 300; }
+  .stat .num small { font-size: 16px; color: var(--fg3); letter-spacing: 0; margin-left: 6px; }
+  .stat .label { font-size: 10px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--fg3); }
+  .stat .delta { font-family: var(--font-mono); font-size: 12px; color: var(--accent-turquoise); }
+  .stat .delta[data-neg] { color: var(--accent-crimson); }
+
+  /* Spinner row */
+  .spin-row { display: flex; gap: var(--sp-12); align-items: center; padding: var(--sp-8); justify-content: center; }
+
+  /* Inline brand mark line draw */
+  .brand-mark { display: grid; place-items: center; padding: var(--sp-8); }
+  .brand-mark svg { width: 220px; height: auto; }
+
+  /* Flow node mini-edge effect (since FlowGraph nodes are absolute, give them their own gradient) */
+  .wf-edge-mini { background: var(--mono-onyx); }
+  .wf-edge-mini .edge-top, .wf-edge-mini .edge-bot {
+    position: absolute; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent 0%, currentColor 10%, transparent 80%);
+    opacity: 0.85;
+    pointer-events: none;
+  }
+  .wf-edge-mini .edge-top { top: 0; }
+  .wf-edge-mini .edge-bot { bottom: 0; transform: scaleX(-1); }
+  .wf-edge-mini[data-accent="violet"]   { color: var(--accent-violet); }
+  .wf-edge-mini[data-accent="crimson"]  { color: var(--accent-crimson); }
+  .wf-edge-mini[data-accent="turquoise"]{ color: var(--accent-turquoise); }
+  .wf-edge-mini:not([data-accent]) { color: var(--fg2); }
+
+  /* Toggle pills for color-schemes section */
+  .color-pills { display: flex; gap: var(--sp-2); flex-wrap: wrap; }
+  .color-pills button {
+    min-height: 28px; padding: 0 var(--sp-3); font-size: var(--text-xs);
+    background: transparent; border: 1px solid var(--border-soft);
+    color: var(--fg2); cursor: pointer;
+  }
+  .color-pills button[aria-pressed="true"] { color: var(--accent-turquoise); border-color: var(--accent-turquoise); }
+
+  /* Ground bg embedded in tile */
+  .bg-tile { position: relative; height: 320px; overflow: hidden; padding: 0 !important; }
+  .bg-tile .label-strip { position: absolute; inset: auto var(--sp-4) var(--sp-4) var(--sp-4); display: flex; justify-content: space-between; color: var(--fg3); font-size: 10px; letter-spacing: .24em; text-transform: uppercase; z-index: 3; }
+  .bg-tile .label-strip b { color: var(--fg1); font-family: var(--font-mono); font-weight: 400; letter-spacing: 0; }
+  .bg-tile .corner { position: absolute; top: var(--sp-4); left: var(--sp-4); font-family: var(--font-mono); font-size: 11px; color: var(--accent-turquoise); letter-spacing: 0.08em; z-index: 3; }
+
+  /* Wide tile for scene/cow */
+  .wide-tile { padding: var(--sp-4) !important; }
+
+  /* Brand wireframe — geometric mark with line-by-line draw */
+  .brand-wide { padding: var(--sp-12) var(--sp-8) !important; min-height: 280px; display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-8); align-items: center; }
+  .brand-wide .copy h3 { font-size: 28px; font-weight: 100; margin: 0 0 var(--sp-3); color: var(--fg1); letter-spacing: -0.01em; }
+  .brand-wide .copy p { margin: 0 0 var(--sp-4); color: var(--fg2); }
+
+  /* Section anchor list */
+  .toc { display: flex; flex-wrap: wrap; gap: var(--sp-3); margin-top: var(--sp-6); }
+  .toc a {
+    font-size: 10px; letter-spacing: 0.24em; text-transform: uppercase;
+    color: var(--fg3); padding: 6px 10px; border: 1px solid var(--border-soft);
+    text-decoration: none; transition: all var(--duration-base);
+  }
+  .toc a:hover { color: var(--accent-turquoise); border-color: var(--accent-turquoise); }
+
+  .footer { padding: var(--sp-12) 0 var(--sp-6); text-align: center; color: var(--fg4); font-size: 11px; letter-spacing: 0.24em; text-transform: uppercase; border-top: 1px solid var(--border-hairline); margin-top: var(--sp-16); }
+  /* Iso kit thumbnail tiles */
+  .kit-tile { padding: var(--sp-3) !important; display: flex; flex-direction: column; gap: var(--sp-2); }
+  .kit-tile > div:first-child { aspect-ratio: 1; width: 100%; display: grid; place-items: center; }
+  .kit-tile > div:first-child svg { max-width: 100%; max-height: 100%; }
+  .kit-tile .tile-label { margin: 0; }
+</style>
+</head>
+<body style="background-color: rgba(32, 29, 29, 0.35); font-size: 20px; font-family: Poppins">
+<div class="aurora-host">
+  <div class="aurora-1"></div>
+  <div class="aurora-2"></div>
+  <div class="aurora-3"></div>
+</div>
+
+<div class="page" style="position: relative; z-index: 1;">
+  <!-- HERO -->
+  <header class="hero mono-cinematic-enter" data-screen-label="01 Hero">
+    <div class="ico-stage" id="hero-ico"></div>
+    <div class="eyebrow">— MONO / EXTENSION ⋅ WIREFRAME</div>
+    <h1>Hairline geometry. <em>Triangulated</em> by default.</h1>
+    <p class="lede">An extension of the MONO operator-console kit: animated gradient edges replacing hard borders, low-poly SVG branding, triangle-mesh backgrounds, isometric primitives and a minimalist data toolkit — all rendered in single-pixel lines.</p>
+    <div class="specs">
+      <div class="spec">Components<b>14</b></div>
+      <div class="spec">Edge schemes<b>06</b></div>
+      <div class="spec">Animations<b>0.0</b></div>
+      <div class="spec">Stroke<b>1.0px</b></div>
+    </div>
+    <div class="toc">
+      <a href="#edges">Edges</a>
+      <a href="#brand">Brand</a>
+      <a href="#spinner">Spinner</a>
+      <a href="#bg">Backgrounds</a>
+      <a href="#data">Data</a>
+      <a href="#flow">Flow</a>
+      <a href="#iso">Iso</a>
+      <a href="#scene">Scenes</a>
+      <a href="#cow">Idle</a>
+      <a href="#bestiary">Bestiary</a>
+      <a href="#iso-kit">Iso kit</a>
+      <a href="#city-block">City block</a>
+    </div>
+  </header>
+
+  <!-- ANIMATED EDGES -->
+  <section id="edges" data-screen-label="02 Animated edges">
+    <header>
+      <div>
+        <div class="eyebrow" style="color: var(--accent-turquoise); margin-bottom: var(--sp-2);">— 01 / EDGES</div>
+        <h2>Animated gradient borders</h2>
+      </div>
+      <div class="meta">No flat borders. Single-colour fade-right, brighten + nudge-left on hover. <b>data-edge</b></div>
+    </header>
+    <div class="grid-3">
+      <article data-wf data-edge="turquoise" data-edge-anim data-fill="onyx">
+        <div class="eyebrow">— PRIMARY</div>
+        <h3 style="font-weight: 300; margin: var(--sp-2) 0 var(--sp-3); color: var(--fg1);">Turquoise</h3>
+        <p style="color: var(--fg2); margin: 0 0 var(--sp-4);">Default state. Travelling sweep on top + reversed sweep on bottom. Hover to brighten.</p>
+        <span class="caption" style="font-family: var(--font-mono); color: var(--fg3);">data-edge="turquoise"</span>
+      </article>
+      <article data-wf data-edge="crimson" data-edge-anim data-fill="onyx">
+        <div class="eyebrow" style="color: var(--accent-crimson);">— DANGER</div>
+        <h3 style="font-weight: 300; margin: var(--sp-2) 0 var(--sp-3); color: var(--fg1);">Crimson</h3>
+        <p style="color: var(--fg2); margin: 0 0 var(--sp-4);">Used for hot states, lost signal, abort affordances. Maintains the same fade-and-nudge pattern.</p>
+        <span class="caption" style="font-family: var(--font-mono); color: var(--fg3);">data-edge="crimson"</span>
+      </article>
+      <article data-wf data-edge="violet" data-edge-anim data-fill="onyx">
+        <div class="eyebrow" style="color: var(--accent-violet);">— TERTIARY</div>
+        <h3 style="font-weight: 300; margin: var(--sp-2) 0 var(--sp-3); color: var(--fg1);">Violet</h3>
+        <p style="color: var(--fg2); margin: 0 0 var(--sp-4);">Atmospheric / informational. Often pairs with iridescent shaders.</p>
+        <span class="caption" style="font-family: var(--font-mono); color: var(--fg3);">data-edge="violet"</span>
+      </article>
+
+      <article data-wf data-edge="ember" data-edge-anim data-fill="onyx">
+        <div class="eyebrow" style="color: #ffd166;">— WARN</div>
+        <h3 style="font-weight: 300; margin: var(--sp-2) 0 var(--sp-3); color: var(--fg1);">Ember</h3>
+        <p style="color: var(--fg2); margin: 0 0 var(--sp-4);">Tertiary amber→yellow ramp. Reserved for caution messaging without the urgency of crimson.</p>
+        <span class="caption" style="font-family: var(--font-mono); color: var(--fg3);">data-edge="ember"</span>
+      </article>
+      <article data-wf data-edge="iris" data-edge-anim data-fill="onyx">
+        <div class="eyebrow" style="color: #5cd1ff;">— INFO</div>
+        <h3 style="font-weight: 300; margin: var(--sp-2) 0 var(--sp-3); color: var(--fg1);">Iris</h3>
+        <p style="color: var(--fg2); margin: 0 0 var(--sp-4);">Cyan→violet. Used for system overlays, modal chrome and inspector panels.</p>
+        <span class="caption" style="font-family: var(--font-mono); color: var(--fg3);">data-edge="iris"</span>
+      </article>
+      <article data-wf data-edge="mixed" data-edge-anim data-fill="onyx">
+        <div class="eyebrow">— SIGNATURE</div>
+        <h3 style="font-weight: 300; margin: var(--sp-2) 0 var(--sp-3); color: var(--fg1);">Tri-stop</h3>
+        <p style="color: var(--fg2); margin: 0 0 var(--sp-4);">Full turquoise → violet → crimson sweep. Reserved for hero surfaces and mode-switch banners.</p>
+        <span class="caption" style="font-family: var(--font-mono); color: var(--fg3);">data-edge="mixed"</span>
+      </article>
+    </div>
+  </section>
+
+  <!-- BRAND WIREFRAME -->
+  <section id="brand" data-screen-label="03 Brand wireframe">
+    <header>
+      <div>
+        <div class="eyebrow" style="color: var(--accent-turquoise); margin-bottom: var(--sp-2);">— 02 / BRAND</div>
+        <h2>Wireframe mark</h2>
+      </div>
+      <div class="meta">Line-by-line draw. SVG hairline. <b>30 strokes / 12 nodes</b></div>
+    </header>
+    <div class="grid-2">
+      <article data-wf data-edge="mixed" data-fill="onyx" class="brand-wide">
+        <div id="brand-svg" class="brand-mark"></div>
+        <div class="copy">
+          <div class="eyebrow">— SYSTEM MARK</div>
+          <h3>Regular alt &#x2014; icosahedron</h3>
+          <p>The system glyph is a hairline icosahedron drawn edge-by-edge. Each of the 30 edges arrives with a staggered <code>stroke-dashoffset</code> animation; the 12 vertices fade in once the wireframe closes.</p>
+          <button data-button id="redraw">Redraw</button>
+        </div>
+      </article>
+      <article data-wf data-edge="turquoise" data-fill="onyx" style="padding: 0;">
+        <div id="ico-spin" style="display: grid; place-items: center; padding: var(--sp-8); min-height: 360px;"></div>
+        <div class="tile-label" style="padding: 0 var(--sp-6) var(--sp-6); margin: 0;">
+          <span>Rotation · Y-axis</span><b>9.0 s</b>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- SPINNER -->
+  <section id="spinner" data-screen-label="04 Spinner">
+    <header>
+      <div>
+        <div class="eyebrow" style="color: var(--accent-turquoise); margin-bottom: var(--sp-2);">— 03 / LOADER</div>
+        <h2>Triangle loader</h2>
+      </div>
+      <div class="meta">Bold trace from top vertex over hairline triangle. <b>1.8s loop</b></div>
+    </header>
+    <article data-wf data-edge="mixed" data-fill="onyx">
+      <div class="spin-row">
+        <div style="text-align: center;">
+          <div id="spin-1"></div>
+          <div class="tile-label"><span>Default</span><b>turquoise</b></div>
+        </div>
+        <div style="text-align: center;">
+          <div id="spin-2"></div>
+          <div class="tile-label"><span>Danger</span><b>crimson</b></div>
+        </div>
+        <div style="text-align: center;">
+          <div id="spin-3"></div>
+          <div class="tile-label"><span>Tertiary</span><b>violet</b></div>
+        </div>
+        <div style="text-align: center;">
+          <div id="spin-4"></div>
+          <div class="tile-label"><span>Large</span><b>96px</b></div>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <!-- BACKGROUNDS -->
+  <section id="bg" data-screen-label="05 Backgrounds">
+    <header>
+      <div>
+        <div class="eyebrow" style="color: var(--accent-turquoise); margin-bottom: var(--sp-2);">— 04 / SHADERS</div>
+        <h2>Triangle-mesh backgrounds</h2>
+      </div>
+      <div class="meta">Terrain · neural nets · mind maps · polyhedra — <b style="color: var(--fg1);">click any mesh</b> to send a ripple</div>
+    </header>
+    <div class="grid-2">
+      <article data-wf data-edge="turquoise" data-fill="ink" class="bg-tile">
+        <div class="corner">[ TERRAIN / 22 × 14 ]</div>
+        <div id="ground-1" style="position: absolute; inset: 0;"></div>
+        <div class="label-strip"><span>Rolling hill mesh</span><b>click → ripple</b></div>
+      </article>
+      <article data-wf data-edge="violet" data-fill="ink" class="bg-tile">
+        <div class="corner" style="color: var(--accent-violet);">[ NEURAL / 4 LAYERS ]</div>
+        <div id="nn-1" style="position: absolute; inset: 0; display: grid; place-items: center; padding: var(--sp-6);"></div>
+        <div class="label-strip"><span>Hover relations · click → fire</span><b>sparse fan-out</b></div>
+      </article>
+      <article data-wf data-edge="iris" data-fill="ink" class="bg-tile">
+        <div class="corner" style="color: #5cd1ff;">[ NEURAL / 3D / ROTATING ]</div>
+        <div id="nn3d-1" style="position: absolute; inset: 0; display: grid; place-items: center; padding: var(--sp-4);"></div>
+        <div class="label-strip"><span>Hover freeze · click → fire</span><b>Y-axis spin</b></div>
+      </article>
+      <article data-wf data-edge="crimson" data-fill="ink" class="bg-tile">
+        <div class="corner" style="color: var(--accent-crimson);">[ TERRAIN / CRIMSON ]</div>
+        <div id="ground-2" style="position: absolute; inset: 0;"></div>
+        <div class="label-strip"><span>Alt scheme · alt seed</span><b>click → ripple</b></div>
+      </article>
+      <article data-wf data-edge="turquoise" data-fill="ink" class="bg-tile">
+        <div class="corner">[ MIND-MAP / RADIAL ]</div>
+        <div id="mm-1" style="position: absolute; inset: 0; display: grid; place-items: center; padding: var(--sp-4);"></div>
+        <div class="label-strip"><span>Hover branch · click → ripple</span><b>ancestry + subtree</b></div>
+      </article>
+      <article data-wf data-edge="violet" data-fill="ink" class="bg-tile">
+        <div class="corner" style="color: var(--accent-violet);">[ MIND-MAP / 3D / SPHERE ]</div>
+        <div id="mm3d-1" style="position: absolute; inset: 0; display: grid; place-items: center; padding: var(--sp-4);"></div>
+        <div class="label-strip"><span>Hover freeze · click → ripple</span><b>spherical tree</b></div>
+      </article>
+    </div>
+
+    <div class="meta" style="margin: var(--sp-7) 0 var(--sp-4);">— WIRE POLYHEDRA · rotating &amp; static · click to ripple</div>
+    <div class="grid-5" id="poly-gallery"></div>
+  </section>
+
+  <!-- INFOGRAPHICS -->
+  <section id="data" data-screen-label="06 Infographics">
+    <header>
+      <div>
+        <div class="eyebrow" style="color: var(--accent-turquoise); margin-bottom: var(--sp-2);">— 05 / DATA</div>
+        <h2>Infographic starter kit</h2>
+      </div>
+      <div class="meta">Stats · dials · sparklines · bars</div>
+    </header>
+    <div class="grid-4" style="margin-bottom: var(--sp-6);">
+      <article data-wf data-edge="turquoise" data-fill="onyx" class="stat">
+        <span class="label">— Throughput</span>
+        <span class="num">14.6<small>k/s</small></span>
+        <span class="delta">↑ 0.42 vs prev</span>
+      </article>
+      <article data-wf data-edge="crimson" data-fill="onyx" class="stat">
+        <span class="label">— Drift</span>
+        <span class="num">0.078</span>
+        <span class="delta" data-neg>↑ 0.012 over threshold</span>
+      </article>
+      <article data-wf data-edge="violet" data-fill="onyx" class="stat">
+        <span class="label">— Coverage</span>
+        <span class="num">92<small>%</small></span>
+        <span class="delta">↑ 1.4 vs prev</span>
+      </article>
+      <article data-wf data-edge="iris" data-fill="onyx" class="stat">
+        <span class="label">— Channels</span>
+        <span class="num">128<small> / 256</small></span>
+        <span class="delta">↑ 6 locked</span>
+      </article>
+    </div>
+    <div class="grid-3">
+      <article data-wf data-edge="turquoise" data-fill="onyx">
+        <div class="eyebrow">— Load</div>
+        <div style="display: grid; place-items: center; padding: var(--sp-6) 0;"><div id="dial-1"></div></div>
+      </article>
+      <article data-wf data-edge="crimson" data-fill="onyx">
+        <div class="eyebrow" style="color: var(--accent-crimson);">— Latency</div>
+        <div style="display: grid; place-items: center; padding: var(--sp-6) 0;"><div id="dial-2"></div></div>
+      </article>
+      <article data-wf data-edge="violet" data-fill="onyx">
+        <div class="eyebrow" style="color: var(--accent-violet);">— Memory</div>
+        <div style="display: grid; place-items: center; padding: var(--sp-6) 0;"><div id="dial-3"></div></div>
+      </article>
+    </div>
+    <div class="grid-2" style="margin-top: var(--sp-6);">
+      <article data-wf data-edge="turquoise" data-fill="onyx">
+        <div class="eyebrow" style="margin-bottom: var(--sp-3);">— SIGNAL · 14d</div>
+        <div id="spark-1"></div>
+        <div class="tile-label"><span>min 3 · max 16</span><b>+ 13.2</b></div>
+      </article>
+      <article data-wf data-edge="violet" data-fill="onyx">
+        <div class="eyebrow" style="margin-bottom: var(--sp-3); color: var(--accent-violet);">— PIPELINE</div>
+        <div id="bars-1"></div>
+      </article>
+    </div>
+  </section>
+
+  <!-- FLOW -->
+  <section id="flow" data-screen-label="07 Flow">
+    <header>
+      <div>
+        <div class="eyebrow" style="color: var(--accent-turquoise); margin-bottom: var(--sp-2);">— 06 / GRAPH</div>
+        <h2>Architecture flow</h2>
+      </div>
+      <div class="meta">Custom node + path renderer. Hot edges glow.</div>
+    </header>
+    <article data-wf data-edge="mixed" data-fill="onyx" style="padding: var(--sp-8) var(--sp-6);">
+      <div id="flow-1" style="height: 320px;"></div>
+    </article>
+  </section>
+
+  <!-- ISO -->
+  <section id="iso" data-screen-label="08 Isometric">
+    <header>
+      <div>
+        <div class="eyebrow" style="color: var(--accent-turquoise); margin-bottom: var(--sp-2);">— 07 / ISOMETRIC</div>
+        <h2>City &amp; rural primitives</h2>
+      </div>
+      <div class="meta">Pure CSS / SVG. Composable buildings.</div>
+    </header>
+    <div class="grid-2">
+      <article data-wf data-edge="turquoise" data-fill="ink" class="bg-tile" style="height: 380px;">
+        <div class="corner">[ DENSITY / URBAN ]</div>
+        <div id="iso-city" style="position: absolute; inset: 0;"></div>
+        <div class="label-strip"><span>8 towers · accented</span><b>iso-30°</b></div>
+      </article>
+      <article data-wf data-edge="ember" data-fill="ink" class="bg-tile" style="height: 380px;">
+        <div class="corner" style="color: #ffd166;">[ DENSITY / RURAL ]</div>
+        <div id="iso-rural" style="position: absolute; inset: 0;"></div>
+        <div class="label-strip"><span>5 cottages · pitched</span><b>iso-30°</b></div>
+      </article>
+    </div>
+  </section>
+
+  <!-- SCENES -->
+  <section id="scene" data-screen-label="09 Wireframe scenes">
+    <header>
+      <div>
+        <div class="eyebrow" style="color: var(--accent-turquoise); margin-bottom: var(--sp-2);">— 08 / SCENES</div>
+        <h2>Hairline wireframe scenery</h2>
+      </div>
+      <div class="meta">House · ground plane · low-poly flora</div>
+    </header>
+    <div class="grid-2">
+      <article data-wf data-edge="turquoise" data-fill="ink" class="wide-tile">
+        <div id="scene-farm"></div>
+        <div class="tile-label" style="padding: 0 var(--sp-3) var(--sp-3);"><span>SCENE / FARM</span><b>14 elements</b></div>
+      </article>
+      <article data-wf data-edge="violet" data-fill="ink" class="wide-tile">
+        <div id="scene-village"></div>
+        <div class="tile-label" style="padding: 0 var(--sp-3) var(--sp-3);"><span>SCENE / VILLAGE</span><b>18 elements</b></div>
+      </article>
+      <article data-wf data-edge="crimson" data-fill="ink" class="wide-tile" style="grid-column: 1 / -1;">
+        <div id="scene-plain"></div>
+        <div class="tile-label" style="padding: 0 var(--sp-3) var(--sp-3);"><span>SCENE / PLAIN</span><b>centerpiece</b></div>
+      </article>
+    </div>
+  </section>
+
+  <!-- COW -->
+  <section id="cow" data-screen-label="10 Idle cow">
+    <header>
+      <div>
+        <div class="eyebrow" style="color: var(--accent-turquoise); margin-bottom: var(--sp-2);">— 09 / IDLE</div>
+        <h2>Wireframe bovine, idle</h2>
+      </div>
+      <div class="meta">Breath · tail · ear twitch · head sway</div>
+    </header>
+    <div class="grid-2">
+      <article data-wf data-edge="mixed" data-fill="onyx" style="padding: var(--sp-8);">
+        <div id="cow-1"></div>
+      </article>
+      <article data-wf data-edge="ember" data-fill="onyx" style="padding: var(--sp-6); display: grid; align-content: center; gap: var(--sp-4);">
+        <div class="eyebrow">— STATE / IDLE</div>
+        <h3 style="font-weight: 100; font-size: 28px; margin: 0; color: var(--fg1);">Breathing 3.8 s</h3>
+        <p style="margin: 0; color: var(--fg2);">Body scales 1.000 → 1.025 on the Y-axis. Tail oscillates ±10° around the rump pivot. Ear twitches every 5.2 s. Head bobs 2 px on a 6 s phase.</p>
+        <div class="grid-3" style="gap: var(--sp-2); margin-top: var(--sp-4);">
+          <div class="tile-label"><span>Breath</span><b>3.8s</b></div>
+          <div class="tile-label"><span>Tail</span><b>2.6s</b></div>
+          <div class="tile-label"><span>Ear</span><b>5.2s</b></div>
+          <div class="tile-label"><span>Head</span><b>6.0s</b></div>
+          <div class="tile-label"><span>Strokes</span><b>34</b></div>
+          <div class="tile-label"><span>Polygons</span><b>17</b></div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ISO BESTIARY -->
+  <section id="bestiary" data-screen-label="11 Iso bestiary">
+    <header>
+      <div>
+        <div class="eyebrow" style="color: var(--accent-turquoise); margin-bottom: var(--sp-2);">— 10 / BESTIARY</div>
+        <h2>Isometric 3D bestiary, idle</h2>
+      </div>
+      <div class="meta">Low-poly box-meshes. Iso-30° projection. Breath · ear · tail.</div>
+    </header>
+    <div class="grid-4">
+      <article data-wf data-edge="turquoise" data-fill="onyx" style="padding: var(--sp-3);">
+        <div id="iso-cow" style="aspect-ratio: 7 / 5; width: 100%;"></div>
+        <div class="tile-label"><span>SPECIES · BOS</span><b>Cow</b></div>
+      </article>
+      <article data-wf data-edge="crimson" data-fill="onyx" style="padding: var(--sp-3);">
+        <div id="iso-pig" style="aspect-ratio: 7 / 5; width: 100%;"></div>
+        <div class="tile-label"><span>SPECIES · SUS</span><b>Pig</b></div>
+      </article>
+      <article data-wf data-edge="violet" data-fill="onyx" style="padding: var(--sp-3);">
+        <div id="iso-cat" style="aspect-ratio: 7 / 5; width: 100%;"></div>
+        <div class="tile-label"><span>SPECIES · FELIS</span><b>Cat</b></div>
+      </article>
+      <article data-wf data-edge="iris" data-fill="onyx" style="padding: var(--sp-3);">
+        <div id="iso-rabbit" style="aspect-ratio: 7 / 5; width: 100%;"></div>
+        <div class="tile-label"><span>SPECIES · LEPUS</span><b>Rabbit</b></div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ISO KIT — primitives grid -->
+  <section id="iso-kit" data-screen-label="12 Iso kit">
+    <header>
+      <div>
+        <div class="eyebrow" style="color: var(--accent-turquoise); margin-bottom: var(--sp-2);">— 11 / KIT</div>
+        <h2>Iso primitives</h2>
+      </div>
+      <div class="meta">Flora · road · street props · humans. Tapered low-poly.</div>
+    </header>
+
+    <div class="eyebrow" style="margin: var(--sp-4) 0 var(--sp-3);">— FLORA</div>
+    <div class="grid-6" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: var(--sp-3);">
+      <article data-wf data-edge="turquoise" data-fill="onyx" class="kit-tile"><div id="k-pine"></div><div class="tile-label"><span>—</span><b>Pine</b></div></article>
+      <article data-wf data-edge="turquoise" data-fill="onyx" class="kit-tile"><div id="k-oak"></div><div class="tile-label"><span>—</span><b>Oak</b></div></article>
+      <article data-wf data-edge="turquoise" data-fill="onyx" class="kit-tile"><div id="k-palm"></div><div class="tile-label"><span>—</span><b>Palm</b></div></article>
+      <article data-wf data-edge="turquoise" data-fill="onyx" class="kit-tile"><div id="k-bush"></div><div class="tile-label"><span>—</span><b>Bush</b></div></article>
+      <article data-wf data-edge="crimson" data-fill="onyx" class="kit-tile"><div id="k-flower"></div><div class="tile-label"><span>—</span><b>Flower</b></div></article>
+      <article data-wf data-edge="violet" data-fill="onyx" class="kit-tile"><div id="k-rock"></div><div class="tile-label"><span>—</span><b>Rock</b></div></article>
+    </div>
+
+    <div class="eyebrow" style="margin: var(--sp-8) 0 var(--sp-3);">— ROAD TILES</div>
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--sp-3);">
+      <article data-wf data-edge="violet" data-fill="onyx" class="kit-tile"><div id="k-road"></div><div class="tile-label"><span>—</span><b>Straight</b></div></article>
+      <article data-wf data-edge="violet" data-fill="onyx" class="kit-tile"><div id="k-inter"></div><div class="tile-label"><span>—</span><b>Intersection</b></div></article>
+      <article data-wf data-edge="violet" data-fill="onyx" class="kit-tile"><div id="k-cross"></div><div class="tile-label"><span>—</span><b>Crosswalk</b></div></article>
+      <article data-wf data-edge="violet" data-fill="onyx" class="kit-tile"><div id="k-sidewalk"></div><div class="tile-label"><span>—</span><b>Sidewalk</b></div></article>
+    </div>
+
+    <div class="eyebrow" style="margin: var(--sp-8) 0 var(--sp-3);">— STREET PROPS</div>
+    <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--sp-3);">
+      <article data-wf data-edge="turquoise" data-fill="onyx" class="kit-tile"><div id="k-lamp"></div><div class="tile-label"><span>—</span><b>Lamppost</b></div></article>
+      <article data-wf data-edge="turquoise" data-fill="onyx" class="kit-tile"><div id="k-bench"></div><div class="tile-label"><span>—</span><b>Bench</b></div></article>
+      <article data-wf data-edge="crimson" data-fill="onyx" class="kit-tile"><div id="k-hydrant"></div><div class="tile-label"><span>—</span><b>Hydrant</b></div></article>
+      <article data-wf data-edge="iris" data-fill="onyx" class="kit-tile"><div id="k-mailbox"></div><div class="tile-label"><span>—</span><b>Mailbox</b></div></article>
+      <article data-wf data-edge="ember" data-fill="onyx" class="kit-tile"><div id="k-traffic"></div><div class="tile-label"><span>—</span><b>Traffic</b></div></article>
+      <article data-wf data-edge="turquoise" data-fill="onyx" class="kit-tile"><div id="k-planter"></div><div class="tile-label"><span>—</span><b>Planter</b></div></article>
+      <article data-wf data-edge="turquoise" data-fill="onyx" class="kit-tile"><div id="k-trash"></div><div class="tile-label"><span>—</span><b>Trash bin</b></div></article>
+      <article data-wf data-edge="turquoise" data-fill="onyx" class="kit-tile"><div id="k-busstop"></div><div class="tile-label"><span>—</span><b>Bus stop</b></div></article>
+      <article data-wf data-edge="crimson" data-fill="onyx" class="kit-tile"><div id="k-car"></div><div class="tile-label"><span>—</span><b>Car</b></div></article>
+      <article data-wf data-edge="violet" data-fill="onyx" class="kit-tile"><div id="k-human"></div><div class="tile-label"><span>—</span><b>Human</b></div></article>
+    </div>
+
+    <div class="eyebrow" style="margin: var(--sp-8) 0 var(--sp-3);">— HUMANS · CHROMA</div>
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-3);">
+      <article data-wf data-edge="turquoise" data-fill="onyx" class="kit-tile"><div id="k-human2"></div><div class="tile-label"><span>OPERATOR</span><b>crimson</b></div></article>
+      <article data-wf data-edge="violet" data-fill="onyx" class="kit-tile"><div id="k-human3"></div><div class="tile-label"><span>OBSERVER</span><b>violet</b></div></article>
+      <article data-wf data-edge="iris" data-fill="onyx" class="kit-tile"><div id="k-human"></div><div class="tile-label"><span>ANALYST</span><b>turquoise</b></div></article>
+    </div>
+  </section>
+
+  <!-- CITY BLOCK -->
+  <section id="city-block" data-screen-label="13 City block">
+    <header>
+      <div>
+        <div class="eyebrow" style="color: var(--accent-turquoise); margin-bottom: var(--sp-2);">— 12 / SCENES</div>
+        <h2>Composed scenes</h2>
+      </div>
+      <div class="meta">Iso-30° · painter’s order · same primitives</div>
+    </header>
+    <div class="grid-2">
+      <article data-wf data-edge="mixed" data-fill="ink" style="padding: var(--sp-4); min-height: 360px;">
+        <div id="iso-block" style="width: 100%; aspect-ratio: 11 / 8;"></div>
+        <div class="tile-label" style="padding: 0 var(--sp-3);"><span>SCENE · URBAN BLOCK</span><b>22 primitives</b></div>
+      </article>
+      <article data-wf data-edge="ember" data-fill="ink" style="padding: var(--sp-4); min-height: 360px;">
+        <div id="iso-rural" style="width: 100%; aspect-ratio: 11 / 8;"></div>
+        <div class="tile-label" style="padding: 0 var(--sp-3);"><span>SCENE · RURAL FIELD</span><b>13 primitives</b></div>
+      </article>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <code>// MONO · WIREFRAME EXT · DRAFT 01 · 2026-05-26 //</code>
+  </footer>
+</div>
+
+<!-- Brand mark SVG (icosahedron line-by-line draw — separate to allow redraw) -->
+<template id="tpl-brand-ico">
+  <svg viewBox="0 0 220 220" class="wf-svg wf-draw" style="overflow: visible;">
+    <defs>
+      <filter id="brandGlow" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="0.6" result="b" />
+        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+    <g id="brand-ico-edges" filter="url(#brandGlow)"></g>
+    <g id="brand-ico-nodes"></g>
+  </svg>
+</template>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="wf-primitives.jsx"></script>
+<script type="text/babel" src="wf-graphs.jsx"></script>
+<script type="text/babel" src="wf-shapes.jsx"></script>
+<script type="text/babel" src="wf-scenes.jsx"></script>
+<script type="text/babel" src="wf-iso-kit.jsx"></script>
+<script type="text/babel" src="wf-iso-animals.jsx"></script>
+<script type="text/babel" src="wf-backgrounds.jsx"></script>
+
+<script type="text/babel">
+  // Brand mark — static icosahedron at slight angle, line-by-line draw
+  function drawBrandMark() {
+    const tpl = document.getElementById("tpl-brand-ico");
+    const root = document.getElementById("brand-svg");
+    root.innerHTML = "";
+    const node = tpl.content.cloneNode(true);
+    root.appendChild(node);
+    const edgesG = root.querySelector("#brand-ico-edges");
+    const nodesG = root.querySelector("#brand-ico-nodes");
+
+    const phi = (1 + Math.sqrt(5)) / 2;
+    let verts = [
+      [-1,  phi, 0], [ 1,  phi, 0], [-1, -phi, 0], [ 1, -phi, 0],
+      [0, -1,  phi], [0,  1,  phi], [0, -1, -phi], [0,  1, -phi],
+      [ phi, 0, -1], [ phi, 0,  1], [-phi, 0, -1], [-phi, 0,  1],
+    ];
+    const norm = Math.sqrt(1 + phi*phi);
+    verts = verts.map(([x,y,z]) => [x/norm, y/norm, z/norm]);
+    // Rotate for nice angle (similar to user's reference)
+    const ay = -0.6, ax = 0.5;
+    const cy = Math.cos(ay), sy = Math.sin(ay), cx = Math.cos(ax), sxv = Math.sin(ax);
+    verts = verts.map(([x,y,z]) => {
+      let x1 = cy*x + sy*z, z1 = -sy*x + cy*z, y1 = y;
+      let y2 = cx*y1 - sxv*z1, z2 = sxv*y1 + cx*z1;
+      return [x1, y2, z2];
+    });
+    const R = 92, size = 220;
+    const proj = verts.map(([x,y,z]) => [size/2 + x*R, size/2 + y*R, z]);
+
+    const edges = [
+      [0,1],[0,5],[0,7],[0,10],[0,11],[1,5],[1,7],[1,8],[1,9],
+      [2,3],[2,4],[2,6],[2,10],[2,11],[3,4],[3,6],[3,8],[3,9],
+      [4,5],[4,9],[4,11],[5,9],[5,11],[6,7],[6,8],[6,10],
+      [7,8],[7,10],[8,9],[10,11],
+    ];
+
+    edges.forEach(([i, j], k) => {
+      const a = proj[i], b = proj[j];
+      const back = (a[2] + b[2]) / 2 < -0.05;
+      const len = Math.hypot(b[0]-a[0], b[1]-a[1]);
+      const l = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      l.setAttribute("x1", a[0]); l.setAttribute("y1", a[1]);
+      l.setAttribute("x2", b[0]); l.setAttribute("y2", b[1]);
+      l.setAttribute("stroke", back ? "rgba(255,255,255,0.22)" : "var(--fg1)");
+      l.setAttribute("stroke-width", back ? "0.6" : "1.2");
+      l.setAttribute("stroke-linecap", "round");
+      l.setAttribute("vector-effect", "non-scaling-stroke");
+      l.classList.add("wf-draw-line");
+      l.style.setProperty("--len", Math.ceil(len));
+      l.style.setProperty("--i", k);
+      edgesG.appendChild(l);
+    });
+    proj.forEach((p, i) => {
+      const back = p[2] < -0.05;
+      const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      c.setAttribute("cx", p[0]); c.setAttribute("cy", p[1]);
+      c.setAttribute("r", back ? 2 : 3);
+      c.setAttribute("fill", back ? "rgba(255,255,255,0.35)" : "var(--accent-turquoise)");
+      c.classList.add("wf-node-anim");
+      c.style.setProperty("--i", i + edges.length/2);
+      nodesG.appendChild(c);
+    });
+  }
+  drawBrandMark();
+  document.getElementById("redraw").addEventListener("click", drawBrandMark);
+
+  // Render React components ----------------------------------------------------
+  function mount(id, el) {
+    const node = document.getElementById(id);
+    if (!node) return;
+    ReactDOM.createRoot(node).render(el);
+  }
+
+  mount("hero-ico", <Icosahedron size={520} speed={14} />);
+  mount("ico-spin", <Icosahedron size={300} speed={9} accent />);
+
+  mount("spin-1", <TriangleSpinner size={72} />);
+  mount("spin-2", <TriangleSpinner size={72} color="crimson" tilt={-22} />);
+  mount("spin-3", <TriangleSpinner size={72} color="violet" tilt={8} />);
+  mount("spin-4", <TriangleSpinner size={120} tilt={-16} />);
+
+  mount("dial-1", <Dial value={72} label="LOAD" />);
+  mount("dial-2", <Dial value={48} label="LATENCY · ms" color="crimson" />);
+  mount("dial-3", <Dial value={86} label="MEMORY" color="violet" />);
+  mount("spark-1", <Sparkline />);
+  mount("bars-1", <BarGroup />);
+
+  mount("flow-1", <FlowGraph width={1200} height={320} />);
+  mount("iso-city", <IsoCity />);
+  mount("iso-rural", <IsoRural />);
+
+  mount("scene-farm", <WireScene variant="farm" height={320} />);
+  mount("scene-village", <WireScene variant="village" height={320} />);
+  mount("scene-plain", <WireScene variant="plain" height={360} />);
+
+  mount("cow-1", <WireCow height={300} />);
+
+  mount("iso-cow",    <IsoCow />);
+  mount("iso-pig",    <IsoPig />);
+  mount("iso-cat",    <IsoCat />);
+  mount("iso-rabbit", <IsoRabbit />);
+
+  // Iso kit thumbnails — each rendered into 200x160 svg viewport via wrapper that scales primitive
+  function IsoTile({ children, vb = "-60 -80 120 130" }) {
+    return <svg viewBox={vb} style={{ width: "100%", height: "100%" }}>{children}</svg>;
+  }
+  window.IsoTile = IsoTile;
+
+  mount("k-pine",     <IsoTile><PineTree /></IsoTile>);
+  mount("k-oak",      <IsoTile><OakTree accent /></IsoTile>);
+  mount("k-palm",     <IsoTile><PalmTree /></IsoTile>);
+  mount("k-bush",     <IsoTile vb="-40 -40 80 70"><Bush /></IsoTile>);
+  mount("k-flower",   <IsoTile vb="-30 -30 60 60"><Flower color="crimson" /></IsoTile>);
+  mount("k-rock",     <IsoTile vb="-30 -30 60 60"><Rock scale={1.2} /></IsoTile>);
+  mount("k-road",     <IsoTile vb="-40 -30 80 60"><RoadTile variant="straight" /></IsoTile>);
+  mount("k-inter",    <IsoTile vb="-40 -30 80 60"><RoadTile variant="intersection" /></IsoTile>);
+  mount("k-cross",    <IsoTile vb="-40 -30 80 60"><RoadTile variant="crosswalk" /></IsoTile>);
+  mount("k-sidewalk", <IsoTile vb="-40 -30 80 60"><RoadTile variant="sidewalk" /></IsoTile>);
+  mount("k-lamp",     <IsoTile vb="-30 -70 80 110"><Lamppost /></IsoTile>);
+  mount("k-bench",    <IsoTile vb="-30 -40 60 60"><Bench /></IsoTile>);
+  mount("k-hydrant",  <IsoTile vb="-20 -30 40 50"><FireHydrant /></IsoTile>);
+  mount("k-mailbox",  <IsoTile vb="-30 -40 60 60"><Mailbox /></IsoTile>);
+  mount("k-traffic",  <IsoTile vb="-20 -50 40 70"><TrafficLight /></IsoTile>);
+  mount("k-planter",  <IsoTile vb="-30 -40 60 60"><Planter plant="flower" /></IsoTile>);
+  mount("k-trash",    <IsoTile vb="-20 -30 40 50"><TrashBin /></IsoTile>);
+  mount("k-busstop",  <IsoTile vb="-40 -40 80 70"><BusStop /></IsoTile>);
+  mount("k-car",      <IsoTile vb="-30 -30 60 50"><Car accent="crimson" /></IsoTile>);
+  mount("k-human",    <IsoTile vb="-20 -50 40 70"><Human color="turquoise" /></IsoTile>);
+  mount("k-human2",   <IsoTile vb="-20 -50 40 70"><Human color="crimson" /></IsoTile>);
+  mount("k-human3",   <IsoTile vb="-20 -50 40 70"><Human color="violet" /></IsoTile>);
+
+  mount("iso-block",  <CityBlock />);
+  mount("iso-rural",  <RuralScene />);
+</script>
+
+</body>
+</html>

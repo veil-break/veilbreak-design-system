@@ -1,5 +1,9 @@
 # Changelog
 
+## unreleased
+
+- Authoring sources moved from veilbreak-main's `assets/logo/`: `Tools~/source/logo/` (the logo keyframes and the vectorcraft project) and `Tools~/splash/` (the splash keyframes and animation prototypes). Unity does not import them.
+
 ## 1.3.0
 
 - The slash-cut mark moved here from veilbreak-main with its GUIDs unchanged:
