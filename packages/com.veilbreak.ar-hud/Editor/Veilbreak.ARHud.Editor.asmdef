@@ -1,0 +1,18 @@
+{
+  "name": "Veilbreak.ARHud.Editor",
+  "rootNamespace": "Veilbreak.ARHud.Editor",
+  "references": [
+    "Veilbreak.ARHud"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

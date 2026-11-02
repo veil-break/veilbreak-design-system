@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <NoWarn>CS0067;CS0649</NoWarn>
+    <!-- Unity's bundled SDK ships a newer runtime than net8.0; run on it rather than requiring a separate .NET 8 install. -->
+    <RollForward>Major</RollForward>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../Runtime/Layout/HudInput.cs" Link="Production/HudInput.cs" />
+    <Compile Include="../../Runtime/Layout/HudStage.cs" Link="Production/HudStage.cs" />
+  </ItemGroup>
+</Project>

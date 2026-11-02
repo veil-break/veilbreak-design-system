@@ -1,0 +1,55 @@
+/* Theme-level rules for every HUD panel (RuntimeTheme.tss imports this; an app's own theme can too): the view's layers, the modal
+   scrim and toast, and the sample gallery. Button styling here is scoped to .ar-themed subtrees, so screens with their own sheets
+   keep their look; the kit (Base.uss, Kit.uss) is attached per screen, since its rules must outrank element-level button styles. */
+.ar-root { position: absolute; left: 0; right: 0; top: 0; bottom: 0; overflow: hidden; }
+.ar-chrome { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
+.ar-content { flex-grow: 1; }
+.ar-content > .unity-template-container { flex-grow: 1; }
+.ar-modal { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
+.modal-scrim { position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: rgba(2, 5, 8, 0.72); }
+.ar-toast { position: absolute; bottom: 28px; align-self: center; max-width: 90%; background-color: rgb(7, 17, 23); color: white; padding: 14px 24px; border-left-width: 3px; border-left-color: white; white-space: normal; }
+
+/* Themed controls (HudPanel, HudGauge, HudReticle, HudLoader) */
+.ar-panel { min-width: 160px; flex-shrink: 1; margin: 6px; }
+.ar-panel__body { flex-grow: 1; }
+.ar-heading { font-size: 12px; -unity-font-style: bold; letter-spacing: 2px; margin-bottom: 12px; white-space: normal; }
+.ar-gauge { width: 144px; height: 144px; align-items: center; justify-content: center; align-self: center; flex-shrink: 0; }
+.ar-gauge__value { font-size: 26px; -unity-font-style: bold; }
+.ar-reticle { width: 88px; height: 88px; }
+.ar-loader { width: 96px; height: 96px; flex-shrink: 0; align-self: center; }
+
+/* .ar-themed subtrees (the gallery, themed sample layouts) */
+.ar-screen { flex-grow: 1; }
+.ar-row { flex-direction: row; align-items: stretch; flex-shrink: 0; }
+.ar-open { flex-grow: 1; align-items: center; justify-content: center; min-height: 80px; }
+.ar-muted { font-size: 11px; white-space: normal; margin: 6px; }
+.ar-copy { white-space: normal; margin-bottom: 16px; }
+.ar-number { font-size: 26px; -unity-font-style: bold; }
+.ar-dialog { width: 480px; max-width: 90%; }
+.ar-button, .ar-themed Button { border-radius: 0; border-width: 1px; border-color: rgba(180, 221, 230, 0.4); margin: 4px; padding: 10px 16px; white-space: normal; -unity-text-align: middle-left; }
+.ar-themed Button:hover { border-color: white; border-width: 2px; }
+.ar-themed Button:focus { border-color: white; border-width: 2px; }
+.ar-themed Button:active { opacity: 0.8; }
+.ar-themed Button:disabled { opacity: 0.5; }
+.ar-high-contrast .ar-muted { opacity: 1; }
+.ar-high-contrast Button { border-color: white; }
+
+/* The gallery (HudGallery) */
+.ar-g-title { font-size: 44px; letter-spacing: 5px; margin-bottom: 6px; }
+.mobile .ar-g-title { font-size: 28px; letter-spacing: 3px; }
+.ar-g-menu { width: 320px; padding: 16px; }
+.ar-g-menu > * { margin-top: 8px; }
+.ar-g-menu .cta { height: 64px; }
+.ar-g-side { width: 240px; }
+.mobile .ar-g-side { width: 180px; }
+.mobile .ar-g-side .ar-gauge { width: 88px; height: 88px; }
+.ar-g-strip { align-items: flex-end; }
+.ar-g-skills { padding: 14px; margin: 6px; }
+.ar-g-skills > * { margin-top: 6px; }
+.ar-g-skills .row > * { margin-right: 8px; }
+.ar-g-bar { width: 220px; }
+.ar-g-ammo { padding: 14px; margin: 6px; min-width: 120px; }
+.ar-g-loadout { width: 420px; flex-grow: 1; padding: 16px; }
+.ar-g-loadout > * { margin-top: 8px; }
+.ar-g-press { margin-top: 6px; }
+.ar-g-dialog-holder { align-items: center; justify-content: center; }

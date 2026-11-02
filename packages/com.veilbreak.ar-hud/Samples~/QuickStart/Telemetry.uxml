@@ -1,0 +1,18 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:hud="Veilbreak.ARHud">
+    <ui:VisualElement class="ar-screen ar-themed">
+        <hud:HudPanel title="OBJECTIVE">
+            <ui:Label text="REACH THE SIGNAL RELAY">
+                <Bindings><ui:DataBinding property="text" data-source-path="Objective" binding-mode="ToTarget" /></Bindings>
+            </ui:Label>
+        </hud:HudPanel>
+        <ui:VisualElement class="ar-open" picking-mode="Ignore"><hud:HudReticle /></ui:VisualElement>
+        <hud:HudPanel title="SUIT INTEGRITY">
+            <hud:HudGauge value="0.86">
+                <Bindings><ui:DataBinding property="Value" data-source-path="Integrity" binding-mode="ToTarget" /></Bindings>
+            </hud:HudGauge>
+            <ui:Label text="24 / 120">
+                <Bindings><ui:DataBinding property="text" data-source-path="Ammunition" binding-mode="ToTarget" /></Bindings>
+            </ui:Label>
+        </hud:HudPanel>
+    </ui:VisualElement>
+</ui:UXML>
