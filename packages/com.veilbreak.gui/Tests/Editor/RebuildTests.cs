@@ -21,7 +21,7 @@ public sealed class RebuildTests {
  [Test] public void AHostNamesItsOwnDecodeClass(){var was=new Label("RANGED"){name="role"};was.AddToClassList("host-decode");var snapshot=VbRebuild.Capture(Tree(was));
   var role=new Label("HEALER"){name="role"};role.AddToClassList("host-decode");VbRebuild.Play(Tree(role),snapshot,reduced:false,decode:"host-decode");Assert.AreNotEqual("HEALER",role.text);}
  [Test] public void ReducedMotionKeepsTheNewTextAtOnce(){var snapshot=VbRebuild.Capture(Tree(new Label("ARIA"){name="name"}));var name=new Label("NYRA"){name="name"};VbRebuild.Play(Tree(name),snapshot,reduced:true);
-  Assert.AreEqual("NYRA",name.text);Assert.AreEqual(StyleKeyword.Undefined,name.style.opacity.keyword);}
+  Assert.AreEqual("NYRA",name.text);Assert.AreEqual(new Label().style.opacity.keyword,name.style.opacity.keyword,"reduced motion leaves the inline opacity untouched");}
  [Test] public void TheBeatComesFromTheMotionTokens(){Assert.AreEqual(MotionRecipes.Rebuild/1000f,VbRebuild.Duration,1e-6f);Assert.AreEqual(.18f,VbRebuild.Duration,1e-6f);}
 }
 }
