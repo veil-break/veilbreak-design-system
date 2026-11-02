@@ -3,6 +3,8 @@
   "references": [
     "Veilbreak.Feedback",
     "Veilbreak.Feedback.UI",
+    "Unity.RenderPipelines.Universal.Runtime",
+    "Veilbreak.Feedback.URP",
     "UnityEngine.TestRunner",
     "UnityEditor.TestRunner"
   ],

@@ -4,6 +4,20 @@
 
 - Moved from `veilbreak-arcade/packages` to `veilbreak-design-system/packages` with every file and GUID unchanged. Consume it from git at `?path=/packages/com.veilbreak.feedback`.
 
+## 1.4.0 — 2026-11-02
+
+Battle-surface helpers from veilbreak-main's battle VFX, generalised with the host's choices injected. The scripts keep their
+GUIDs from main.
+
+- `DecalPool` (`Feedback.URP`): pooled URP Decal Projectors, projected straight down and faded over the last third of their
+  life; the oldest is evicted at the cap. The host sets the cap (`Initialize`), the draw distance and, for tests or replays,
+  the `Clock`.
+- `SurfaceIndicators` (`Feedback.URP`): plan lines projected through the world depth, one reused projector per segment, with a
+  segment cap, a four-slot tint palette and the projected span (`Top`, `Bottom`) from the host.
+- `CurtainBatch`: vertical light-curtain strips on ground outlines in one mesh, with `Bake` for builders and the shared
+  `_CurtainPhase` drift (`Phase`). The host supplies the curtain material.
+- `PooledEffect`: one-shot prefab instances that return to their pool through the particle Stop callback.
+
 ## 1.3.0 — 2026-11-01
 
 - OverlayBlur volume and bounded two-pass Render Graph blur/dimming after world post-processing and before gamma UI composition.

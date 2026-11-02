@@ -6,6 +6,13 @@ For combat effects, add EffectEmitters and call Initialize(additive, alpha, high
 
 For ground telegraphs, add GroundTelegraphs, call Initialize(material using Telegraph.shader), then each frame Begin(), Draw(request) in priority order and End(). Requests are world-space circles, cones (full angle in degrees) or capsule lanes; supply your own authoritative geometry and verify it with TelegraphGeometry.Inside. Set TelegraphRequest.curtain (metres) to raise a light curtain along the outline: vertical rays and drifting dust in Telegraph.shader's second pass (LightMode UniversalForward), one shared dynamic mesh, skipping strips buried inside another footprint of the same side; TelegraphGeometry.Outline returns the rim points.
 
+For battle surfaces (desktop-tier battle VFX, from veilbreak-main):
+
+- `DecalPool` (Feedback.URP): add it, call `Initialize(capacity)` with the cap for your quality tier, then `Place(material, at, size, life)`. Decals project straight down, fade over the last third of their life, and the oldest goes first at the cap. Set `DrawDistance` to your camera's farthest ground view.
+- `SurfaceIndicators` (Feedback.URP): plan lines projected through the world depth. Construct it with a URP decal material template, a segment cap and optionally a four-slot palette (green, red, blue, neutral). Set `Top`/`Bottom` above and below every surface, then `Begin()`, `Draw(points, width, loop, colour)` per polyline, `End()`.
+- `CurtainBatch`: vertical light curtains on ground outlines in one mesh (`Begin`, `Add`, `End`; `Bake` for builders). Your curtain shader reads the global `_CurtainPhase`, which `CurtainBatch.Phase(time)` advances (0 under Reduced Motion).
+- `PooledEffect.Create(prefab, parent, release)`: a one-shot prefab instance that returns itself to your `ObjectPool` through the particle Stop callback.
+
 For whole-screen hits, push confirmed impacts with ScreenImpacts.Push(viewport, colour, strength) and call ScreenImpacts.Advance(unscaledDelta) each frame; CinematicPulseFeature renders the strongest four (shockwave refraction, zoom punch, chromatic split, tinted vignette) even while no pulse volume is active. Set ScreenImpacts.Motion to 0 for Reduced Motion and ScreenImpacts.Flash to 0 for Reduced Flashes.
 
 Assemblies: `Veilbreak.Feedback / Veilbreak.Feedback.URP / Veilbreak.Feedback.UI`. Unity 6000.3; URP adapters require URP 17.3.
