@@ -38,26 +38,26 @@ jobs:
         run: |
           uv run --frozen ruff check .
           uv run --frozen ruff format --check .
-          uv run --frozen python -m unittest discover -s Tools~/handbook/tests
-          uv run --frozen python Tools~/motion.py --check
-          uv run --frozen python Tools~/tokens.py --check
-          uv run --frozen python Tools~/samples.py --check
-          uv run --frozen python Tools~/metas.py --check
+          uv run --frozen python -m unittest discover -s packages/com.veilbreak.gui/Tools~/handbook/tests
+          uv run --frozen python packages/com.veilbreak.gui/Tools~/motion.py --check
+          uv run --frozen python packages/com.veilbreak.gui/Tools~/tokens.py --check
+          uv run --frozen python packages/com.veilbreak.gui/Tools~/samples.py --check
+          uv run --frozen python packages/com.veilbreak.gui/Tools~/metas.py --check
 
       - name: Build handbook and web app
         run: |
-          uv run --frozen python Tools~/web/package.py
-          uv run --frozen python Tools~/handbook/build_handbook.py . "$RUNNER_TEMP/github-pages"
-          git diff --exit-code -- Web~/dist Runtime/Styles/Tokens.uss Runtime/Core/VbTokens.cs
-          diff -qr --exclude='*.meta' docs "$RUNNER_TEMP/github-pages"
+          uv run --frozen python packages/com.veilbreak.gui/Tools~/web/package.py
+          uv run --frozen python packages/com.veilbreak.gui/Tools~/handbook/build_handbook.py packages/com.veilbreak.gui "$RUNNER_TEMP/github-pages"
+          git diff --exit-code -- packages/com.veilbreak.gui/Web~/dist packages/com.veilbreak.gui/Runtime/Styles/Tokens.uss packages/com.veilbreak.gui/Runtime/Core/VbTokens.cs
+          diff -qr --exclude='*.meta' packages/com.veilbreak.gui/docs "$RUNNER_TEMP/github-pages"
 
       - name: Install browser checks
         run: |
-          npm ci --prefix Tools~/browser --ignore-scripts
-          Tools~/browser/node_modules/.bin/playwright install --with-deps chromium
+          npm ci --prefix packages/com.veilbreak.gui/Tools~/browser --ignore-scripts
+          packages/com.veilbreak.gui/Tools~/browser/node_modules/.bin/playwright install --with-deps chromium
 
       - name: Check mobile, inspector and motion interactions
-        run: node Tools~/browser/run.cjs "$RUNNER_TEMP/github-pages"
+        run: node packages/com.veilbreak.gui/Tools~/browser/run.cjs "$RUNNER_TEMP/github-pages"
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

@@ -15,7 +15,7 @@ kit's `dist/` and the `demo/` app, from `Web~`) and `.nojekyll`. It can also be 
 ## GitHub Pages deployment
 
 In the repository's **Settings → Pages → Build and deployment**, select **GitHub Actions** as the source.
-The [Deploy GitHub Pages workflow](../../.github/workflows/deploy-pages.yml) rebuilds the handbook and demo from
+The [Deploy GitHub Pages workflow](../../../../.github/workflows/deploy-pages.yml) rebuilds the handbook and demo from
 source on every push to `main`, then publishes the generated site with the official Pages actions. No npm install,
 Unity editor or custom deployment secret is needed. Pull requests targeting `main` build and upload an artifact
 for validation; deployment runs only from `main`. To redeploy manually, open **Actions → Deploy GitHub Pages →

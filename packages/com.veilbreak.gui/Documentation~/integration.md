@@ -8,7 +8,7 @@ guide in code. The arcade (`unity/Assets/_Arcade/Runtime/ArcadeUI.cs`, `WorldRea
 Add the package from Git in `Packages/manifest.json` (append `#<tag or commit>` to pin a version):
 
 ```json
-"com.veilbreak.gui": "https://github.com/veil-break/veilbreak-design-system.git"
+"com.veilbreak.gui": "https://github.com/veil-break/veilbreak-design-system.git?path=/packages/com.veilbreak.gui#<full-reviewed-commit>"
 ```
 
 or reference a checkout as a local package (`"file:../../packages/com.veilbreak.gui"`).

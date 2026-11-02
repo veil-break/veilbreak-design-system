@@ -27,4 +27,4 @@ uv run --frozen python Tools~/web/harness.py "$OUT" Tokens~/tokens.json BattleHU
 To publish, use the Artifact tool. The steps are in `Documentation~/web-mirror.md`: read first, upload icons as
 assets, send one files publish with `design-system.json` last.
 
-To lint, run `uv run --project .. --frozen ruff check .` from `Tools~`. The settings are in the root `pyproject.toml`. Run `uv sync --locked` at the repository root first.
+To lint, run `uv run --project .. --frozen ruff check .` from `Tools~`. The settings are in the repository-root `pyproject.toml` (two levels above this package). Run `uv sync --locked` at the repository root first.
