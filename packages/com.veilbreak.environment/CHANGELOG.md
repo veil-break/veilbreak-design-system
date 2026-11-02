@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.0 — 2026-11-02
+
+- `FireLight` from veilbreak-main (same GUID): flickers a fire's point light around its authored intensity, low frequency
+  only. The host sets `FireLight.Still` for Reduced Motion instead of the component reading main's `FighterView.Still`.
+
 ## 0.2.0
 
 - Moved from `veilbreak-arcade/packages` to `veilbreak-design-system/packages` with every file and GUID unchanged.

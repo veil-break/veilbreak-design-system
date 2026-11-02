@@ -36,6 +36,7 @@ reflect only the painted sky.
 | `SegmentStreamer` | Recycles nine connector-aligned 8 m segments around the presented distance and asks the street to fill each one with its host-seeded hash. It never advances progression. |
 | `StreetStreamer` | Shows the blocks on the segments. It creates each segment's four parts on first show and never instantiates after that. |
 | `LightBudget` | Point lights for the emitters nearest the action: 8 on Standard, 2 on Low. The lights fade in and out and follow their emitter. |
+| `FireLight` | Flickers an authored fire's point light around its intensity, low frequency only. Set the static `FireLight.Still` for Reduced Motion. veilbreak-main's builders put it on their fire prefabs. |
 | `Atmospherics` | Two fog sheets, an ember field, rain and a pool of fire rigs, each with a positional crackle. Counts are fixed per tier. |
 | `EnvironmentDirector` | Blends themes over 8 s. Publishes shader globals, trilight ambient, fog, the moon and the camera background, and plays the rain and hum beds. |
 | `ReflectionSet`, `VeilReflectionFeature` | The mirrored wet-street pass. Registered emissive submeshes are drawn mirrored at a quarter of the resolution and blurred vertically. |

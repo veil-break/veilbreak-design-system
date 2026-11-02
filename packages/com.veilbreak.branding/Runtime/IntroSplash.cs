@@ -28,6 +28,7 @@ namespace Veilbreak.Branding
         private readonly IVisualElementScheduledItem ticker;
         private readonly bool reduced;
         private readonly float volume;
+        private Action ended;
         private bool sliced;
         private float start = -1;
         private readonly float seed = UnityEngine.Random.Range(0, 1000);
@@ -38,8 +39,9 @@ namespace Veilbreak.Branding
         private static IntroSplash current;
         public static bool Active => current != null && current.overlay.panel != null;
         private VisualElement tree;
-        // Opens over the view as a modal with its own input (HudModal.OwnInput): the view's navigation stands by until it closes itself.
-        public static void Play(VisualElement host, bool reducedMotion, float volume = 1) { Stop(); new IntroSplash(host, reducedMotion, volume); }
+        // Draws the intro over `host` (a host with navigation opens `host` as a modal with its own input, so its navigation stands by)
+        // and calls `ended` once when the intro finishes, is skipped through, stopped or detached, so the host can close that modal.
+        public static void Play(VisualElement host, bool reducedMotion, float volume = 1, Action ended = null) { Stop(); new IntroSplash(host, reducedMotion, volume, ended); }
         // Seconds of the slice clip before its cut (keep equal to SLICE_LEAD in Tools~/splash_sound.py).
         public const float SliceLead = .24f;
         // The cut's sound: the package's clip unless a host supplies its own (null: silent).
@@ -51,9 +53,9 @@ namespace Veilbreak.Branding
         public static float? Pinned { get; set; }
         public static void Stop(){var splash=current;if(splash==null)return;splash.ticker.Pause();splash.End();splash.overlay.RemoveFromHierarchy();}
 
-        private IntroSplash(VisualElement host, bool reducedMotion, float volume)
+        private IntroSplash(VisualElement host, bool reducedMotion, float volume, Action ended)
         {
-            reduced = reducedMotion; this.volume = Mathf.Clamp01(volume);
+            reduced = reducedMotion; this.volume = Mathf.Clamp01(volume); this.ended = ended;
             overlay = new VisualElement { name = "intro-splash" }; overlay.AddToClassList("intro"); Fill(overlay);
             overlay.style.backgroundColor = Ground;
             overlay.Add(ambient = Layer(Radial(false))); ambient.style.unityBackgroundImageTintColor = Solid;
@@ -111,6 +113,7 @@ namespace Veilbreak.Branding
         private void End()
         {
             if (current == this) current = null;
+            var done = ended; ended = null; done?.Invoke();
             if (tree == null) return;
             tree.UnregisterCallback<KeyDownEvent>(Skip, TrickleDown.TrickleDown); tree.UnregisterCallback<NavigationMoveEvent>(Skip, TrickleDown.TrickleDown);
             tree.UnregisterCallback<NavigationSubmitEvent>(Skip, TrickleDown.TrickleDown); tree.UnregisterCallback<NavigationCancelEvent>(Skip, TrickleDown.TrickleDown);

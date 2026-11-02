@@ -4,6 +4,12 @@
 
 - Moved from `veilbreak-arcade/packages` to `veilbreak-design-system/packages` with every file and GUID unchanged. Consume it from git at `?path=/packages/com.veilbreak.branding`.
 
+## 1.2.0 — 2026-11-02
+
+- `IntroSplash.Play` takes an optional `ended` callback, called once when the intro finishes, is skipped through, stopped or
+  detached. veilbreak-main hosts the splash in its navigation's own-input modal and closes the modal from it; main's own copy
+  of the intro is retired.
+
 ## 1.1.0 — 2026-11-01
 
 - **Slicing sound.** The splash plays `Runtime/Resources/VeilbreakSplashSlice.wav` as the blade strikes: a rising whip of air,
