@@ -31,6 +31,11 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
       - name: Install locked Python tools
         run: uv sync --locked
 
@@ -43,6 +48,10 @@ jobs:
           uv run --frozen python packages/com.veilbreak.gui/Tools~/tokens.py --check
           uv run --frozen python packages/com.veilbreak.gui/Tools~/samples.py --check
           uv run --frozen python packages/com.veilbreak.gui/Tools~/metas.py --check
+          uv run --frozen python packages/com.veilbreak.ar-hud/Tools~/kit_tokens.py --check
+
+      - name: ar-hud input checks
+        run: dotnet run --project packages/com.veilbreak.ar-hud/Tests~/InputChecks/Veilbreak.ARHud.InputChecks.csproj
 
       - name: Build handbook and web app
         run: |
