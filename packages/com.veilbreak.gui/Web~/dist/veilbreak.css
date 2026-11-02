@@ -163,6 +163,8 @@
 .vb-meter__preview { position: absolute; top: -1px; bottom: -1px; border-width: 1px; border-color: var(--power-text); background-color: rgba(192, 132, 252, 0.22); }
 .vb-meter__mark { position: absolute; top: -3px; bottom: -3px; width: 2px; margin-left: -1px; background-color: var(--power-text); }
 .vb-meter__mark-label { display: none; }
+.vb-gauge { --vb-gauge-color: var(--ally); width: 144px; height: 144px; align-items: center; justify-content: center; align-self: center; flex-shrink: 0; }
+.vb-gauge__value { font-size: 26px; font-weight: 700; color: var(--text); }
 .vb-health { flex-direction: column; }
 .vb-health__hp { height: 6px; }
 .vb-health__stability { height: 3px; margin-top: 2px; background-color: rgba(250, 238, 244, 0.10); }

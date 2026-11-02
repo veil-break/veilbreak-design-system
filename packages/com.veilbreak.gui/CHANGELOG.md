@@ -13,6 +13,12 @@ thin adapter over them.
 - `VbGauge` (`[UxmlElement]`): the radial segmented gauge from ar-hud (`Value`, `Segments`, `Tint`, centre `Readout`; colour from
   `--vb-gauge-color`, the ally colour by default) and its public `VbGauge.Draw` dial painter. `VbPaint`: Painter2D `Alpha`, `Line`
   and `Arc` helpers. `Gui.uss` styles `.vb-gauge`.
+- `VbVectorShape`: the Painter2D cut shape from ar-hud's `HudShape`, next to the mesh-painted `VbShape`: a choice of cut corners
+  (`flip`), lock-on brackets with a corner mask, a focus ring, glass (sheen, scanlines), halo and glow, blending between looks, and
+  `Outline(element, inset)` for overlays that trace the painted edge. The custom properties it reads come from a
+  `VbVectorVocabulary` (`--vb-vector-*` and the `vb-vector` class by default). Nothing in gui attaches it yet.
+- `VbPressGlow` (with `VbPressGlowOptions`): the per-panel hover and keyboard-focus glow that traces a button's outline, plus the press
+  sink, from ar-hud's `HudPress`. The neon property, keyboard class and reduced-motion check are options.
 ## 0.5.1 — 2026-11-01
 
 - `MerchantScreen` names each row's action again (`buy-{index}`, `sell-perk-{id}`, `sell-hp-{actor}`); the 0.5.0 keyed rows

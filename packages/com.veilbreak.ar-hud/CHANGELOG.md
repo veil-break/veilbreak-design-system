@@ -9,6 +9,10 @@ unchanged; the package references the `Veilbreak.Gui` assembly and needs gui 0.6
   classes. The engine and its tests moved to gui.
 - `HudGauge` paints with gui's `VbGauge.Draw` and takes its clamping and read-out text from `VbGauge`. It keeps its own `Value`
   and `Segments` attributes and the `ar-gauge` classes, so data bindings and UXML are unchanged. `HudPaint` forwards to `VbPaint`.
+- `HudShape` is the HUD's vocabulary over gui's `VbVectorShape`: the bare `--cut`, `--fill`, `--stroke` ... properties and the
+  `ar-shape` class are read exactly as before, and `Outline`, `Linear` and `Attach` keep their signatures. `HudFrame` and `HudButton`
+  stay here as the UXML elements. `HudPress` is an adapter over `VbPressGlow` with the `--neon` property, the `kbd` class and
+  `HudFx.Reduced`.
 ## 3.0.0
 
 - Depends on `com.veilbreak.gui`, the design-token authority.

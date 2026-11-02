@@ -938,6 +938,42 @@
       "web": true
     },
     {
+      "name": "VbVectorShape",
+      "base": "",
+      "kind": "service",
+      "family": "controls",
+      "level": "atom",
+      "source": "Runtime/Core/VbVectorShape.cs",
+      "web": false
+    },
+    {
+      "name": "VbVectorVocabulary",
+      "base": "",
+      "kind": "service",
+      "family": "controls",
+      "level": "atom",
+      "source": "Runtime/Core/VbVectorShape.cs",
+      "web": false
+    },
+    {
+      "name": "VbPressGlow",
+      "base": "IDisposable",
+      "kind": "service",
+      "family": "controls",
+      "level": "atom",
+      "source": "Runtime/Core/VbPressGlow.cs",
+      "web": false
+    },
+    {
+      "name": "VbPressGlowOptions",
+      "base": "",
+      "kind": "service",
+      "family": "controls",
+      "level": "atom",
+      "source": "Runtime/Core/VbPressGlow.cs",
+      "web": false
+    },
+    {
       "name": "VbSlider",
       "base": "Slider",
       "kind": "component",
