@@ -4,6 +4,13 @@
 
 - Moved from `veilbreak-arcade/packages` to `veilbreak-design-system/packages` with every file and GUID unchanged. Consume it from git at `?path=/packages/com.veilbreak.feedback`.
 
+## 1.5.0 — 2026-11-02
+
+- `CueStage`: draws catalogue set pieces through the pooled sinks (particles budgeted by priority, ground mark, light flash,
+  shake and sound), a heavy moment's screen impact and particle punch (`Punch`) and a marked body's closing chevrons
+  (`Reticle`). Lifted from veilbreak-arcade's `VfxDirector`, which keeps only the event-to-cue mapping, strengths, colours,
+  shake scaling and HUD jolt. Reduced Flashes, shake and pulse are host-set (`ReducedFlashes`, `Shake`, `Pulsed`).
+
 ## 1.4.0 — 2026-11-02
 
 Battle-surface helpers from veilbreak-main's battle VFX, generalised with the host's choices injected. The scripts keep their

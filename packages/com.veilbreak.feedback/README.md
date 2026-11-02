@@ -13,6 +13,8 @@ For battle surfaces (desktop-tier battle VFX, from veilbreak-main):
 - `CurtainBatch`: vertical light curtains on ground outlines in one mesh (`Begin`, `Add`, `End`; `Bake` for builders). Your curtain shader reads the global `_CurtainPhase`, which `CurtainBatch.Phase(time)` advances (0 under Reduced Motion).
 - `PooledEffect.Create(prefab, parent, release)`: a one-shot prefab instance that returns itself to your `ObjectPool` through the particle Stop callback.
 
+To draw catalogue cues without writing the sink plumbing, create a `CueStage` with your `EffectEmitters`, `GroundMarks`, `LightFlashes` and `AudioVoices` (any may be null), set `Shake` and `Pulsed` to your camera rig and flash volume, and call `Play(cue, fallbackRoutine, call, groundPoint)` per mapped event. `Punch(at, colour, strength, camera)` adds a heavy moment's screen impact and particle burst, and `CueStage.Reticle(batch, local, size, colour, time)` draws closing chevrons around a marked body. Set `ReducedFlashes` from your settings. Event mapping stays in the game.
+
 For whole-screen hits, push confirmed impacts with ScreenImpacts.Push(viewport, colour, strength) and call ScreenImpacts.Advance(unscaledDelta) each frame; CinematicPulseFeature renders the strongest four (shockwave refraction, zoom punch, chromatic split, tinted vignette) even while no pulse volume is active. Set ScreenImpacts.Motion to 0 for Reduced Motion and ScreenImpacts.Flash to 0 for Reduced Flashes.
 
 Assemblies: `Veilbreak.Feedback / Veilbreak.Feedback.URP / Veilbreak.Feedback.UI`. Unity 6000.3; URP adapters require URP 17.3.

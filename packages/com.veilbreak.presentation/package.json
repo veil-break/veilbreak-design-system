@@ -1,14 +1,14 @@
 {
   "name": "com.veilbreak.presentation",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "displayName": "Veilbreak Presentation",
   "description": "Entry package for the shared Veilbreak presentation stack: declares gui, feedback, branding and environment at tested versions. Contains no assets or assemblies.",
   "unity": "6000.3",
   "dependencies": {
     "com.veilbreak.gui": "0.5.1",
-    "com.veilbreak.feedback": "1.3.0",
-    "com.veilbreak.branding": "1.1.0",
-    "com.veilbreak.environment": "0.2.0"
+    "com.veilbreak.feedback": "1.5.0",
+    "com.veilbreak.branding": "1.2.0",
+    "com.veilbreak.environment": "0.3.0"
   },
   "license": "SEE LICENSE.md"
 }
