@@ -1,0 +1,28 @@
+{
+  "name": "com.veilbreak.ar-hud",
+  "version": "2.0.0",
+  "displayName": "Veilbreak AR HUD",
+  "description": "UI Toolkit framework for game UI: a PanelRenderer host and view that own screens, modals, toasts and keyboard/gamepad focus; boards (HudStage) with visor chrome; the cut-shape kit, press feedback and effects; themes, effects profiles and a live editor workshop.",
+  "unity": "7000.0",
+  "dependencies": {},
+  "keywords": [
+    "ui-toolkit",
+    "hud",
+    "visor",
+    "theme",
+    "navigation",
+    "screens"
+  ],
+  "author": {
+    "name": "Hummingbird Design",
+    "url": "https://tuomashatakka.github.io"
+  },
+  "documentationUrl": "https://github.com/veil-break/veilbreak-design-system/tree/main/packages/com.veilbreak.ar-hud",
+  "samples": [
+    {
+      "displayName": "Quick Start",
+      "description": "Editable UXML and a bound telemetry driver. Use Veilbreak > AR HUD > Create Demo in Scene for an instant gallery.",
+      "path": "Samples~/QuickStart"
+    }
+  ]
+}

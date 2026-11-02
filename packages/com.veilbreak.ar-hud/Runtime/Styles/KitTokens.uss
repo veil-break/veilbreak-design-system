@@ -1,0 +1,31 @@
+/* Snapshot of Veilbreak's first colour theme, owned by this package; Tools~/kit_tokens.py --check keeps it complete. */
+/* Default values for the design-token variables Base.uss and Kit.uss read, for projects without their own token sheet: the
+   demo host (Create Demo in Scene) and the Theme Workshop fallback attach it first. An app with a token sheet attaches that. */
+:root {
+    --vb-color-amber-400: #ffc35a;
+    --vb-color-badge-new: #f0509a;
+    --vb-color-crimson-300: #f39bc6;
+    --vb-color-crimson-400: #f0509a;
+    --vb-color-cta: #1dd9a0;
+    --vb-color-cta-2: #8ff0cf;
+    --vb-color-dark-100: #110811;
+    --vb-color-focus: #faeef4;
+    --vb-color-glass-sheen: rgba(0, 0, 0, 0);
+    --vb-color-ground: #050208;
+    --vb-color-halo: rgba(29, 217, 160, 0.078);
+    --vb-color-holo: #8ff0cf;
+    --vb-color-holo-frame: rgba(29, 217, 160, 0.851);
+    --vb-color-lavender-300: #d9b8ff;
+    --vb-color-lavender-500: #c084fc;
+    --vb-color-line: rgba(250, 238, 244, 0.141);
+    --vb-color-line-strong: rgba(250, 238, 244, 0.4);
+    --vb-color-on-cta: #0e0914;
+    --vb-color-panel: rgba(14, 9, 20, 0.859);
+    --vb-color-panel-solid: #0e0914;
+    --vb-color-scan: rgba(0, 0, 0, 0);
+    --vb-color-teal-300: #8ff0cf;
+    --vb-color-teal-500: #1dd9a0;
+    --vb-color-text: #faeef4;
+    --vb-color-text-2: rgba(250, 238, 244, 0.78);
+    --vb-color-text-3: rgba(250, 238, 244, 0.651);
+}

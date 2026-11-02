@@ -1,0 +1,81 @@
+/* Shared desktop components (k-*) after "veilbreak-screens.pdf" (1440 x 900 board units = PDF CSS px). Screens include this
+   after Base.uss and the app's base sheets; restyle a screen for one board with `.desktop .x` / `.mobile .x`. It sets no
+   typefaces: the app's faces for the k-* classes follow it (Veilbreak: KitFaces.uss).
+   Cut shapes (ar:HudFrame / ar:HudButton, painted by the AR HUD package) read --fill, --fill-to, --fill-dir, --stroke, --cut. */
+
+/* ---------- surfaces ---------- */
+.k-panel { background-color: var(--vb-color-panel); border-width: 1px; border-color: var(--vb-color-line); padding: 20px; }
+.k-panel-flat { background-color: var(--vb-color-panel); border-width: 1px; border-color: var(--vb-color-line); }
+.k-modal { background-color: var(--vb-color-panel-solid); border-width: 1px; border-color: var(--vb-color-line-strong); }
+/* the 2px teal -> lilac -> rose line along a modal's top edge: a HudFrame strip */
+.k-modal-edge { position: absolute; left: 0; right: 0; top: -1px; height: 2px; --cut: 0; --fill: #34d6a0; --fill-to: #f06aa0; --fill-dir: 0; --stroke: rgba(0, 0, 0, 0); }
+.k-divider { height: 1px; background-color: var(--vb-color-line); }
+.k-vdivider { width: 1px; background-color: var(--vb-color-line); }
+
+/* ---------- type ---------- */
+.k-caps { font-size: 11px; letter-spacing: 2.6px; color: var(--vb-color-text); }
+.k-caps-dim { font-size: 10px; letter-spacing: 2.2px; color: var(--vb-color-text-3); }
+.k-title { font-size: 26px; letter-spacing: 5px; color: var(--vb-color-text); }
+.k-name { font-size: 15px; color: var(--vb-color-text); }
+.k-body { font-size: 13px; color: var(--vb-color-text-2); white-space: normal; }
+.k-small { font-size: 11px; color: var(--vb-color-text-3); white-space: normal; }
+.k-num { font-size: 13px; color: var(--vb-color-text); -unity-text-align: middle-right; }
+.k-good { color: var(--vb-color-cta); }
+.k-bad { color: var(--vb-color-crimson-300); }
+.k-lilac { color: var(--vb-color-lavender-300); }
+/* section heading with a right-aligned count ("INVENTORY ... 14 / 30") */
+.k-head { flex-direction: row; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+
+/* ---------- buttons ---------- */
+.k-btn { height: 40px; padding: 0 20px; flex-direction: row; align-items: center; justify-content: center; background-color: rgba(0, 0, 0, 0); border-width: 1px; border-color: var(--vb-color-line-strong); border-radius: 0; margin: 0; }
+.k-btn > .unity-label, .k-btn-label { font-size: 11px; letter-spacing: 2.6px; color: var(--vb-color-text); padding: 0; margin: 0; }
+.k-btn:hover { border-color: var(--vb-color-holo-frame); background-color: rgba(89, 225, 255, 0.06); }
+.k-btn-lilac { border-color: var(--vb-color-lavender-500); background-color: rgba(122, 90, 180, 0.18); }
+.k-btn-light { background-color: var(--vb-color-text); border-color: var(--vb-color-text); }
+.k-btn-light > .unity-label, .k-btn-light .k-btn-label { color: var(--vb-color-on-cta); }
+.k-btn-light:hover { background-color: rgb(255, 255, 255); border-color: rgb(255, 255, 255); }
+.k-btn-dashed { border-color: rgba(250, 238, 244, 0.28); }
+/* the big gradient CTA (BATTLE, DONE): an ar:HudButton with a k-cta-title / k-cta-sub */
+.k-cta { height: 64px; min-width: 200px; padding: 0 24px; justify-content: center; --cut: 10; --fill: rgb(52, 214, 160); --fill-to: rgb(212, 247, 234); --fill-dir: 0; --stroke: var(--vb-color-cta-2); --sheen: rgba(255, 255, 255, 0.18); --halo: rgba(29, 217, 160, 0.25); --neon: var(--vb-color-cta-2); }
+.k-cta:hover { --fill: rgb(78, 228, 178); --fill-to: rgb(230, 252, 243); }
+.k-cta-title { font-size: 24px; letter-spacing: 6px; color: rgb(14, 9, 20); padding: 0; }
+.k-cta-sub { font-size: 11px; color: rgba(14, 9, 20, 0.75); padding: 0; }
+
+/* ---------- segmented tabs (SOLO DUO TRIO SQUAD, RANKED TRAINING, ALL CORE PLATING) ---------- */
+.k-seg { flex-direction: row; background-color: var(--vb-color-panel); border-width: 1px; border-color: var(--vb-color-line); }
+.k-seg-item { flex-grow: 1; min-height: 40px; padding: 6px 18px; align-items: center; justify-content: center; background-color: rgba(0, 0, 0, 0); border-width: 0; border-radius: 0; margin: 0; }
+.k-seg-item .k-seg-title { font-size: 12px; letter-spacing: 2.4px; color: var(--vb-color-text); padding: 0; }
+.k-seg-item .k-seg-sub { font-size: 10px; color: var(--vb-color-text-2); padding: 0; }
+.k-seg-item:hover { background-color: rgba(250, 238, 244, 0.05); }
+.k-seg-item.on { background-color: var(--vb-color-text); }
+.k-seg-item.on .k-seg-title, .k-seg-item.on .k-seg-sub { color: var(--vb-color-on-cta); }
+
+/* ---------- rows ---------- */
+.k-row { flex-direction: row; align-items: center; min-height: 34px; border-bottom-width: 1px; border-color: var(--vb-color-line); }
+.k-row > .k-grow, .k-grow { flex-grow: 1; flex-shrink: 1; }
+.k-stat-delta { width: 92px; font-size: 13px; -unity-text-align: middle-right; color: var(--vb-color-cta); }
+.k-bar { height: 4px; background-color: rgba(250, 238, 244, 0.1); margin-top: 6px; }
+.k-bar-fill { height: 100%; background-color: var(--vb-color-cta); }
+.k-bar-fill.lilac { background-color: var(--vb-color-lavender-500); }
+.k-bar-fill.dim { background-color: rgba(250, 238, 244, 0.55); }
+
+/* ---------- rank pips ---------- */
+.k-pips { flex-direction: row; }
+.k-pip { width: 10px; height: 10px; margin-right: 3px; border-width: 1px; border-color: var(--vb-color-lavender-500); }
+.k-pip.on { background-color: var(--vb-color-lavender-500); }
+
+/* ---------- item cells (inventory, equipped slots) ---------- */
+.k-cell { width: 56px; height: 56px; margin: 0 6px 6px 0; align-items: center; justify-content: center; background-color: var(--vb-color-panel); border-width: 1px; border-color: rgba(250, 238, 244, 0.2); border-radius: 0; padding: 0; }
+.k-cell:hover { border-color: rgba(250, 238, 244, 0.5); }
+.k-cell.empty { border-color: rgba(250, 238, 244, 0.08); background-color: rgba(14, 9, 20, 0.5); }
+.k-cell.sel { border-width: 2px; border-color: var(--vb-color-cta); }
+.k-cell.r-rare { border-color: var(--vb-color-lavender-500); }
+.k-cell.r-unique { border-color: var(--vb-color-crimson-400); }
+.k-cell.r-legendary { border-color: var(--vb-color-amber-400); }
+.k-cell-letter { position: absolute; top: 2px; right: 4px; font-size: 9px; color: var(--vb-color-text); padding: 0; }
+.k-slot { width: 64px; height: 64px; }
+.k-slot-label { font-size: 10px; letter-spacing: 2.2px; color: var(--vb-color-text-2); -unity-text-align: middle-center; margin-top: 6px; }
+
+/* ---------- monogram tile (AR, AE ...) ---------- */
+.k-mono { width: 36px; height: 36px; align-items: center; justify-content: center; border-width: 1px; border-color: var(--vb-color-cta); background-color: rgba(22, 60, 46, 0.6); }
+.k-mono > .unity-label { font-size: 14px; color: var(--vb-color-text); padding: 0; }
