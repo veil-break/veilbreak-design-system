@@ -1,6 +1,6 @@
 /* The AR HUD kit (HudKit; design-system/README.md): board-unit layout for HudStage, the HudShape reset and focus rings, glass
    panels and presses, the CTA, rail, icon buttons, switch, segment, bar, tiles, chips, helpers and the HudFx effect layers.
-   Colours come from the design tokens (--vb-color-*, VeilbreakTokens.uss in Veilbreak). The kit sets no typefaces: the app adds
+   Colours come from the design tokens (--vb-color-*, com.veilbreak.gui Runtime/Styles/Tokens.uss). The kit sets no typefaces: the app adds
    its face rules (-unity-font) for these classes in a sheet after this one (Veilbreak: VeilbreakBoards.uss). Attach it per screen
    (a UXML <Style>), after the app's own base sheet and before its screen sheets: .ar-shape must outrank element-level button rules. */
 .disp { -unity-font-style: normal; letter-spacing: 2px; }

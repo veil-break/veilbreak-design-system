@@ -1,6 +1,15 @@
 # Changelog
 
-## Unreleased
+## 3.0.0
+
+- Depends on `com.veilbreak.gui`, the design-token authority.
+- Removed `KitTokens.uss` and `Tools~/kit_tokens.py`. The demo host and the Theme Workshop now attach gui's
+  `Runtime/Styles/Tokens.uss`.
+- Added `Runtime/Themes/HudTheme_Veil.asset` and `HudTheme_Contrast.asset`. `Tools~/themes.py` generates them from gui's
+  `Tokens~/tokens.json` (`--check` names stale outputs). They moved from veilbreak-main's `Features/UI/Hud` with their
+  GUIDs unchanged and are byte-identical apart from `generatedFrom`.
+
+## 2.0.0
 
 - Moved from `veilbreak-main/packages` to `veilbreak-design-system/packages` with every file and GUID unchanged. Consume it
   from git at `?path=/packages/com.veilbreak.ar-hud`; the Unity paths (`Packages/com.veilbreak.ar-hud/...`) stay the same.

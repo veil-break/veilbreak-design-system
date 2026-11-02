@@ -31,7 +31,7 @@ namespace Veilbreak.ARHud.Editor
             host.Theme = theme; host.Effects = effects;
             // RuntimeTheme.tss brings Hud.uss; the gallery's kit pieces need the kit sheets (and default token values) on the view.
             StyleSheet Sheet(string name) => AssetDatabase.LoadAssetAtPath<StyleSheet>(HudWorkshop.PackagePath + "Runtime/Styles/" + name);
-            host.Styles = new[] { Sheet("KitTokens.uss"), Sheet("Base.uss"), Sheet("Kit.uss") };
+            host.Styles = new[] { HudWorkshop.Tokens(), Sheet("Base.uss"), Sheet("Kit.uss") };
             host.Rebuild(); EditorUtility.SetDirty(host);
             EditorSceneManager.MarkSceneDirty(go.scene); AssetDatabase.SaveAssets(); Selection.activeGameObject = go;
         }

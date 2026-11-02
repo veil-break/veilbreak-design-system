@@ -67,7 +67,7 @@ Each stage carries a `HudVisor`: the `HudChrome` rails and brackets under the bo
 
 ## Build with the kit
 
-Attach the kit per screen, in this order: the app's tokens and base sheet, `Base.uss`, the app's board and face rules, `Kit.uss`, the app's kit faces, then screen sheets. `.ar-shape` (Base.uss) must outrank element-level button rules, and the kit sets no `-unity-font`: the app adds its faces for the kit classes in a sheet after each kit sheet. Colours come from `--vb-color-*` variables; `KitTokens.uss` holds defaults for projects without a token sheet.
+Attach the kit per screen, in this order: the app's tokens and base sheet, `Base.uss`, the app's board and face rules, `Kit.uss`, the app's kit faces, then screen sheets. `.ar-shape` (Base.uss) must outrank element-level button rules, and the kit sets no `-unity-font`: the app adds its faces for the kit classes in a sheet after each kit sheet. Colours come from `--vb-color-*` variables; `com.veilbreak.gui`'s `Runtime/Styles/Tokens.uss` defines them.
 
 `HudKit` builds the pieces in code (`Panel`, `Press`, `Cta`, `Rail`, `IconButton`, `Switch`, `Segment`, `Bar`, `Tag`, `Text`, `Box`) and binds widgets declared in UXML (`BindToggle`, `BindSlider`, `BindChoice`, `BindSegment`, `BindSwitch`, `Click`, `SetText`). `HudIcon` draws glyphs from the installed `HudIcons` library (`HudIcons.Active`; UI Builder and edit-mode previews use the project's first library), tinted with the text colour. `HudScreenFrame` draws a screen's corner chrome; give it the `HudFx.Static` class so it never fades in.
 
@@ -112,7 +112,7 @@ Screens that are cleared and cloned on every change can still animate. Call `var
 
 Assign assets on HudHost, install app-wide defaults (`HudTheme.Default`, `HudEffects.Default`) at boot, or edit them in the workshop. Inspector changes apply live. For script edits, call `theme.NotifyChanged()` or `effects.NotifyChanged()` after mutation. `theme.ApplyPreset(HudPalette.Veilbreak)` sets a complete palette (not on a generated theme). The visor never writes the shared assets: reduced motion and interference are overrides on its chrome. Clone shared assets if individual players need different settings.
 
-A theme written by a tool records its source in `generatedFrom`; the inspector and the workshop show it read-only, and the workshop's preset dropdown is disabled for it. Edit the source and regenerate, or save a copy from the workshop. `HudWorkshop.PreviewStyles` lets an app preview with its own sheets; otherwise the workshop uses `Hud.uss`, `KitTokens.uss`, `Base.uss` and `Kit.uss`.
+A theme written by a tool records its source in `generatedFrom`; the inspector and the workshop show it read-only, and the workshop's preset dropdown is disabled for it. Edit the source and regenerate, or save a copy from the workshop. `HudWorkshop.PreviewStyles` lets an app preview with its own sheets; otherwise the workshop uses `Hud.uss`, gui's `Tokens.uss`, `Base.uss` and `Kit.uss`. The package's own `HudTheme_Veil` and `HudTheme_Contrast` are generated from gui's tokens by `Tools~/themes.py`.
 
 ## Optional Unity 7000 filters
 

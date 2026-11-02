@@ -60,7 +60,9 @@ The style sheets are:
 - `Hud.uss`, theme level: the view's layers, the scrim and the toast. `RuntimeTheme.tss` imports it, or an app's own theme can.
 - `Base.uss`: the kit's layout, the shape reset, focus rings, panels, presses and effect layers.
 - `Kit.uss`: the `k-*` desktop components.
-- `KitTokens.uss`: default `--vb-color-*` values for projects without a token sheet, a package-owned snapshot. `Tools~/kit_tokens.py --check` keeps it complete against `Base.uss` and `Kit.uss`.
+- The `--vb-color-*` variables come from `com.veilbreak.gui`'s `Runtime/Styles/Tokens.uss`, the Veilbreak design tokens. The demo host and the Theme Workshop attach it before `Base.uss`.
+
+The themes `Runtime/Themes/HudTheme_Veil.asset` and `HudTheme_Contrast.asset` are generated from gui's `Tokens~/tokens.json` by `Tools~/themes.py` (`--check` names stale outputs). They are read-only in the inspector and the workshop.
 
 The kit sheets set no typefaces. Attach `Base.uss` and `Kit.uss` per screen (a UXML `<Style>`), followed by the app's own face rules.
 

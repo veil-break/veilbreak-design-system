@@ -14,10 +14,10 @@ Shared presentation packages for Veilbreak games. Each Unity package lives in it
 | [`com.veilbreak.branding`](packages/com.veilbreak.branding/README.md) | the intro splash / slash-cut mark and its slice sound; the host supplies completion and navigation |
 | [`com.veilbreak.rendering`](packages/com.veilbreak.rendering/README.md) | URP render features, volume overrides and shaders: anamorphic lens streaks, the full-screen signal glitch and its decaying transient, the visor barrel lens (camera pass plus the shared `Source`/`Shown` mapping), SRP Batcher-safe `MaterialPaint`; the host owns renderers, tiers, volumes and settings |
 | [`com.veilbreak.environment`](packages/com.veilbreak.environment/README.md) | the veil cityscape: wet street, lit facades, props, sky and skyline, fog, embers, rain, pooled lamp lights, flickering fire lights (`FireLight`) and street themes, streamed on its own bounded `SegmentStreamer`; the host supplies distance, theme and the per-segment seed |
-| [`com.veilbreak.ar-hud`](packages/com.veilbreak.ar-hud/README.md) | transitional UI framework that veilbreak-main hosts every screen with: `HudHost`/`HudView`/`HudNavigation`, `HudStage` boards and visor chrome, the cut-shape kit, themes and the Theme Workshop. Unity 7000.0 baseline; its navigation, shape, motion and gauge primitives consolidate into `gui` incrementally |
+| [`com.veilbreak.ar-hud`](packages/com.veilbreak.ar-hud/README.md) | UI framework that veilbreak-main hosts every screen with, kept as a permanent adapter over `gui`: `HudHost`/`HudView`/`HudNavigation`, `HudStage` boards and visor chrome, the cut-shape kit, HUD themes generated from gui's tokens and the Theme Workshop. Unity 7000.0 baseline; its navigation, shape, motion and gauge primitives delegate to `gui` incrementally |
 | [`com.veilbreak.presentation`](packages/com.veilbreak.presentation/README.md) | entry package: declares the four packages above at tested versions; no assets, no assembly. Root it in a game spec to get the whole stack |
 
-Dependency graph (acyclic): `gui` ← `feedback`, `gui` ← `branding`; `environment` and `rendering` depend only on URP and Unity modules. `presentation` depends on all four. `ar-hud` depends on no other Veilbreak package (Input System optional) and is not part of the entry package yet; neither is `rendering`, which only veilbreak-main consumes so far. Binaries are plain git blobs (no LFS), so a git
+Dependency graph (acyclic): `gui` ← `feedback`, `gui` ← `branding`; `environment` and `rendering` depend only on URP and Unity modules. `presentation` depends on all four. `ar-hud` depends on `gui` (its design tokens; Input System optional) and is not part of the entry package; neither is `rendering`, which only veilbreak-main consumes so far. Binaries are plain git blobs (no LFS), so a git
 package resolves without git-lfs.
 
 Games do not edit these manifests by hand. The [workspace tool](https://github.com/veil-break/.github-private/blob/main/docs/development/workspace.md)
@@ -34,7 +34,7 @@ repository root or the package folder; uv and Ruff discover the root configurati
 uv sync --locked
 uv run --frozen ruff check .
 uv run --frozen python packages/com.veilbreak.gui/Tools~/tokens.py --check
-uv run --frozen python packages/com.veilbreak.ar-hud/Tools~/kit_tokens.py --check
+uv run --frozen python packages/com.veilbreak.ar-hud/Tools~/themes.py --check
 dotnet run --project packages/com.veilbreak.ar-hud/Tests~/InputChecks/Veilbreak.ARHud.InputChecks.csproj
 ```
 

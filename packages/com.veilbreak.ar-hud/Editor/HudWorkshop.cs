@@ -9,11 +9,11 @@ namespace Veilbreak.ARHud.Editor
     /// Live theme editing over the sample gallery, laid out on a <see cref="HudStage"/> with its chrome and the kit. It opens on
     /// <see cref="HudTheme.Default"/> / <see cref="HudEffects.Default"/> (an app's installed profiles) or temporary ones, and
     /// previews with <see cref="PreviewStyles"/> (an app can install its own sheets; the package's Hud.uss, Base.uss and Kit.uss
-    /// with KitTokens.uss otherwise). A <see cref="HudTheme.Generated"/> theme is shown read-only: edit its source and regenerate, or save a copy.
+    /// with com.veilbreak.gui's Tokens.uss otherwise). A <see cref="HudTheme.Generated"/> theme is shown read-only: edit its source and regenerate, or save a copy.
     /// </summary>
     public sealed class HudWorkshop : EditorWindow
     {
-        /// <summary>The sheets the preview attaches, in cascade order; null or empty uses the package's Hud.uss, KitTokens.uss, Base.uss and Kit.uss.</summary>
+        /// <summary>The sheets the preview attaches, in cascade order; null or empty uses the package's Hud.uss, gui's Tokens.uss, Base.uss and Kit.uss.</summary>
         public static System.Func<StyleSheet[]> PreviewStyles { get; set; }
         private HudTheme theme;
         private HudEffects effects;
@@ -23,6 +23,9 @@ namespace Veilbreak.ARHud.Editor
         private IVisualElementScheduledItem refresh;
         private int themeRevision = -1, effectsRevision = -1;
         // Resolved through the package registry so the path is right however the package is installed.
+        /// <summary>The design-token sheet the kit reads: com.veilbreak.gui owns the tokens.</summary>
+        internal const string GuiTokens = "Packages/com.veilbreak.gui/Runtime/Styles/Tokens.uss";
+        internal static StyleSheet Tokens() => AssetDatabase.LoadAssetAtPath<StyleSheet>(GuiTokens);
         internal static string PackagePath => UnityEditor.PackageManager.PackageInfo.FindForAssembly(typeof(HudTheme).Assembly).assetPath + "/";
         [MenuItem("Veilbreak/AR HUD/Theme Workshop")]
         public static void Open() => GetWindow<HudWorkshop>("AR HUD Workshop");
@@ -82,7 +85,7 @@ namespace Veilbreak.ARHud.Editor
             var styles = PreviewStyles?.Invoke();
             if (styles != null && styles.Length > 0) return styles;
             StyleSheet Sheet(string name) => AssetDatabase.LoadAssetAtPath<StyleSheet>(PackagePath + "Runtime/Styles/" + name);
-            return new[] { Sheet("Hud.uss"), Sheet("KitTokens.uss"), Sheet("Base.uss"), Sheet("Kit.uss") };
+            return new[] { Sheet("Hud.uss"), Tokens(), Sheet("Base.uss"), Sheet("Kit.uss") };
         }
 
         private void Apply()
