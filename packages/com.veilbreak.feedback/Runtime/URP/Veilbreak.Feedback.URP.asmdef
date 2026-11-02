@@ -1,0 +1,1 @@
+{"name": "Veilbreak.Feedback.URP", "references": ["Veilbreak.Feedback", "Unity.RenderPipelines.Universal.Runtime", "Unity.RenderPipelines.Core.Runtime"]}

@@ -21,13 +21,13 @@ preview = true
 extend-select = ["E", "W"]
 
 [tool.ruff.lint.per-file-ignores]
-"Tools~/web/docs.py" = ["E501"]
-"Tools~/web/previews.py" = ["E501"]
-"Tools~/handbook/catalog.py" = ["E501"]
-"Tools~/handbook/build_handbook.py" = ["E501"]
-"Tools~/handbook/inspection_schema.py" = ["E501"]
+"packages/com.veilbreak.gui/Tools~/web/docs.py" = ["E501"]
+"packages/com.veilbreak.gui/Tools~/web/previews.py" = ["E501"]
+"packages/com.veilbreak.gui/Tools~/handbook/catalog.py" = ["E501"]
+"packages/com.veilbreak.gui/Tools~/handbook/build_handbook.py" = ["E501"]
+"packages/com.veilbreak.gui/Tools~/handbook/inspection_schema.py" = ["E501"]
 
 [tool.ruff.format]
-exclude = ["Tools~/web/docs.py", "Tools~/web/previews.py", "Tools~/handbook/catalog.py"]
+exclude = ["packages/com.veilbreak.gui/Tools~/web/docs.py", "packages/com.veilbreak.gui/Tools~/web/previews.py", "packages/com.veilbreak.gui/Tools~/handbook/catalog.py"]
 preview = true
 quote-style = "single"
