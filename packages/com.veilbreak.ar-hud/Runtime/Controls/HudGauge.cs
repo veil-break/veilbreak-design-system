@@ -1,9 +1,13 @@
 using Unity.Properties;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Veilbreak.Gui;
 
 namespace Veilbreak.ARHud
 {
+    /// <summary>The HUD's radial gauge. The dial, value rules and read-out text are gui's <see cref="VbGauge"/>; this element keeps the
+    /// <c>ar-gauge</c> classes, the themed colours and its UXML name. It paints with <see cref="VbGauge.Draw"/> instead of deriving from
+    /// it so <see cref="Value"/> keeps its own data-binding property bag.</summary>
     [UxmlElement]
     public partial class HudGauge : VisualElement, IHudThemed
     {
@@ -17,12 +21,12 @@ namespace Veilbreak.ARHud
             get => amount;
             set
             {
-                amount = float.IsNaN(value) ? 0 : Mathf.Clamp01(value);
-                if (readout != null) readout.text = $"{amount * 100:0}%";
+                amount = VbGauge.Clamp(value);
+                if (readout != null) readout.text = VbGauge.Percent(amount);
                 MarkDirtyRepaint();
             }
         }
-        [UxmlAttribute] public int Segments { get => segments; set { segments = Mathf.Clamp(value, 4, 96); MarkDirtyRepaint(); } }
+        [UxmlAttribute] public int Segments { get => segments; set { segments = Mathf.Clamp(value, VbGauge.MinSegments, VbGauge.MaxSegments); MarkDirtyRepaint(); } }
         public HudGauge()
         {
             AddToClassList("ar-gauge"); pickingMode = PickingMode.Ignore;
@@ -31,18 +35,6 @@ namespace Veilbreak.ARHud
             generateVisualContent += Draw;
         }
         public void ApplyTheme(HudTheme value) { theme = value; readout.style.color = value.foreground; MarkDirtyRepaint(); }
-        private void Draw(MeshGenerationContext ctx)
-        {
-            var center = contentRect.center;
-            var radius = Mathf.Min(contentRect.width, contentRect.height) * .5f - 8;
-            var accent = theme ? theme.accent : Color.cyan;
-            for (int i = 0; i < segments; i++)
-            {
-                float a = 140 + 260f * i / segments;
-                HudPaint.Arc(ctx.painter2D, center, radius, a, a + 260f / segments - 2,
-                    HudPaint.Alpha(accent, i < Mathf.CeilToInt(amount * segments) ? 1 : .18f), 4);
-            }
-            HudPaint.Arc(ctx.painter2D, center, radius - 9, 140, 400, HudPaint.Alpha(accent, .22f), 1);
-        }
+        private void Draw(MeshGenerationContext ctx) => VbGauge.Draw(ctx.painter2D, contentRect, amount, segments, theme ? theme.accent : Color.cyan);
     }
 }

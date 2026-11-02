@@ -10,6 +10,9 @@ thin adapter over them.
   and named ones slide. Reduced motion keeps colour and opacity only. It runs on `VbMotion.Clock`, and its beat is the new
   `timings.rebuild` token in `Tokens~/motion.json` (generated into `MotionRecipes.Rebuild`). A host names its own skip and
   decode classes (`vb-no-motion` and `vb-decode` by default).
+- `VbGauge` (`[UxmlElement]`): the radial segmented gauge from ar-hud (`Value`, `Segments`, `Tint`, centre `Readout`; colour from
+  `--vb-gauge-color`, the ally colour by default) and its public `VbGauge.Draw` dial painter. `VbPaint`: Painter2D `Alpha`, `Line`
+  and `Arc` helpers. `Gui.uss` styles `.vb-gauge`.
 ## 0.5.1 — 2026-11-01
 
 - `MerchantScreen` names each row's action again (`buy-{index}`, `sell-perk-{id}`, `sell-hp-{actor}`); the 0.5.0 keyed rows

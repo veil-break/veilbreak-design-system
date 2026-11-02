@@ -206,6 +206,9 @@
 .vb-meter__mark { position: absolute; top: -3px; bottom: -3px; width: 2px; margin-left: -1px; background-color: var(--vb-color-power-text); }
 .vb-meter__mark-label { display: none; }
 
+.vb-gauge { --vb-gauge-color: var(--vb-color-ally); width: 144px; height: 144px; align-items: center; justify-content: center; align-self: center; flex-shrink: 0; }
+.vb-gauge__value { font-size: 26px; -unity-font-style: bold; color: var(--vb-color-text); }
+
 .vb-health { flex-direction: column; }
 .vb-health__hp { height: 6px; }
 .vb-health__stability { height: 3px; margin-top: 2px; background-color: rgba(250, 238, 244, 0.10); }

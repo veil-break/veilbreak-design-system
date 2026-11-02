@@ -875,6 +875,24 @@
       "web": true
     },
     {
+      "name": "VbGauge",
+      "base": "VisualElement",
+      "kind": "component",
+      "family": "controls",
+      "level": "atom",
+      "source": "Runtime/Controls/Gauge.cs",
+      "web": false
+    },
+    {
+      "name": "VbPaint",
+      "base": "",
+      "kind": "service",
+      "family": "controls",
+      "level": "atom",
+      "source": "Runtime/Core/VbPaint.cs",
+      "web": false
+    },
+    {
       "name": "VbMotion",
       "base": "",
       "kind": "service",

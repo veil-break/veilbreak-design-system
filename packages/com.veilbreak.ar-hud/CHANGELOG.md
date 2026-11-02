@@ -7,6 +7,8 @@ unchanged; the package references the `Veilbreak.Gui` assembly and needs gui 0.6
 
 - `HudMotion` is an adapter over gui's `VbRebuild`: same `Capture`/`Play`/`Snapshot`, same `ar-no-motion` and `ar-decode`
   classes. The engine and its tests moved to gui.
+- `HudGauge` paints with gui's `VbGauge.Draw` and takes its clamping and read-out text from `VbGauge`. It keeps its own `Value`
+  and `Segments` attributes and the `ar-gauge` classes, so data bindings and UXML are unchanged. `HudPaint` forwards to `VbPaint`.
 ## 3.0.0
 
 - Depends on `com.veilbreak.gui`, the design-token authority.
