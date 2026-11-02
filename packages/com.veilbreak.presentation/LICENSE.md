@@ -1,0 +1,3 @@
+# Ownership and redistribution
+
+Project-authored Veilbreak code and designs retain their original ownership. No new public redistribution license is granted by this extraction. Publish to private repositories unless the rights holder chooses a public license. Unity package dependencies retain their own licenses. This package contains no assets of its own; each dependency carries its own notice.
