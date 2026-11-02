@@ -14,6 +14,7 @@ public static class MotionRecipes {
  public static readonly MotionRecipe HudTop=new MotionRecipe(320,0,-24,0,1);
  public static readonly MotionRecipe HudCard=new MotionRecipe(360,0,32,-2,0.98f);
  public const int Stagger=80,MaxDealDelay=400;
+ public const int Rebuild=180;
  public static int DealDelay(int index)=>Mathf.Min(Mathf.Max(0,index)*Stagger,MaxDealDelay);
  public static MotionRecipe For(MotionKind kind,bool enter=true)=>kind switch {
   MotionKind.Deal=>Deal,MotionKind.Rise=>new MotionRecipe(enter?320:180,0,12),MotionKind.Drop=>new MotionRecipe(enter?320:180,0,-12),

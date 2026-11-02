@@ -1,11 +1,11 @@
 {
   "name": "com.veilbreak.ar-hud",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "displayName": "Veilbreak AR HUD",
   "description": "UI Toolkit framework for game UI: a PanelRenderer host and view that own screens, modals, toasts and keyboard/gamepad focus; boards (HudStage) with visor chrome; the cut-shape kit, press feedback and effects; themes, effects profiles and a live editor workshop.",
   "unity": "7000.0",
   "dependencies": {
-    "com.veilbreak.gui": "0.5.1"
+    "com.veilbreak.gui": "0.6.0"
   },
   "keywords": [
     "ui-toolkit",

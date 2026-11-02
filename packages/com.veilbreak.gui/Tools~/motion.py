@@ -15,6 +15,8 @@ def outputs():
         args = ','.join(str(v) + ('f' if isinstance(v, float) else '') for v in values)
         fields.append(f' public static readonly MotionRecipe {name[0].upper() + name[1:]}=new MotionRecipe({args});')
     fields.append(f' public const int Stagger={model["stagger"]},MaxDealDelay={model["maxDealDelay"]};')
+    for name, milliseconds in model.get('timings', {}).items():
+        fields.append(f' public const int {name[0].upper() + name[1:]}={milliseconds};')
     fields.append(' public static int DealDelay(int index)=>Mathf.Min(Mathf.Max(0,index)*Stagger,MaxDealDelay);')
     template = (ROOT / 'Tools~/motion.cs.template').read_text()
     yield ROOT / 'Runtime/Core/MotionRecipes.cs', template.replace('/*@@RECIPES@@*/', '\n'.join(fields))

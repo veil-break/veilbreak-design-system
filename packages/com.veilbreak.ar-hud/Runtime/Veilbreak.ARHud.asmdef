@@ -2,6 +2,7 @@
   "name": "Veilbreak.ARHud",
   "rootNamespace": "Veilbreak.ARHud",
   "references": [
+    "Veilbreak.Gui",
     "Unity.InputSystem"
   ],
   "includePlatforms": [],

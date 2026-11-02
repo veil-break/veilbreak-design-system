@@ -884,6 +884,24 @@
       "web": false
     },
     {
+      "name": "VbRebuild",
+      "base": "",
+      "kind": "service",
+      "family": "motion",
+      "level": "atom",
+      "source": "Runtime/Core/VbRebuild.cs",
+      "web": false
+    },
+    {
+      "name": "RebuildSnapshot",
+      "base": "",
+      "kind": "service",
+      "family": "motion",
+      "level": "atom",
+      "source": "Runtime/Core/VbRebuild.cs",
+      "web": false
+    },
+    {
       "name": "VbSegmented",
       "base": "VisualElement",
       "kind": "component",

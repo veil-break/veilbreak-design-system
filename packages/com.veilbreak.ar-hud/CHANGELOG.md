@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.1.0
+
+Consolidation over `com.veilbreak.gui` (veilbreak-design-system#13). Public API, script GUIDs and UXML element names are
+unchanged; the package references the `Veilbreak.Gui` assembly and needs gui 0.6.0.
+
+- `HudMotion` is an adapter over gui's `VbRebuild`: same `Capture`/`Play`/`Snapshot`, same `ar-no-motion` and `ar-decode`
+  classes. The engine and its tests moved to gui.
 ## 3.0.0
 
 - Depends on `com.veilbreak.gui`, the design-token authority.

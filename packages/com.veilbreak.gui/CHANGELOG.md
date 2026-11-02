@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.6.0 — 2026-11-02
+
+Primitives that `com.veilbreak.ar-hud` used to carry alone now live here (veilbreak-design-system#13); ar-hud keeps its API as a
+thin adapter over them.
+
+- `VbRebuild`: animates the difference between two builds of a rebuilt tree (`Capture` before, `Play` after). Elements are matched
+  by name path; changed classes replay from the old look, numbers count, text fades or decodes, bars grow, new elements fade in
+  and named ones slide. Reduced motion keeps colour and opacity only. It runs on `VbMotion.Clock`, and its beat is the new
+  `timings.rebuild` token in `Tokens~/motion.json` (generated into `MotionRecipes.Rebuild`). A host names its own skip and
+  decode classes (`vb-no-motion` and `vb-decode` by default).
 ## 0.5.1 — 2026-11-01
 
 - `MerchantScreen` names each row's action again (`buy-{index}`, `sell-perk-{id}`, `sell-hp-{actor}`); the 0.5.0 keyed rows

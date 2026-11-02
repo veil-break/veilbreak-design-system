@@ -1,6 +1,9 @@
 {
   "stagger": 80,
   "maxDealDelay": 400,
+  "timings": {
+    "rebuild": 180
+  },
   "recipes": {
     "viewIn": {
       "milliseconds": 320,
