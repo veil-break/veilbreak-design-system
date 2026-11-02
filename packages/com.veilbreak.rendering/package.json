@@ -1,0 +1,12 @@
+{
+  "name": "com.veilbreak.rendering",
+  "version": "1.0.0",
+  "displayName": "Veilbreak Rendering",
+  "description": "URP render features, volume overrides and shaders shared by the Veilbreak games: anamorphic lens streaks, the full-screen signal glitch, the visor barrel lens and SRP Batcher-safe material painting.",
+  "unity": "6000.3",
+  "dependencies": {
+    "com.unity.render-pipelines.universal": "17.3.0"
+  },
+  "license": "SEE LICENSE.md",
+  "documentationUrl": "https://github.com/veil-break/veilbreak-design-system/tree/main/packages/com.veilbreak.rendering"
+}

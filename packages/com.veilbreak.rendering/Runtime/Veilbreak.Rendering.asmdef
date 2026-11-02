@@ -1,0 +1,9 @@
+{
+  "name": "Veilbreak.Rendering",
+  "rootNamespace": "Veilbreak.Rendering",
+  "references": [
+    "Unity.RenderPipelines.Core.Runtime",
+    "Unity.RenderPipelines.Universal.Runtime"
+  ],
+  "autoReferenced": true
+}
