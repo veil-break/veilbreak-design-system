@@ -1,0 +1,152 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da44dbaf397404fcfaa3c42843b7ea86, type: 3}
+  m_Name: CityKit
+  m_EditorClassIdentifier: Veilbreak.Environment::Veilbreak.Environment.CityKit
+  models:
+  - name: AnchorLow
+    mesh: {fileID: 4300000, guid: 31ec1bfb4889c4742bd1ca95109a91b3, type: 2}
+    slots: 0000000001000000
+  - name: AnchorMonument
+    mesh: {fileID: 4300000, guid: 18855a3d17ba84b118810de071e6fa0c, type: 2}
+    slots: 000000000300000007000000
+  - name: Bench
+    mesh: {fileID: 4300000, guid: 40ee1f5752f4f48b694d13c2fdf06bbe, type: 2}
+    slots: 000000000100000005000000
+  - name: Bus
+    mesh: {fileID: 4300000, guid: 63b2f365b89f640b19688143ddcef4ec, type: 2}
+    slots: 01000000020000000600000007000000080000000b000000
+  - name: CarWreck
+    mesh: {fileID: 4300000, guid: aca2f2ad3483a4cb3b1bc381054ca419, type: 2}
+    slots: 01000000070000000a000000
+  - name: Curb4m
+    mesh: {fileID: 4300000, guid: 16053fff32aa5410389fd7f704114b5b, type: 2}
+    slots: 00000000
+  - name: DebrisPile
+    mesh: {fileID: 4300000, guid: bb98598ff535f4df4976abaaaa2444c7, type: 2}
+    slots: 000000000100000005000000
+  - name: DistantBuilding12m
+    mesh: {fileID: 4300000, guid: 2281c0bddf677468686a1274a05dc05b, type: 2}
+    slots: 0000000002000000
+  - name: DistantBuilding18m
+    mesh: {fileID: 4300000, guid: 83826341e242740ddbc1b05850d0cba0, type: 2}
+    slots: 0000000002000000
+  - name: DistantBuilding24m
+    mesh: {fileID: 4300000, guid: 36ae98955c433442dbcd1c69202023fb, type: 2}
+    slots: 0000000002000000
+  - name: Dumpster
+    mesh: {fileID: 4300000, guid: 4f4baff4964cf4b3a83f3a1e9a5d27df, type: 2}
+    slots: 0100000007000000
+  - name: Facade
+    mesh: {fileID: 4300000, guid: 90c8cd44f8f3a4223960e8b81fa2ddf5, type: 2}
+    slots: 000000000100000002000000
+  - name: FacadeBalcony
+    mesh: {fileID: 4300000, guid: e10f1d45c834749418d5cb30c8b66af6, type: 2}
+    slots: 000000000100000002000000
+  - name: FacadeDamaged
+    mesh: {fileID: 4300000, guid: b8ca460b603404e51bf9fa9900f87f69, type: 2}
+    slots: 000000000100000002000000
+  - name: FacadeEntrance
+    mesh: {fileID: 4300000, guid: b0b9a6a15c05e4048bb9f63020de31ac, type: 2}
+    slots: 000000000100000002000000
+  - name: Fence4m
+    mesh: {fileID: 4300000, guid: 22b2af71aad3644ac9e81a180cf6c5ce, type: 2}
+    slots: 0000000001000000
+  - name: PlanterBroken
+    mesh: {fileID: 4300000, guid: 1405e26c1aa7d42399013da4faf24681, type: 2}
+    slots: 00000000040000000500000007000000
+  - name: PlanterCracked
+    mesh: {fileID: 4300000, guid: 83cf3e50ea65545b5a56c1d46d4a1cb5, type: 2}
+    slots: 00000000040000000500000007000000
+  - name: PlanterIntact
+    mesh: {fileID: 4300000, guid: 5a4599fe82b684ad29da90e5eb32c484, type: 2}
+    slots: 000000000400000005000000
+  - name: PlanterRubble
+    mesh: {fileID: 4300000, guid: 5933955bffa7448659662bf8f20593d2, type: 2}
+    slots: 0000000007000000
+  - name: Sidewalk4m
+    mesh: {fileID: 4300000, guid: f5fe286835fc14f6ea1197cdba9a38fb, type: 2}
+    slots: 00000000
+  - name: SignalKioskBroken
+    mesh: {fileID: 4300000, guid: c1527068c10d14c179816e1a6feab0ca, type: 2}
+    slots: 010000000200000007000000
+  - name: SignalKioskCracked
+    mesh: {fileID: 4300000, guid: 6d44fd6d78f7e4ccfb3c22a2b069febf, type: 2}
+    slots: 00000000010000000300000007000000
+  - name: SignalKioskIntact
+    mesh: {fileID: 4300000, guid: 50962888632bb4304b928aefdcd14077, type: 2}
+    slots: 000000000100000003000000
+  - name: SignalKioskRubble
+    mesh: {fileID: 4300000, guid: 7cc20fbd2c5fa462f9b12920c4ebb476, type: 2}
+    slots: 0100000007000000
+  - name: StreetLamp
+    mesh: {fileID: 4300000, guid: a909969a5aeb34663a1f29e940977638, type: 2}
+    slots: 000000000100000006000000
+  - name: StreetLampDouble
+    mesh: {fileID: 4300000, guid: a1c09928c179c480ea17187a83631566, type: 2}
+    slots: 000000000100000006000000
+  - name: TreeBare
+    mesh: {fileID: 4300000, guid: 4bbbe0e8400334ea796b8febb9201ef8, type: 2}
+    slots: 05000000
+  - name: UtilityBarricadeBroken
+    mesh: {fileID: 4300000, guid: 828598cb603c246b887b355beacc091d, type: 2}
+    slots: 000000000100000007000000
+  - name: UtilityBarricadeCracked
+    mesh: {fileID: 4300000, guid: 64d8e183a566240f48ca1ae543ad8d3a, type: 2}
+    slots: 00000000010000000700000009000000
+  - name: UtilityBarricadeIntact
+    mesh: {fileID: 4300000, guid: 855bd818f50bb4c3293ca771ee390aed, type: 2}
+    slots: 000000000100000009000000
+  - name: UtilityBarricadeRubble
+    mesh: {fileID: 4300000, guid: c30ded6f5f5c64c4184d9d2fef9b67d3, type: 2}
+    slots: 0100000007000000
+  - name: VehicleBarricadeBroken
+    mesh: {fileID: 4300000, guid: aae2d3341721640258ddd64d88a3206e, type: 2}
+    slots: 0100000007000000
+  - name: VehicleBarricadeCracked
+    mesh: {fileID: 4300000, guid: dfd350b0d758841a0988619ebf5e92f1, type: 2}
+    slots: 0100000002000000060000000700000008000000
+  - name: VehicleBarricadeIntact
+    mesh: {fileID: 4300000, guid: 7c47fc7e01aae488794cc00eb3f6f2bf, type: 2}
+    slots: 0100000002000000060000000700000008000000
+  - name: VehicleBarricadeRubble
+    mesh: {fileID: 4300000, guid: facebb518262e498f88a4b0a6688a3e7, type: 2}
+    slots: 0100000007000000
+  palette:
+  - {fileID: 2100000, guid: 2eb7a6a01c43c476eb25be78faa5176c, type: 2}
+  - {fileID: 2100000, guid: 671699af8e617480aa0a0c25d04f05fa, type: 2}
+  - {fileID: 2100000, guid: 94cd6f96aa032412ab651a1958657c2d, type: 2}
+  - {fileID: 2100000, guid: 4e518b2dc2db84a7d829d57d573ed150, type: 2}
+  - {fileID: 2100000, guid: 6ce739308ede64e31bbda641f28f5432, type: 2}
+  - {fileID: 2100000, guid: 5b047c70aacda4913bcc44522c041d23, type: 2}
+  - {fileID: 2100000, guid: 21c4745909dac4503babfca010e56a1a, type: 2}
+  - {fileID: 2100000, guid: 4509972cb66124f78a1bad77ad0f8994, type: 2}
+  - {fileID: 2100000, guid: d56be40add26a4cbd92cf6bad70a56e9, type: 2}
+  - {fileID: 2100000, guid: 780a5bc8d53074f0a9d153f710f1fce7, type: 2}
+  - {fileID: 2100000, guid: 2a317645fa3e64b8ab7c5932c3fb8472, type: 2}
+  - {fileID: 2100000, guid: 75d0230cdb7974abcb038a3ee1e80d87, type: 2}
+  street: {fileID: 2100000, guid: 6d787e748c41e446e9295819bd47aac5, type: 2}
+  sidewalk: {fileID: 2100000, guid: 25001b013cee94fa89019dd70ad96ce8, type: 2}
+  lightPool: {fileID: 2100000, guid: 8ebfca6ad299843ffbce97552413cb2e, type: 2}
+  fog: {fileID: 2100000, guid: feac8feb8a3d9472d9cbdad2d24bb897, type: 2}
+  sky: {fileID: 2100000, guid: 634f77012274e49679417ec23e760c19, type: 2}
+  skyline: {fileID: 2100000, guid: 1e96435f1ae4c437f834f993c35ef6ba, type: 2}
+  ember: {fileID: 2100000, guid: e73685ddc7a0242b49535b862f08a83f, type: 2}
+  smoke: {fileID: 2100000, guid: cd4e028fce4644d5bbbd03175bbc7ce2, type: 2}
+  rain: {fileID: 2100000, guid: a06d8531443e54f9b877d8f741dc7597, type: 2}
+  noise: {fileID: 2800000, guid: 4acefd2481a524430a5c5cfb9b9e3759, type: 3}
+  skyPlate: {fileID: 2800000, guid: 0bce8b3c4f7184d11b1839ded548a45c, type: 3}
+  quad: {fileID: 4300000, guid: 01240aaf52b42447c8b1092f29a4a237, type: 2}
+  dome: {fileID: 4300000, guid: c2aa3382419fe405c8a6ddf6d3fbcd9a, type: 2}
+  rainLoop: {fileID: 8300000, guid: 0c795e7ea23ff429b80ea0050de12de9, type: 3}
+  humLoop: {fileID: 8300000, guid: 4f421b77425fe49b5bba4c8e432c91e5, type: 3}
+  fireLoop: {fileID: 8300000, guid: fb412298c26954d719caa0a835a08ca9, type: 3}
