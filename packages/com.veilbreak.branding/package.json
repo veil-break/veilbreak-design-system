@@ -1,0 +1,21 @@
+{
+  "name": "com.veilbreak.branding",
+  "version": "1.1.0",
+  "displayName": "Veilbreak Branding",
+  "description": "Original Veilbreak splash with independent UI Toolkit hosting and its slicing sound.",
+  "unity": "6000.3",
+  "dependencies": {
+    "com.unity.inputsystem": "1.20.1",
+    "com.unity.modules.audio": "1.0.0",
+    "com.unity.modules.uielements": "1.0.0",
+    "com.veilbreak.gui": "0.5.0"
+  },
+  "license": "SEE LICENSE.md",
+  "samples": [
+    {
+      "displayName": "Minimal consumer",
+      "description": "Standalone integration with explicit configuration.",
+      "path": "Samples~/MinimalConsumer"
+    }
+  ]
+}

@@ -10,6 +10,11 @@ Shared presentation packages for Veilbreak games. Each Unity package lives in it
 | package | responsibility |
 | --- | --- |
 | [`com.veilbreak.gui`](packages/com.veilbreak.gui/README.md) | tokens, fonts, icons, controls, screen views, hud, world labels, navigation, accessibility; the web kit (`Web~`) and the GUI Handbook (`docs/`) |
+| [`com.veilbreak.feedback`](packages/com.veilbreak.feedback/README.md) | cue catalog, pooled emitters, telegraphs and light curtains, ground marks, screen impacts, cue audio voices, projected readouts (`Feedback.UI`), URP effects: overlay blur, gamma UI, cinematic pulse (`Feedback.URP`) |
+| [`com.veilbreak.branding`](packages/com.veilbreak.branding/README.md) | the intro splash / slash-cut mark and its slice sound; the host supplies completion and navigation |
+
+Dependency graph (acyclic): `gui` ← `feedback`, `gui` ← `branding`. Binaries are plain git blobs (no LFS), so a git
+package resolves without git-lfs.
 
 Games do not edit these manifests by hand. The [workspace tool](https://github.com/veil-break/.github-private/blob/main/docs/development/workspace.md)
 writes reviewed git pins (`vb packages remote`) or local `file:` sources for package authoring
