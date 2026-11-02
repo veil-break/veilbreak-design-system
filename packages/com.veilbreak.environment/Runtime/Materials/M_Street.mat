@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: M_Street
+  m_Shader: {fileID: 4800000, guid: 8e82f734fb78c4d54adceda247a409c6, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 1
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BaseMap:
+        m_Texture: {fileID: 2800000, guid: 8e52e2e4a555b47ebb905f773ea0435f, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BumpMap:
+        m_Texture: {fileID: 2800000, guid: 7a296aa836a4647f493f99ef9a8ea252, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _BumpScale: 0.8
+    - _Puddles: 0
+    - _Sidewalk: 0
+    - _Smoothness: 0.32
+    - _Tiling: 0.25
+    m_Colors:
+    - _Paint: {r: 0.78, g: 0.76, b: 0.7, a: 1}
+    - _Tint: {r: 0.62, g: 0.58, b: 0.7, a: 1}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1
