@@ -49,7 +49,12 @@ jobs:
           uv run --frozen python packages/com.veilbreak.gui/Tools~/web/package.py
           uv run --frozen python packages/com.veilbreak.gui/Tools~/handbook/build_handbook.py packages/com.veilbreak.gui "$RUNNER_TEMP/github-pages"
           git diff --exit-code -- packages/com.veilbreak.gui/Web~/dist packages/com.veilbreak.gui/Runtime/Styles/Tokens.uss packages/com.veilbreak.gui/Runtime/Core/VbTokens.cs
-          diff -qr --exclude='*.meta' packages/com.veilbreak.gui/docs "$RUNNER_TEMP/github-pages"
+          if ! diff -qr --exclude='*.meta' packages/com.veilbreak.gui/docs "$RUNNER_TEMP/github-pages"; then
+            # Show what differs: the handbook is minified, so split tags onto lines before diffing.
+            diff -qr --exclude='*.meta' packages/com.veilbreak.gui/docs "$RUNNER_TEMP/github-pages" | awk '/^Files /{print $2" "$4}' |
+              while read -r committed built; do diff <(tr '>' '\n' < "$committed") <(tr '>' '\n' < "$built") | cut -c1-400 | head -40; done
+            exit 1
+          fi
 
       - name: Install browser checks
         run: |

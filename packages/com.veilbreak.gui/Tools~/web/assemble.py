@@ -129,7 +129,7 @@ for font in tokens['type']['fonts']:
 
 # Checks.
 errors = []
-for f in PROJECT.rglob('*'):
+for f in sorted(PROJECT.rglob('*')):
     if f.suffix in {'.md', '.html', '.js', '.css', '.ts', '.json'}:
         text = f.read_text()
         if re.search(r'(?<![A-Za-z0-9_])vba(?![A-Za-z0-9_])', text):
@@ -159,7 +159,7 @@ for c in header['components']:
     for part in ('README.md', 'preview.html'):
         if not (COMPONENTS / c['name'] / part).exists():
             errors.append(f'components/{c["name"]}/{part}: missing')
-for f in COMPONENTS.glob('*/preview.html'):
+for f in sorted(COMPONENTS.glob('*/preview.html')):
     if not re.match(r'<!-- @dsCard [^\n]*-->\n', f.read_text()):
         errors.append(f'{f.relative_to(PROJECT)}: line 1 is not the @dsCard marker')
 defined = {t['name'] for family in tokens.values() if isinstance(family, dict) for t in family.get('tokens', [])}

@@ -41,7 +41,7 @@ css = '\n'.join(p.rstrip('\n') for p in ((WEB / 'base.css').read_text(), kit_css
 (OUT / 'veilbreak.css').write_text(head + css + '\n')
 tokens = json.loads((PKG / 'Tokens~' / 'tokens.json').read_text())
 (OUT / 'tokens.css').write_text(head + tokens_css(tokens))
-for f in (PKG / 'Runtime' / 'Fonts').iterdir():
+for f in sorted((PKG / 'Runtime' / 'Fonts').iterdir()):
     if f.suffix in ('.ttf', '.otf'):
         shutil.copy(f, OUT / 'fonts' / f.name)
 

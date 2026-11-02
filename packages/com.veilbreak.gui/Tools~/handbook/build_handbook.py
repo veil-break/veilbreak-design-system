@@ -44,7 +44,7 @@ if KIT.exists():
 (KIT / 'fonts').mkdir(parents=True)
 for f in ('bundle.js', 'bundle.css'):
     shutil.copy(tmp / 'project' / 'components' / f, KIT / f)
-for f in (tmp / 'project' / 'fonts').iterdir():
+for f in sorted((tmp / 'project' / 'fonts').iterdir()):
     shutil.copy(f, KIT / 'fonts' / f.name)
 tokens = json.loads((PKG / 'Tokens~' / 'tokens.json').read_text())
 
@@ -189,7 +189,7 @@ font_vars = {
 FONTS = [dict(f, uss=font_vars.get(pathlib.Path(f['file']).name)) for f in tokens['type']['fonts']]
 
 # ── 6. public C# API by type ─────────────────────────────────────────────────
-SRC = {p: re.sub(r'(?<![/:])//(?!/)[^\n]*', '', p.read_text()) for p in (PKG / 'Runtime').rglob('*.cs')}
+SRC = {p: re.sub(r'(?<![/:])//(?!/)[^\n]*', '', p.read_text()) for p in sorted((PKG / 'Runtime').rglob('*.cs'))}
 
 
 def class_body(name):
