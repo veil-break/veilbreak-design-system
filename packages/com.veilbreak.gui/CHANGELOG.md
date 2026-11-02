@@ -3,6 +3,7 @@
 
 ## unreleased
 
+- `Tools~/screen_kit.py` (from veilbreak-main's `vb screens build`): generates the screen kit's 57 reference vectors (frames, ability states, markers, telegraphs, decals) from the veil tokens into `Tools~/references/screen-kit/`; `--check` is part of CI's tooling validation. Unity does not import them. The 72-icon reference render and the original wordmark were not carried over: `Runtime/Icons` and branding's mark are the shipped sources.
 - `Tools~/references/atlases/` holds the VEIL_BREAK tactical-icon and rarity-badge atlases (moved from veilbreak-main's `assets/`), the reference art for gui's icons and badges. Unity does not import them.
 ## 0.6.0 — 2026-11-02
 

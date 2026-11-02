@@ -81,6 +81,7 @@ camera.Pinched += f => rig.ZoomBy(f);                // events carry panel units
 ## Regenerating
 
 - `uv run --frozen python Tools~/icons.py` rebuilds `Styles/Icons.uss` from `Runtime/Icons/*.svg` (kebab-case class per file).
+- `uv run --frozen python Tools~/screen_kit.py` rebuilds the screen-kit reference vectors (cut-corner frames, ability states, markers, telegraphs, decals) in `Tools~/references/screen-kit/`; `--check` reports drift. Moved from veilbreak-main's `vb screens build`.
 - `uv run --frozen python Tools~/tokens.py` rebuilds `Styles/Tokens.uss`, `Styles/TokensContrast.uss`, `Core/VbTokens.cs` and
   `Documentation~/tokens.md` from `Tokens~/tokens.json`, the design tokens this package owns (`--check` reports stale
   outputs; `--upstream FILE` lists differences from another `tokens.json`).

@@ -1,0 +1,186 @@
+[
+  {
+    "id": "aria",
+    "role": "striker",
+    "tier": "rare",
+    "tint": "#3ad6e6",
+    "tierColor": "#6cb6ff",
+    "image": "art/aria.png",
+    "pivot": [
+      0.5,
+      1
+    ],
+    "appearance": "proposed",
+    "skills": [
+      {
+        "id": "needle-storm",
+        "icon": "ui/icons/skill-aria-needle-storm.svg"
+      },
+      {
+        "id": "terminal-vector",
+        "icon": "ui/icons/skill-aria-terminal-vector.svg"
+      }
+    ]
+  },
+  {
+    "id": "sol",
+    "role": "striker",
+    "tier": "legendary",
+    "tint": "#ffb547",
+    "tierColor": "#f6c86e",
+    "image": "art/sol.png",
+    "pivot": [
+      0.5,
+      1
+    ],
+    "appearance": "proposed",
+    "skills": [
+      {
+        "id": "zero-line",
+        "icon": "ui/icons/skill-sol-zero-line.svg"
+      },
+      {
+        "id": "dead-horizon",
+        "icon": "ui/icons/skill-sol-dead-horizon.svg"
+      }
+    ]
+  },
+  {
+    "id": "rook",
+    "role": "breaker",
+    "tier": "epic",
+    "tint": "#ff7f5c",
+    "tierColor": "#a58bff",
+    "image": "art/rook.png",
+    "pivot": [
+      0.5,
+      1
+    ],
+    "appearance": "proposed",
+    "skills": [
+      {
+        "id": "crash-pulse",
+        "icon": "ui/icons/skill-rook-crash-pulse.svg"
+      },
+      {
+        "id": "system-seizure",
+        "icon": "ui/icons/skill-rook-system-seizure.svg"
+      }
+    ]
+  },
+  {
+    "id": "hex",
+    "role": "breaker",
+    "tier": "epic",
+    "tint": "#e05cff",
+    "tierColor": "#a58bff",
+    "image": "art/hex.png",
+    "pivot": [
+      0.5,
+      1
+    ],
+    "appearance": "proposed",
+    "skills": [
+      {
+        "id": "black-signal",
+        "icon": "ui/icons/skill-hex-black-signal.svg"
+      },
+      {
+        "id": "contagion",
+        "icon": "ui/icons/skill-hex-contagion.svg"
+      }
+    ]
+  },
+  {
+    "id": "aegis",
+    "role": "bastion",
+    "tier": "rare",
+    "tint": "#8fa8ff",
+    "tierColor": "#6cb6ff",
+    "image": "art/aegis.png",
+    "pivot": [
+      0.5,
+      1
+    ],
+    "appearance": "proposed",
+    "skills": [
+      {
+        "id": "intercept-field",
+        "icon": "ui/icons/skill-aegis-intercept-field.svg"
+      },
+      {
+        "id": "absolute-wall",
+        "icon": "ui/icons/skill-aegis-absolute-wall.svg"
+      }
+    ]
+  },
+  {
+    "id": "mira",
+    "role": "bastion",
+    "tier": "epic",
+    "tint": "#d4f05a",
+    "tierColor": "#a58bff",
+    "image": "art/mira.png",
+    "pivot": [
+      0.5,
+      1
+    ],
+    "appearance": "proposed",
+    "skills": [
+      {
+        "id": "counterdrive",
+        "icon": "ui/icons/skill-mira-counterdrive.svg"
+      },
+      {
+        "id": "gravity-cage",
+        "icon": "ui/icons/skill-mira-gravity-cage.svg"
+      }
+    ]
+  },
+  {
+    "id": "echo",
+    "role": "operator",
+    "tier": "rare",
+    "tint": "#86f0a8",
+    "tierColor": "#6cb6ff",
+    "image": "art/echo.png",
+    "pivot": [
+      0.5,
+      1
+    ],
+    "appearance": "proposed",
+    "skills": [
+      {
+        "id": "clocksplice",
+        "icon": "ui/icons/skill-echo-clocksplice.svg"
+      },
+      {
+        "id": "overclock",
+        "icon": "ui/icons/skill-echo-overclock.svg"
+      }
+    ]
+  },
+  {
+    "id": "nyra",
+    "role": "operator",
+    "tier": "legendary",
+    "tint": "#9d8cff",
+    "tierColor": "#f6c86e",
+    "image": "art/nyra.png",
+    "pivot": [
+      0.5,
+      1
+    ],
+    "appearance": "proposed",
+    "skills": [
+      {
+        "id": "reconstruct",
+        "icon": "ui/icons/skill-nyra-reconstruct.svg"
+      },
+      {
+        "id": "white-noise",
+        "icon": "ui/icons/skill-nyra-white-noise.svg"
+      }
+    ]
+  }
+]

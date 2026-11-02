@@ -1,0 +1,10 @@
+{
+  "checks": "png decode and alpha, svg xml, glb headers/accessors, file sha256",
+  "counts": {
+    ".png": 15,
+    ".svg": 131,
+    ".glb": 34
+  },
+  "engineImported": false,
+  "collisionVerified": false
+}

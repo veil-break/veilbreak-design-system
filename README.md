@@ -34,6 +34,7 @@ repository root or the package folder; uv and Ruff discover the root configurati
 uv sync --locked
 uv run --frozen ruff check .
 uv run --frozen python packages/com.veilbreak.gui/Tools~/tokens.py --check
+uv run --frozen python packages/com.veilbreak.gui/Tools~/screen_kit.py --check
 uv run --frozen python packages/com.veilbreak.ar-hud/Tools~/themes.py --check
 uv run --frozen python packages/com.veilbreak.branding/Tools~/logo.py --check
 dotnet run --project packages/com.veilbreak.ar-hud/Tests~/InputChecks/Veilbreak.ARHud.InputChecks.csproj
@@ -42,3 +43,5 @@ dotnet run --project packages/com.veilbreak.ar-hud/Tests~/InputChecks/Veilbreak.
 [`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml) validates the tooling and publishes the handbook.
 See the [multi-repo architecture](https://github.com/veil-break/.github-private/blob/main/docs/architecture/multi-repo-refactoring.md)
 for the package plan (gui, rendering, feedback, environment, branding, presentation, ar-hud).
+
+`packages/com.veilbreak.environment/vendor~/veilbreak-screen-assets` (about 30 MB, plain git blobs) is the original screen asset pack from veilbreak-main's `assets/source-packs`: project-authored procedural vectors and meshes plus AI-generated plates, kept as source for the games' generators with its README and metadata. The `~` suffix keeps Unity from importing it.

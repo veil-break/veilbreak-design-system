@@ -48,6 +48,7 @@ jobs:
           uv run --frozen python packages/com.veilbreak.gui/Tools~/tokens.py --check
           uv run --frozen python packages/com.veilbreak.gui/Tools~/samples.py --check
           uv run --frozen python packages/com.veilbreak.gui/Tools~/metas.py --check
+          uv run --frozen python packages/com.veilbreak.gui/Tools~/screen_kit.py --check
           uv run --frozen python packages/com.veilbreak.ar-hud/Tools~/themes.py --check
           uv run --frozen python packages/com.veilbreak.branding/Tools~/logo.py --check
 

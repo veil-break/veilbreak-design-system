@@ -1,0 +1,1618 @@
+{
+  "version": 1,
+  "source": "supplied veilbreak specification v2",
+  "assets": [
+    {
+      "path": "README.md",
+      "bytes": 7572,
+      "sha256": "e24c9dd1aaf3798d9499b9c8940d28ffdb47ce87a7d27ffef2ebe98f60ad7a0d"
+    },
+    {
+      "path": "art/aegis.png",
+      "bytes": 2147554,
+      "sha256": "59b7b9ffd2ab74daa1ab4265106dcb5a88a6874910d6215e6fa10b1b75cb8d62",
+      "width": 1024,
+      "height": 1536,
+      "mode": "RGBA",
+      "alphaRange": [
+        0,
+        254
+      ]
+    },
+    {
+      "path": "art/aria.png",
+      "bytes": 1935232,
+      "sha256": "5a46520cce738c2bdd7270af9fa21e37961e85177c8cb5860df7cab6e3fe1ead",
+      "width": 1024,
+      "height": 1536,
+      "mode": "RGBA",
+      "alphaRange": [
+        0,
+        254
+      ]
+    },
+    {
+      "path": "art/asphalt-albedo.png",
+      "bytes": 4493473,
+      "sha256": "a42b4af611df002f17fc51683bb88c0e6581145b150a16cfa4f4d2057eda0025",
+      "width": 1254,
+      "height": 1254,
+      "mode": "RGB"
+    },
+    {
+      "path": "art/courtyard-empty.png",
+      "bytes": 3055173,
+      "sha256": "f3c86b688d6a594b3c1eb6c7fed06cf66170da22c78808d9a4082f9533a6ca9d",
+      "width": 1672,
+      "height": 941,
+      "mode": "RGB"
+    },
+    {
+      "path": "art/echo.png",
+      "bytes": 1931592,
+      "sha256": "a76c8f709e5110578a8ede09827b015dce530a49aca4375142f8b4140decd71e",
+      "width": 1024,
+      "height": 1536,
+      "mode": "RGBA",
+      "alphaRange": [
+        0,
+        254
+      ]
+    },
+    {
+      "path": "art/hex.png",
+      "bytes": 1947789,
+      "sha256": "74540b43f9a8b6f3d0a59499f7314c7c06b7b71cc59e547929f0ba0779d21c13",
+      "width": 1024,
+      "height": 1536,
+      "mode": "RGBA",
+      "alphaRange": [
+        0,
+        254
+      ]
+    },
+    {
+      "path": "art/menu-boulevard.png",
+      "bytes": 2508323,
+      "sha256": "ec26894c8f2c6bfcfe3f7a96093af8504ae9e23031c5750e32e394e9056beef4",
+      "width": 1672,
+      "height": 941,
+      "mode": "RGB"
+    },
+    {
+      "path": "art/menu-foreground.png",
+      "bytes": 694203,
+      "sha256": "5923c5f36e62323cdf228a266cc1ab36fd7ec12b68ebef376d36fe2c5240b32c",
+      "width": 1672,
+      "height": 941,
+      "mode": "RGBA",
+      "alphaRange": [
+        0,
+        255
+      ]
+    },
+    {
+      "path": "art/menu-sky.png",
+      "bytes": 1727704,
+      "sha256": "21b409bf872418d09f149db1e37d23d5fda5de045cfdf37af4adb9435017c483",
+      "width": 1672,
+      "height": 941,
+      "mode": "RGB"
+    },
+    {
+      "path": "art/menu-skyline.png",
+      "bytes": 1527114,
+      "sha256": "6ae6382ffb868e0cdfd5e67674b4c5f541d3571f2ba40bcf7ad7a19d64b1bbaf",
+      "width": 1672,
+      "height": 941,
+      "mode": "RGBA",
+      "alphaRange": [
+        0,
+        255
+      ]
+    },
+    {
+      "path": "art/mira.png",
+      "bytes": 2139847,
+      "sha256": "254eb0302a01751ad1fbc0ffe4e2baa783bfcc8d1b7d99789e64883cb705e125",
+      "width": 1024,
+      "height": 1536,
+      "mode": "RGBA",
+      "alphaRange": [
+        0,
+        254
+      ]
+    },
+    {
+      "path": "art/nyra.png",
+      "bytes": 2402203,
+      "sha256": "3e8958bae0b2545d40b7df9f8cfb0b76c315ef2415e1fdd952f16324023f074b",
+      "width": 1024,
+      "height": 1536,
+      "mode": "RGBA",
+      "alphaRange": [
+        0,
+        254
+      ]
+    },
+    {
+      "path": "art/rook.png",
+      "bytes": 2040175,
+      "sha256": "f6be1cef1fb0147668be8d0324d8b34f3db84688686939679e19f292d56cb815",
+      "width": 1024,
+      "height": 1536,
+      "mode": "RGBA",
+      "alphaRange": [
+        0,
+        254
+      ]
+    },
+    {
+      "path": "art/sol.png",
+      "bytes": 2206943,
+      "sha256": "5d9c620d4a101478f8b54c84de6323625813019e33f53a8a3cfa8177e214553a",
+      "width": 1024,
+      "height": 1536,
+      "mode": "RGBA",
+      "alphaRange": [
+        0,
+        254
+      ]
+    },
+    {
+      "path": "metadata/image-prompts.json",
+      "bytes": 11053,
+      "sha256": "73f15c6bd58ca6ff88fb6db495beb359526223086e7ca05cd7bd16205a6999e7"
+    },
+    {
+      "path": "metadata/roster.json",
+      "bytes": 3570,
+      "sha256": "cbd28998eddf7009cf678c1509213d3145ce50cbe82facc2bb39d50d23415c17"
+    },
+    {
+      "path": "metadata/tokens.json",
+      "bytes": 843,
+      "sha256": "53399db754101dec0ff9eabddedda47325562e920cf56eb27e36ad5a68d3fd5a"
+    },
+    {
+      "path": "models/anchor-low.glb",
+      "bytes": 2684,
+      "sha256": "31b866ac762e21e64b2248263c1871b6fea10bc63a3279dc645546aebac07cef",
+      "triangles": 12,
+      "parts": 1,
+      "bounds": [
+        [
+          -1.0,
+          0.0,
+          -1.0
+        ],
+        [
+          1.0,
+          1.5,
+          1.0
+        ]
+      ]
+    },
+    {
+      "path": "models/anchor-monument.glb",
+      "bytes": 6088,
+      "sha256": "cfb283d8a042b90f00339980f2c742fa40554b3d902f36d8f2e48f421c138dd8",
+      "triangles": 42,
+      "parts": 4,
+      "bounds": [
+        [
+          -1.5,
+          0.0,
+          -1.5
+        ],
+        [
+          1.5,
+          4.725,
+          1.5
+        ]
+      ]
+    },
+    {
+      "path": "models/asphalt-tile-4m.glb",
+      "bytes": 2680,
+      "sha256": "37e67cd71c67be7828e8bda5726fab910c79c0027b6984d74305ad4578e13fb2",
+      "triangles": 12,
+      "parts": 1,
+      "bounds": [
+        [
+          -2.0,
+          -0.1,
+          -2.0
+        ],
+        [
+          2.0,
+          0.0,
+          2.0
+        ]
+      ]
+    },
+    {
+      "path": "models/canal-embankment-4m.glb",
+      "bytes": 2680,
+      "sha256": "30d75a6e3bda7875552b8b653227eb0dbe973d19fd231078cb6ac926ceccd46a",
+      "triangles": 12,
+      "parts": 1,
+      "bounds": [
+        [
+          -2.0,
+          0.0,
+          -0.25
+        ],
+        [
+          2.0,
+          2.0,
+          0.25
+        ]
+      ]
+    },
+    {
+      "path": "models/canal-water-4m.glb",
+      "bytes": 2684,
+      "sha256": "b4318ec19de0e63e8df58464e8a26f9db2b01a99f420b7219150babcde13048d",
+      "triangles": 12,
+      "parts": 1,
+      "bounds": [
+        [
+          -2.0,
+          -0.02,
+          -2.0
+        ],
+        [
+          2.0,
+          0.0,
+          2.0
+        ]
+      ]
+    },
+    {
+      "path": "models/court-floor-40x62.glb",
+      "bytes": 2688,
+      "sha256": "22f060587a80e01a3546762bbd41a40766a9a7fb7b6c5a023f3577e1cab222ac",
+      "triangles": 12,
+      "parts": 1,
+      "bounds": [
+        [
+          -20.0,
+          -0.1,
+          -31.0
+        ],
+        [
+          20.0,
+          0.0,
+          31.0
+        ]
+      ]
+    },
+    {
+      "path": "models/curb-4m.glb",
+      "bytes": 2684,
+      "sha256": "a0debe14c109fd1c4f5eb6f6f3be24aa32c11ac22c4f122c39dc483fc5079924",
+      "triangles": 12,
+      "parts": 1,
+      "bounds": [
+        [
+          -2.0,
+          0.0,
+          -0.175
+        ],
+        [
+          2.0,
+          0.2,
+          0.175
+        ]
+      ]
+    },
+    {
+      "path": "models/distant-building-12m.glb",
+      "bytes": 14436,
+      "sha256": "2d5a2f9f7849d3bf6f0ef8d9c6aefceb523832bb944f530d7e7056819127f75b",
+      "triangles": 120,
+      "parts": 10,
+      "bounds": [
+        [
+          -4.0,
+          0.0,
+          -4.0
+        ],
+        [
+          4.0,
+          12.0,
+          4.039999999999999
+        ]
+      ]
+    },
+    {
+      "path": "models/distant-building-18m.glb",
+      "bytes": 22316,
+      "sha256": "bc172a117443da41552888298d8f1de3c8bf648ac48905c58096d6bb785c9a31",
+      "triangles": 192,
+      "parts": 16,
+      "bounds": [
+        [
+          -4.0,
+          0.0,
+          -4.0
+        ],
+        [
+          4.0,
+          18.0,
+          4.039999999999999
+        ]
+      ]
+    },
+    {
+      "path": "models/distant-building-24m.glb",
+      "bytes": 30200,
+      "sha256": "914f9c2bb05e6758cbcb7d06f1253e4246f77216067d2754f408efffbe1928f0",
+      "triangles": 264,
+      "parts": 22,
+      "bounds": [
+        [
+          -4.0,
+          0.0,
+          -4.0
+        ],
+        [
+          4.0,
+          24.0,
+          4.039999999999999
+        ]
+      ]
+    },
+    {
+      "path": "models/facade-damaged.glb",
+      "bytes": 10500,
+      "sha256": "829c5488d2c70176434049114daf29ce970536d561ce9567e8cf7a1fc3ce0a41",
+      "triangles": 84,
+      "parts": 7,
+      "bounds": [
+        [
+          -3.0,
+          0.0,
+          -0.175
+        ],
+        [
+          3.0,
+          3.0,
+          0.505
+        ]
+      ]
+    },
+    {
+      "path": "models/facade.glb",
+      "bytes": 14400,
+      "sha256": "e153b35810146695dc4c47385b8935c72afd7991de85c35e959b7c49b46f7441",
+      "triangles": 120,
+      "parts": 10,
+      "bounds": [
+        [
+          -3.0,
+          0.0,
+          -0.175
+        ],
+        [
+          3.0,
+          3.0,
+          0.505
+        ]
+      ]
+    },
+    {
+      "path": "models/planter-broken.glb",
+      "bytes": 15820,
+      "sha256": "8e96e6a461c77cbc25f29e4969ce1f1c52e64686e46a2d10a439201e69b59a19",
+      "triangles": 132,
+      "parts": 11,
+      "bounds": [
+        [
+          -1.2,
+          0.0,
+          -0.6
+        ],
+        [
+          1.2,
+          0.7260000000000002,
+          0.6255
+        ]
+      ]
+    },
+    {
+      "path": "models/planter-cracked.glb",
+      "bytes": 15812,
+      "sha256": "cb47c4f6b027a813917d24e3f214af926fa1f38c844355e79830ccbf9c841793",
+      "triangles": 132,
+      "parts": 11,
+      "bounds": [
+        [
+          -1.2,
+          0.0,
+          -0.6
+        ],
+        [
+          1.2,
+          1.1,
+          0.6255
+        ]
+      ]
+    },
+    {
+      "path": "models/planter-intact.glb",
+      "bytes": 9132,
+      "sha256": "ca5c98dcd749bce518e83e74134865cb00c82fd4b6e82ac8487f23d5472ab5e0",
+      "triangles": 72,
+      "parts": 6,
+      "bounds": [
+        [
+          -1.2,
+          0.0,
+          -0.6
+        ],
+        [
+          1.2,
+          1.1,
+          0.6
+        ]
+      ]
+    },
+    {
+      "path": "models/planter-rubble.glb",
+      "bytes": 21792,
+      "sha256": "93d9691ffabe1d2e11c99992a8c8497f52d64c63c98db97388447dc68243e343",
+      "triangles": 180,
+      "parts": 15,
+      "bounds": [
+        [
+          -1.2,
+          0.0,
+          -0.6
+        ],
+        [
+          1.2,
+          0.29998454876648967,
+          0.6
+        ]
+      ]
+    },
+    {
+      "path": "models/roof-flat.glb",
+      "bytes": 5224,
+      "sha256": "eb513af71064af9334e37864129d46d4a1541f29260b4775e938ebd3b488c008",
+      "triangles": 36,
+      "parts": 3,
+      "bounds": [
+        [
+          -3.0,
+          0.0,
+          -3.0
+        ],
+        [
+          3.0,
+          1.05,
+          3.0
+        ]
+      ]
+    },
+    {
+      "path": "models/roof-pyramid.glb",
+      "bytes": 3520,
+      "sha256": "bcf6d1b010f741aa9c32d61744b9e2033be90e8c32b78292b9543a90700c3d4b",
+      "triangles": 18,
+      "parts": 2,
+      "bounds": [
+        [
+          -4.24,
+          0.0,
+          -4.24
+        ],
+        [
+          4.24,
+          2.0,
+          4.24
+        ]
+      ]
+    },
+    {
+      "path": "models/sidewalk-4m.glb",
+      "bytes": 2688,
+      "sha256": "6a87a2ef647add2c126add8049490558b374e2b360753a7a17918dcbc4f37052",
+      "triangles": 12,
+      "parts": 1,
+      "bounds": [
+        [
+          -2.0,
+          0.0,
+          -1.0
+        ],
+        [
+          2.0,
+          0.18,
+          1.0
+        ]
+      ]
+    },
+    {
+      "path": "models/signal-kiosk-broken.glb",
+      "bytes": 10656,
+      "sha256": "26d97fe3de17d3fe150e98e335df495cf6ff317f16b227915f44bd37c7c66608",
+      "triangles": 84,
+      "parts": 7,
+      "bounds": [
+        [
+          -0.6,
+          0.0,
+          -0.6
+        ],
+        [
+          0.6,
+          1.4520000000000004,
+          0.6255
+        ]
+      ]
+    },
+    {
+      "path": "models/signal-kiosk-cracked.glb",
+      "bytes": 11980,
+      "sha256": "d539fc398dfba7157c110d483ad878d7c344a0e518c5f19f814152842f66791b",
+      "triangles": 96,
+      "parts": 8,
+      "bounds": [
+        [
+          -0.6,
+          0.0,
+          -0.6
+        ],
+        [
+          0.6,
+          2.2,
+          0.6255
+        ]
+      ]
+    },
+    {
+      "path": "models/signal-kiosk-intact.glb",
+      "bytes": 5288,
+      "sha256": "eb545279ba3174eaf50078d33c5e0d3d9f7307b3276fc2aadca26ca163fb926d",
+      "triangles": 36,
+      "parts": 3,
+      "bounds": [
+        [
+          -0.6,
+          0.0,
+          -0.6
+        ],
+        [
+          0.6,
+          2.2,
+          0.6
+        ]
+      ]
+    },
+    {
+      "path": "models/signal-kiosk-rubble.glb",
+      "bytes": 21808,
+      "sha256": "3779d980322cc1be14f945e3977e63fee1d621d7f2e20c0f6ce35a05cdd1258a",
+      "triangles": 180,
+      "parts": 15,
+      "bounds": [
+        [
+          -0.6,
+          0.0,
+          -0.6
+        ],
+        [
+          0.6,
+          0.2871565981173381,
+          0.6
+        ]
+      ]
+    },
+    {
+      "path": "models/street-lamp.glb",
+      "bytes": 8968,
+      "sha256": "c0d3ab2dd70f73d6e16e5a92124c668c79963dadc5ea38517a3d3135b5bed8ba",
+      "triangles": 76,
+      "parts": 5,
+      "bounds": [
+        [
+          -0.3,
+          0.0,
+          -0.3
+        ],
+        [
+          1.275,
+          5.15,
+          0.3
+        ]
+      ]
+    },
+    {
+      "path": "models/tree-bare.glb",
+      "bytes": 11180,
+      "sha256": "3c9356ec028afeae0b36899997e2d568c249b963eec5a6a502b4677d3d195c20",
+      "triangles": 112,
+      "parts": 4,
+      "bounds": [
+        [
+          -0.665,
+          0,
+          -0.665
+        ],
+        [
+          0.665,
+          3.5,
+          0.265
+        ]
+      ]
+    },
+    {
+      "path": "models/tree-leafy.glb",
+      "bytes": 18484,
+      "sha256": "e1480cf6dbdf8045ce58812baad08d356ffd8c9978d179de2d6fe486ef1f60e4",
+      "triangles": 196,
+      "parts": 7,
+      "bounds": [
+        [
+          -1.4,
+          0,
+          -1.4
+        ],
+        [
+          1.4,
+          5.3999999999999995,
+          1.4
+        ]
+      ]
+    },
+    {
+      "path": "models/utility-barricade-broken.glb",
+      "bytes": 14612,
+      "sha256": "39124668bf0d37a4c653a13276ffe798fd85bc113c2b434f79c89c7af75d6195",
+      "triangles": 120,
+      "parts": 10,
+      "bounds": [
+        [
+          -1.5,
+          -0.04999999999999999,
+          -0.5
+        ],
+        [
+          1.5,
+          0.858,
+          0.5255
+        ]
+      ]
+    },
+    {
+      "path": "models/utility-barricade-cracked.glb",
+      "bytes": 14568,
+      "sha256": "7dc995a7109260762659bdb4f0996fccfdaba802ec3c77e275d97e0bbc841018",
+      "triangles": 120,
+      "parts": 10,
+      "bounds": [
+        [
+          -1.5,
+          -0.050000000000000044,
+          -0.5
+        ],
+        [
+          1.5,
+          1.35,
+          0.5255
+        ]
+      ]
+    },
+    {
+      "path": "models/utility-barricade-intact.glb",
+      "bytes": 7916,
+      "sha256": "395366b805b828bf16af9fd1c18a8473514be76db4ad639302bb5f2005d6e15d",
+      "triangles": 60,
+      "parts": 5,
+      "bounds": [
+        [
+          -1.5,
+          -0.050000000000000044,
+          -0.5
+        ],
+        [
+          1.5,
+          1.35,
+          0.5
+        ]
+      ]
+    },
+    {
+      "path": "models/utility-barricade-rubble.glb",
+      "bytes": 21788,
+      "sha256": "48540b8490ff6a94de553ec03802e6726fdc786b51245842e695127d474c5d03",
+      "triangles": 180,
+      "parts": 15,
+      "bounds": [
+        [
+          -1.5,
+          0.0,
+          -0.5
+        ],
+        [
+          1.5,
+          0.2643736639704399,
+          0.5
+        ]
+      ]
+    },
+    {
+      "path": "models/vehicle-barricade-broken.glb",
+      "bytes": 15868,
+      "sha256": "89a473e29ce5fa7da19e248aaee93dd0737843082fd5ed9c380fbe5896e37a61",
+      "triangles": 132,
+      "parts": 11,
+      "bounds": [
+        [
+          -2.25,
+          0.0,
+          -0.95
+        ],
+        [
+          2.25,
+          1.122,
+          0.9754999999999999
+        ]
+      ]
+    },
+    {
+      "path": "models/vehicle-barricade-cracked.glb",
+      "bytes": 18492,
+      "sha256": "4a74f830612a0b19a7b64443a0c28060d52bdb35d986006235ee0eee575687b4",
+      "triangles": 156,
+      "parts": 13,
+      "bounds": [
+        [
+          -2.25,
+          0.0,
+          -0.95
+        ],
+        [
+          2.25,
+          1.632,
+          0.9754999999999999
+        ]
+      ]
+    },
+    {
+      "path": "models/vehicle-barricade-intact.glb",
+      "bytes": 11800,
+      "sha256": "0a6fd956e1a5cc9f626a35bf1b23be3f3ce3e6fa272f6c4d3b5fe3f5d74db105",
+      "triangles": 96,
+      "parts": 8,
+      "bounds": [
+        [
+          -2.25,
+          0.0,
+          -0.95
+        ],
+        [
+          2.25,
+          1.632,
+          0.95
+        ]
+      ]
+    },
+    {
+      "path": "models/vehicle-barricade-rubble.glb",
+      "bytes": 21784,
+      "sha256": "c91a1481789a30cb281eab9b1dc6f00bfb38f1bcaa1b377aebc83ce5e1d89d49",
+      "triangles": 180,
+      "parts": 15,
+      "bounds": [
+        [
+          -2.25,
+          0.0,
+          -0.95
+        ],
+        [
+          2.25,
+          0.28505046656365973,
+          0.95
+        ]
+      ]
+    },
+    {
+      "path": "previews/icon-inventory.svg",
+      "bytes": 25359,
+      "sha256": "c9964df77bea92e721700cd3a715d1123a9b6d5c792122c9e6036e78729dc116",
+      "viewBox": "0 0 1200 970"
+    },
+    {
+      "path": "previews/mesh-inventory.png",
+      "bytes": 36842,
+      "sha256": "cf021e1430cf8cee99f3be33ef17c0336df78e37b4ecb99adaf7a180cb48f0e6",
+      "width": 1200,
+      "height": 1080,
+      "mode": "RGB"
+    },
+    {
+      "path": "ui/decals/cracks.svg",
+      "bytes": 350,
+      "sha256": "5c76fc2ea866cc3b8654b2f8a9105cac4b9e7dea37eab188642a78e2874a65f8",
+      "viewBox": "0 0 256 256"
+    },
+    {
+      "path": "ui/decals/road-stripe.svg",
+      "bytes": 280,
+      "sha256": "03d1f7e65241b76333a83121087f71b5e2b55b4453b44cc2b3f06c783c3ef6f0",
+      "viewBox": "0 0 256 256"
+    },
+    {
+      "path": "ui/decals/rubble-footprint.svg",
+      "bytes": 329,
+      "sha256": "194f876bb07de4236fedb2112bc51b5f5bc84cf2334d0d882eeb750476ea84c0",
+      "viewBox": "0 0 256 256"
+    },
+    {
+      "path": "ui/frames/ability-aiming.svg",
+      "bytes": 356,
+      "sha256": "2583ad95bb3ca4c7f3609afcba9f6ee14d1fcc0de46c09d99bafdc09d0f798a9",
+      "viewBox": "0 0 80 80"
+    },
+    {
+      "path": "ui/frames/ability-cooldown.svg",
+      "bytes": 334,
+      "sha256": "c5e3784cc0589c442552e913e44bcbefefdd7895b5151c601864c1449380577c",
+      "viewBox": "0 0 80 80"
+    },
+    {
+      "path": "ui/frames/ability-exposed.svg",
+      "bytes": 335,
+      "sha256": "53b53c03b839b23d159415f687ef976f22b49452f3fcb929834ee119fa2e9d29",
+      "viewBox": "0 0 80 80"
+    },
+    {
+      "path": "ui/frames/ability-insufficient-power.svg",
+      "bytes": 318,
+      "sha256": "c7d22d50f86a39a3be0aed104748728b4e891af61361a991140109206a1f50c4",
+      "viewBox": "0 0 80 80"
+    },
+    {
+      "path": "ui/frames/ability-invalid-aim.svg",
+      "bytes": 333,
+      "sha256": "80fd8df5f60cf52283d183a1d5f4d4f875a09e839f64035cfd8c121148f62ad6",
+      "viewBox": "0 0 80 80"
+    },
+    {
+      "path": "ui/frames/ability-queued.svg",
+      "bytes": 406,
+      "sha256": "2cd8282de6345620019836eca9a57f35bdaedc60ac9786c2af165a767cce1cb9",
+      "viewBox": "0 0 80 80"
+    },
+    {
+      "path": "ui/frames/ability-ready.svg",
+      "bytes": 306,
+      "sha256": "feace60bf718fa4fa6fb9da0a4c906e04d9b4f2a6c72376a7d3d27df2b47ccdf",
+      "viewBox": "0 0 80 80"
+    },
+    {
+      "path": "ui/frames/ability-silenced.svg",
+      "bytes": 350,
+      "sha256": "44328cf65828c31d15e9974804b03ee039200975094735147f42e503bc18ce86",
+      "viewBox": "0 0 80 80"
+    },
+    {
+      "path": "ui/frames/ability-windup.svg",
+      "bytes": 338,
+      "sha256": "35ab09ca11ed6699a78093df7d32e033904775f6294f53067b85ab37a1281810",
+      "viewBox": "0 0 80 80"
+    },
+    {
+      "path": "ui/frames/ability.svg",
+      "bytes": 254,
+      "sha256": "1834efa13925201b52fcf846ee6fa6a85dfaa2855825c790b0f724b814d00f84",
+      "viewBox": "0 0 80 80"
+    },
+    {
+      "path": "ui/frames/battle-cta.svg",
+      "bytes": 376,
+      "sha256": "c115769dd19736597845a4c3682d8f617da240762e5de6918d3bae05efb5f828",
+      "viewBox": "0 0 320 88"
+    },
+    {
+      "path": "ui/frames/connection-pill.svg",
+      "bytes": 256,
+      "sha256": "bbcb64254a914c525b98080701e1e99823b00cf37a769f2c56e0b97218851c87",
+      "viewBox": "0 0 180 44"
+    },
+    {
+      "path": "ui/frames/high-contrast-panel.svg",
+      "bytes": 269,
+      "sha256": "b7790ef400cce3edc085c31fafee653d0474fe81460a9f4a8f2cc4cd9cdac745",
+      "viewBox": "0 0 320 96"
+    },
+    {
+      "path": "ui/frames/inspector.svg",
+      "bytes": 262,
+      "sha256": "c0e785f0f7bb5fe22b8829798e4e27f49a4bbf766d2c057fd4461451ced6c132",
+      "viewBox": "0 0 320 420"
+    },
+    {
+      "path": "ui/frames/match-header.svg",
+      "bytes": 258,
+      "sha256": "f23fed49def80750977dc2c5ea620d2f4d9e63138f8b8a0298ecdaeee2679e05",
+      "viewBox": "0 0 420 56"
+    },
+    {
+      "path": "ui/frames/nav.svg",
+      "bytes": 258,
+      "sha256": "5347b1581c0988cc9217e624063fb6481f72587b9f23cd432b1e827570942eca",
+      "viewBox": "0 0 240 64"
+    },
+    {
+      "path": "ui/frames/panel-10-danger.svg",
+      "bytes": 292,
+      "sha256": "8c97dff6b19c188ee9d0eb35a886dd1e1d1d1ad68e82c6c60931649069e9bb70",
+      "viewBox": "0 0 320 96"
+    },
+    {
+      "path": "ui/frames/panel-10-disabled.svg",
+      "bytes": 346,
+      "sha256": "1dbf1896970c28194f201679901e7f0fa97a7fbf87c07bd4891b2113e3268301",
+      "viewBox": "0 0 320 96"
+    },
+    {
+      "path": "ui/frames/panel-10-focus.svg",
+      "bytes": 328,
+      "sha256": "f0d592deff984125e1957fedd1f97cdd63d05bfaf5507ec562eda0205bd8714d",
+      "viewBox": "0 0 320 96"
+    },
+    {
+      "path": "ui/frames/panel-10-idle.svg",
+      "bytes": 292,
+      "sha256": "f87db607830d4b289e6aa9d65fae23fc51a596e66a6689c8f688347ab7a7b524",
+      "viewBox": "0 0 320 96"
+    },
+    {
+      "path": "ui/frames/panel-10-selected.svg",
+      "bytes": 328,
+      "sha256": "621145c5c7d578ce8ef4086e26ba4e07dd9ae835d7fc5e21a547e7857e30e577",
+      "viewBox": "0 0 320 96"
+    },
+    {
+      "path": "ui/frames/panel-14-danger.svg",
+      "bytes": 292,
+      "sha256": "8ad978d473f77549c31109ef0625b19c242740d05ab5830cd3c178bdc6a0182e",
+      "viewBox": "0 0 320 96"
+    },
+    {
+      "path": "ui/frames/panel-14-disabled.svg",
+      "bytes": 346,
+      "sha256": "ee3173d00a4d94335cf3067b1cca4b6956014e6aaaf74a776a028b865c3dcf6b",
+      "viewBox": "0 0 320 96"
+    },
+    {
+      "path": "ui/frames/panel-14-focus.svg",
+      "bytes": 328,
+      "sha256": "8bf9be5517bfa6299ebfce8880014fb5b7e16c45527c290e73165dc6c1dc1276",
+      "viewBox": "0 0 320 96"
+    },
+    {
+      "path": "ui/frames/panel-14-idle.svg",
+      "bytes": 292,
+      "sha256": "f3eda4df1a78c0456b807f5ec3d219cf7595a113858737469d614da6e37823b4",
+      "viewBox": "0 0 320 96"
+    },
+    {
+      "path": "ui/frames/panel-14-selected.svg",
+      "bytes": 328,
+      "sha256": "9663fb93797b50922acdabf8a74e0f35e75de108423541a693750d13d0bd2375",
+      "viewBox": "0 0 320 96"
+    },
+    {
+      "path": "ui/frames/panel-6-danger.svg",
+      "bytes": 290,
+      "sha256": "830c83c4784e2a45391d5ab4065795c25b17159a82e522665e51bf19d019ad65",
+      "viewBox": "0 0 320 96"
+    },
+    {
+      "path": "ui/frames/panel-6-disabled.svg",
+      "bytes": 344,
+      "sha256": "bded4a7bfb813dad433646b08379cb9eff40aeb2c56c212b9b6eecd58ef0e376",
+      "viewBox": "0 0 320 96"
+    },
+    {
+      "path": "ui/frames/panel-6-focus.svg",
+      "bytes": 326,
+      "sha256": "b2629fb975ca38cf4cf85e0cfaee93aa6deaafa5c97fb314a65e3f04c33388d8",
+      "viewBox": "0 0 320 96"
+    },
+    {
+      "path": "ui/frames/panel-6-idle.svg",
+      "bytes": 290,
+      "sha256": "a23823d76239dcf5b6c90f58657340eebf3dbde180e986f55d8af71768f046de",
+      "viewBox": "0 0 320 96"
+    },
+    {
+      "path": "ui/frames/panel-6-selected.svg",
+      "bytes": 326,
+      "sha256": "42e664b19131f587ee173e9ca809c2b6ef4b2fbbe91b4587c3fea1de093cdb3a",
+      "viewBox": "0 0 320 96"
+    },
+    {
+      "path": "ui/frames/portrait.svg",
+      "bytes": 257,
+      "sha256": "76fbcba006140341a519abac0629132c9fbccf525bfde51bf85cec74c11e8113",
+      "viewBox": "0 0 104 80"
+    },
+    {
+      "path": "ui/frames/power-strip.svg",
+      "bytes": 256,
+      "sha256": "fc478bebc2d6021843280a9046babe7da6cbcd551f0eb34131793c030eb83e94",
+      "viewBox": "0 0 480 22"
+    },
+    {
+      "path": "ui/frames/queue-chip.svg",
+      "bytes": 256,
+      "sha256": "33448a9e5c29be41ab2ea61d6a4dd0470d0c314668a1a7cfb75c336bfd0c45c6",
+      "viewBox": "0 0 120 40"
+    },
+    {
+      "path": "ui/icons/add.svg",
+      "bytes": 214,
+      "sha256": "5a18a640f59999757348cee3462db9fd459d2fef1733e4febb8f3c22f1a46028",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/armor.svg",
+      "bytes": 240,
+      "sha256": "7fc9a51873630d74e4d48a923269312d2b62e5df1a4297c3dd48adcf52960db4",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/automation.svg",
+      "bytes": 243,
+      "sha256": "499d2f712cad5130d54657bf241af91242682cd6ae40dcb198d3f7db9dd63b33",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/back.svg",
+      "bytes": 220,
+      "sha256": "ba6a07d31cc2b826fcca4029f61efa8376d527e0ed029f66d72b041029c92bf8",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/barrier.svg",
+      "bytes": 235,
+      "sha256": "5f9a7542cdd78b1cf2f609fe55a209641da7d1f656cc905f3d7458cab9febaa8",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/bastion.svg",
+      "bytes": 226,
+      "sha256": "a1f25e5585b4ad6b29aec534047317aebadf67b2e85cbb506e66e4b770b1ee8a",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/battle.svg",
+      "bytes": 254,
+      "sha256": "6159dc3f0c423d46366936cbe91b124619d6e93c2384b48b95a219f76a002400",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/beam.svg",
+      "bytes": 236,
+      "sha256": "8c668ffc38a15a667e58b30f86bd1094a220e8219b7d5e8fdb54aad8ff0914b9",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/breaker.svg",
+      "bytes": 257,
+      "sha256": "81b0b556fd6cc51272d76360032aa2816afa4f60206e85432eadd36fc2528ccb",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/burst.svg",
+      "bytes": 301,
+      "sha256": "b9881e4c82868d89f384f56fc11eaa5c7617d3c7afd76a8fcae3dba5dd7bf4e4",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/check.svg",
+      "bytes": 211,
+      "sha256": "0a7be715bf672163818834220e799412b37253cdd6f064552c3909561826eac9",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/chevron.svg",
+      "bytes": 209,
+      "sha256": "248c3beb9c23ccd23bb34fd1eb432cd6145c8e8fcd7aef87fb7c8812667200d9",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/cleanse.svg",
+      "bytes": 231,
+      "sha256": "50e142780d68921f14e165b1d95917b4d6ecd70dbbc54a9819d637a67a371384",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/close.svg",
+      "bytes": 218,
+      "sha256": "f76be368a93e32057e700edb9c1a75e8b3443f25560061d268bfdea95f628d52",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/cone.svg",
+      "bytes": 218,
+      "sha256": "d9368116bb99b6337762911ef221b817f260a08e1b0d099baf8d0ed802d3abc1",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/connection.svg",
+      "bytes": 292,
+      "sha256": "22b839baf4247050bd18aefe2ecc5c9d45755297ff4c14ee0c724ae0baf4c834",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/cooldown.svg",
+      "bytes": 239,
+      "sha256": "49ae27f816fa680d096c7c0938046d984582cfa867f0dd7461c8170388be0bd3",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/counter.svg",
+      "bytes": 235,
+      "sha256": "445647f784b108209763bfb9ac5f846cf944289bacd2aa880c6a0076c88a3fff",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/currency.svg",
+      "bytes": 247,
+      "sha256": "8d9be93180474c77eb2bcf76cbe0c32d646c4970439a0ed7bb39870268100678",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/dash.svg",
+      "bytes": 234,
+      "sha256": "83e385da9bd1a364748a0e3520a662e0f7083c56edc6a24d6a3c507b0c076047",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/exposed.svg",
+      "bytes": 240,
+      "sha256": "6bd5394739ac0b2a9ba20dcc676d29a27cc26c754c8d89d70b458db01192aad5",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/fan.svg",
+      "bytes": 241,
+      "sha256": "57630a0f3797c3841a8b88942180895d05f982328a2158bdeac3f555d1750278",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/fullscreen.svg",
+      "bytes": 238,
+      "sha256": "cb869d2b88d8a93a45a94f4ff4bf3421d0d8d07302fe7e57922182c5f81be352",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/haste.svg",
+      "bytes": 223,
+      "sha256": "1298bc0621ea47bff10f5a75e9e919cd429a77e2c647bec9944cf8d5f680d002",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/health.svg",
+      "bytes": 226,
+      "sha256": "30be3df1cc696669f42fee9b433715897bb2a0649b4e90963523db658397e276",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/info.svg",
+      "bytes": 244,
+      "sha256": "bc6f56a291163da47bb94749f926afcab90ebadbef4378b6cfbfdbf9cdbb39e2",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/invalid.svg",
+      "bytes": 238,
+      "sha256": "782e4357820dfc04aa4d34a2dcde387b29ce47d4914422c4a04271e1666def31",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/inventory.svg",
+      "bytes": 236,
+      "sha256": "bdd90555424213a79661584e81412630c1f524bef19d7befcb0514fb3b9c87e4",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/key.svg",
+      "bytes": 258,
+      "sha256": "1947bde8c5d8765dce29c4499a4364e49abf49dee88fb9047c8f6fa5c953fca0",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/lock.svg",
+      "bytes": 244,
+      "sha256": "74824e588e16420a291f232fd1cae0bbc37c12486f493d24f90d00e618973bc5",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/mark.svg",
+      "bytes": 251,
+      "sha256": "c19ac505842b44e7d9103dc439af20f79478bc1743bc25984a740de75ca8f7bf",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/offline.svg",
+      "bytes": 252,
+      "sha256": "c42d3fae5830ab6619113675cda34bc4b43ef4ad7adc6207a09d19f3c0fcd1f9",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/operator.svg",
+      "bytes": 346,
+      "sha256": "2228dcd101dc7df2c08bda24dab7177b271c0cb213b88dda9c878a2b2fbab8f1",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/pause.svg",
+      "bytes": 224,
+      "sha256": "97f6ba9095651427b1f9fd2b6be9296dc63773755484ff2fe2993938a01a6197",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/power.svg",
+      "bytes": 223,
+      "sha256": "5e376c0b788cbfa27e2061ed576fd18ede7f6ae6404a3c020d2b4347ae744d25",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/projectile.svg",
+      "bytes": 219,
+      "sha256": "b26b4e3036f27c7b705d35152a922604d76a200b85fae97dde666c6f276d8114",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/queue.svg",
+      "bytes": 236,
+      "sha256": "59bc6c90ceaf65d5530fbea9a54a11faa921c3f5bada3d374e68ba1dc4723abf",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/ranked.svg",
+      "bytes": 258,
+      "sha256": "d9bbe8c57aa2d3824e4b6755a500bcf59be5749b6bb580d068b800a9a46669f4",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/remove.svg",
+      "bytes": 205,
+      "sha256": "8383bb4559de14e0334b2544f2bcb56e98465250880d59edaa518374b5903a8a",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/replays.svg",
+      "bytes": 218,
+      "sha256": "aea419c38215479accd825fd926d0d74eabf55037a19c3302620a174012b6178",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/rifts.svg",
+      "bytes": 252,
+      "sha256": "8938728206b9d6b05bfb4cdbcc2605e868eaf4251f53ecc17bee1fe0a388cef5",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/root.svg",
+      "bytes": 250,
+      "sha256": "d4dff5d06502ffc554f39bb6e0fb503ce16f26323af4c810d681a6d60011bcb2",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/set.svg",
+      "bytes": 250,
+      "sha256": "619758280f37f2defd22609840cba43f251482e3ac5efbb13c336230b598d9d4",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/settings.svg",
+      "bytes": 271,
+      "sha256": "4c7b6d8bc2fd10942ebb98bfa0dfeebbd044bc237e66a80ae09086722bb31e8d",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/silence.svg",
+      "bytes": 255,
+      "sha256": "4d31988916b3568addf6ff3ad5cea768f17e0ea92bdfef3b503f53faf5bf33a3",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/skill-aegis-absolute-wall.svg",
+      "bytes": 255,
+      "sha256": "66c394023285803d0c20259638dfba9bddbb84bbbf3d5ee9de7f70e3597cb6c2",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/skill-aegis-intercept-field.svg",
+      "bytes": 235,
+      "sha256": "5f9a7542cdd78b1cf2f609fe55a209641da7d1f656cc905f3d7458cab9febaa8",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/skill-aria-needle-storm.svg",
+      "bytes": 241,
+      "sha256": "57630a0f3797c3841a8b88942180895d05f982328a2158bdeac3f555d1750278",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/skill-aria-terminal-vector.svg",
+      "bytes": 219,
+      "sha256": "b26b4e3036f27c7b705d35152a922604d76a200b85fae97dde666c6f276d8114",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/skill-echo-clocksplice.svg",
+      "bytes": 223,
+      "sha256": "1298bc0621ea47bff10f5a75e9e919cd429a77e2c647bec9944cf8d5f680d002",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/skill-echo-overclock.svg",
+      "bytes": 278,
+      "sha256": "b9ef1be5e538b63ece629e1c02eb3b828141e120d4e5efcb3c511569dc29e30a",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/skill-hex-black-signal.svg",
+      "bytes": 251,
+      "sha256": "c19ac505842b44e7d9103dc439af20f79478bc1743bc25984a740de75ca8f7bf",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/skill-hex-contagion.svg",
+      "bytes": 301,
+      "sha256": "b9881e4c82868d89f384f56fc11eaa5c7617d3c7afd76a8fcae3dba5dd7bf4e4",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/skill-mira-counterdrive.svg",
+      "bytes": 234,
+      "sha256": "83e385da9bd1a364748a0e3520a662e0f7083c56edc6a24d6a3c507b0c076047",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/skill-mira-gravity-cage.svg",
+      "bytes": 278,
+      "sha256": "b9ef1be5e538b63ece629e1c02eb3b828141e120d4e5efcb3c511569dc29e30a",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/skill-nyra-reconstruct.svg",
+      "bytes": 226,
+      "sha256": "30be3df1cc696669f42fee9b433715897bb2a0649b4e90963523db658397e276",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/skill-nyra-white-noise.svg",
+      "bytes": 231,
+      "sha256": "50e142780d68921f14e165b1d95917b4d6ecd70dbbc54a9819d637a67a371384",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/skill-rook-crash-pulse.svg",
+      "bytes": 218,
+      "sha256": "d9368116bb99b6337762911ef221b817f260a08e1b0d099baf8d0ed802d3abc1",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/skill-rook-system-seizure.svg",
+      "bytes": 278,
+      "sha256": "b9ef1be5e538b63ece629e1c02eb3b828141e120d4e5efcb3c511569dc29e30a",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/skill-sol-dead-horizon.svg",
+      "bytes": 236,
+      "sha256": "8c668ffc38a15a667e58b30f86bd1094a220e8219b7d5e8fdb54aad8ff0914b9",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/skill-sol-zero-line.svg",
+      "bytes": 219,
+      "sha256": "b26b4e3036f27c7b705d35152a922604d76a200b85fae97dde666c6f276d8114",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/slow.svg",
+      "bytes": 232,
+      "sha256": "b2ad1c54631c0c971368810dc10137b2e134be663ce33206f536956acd7cfc10",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/striker.svg",
+      "bytes": 238,
+      "sha256": "b89456c055faed0a754dfd39b0a01031e47a26527e2896d6abc7b8822c7810c3",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/studio.svg",
+      "bytes": 243,
+      "sha256": "334eb13264e5bd72db400889918b93e382ab0dcecb13ed15aa99bf9e5064b496",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/target.svg",
+      "bytes": 261,
+      "sha256": "6acbcc5cb2b12eceb7022818bc9bee0fcc3c6fd4fe4ca083e0d93f5b85ce7d74",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/team.svg",
+      "bytes": 306,
+      "sha256": "a3ea4cc7f5edce145a727e0edf487e38357095e4d6fbe26c97e8c7cb16fc4915",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/training.svg",
+      "bytes": 292,
+      "sha256": "8a8afed5df88f4687a70ce7c9aace96d8367d95349abd67e4bb2f18e9ef87b1d",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/volume.svg",
+      "bytes": 239,
+      "sha256": "ba6c2e9b308db1dca89aa9e379a73f66d8620566279b6acec710f7e71f950855",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/wall.svg",
+      "bytes": 255,
+      "sha256": "66c394023285803d0c20259638dfba9bddbb84bbbf3d5ee9de7f70e3597cb6c2",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/warning.svg",
+      "bytes": 228,
+      "sha256": "da6243cbb67061dbc87d7c3d6ac88d4f30d039488d1225909676c44af05f8a58",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/windup.svg",
+      "bytes": 243,
+      "sha256": "ee6da9442320be573f0fcea2728066ee3423ed5ef7d7ac2b98747a8c78d212c8",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/icons/zone.svg",
+      "bytes": 278,
+      "sha256": "b9ef1be5e538b63ece629e1c02eb3b828141e120d4e5efcb3c511569dc29e30a",
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "path": "ui/markers/ally.svg",
+      "bytes": 262,
+      "sha256": "ba760fa97a6256294ef3842ddc35cd323780fb122782573ae33a41d8138023a6",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "path": "ui/markers/enemy.svg",
+      "bytes": 220,
+      "sha256": "6cd8f1460c755f17fb578513935444bd62cf6ede037334be8d0daf9568836154",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "path": "ui/markers/offscreen.svg",
+      "bytes": 220,
+      "sha256": "a905bb788d5be910158ff2c0e33a43b76cf0a09939f798b0f0d8fb359efb7f2e",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "path": "ui/markers/platform-empty.svg",
+      "bytes": 364,
+      "sha256": "7ca7ad271fe1a9cc14ffe803e4cf16da1e30170d8d683926cd33288c8cee4e94",
+      "viewBox": "0 0 256 88"
+    },
+    {
+      "path": "ui/markers/platform-idle.svg",
+      "bytes": 342,
+      "sha256": "94debc8d36c98f9dd5f50285fab61a1bad4cc0b46318a3b218ac05684989fbf7",
+      "viewBox": "0 0 256 88"
+    },
+    {
+      "path": "ui/markers/platform-selected.svg",
+      "bytes": 342,
+      "sha256": "57a1cc41ba190a51ed94c77867111d2bdd475978874b9dfa30799af7ffc99558",
+      "viewBox": "0 0 256 88"
+    },
+    {
+      "path": "ui/markers/selected.svg",
+      "bytes": 244,
+      "sha256": "e4051da1de7d1a683824ecbd910b4e1d61919858603bbc258c1ad44b2bf251cf",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "path": "ui/telegraphs/beam-ally.svg",
+      "bytes": 234,
+      "sha256": "784ac5b152fa5bc9660ff2708db6055b8a092d5e293fb0c7af9d9a4b018e3354",
+      "viewBox": "0 0 256 256"
+    },
+    {
+      "path": "ui/telegraphs/beam-enemy.svg",
+      "bytes": 234,
+      "sha256": "3461b749c0d3720c597192cbb3f851abf0d64adb058ff1f18a5b84afe307435f",
+      "viewBox": "0 0 256 256"
+    },
+    {
+      "path": "ui/telegraphs/circle-ally.svg",
+      "bytes": 224,
+      "sha256": "080d59e7aa571a49854f09cd0da61fe9adbcd6645e6ae0fabe159d3389f3919d",
+      "viewBox": "0 0 256 256"
+    },
+    {
+      "path": "ui/telegraphs/circle-enemy.svg",
+      "bytes": 224,
+      "sha256": "7f906de49e5be49533b732603b8464cff48dbb6191a4a5265ccdc434034c4757",
+      "viewBox": "0 0 256 256"
+    },
+    {
+      "path": "ui/telegraphs/cone-ally.svg",
+      "bytes": 230,
+      "sha256": "5b9ffcb729f37e8012a4f0ac174bb8a99616fc9f4c9e93c2c7cd6b350b0a7a9c",
+      "viewBox": "0 0 256 256"
+    },
+    {
+      "path": "ui/telegraphs/cone-enemy.svg",
+      "bytes": 230,
+      "sha256": "e81274e33dba2b6d66195c2d7fc885c121ef6ba6848fb7158e76154396d9c757",
+      "viewBox": "0 0 256 256"
+    },
+    {
+      "path": "ui/telegraphs/dash-ally.svg",
+      "bytes": 236,
+      "sha256": "6866ee5f55e37e37a7cad8c2337b273d4e79a656c97a44713f3d57674ff16732",
+      "viewBox": "0 0 256 256"
+    },
+    {
+      "path": "ui/telegraphs/dash-enemy.svg",
+      "bytes": 236,
+      "sha256": "d45e35c71589dca1c24939169ed73d5e8494b987b34b32eb60db678a13c7b8b1",
+      "viewBox": "0 0 256 256"
+    },
+    {
+      "path": "ui/telegraphs/fan-ally.svg",
+      "bytes": 240,
+      "sha256": "7b4992298a749aba1bd4a94d237bc19ed4f2a1b93733be3a0880d13ed6a2db0a",
+      "viewBox": "0 0 256 256"
+    },
+    {
+      "path": "ui/telegraphs/fan-enemy.svg",
+      "bytes": 240,
+      "sha256": "785778645db1e206ccdbd9a6c3c4f36c4f612120f6636e77d11c1261ced5273f",
+      "viewBox": "0 0 256 256"
+    },
+    {
+      "path": "ui/telegraphs/pressure-hatch.svg",
+      "bytes": 453,
+      "sha256": "c51a893523b322f5e9caa54d0fdbbe170f6fba8684275397f9e66578043bf168",
+      "viewBox": "0 0 256 256"
+    },
+    {
+      "path": "ui/telegraphs/wall-ally.svg",
+      "bytes": 233,
+      "sha256": "1641bf31a68d5fc5d40015f82611421e9bb94412deae8f2a6cea49e8a88277c4",
+      "viewBox": "0 0 256 256"
+    },
+    {
+      "path": "ui/telegraphs/wall-enemy.svg",
+      "bytes": 233,
+      "sha256": "479aa9b474eef13a1cd0c6441e52fe61e63a30661318b0a44f2aee2edd52a747",
+      "viewBox": "0 0 256 256"
+    },
+    {
+      "path": "ui/wordmark.svg",
+      "bytes": 879,
+      "sha256": "fc9c224c1063d67dbda95a2a36206e5bce907c3ee2c2b563dc673bcd64bcab93",
+      "viewBox": "0 0 300 38"
+    }
+  ]
+}

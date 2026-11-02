@@ -21,6 +21,7 @@ preview = true
 extend-select = ["E", "W"]
 
 [tool.ruff.lint.per-file-ignores]
+"packages/com.veilbreak.gui/Tools~/screen_kit.py" = ["E501"]
 "packages/com.veilbreak.gui/Tools~/web/docs.py" = ["E501"]
 "packages/com.veilbreak.gui/Tools~/web/previews.py" = ["E501"]
 "packages/com.veilbreak.gui/Tools~/handbook/catalog.py" = ["E501"]
