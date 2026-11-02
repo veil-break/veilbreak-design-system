@@ -5,10 +5,10 @@ design-system packages so a game can root the whole stack with one dependency:
 
 | package | version |
 | --- | --- |
-| `com.veilbreak.gui` | 0.5.1 |
+| `com.veilbreak.gui` | 0.7.0 |
 | `com.veilbreak.feedback` | 1.5.0 |
 | `com.veilbreak.branding` | 1.2.0 |
-| `com.veilbreak.environment` | 0.3.0 |
+| `com.veilbreak.environment` | 0.4.0 |
 
 Unity does not resolve git dependencies declared inside a package, and these semantic versions are not published to a
 registry. Consumers therefore still list every design-system package as a pinned git source in their own manifest, all at

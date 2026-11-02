@@ -8,7 +8,7 @@ namespace Veilbreak.Cityscape {
 /// use and reused; a theme change only affects segments that stream in afterwards. The road itself carries no collision:
 /// the simulation owns combat space.</summary>
 public sealed class StreetStreamer:MonoBehaviour {
- sealed class Slot { public GameObject root;public MeshFilter road,walks,left,right;public StreetModules.Module l,r;public int theme=-1;public long corner=long.MinValue; }
+ sealed class Slot { public GameObject root;public MeshFilter road,walks,left,right;public StreetModules.Module l,r;public int theme=-1;public long corner=long.MinValue;public IStreetKit kit; }
  /// <summary>The crossroads set: crossing, pavement, skyline, the two frontage blocks closing the T and each arm's first segments.</summary>
  sealed class Crossing { public GameObject root;public MeshFilter road,walks,skyline;public readonly MeshFilter[] wall=new MeshFilter[2];public readonly StreetModules.Module[] wallModules=new StreetModules.Module[2];
   public readonly Slot[] arms=new Slot[2*ArmSegments];public long index=long.MinValue;public double centre;public int side,theme=-1;public float turn; }
@@ -30,8 +30,28 @@ public sealed class StreetStreamer:MonoBehaviour {
  /// <param name="segmentSeed">The host's per-segment seed; null uses <see cref="SegmentStreamer.DefaultSeed"/>.</param>
  public void Initialize(CityKit kit,StreetTheme[] looks,uint seed,int variants=8,bool high=true,SegmentStreamer.SeedFunction segmentSeed=null){
   this.kit=kit;this.high=high;this.seed=seed;themes=new StreetModules[looks.Length];for(int i=0;i<looks.Length;i++)themes[i]=new StreetModules(kit,looks[i],seed+(uint)i*977u,variants,high);
-  stream=gameObject.AddComponent<SegmentStreamer>();stream.Initialize(seed,Configure,segmentSeed);place=Place;Shader.SetGlobalVector(CrossRoadId,Vector4.zero);
+  stream=gameObject.AddComponent<SegmentStreamer>();stream.Initialize(seed,Configure,segmentSeed);stream.Apply=DressSlot;stream.Retire=Retire;place=Place;Shader.SetGlobalVector(CrossRoadId,Vector4.zero);
  }
+ /// <summary>Plan mode (<see cref="Plan"/> set): each slot is dressed once from its descriptor, with the descriptor's look and seed, by its family's registered kit or the
+ /// built-in blocks. Nothing re-dresses it while it holds its index, so a look change never recolours a visible segment.</summary>
+ public ISegmentPlan Plan {get=>stream.Plan;set=>stream.Plan=value;}
+ public SegmentStreamer Stream=>stream;
+ /// <summary>Plan mode: advances the street to `distance`, with a crossroads (if any) dressed in the look of its own segment.</summary>
+ public void Present(double distance){
+  presented=distance;
+  if(crossing&&cross.side!=0&&cross.turn>=1&&distance>=cross.centre+RebaseAfter)Rebase();
+  if(crossing)Frame(distance,stream.TryDescriptor(cross.index,out var d)?Mathf.Clamp(d.Look,0,themes.Length-1):0);
+  stream.Place=crossing?place:null;stream.Present(distance);
+  if(crossing){Shader.SetGlobalVector(CrossId,Global());Shader.SetGlobalVector(CrossRoadId,new Vector4((float)(cross.centre%1024),1,0,0));}
+ }
+ void DressSlot(GameObject go,SegmentDescriptor d){
+  if(!slots.TryGetValue(go,out var slot))slots[go]=slot=Make(go);
+  slot.kit=StreetKitRegistry.Find(d.Family);bool own=slot.kit==null;
+  Parts(slot,own);
+  if(own)Fill(slot,d.Seed,Mathf.Clamp(d.Look,0,themes.Length-1));else{slot.l=slot.r=null;slot.corner=long.MinValue;slot.kit.Build(d,go.transform,high);}
+ }
+ static void Parts(Slot slot,bool on){slot.road.gameObject.SetActive(on);slot.walks.gameObject.SetActive(on);slot.left.gameObject.SetActive(on);slot.right.gameObject.SetActive(on);}
+ void Retire(GameObject go,SegmentDescriptor d){if(slots.TryGetValue(go,out var slot)&&slot.kit!=null){slot.kit.Release(go.transform);slot.kit=null;}}
  public void Present(double distance,int theme){
   presented=distance;
   if(crossing&&cross.side!=0&&cross.turn>=1&&distance>=cross.centre+RebaseAfter)Rebase();
@@ -93,11 +113,11 @@ public sealed class StreetStreamer:MonoBehaviour {
   Near(slot,nearLeft,nearRight);return shown;
  }
  /// <summary>The stream's first segments on an arm show what the arm itself showed, even if they streamed in under an earlier theme.</summary>
- void Match(Slot slot,long index){long k=cross.index;if(index>k+1&&index<=k+1+ArmSegments&&slot.theme!=cross.theme)Fill(slot,stream.Hash(seed,cross.theme,index),cross.theme);}
+ void Match(Slot slot,long index){if(stream.Plan!=null||slot.kit!=null)return;long k=cross.index;if(index>k+1&&index<=k+1+ArmSegments&&slot.theme!=cross.theme)Fill(slot,stream.Hash(seed,cross.theme,index),cross.theme);}
  /// <summary>The incoming road's last segment before a crossroads takes compact corner blocks.</summary>
- void CornerBlocks(Slot slot,long index){var set=themes[cross.theme];uint hash=stream.Hash(seed,cross.theme,index);Fill(slot,hash,cross.theme);
+ void CornerBlocks(Slot slot,long index){if(slot.kit!=null)return;var set=themes[cross.theme];uint hash=stream.Hash(seed,cross.theme,index);Fill(slot,hash,cross.theme);
   slot.l=set.corners[(int)(hash%(uint)set.corners.Length)];slot.r=set.corners[(int)((hash>>11)%(uint)set.corners.Length)];Show(slot.left,slot.l);Show(slot.right,slot.r);slot.corner=index;}
- static void Near(Slot slot,bool hideLeft,bool hideRight){if(slot.left.gameObject.activeSelf==hideLeft)slot.left.gameObject.SetActive(!hideLeft);if(slot.right.gameObject.activeSelf==hideRight)slot.right.gameObject.SetActive(!hideRight);}
+ static void Near(Slot slot,bool hideLeft,bool hideRight){if(slot.kit!=null)return;if(slot.left.gameObject.activeSelf==hideLeft)slot.left.gameObject.SetActive(!hideLeft);if(slot.right.gameObject.activeSelf==hideRight)slot.right.gameObject.SetActive(!hideRight);}
  void Rebase(){crossing=false;released=cross.index;cross.root.SetActive(false);turn=Quaternion.identity;at=Vector3.zero;stream.Place=null;foreach(var slot in slots.Values)Near(slot,false,false);
   Shader.SetGlobalVector(CrossRoadId,Vector4.zero);}
 
@@ -123,7 +143,7 @@ public sealed class StreetStreamer:MonoBehaviour {
 
  MeshFilter Part(Transform parent,string name,float yaw,ShadowCastingMode shadows){var go=new GameObject(name);go.transform.SetParent(parent,false);go.transform.localRotation=Quaternion.Euler(0,yaw,0);var r=go.AddComponent<MeshRenderer>();r.shadowCastingMode=shadows;r.lightProbeUsage=LightProbeUsage.Off;r.reflectionProbeUsage=ReflectionProbeUsage.Off;return go.AddComponent<MeshFilter>();}
  Slot Make(GameObject go){var t=go.transform;return new Slot{root=go,road=Part(t,"Road",0,ShadowCastingMode.Off),walks=Part(t,"Sidewalks",0,ShadowCastingMode.Off),left=Part(t,"Left block",180,BlockShadows),right=Part(t,"Right block",0,BlockShadows)};}
- void Configure(GameObject go,uint hash,int theme){if(!slots.TryGetValue(go,out var slot))slots[go]=slot=Make(go);Fill(slot,hash,theme);}
+ void Configure(GameObject go,uint hash,int theme){if(!slots.TryGetValue(go,out var slot))slots[go]=slot=Make(go);if(slot.kit!=null){slot.kit=null;Parts(slot,true);}Fill(slot,hash,theme);}
  void Fill(Slot slot,uint hash,int theme){
   var set=themes[theme];slot.theme=theme;slot.corner=long.MinValue;slot.l=set.sides[(int)(hash%(uint)set.sides.Length)];slot.r=set.sides[(int)((hash>>11)%(uint)set.sides.Length)];
   Show(slot.road,set.road);Show(slot.walks,set.sidewalks);Show(slot.left,slot.l);Show(slot.right,slot.r);
@@ -139,11 +159,11 @@ public sealed class StreetStreamer:MonoBehaviour {
  static void Add(List<(int,Vector3,Emitter)> into,int key,MeshFilter f,StreetModules.Module m){if(m==null||!f.gameObject.activeInHierarchy)return;var t=f.transform;for(int i=0;i<m.emitters.Length&&i<32;i++)into.Add((key+i,t.TransformPoint(m.emitters[i].position),m.emitters[i]));}
 
  /// <summary>Triangles of the modules currently shown, for the per-tier budget checks.</summary>
- public int Triangles(int segment){int i=0;foreach(var slot in slots.Values){if(i++!=segment)continue;return (slot.l?.triangles??0)+(slot.r?.triangles??0)+themes[slot.theme].road.triangles+themes[slot.theme].sidewalks.triangles;}return 0;}
+ public int Triangles(int segment){int i=0;foreach(var slot in slots.Values){if(i++!=segment)continue;if(slot.kit!=null)return slot.kit.TriangleBudget(high);return (slot.l?.triangles??0)+(slot.r?.triangles??0)+themes[slot.theme].road.triangles+themes[slot.theme].sidewalks.triangles;}return 0;}
 
  void OnDestroy(){
   void Drop(MeshFilter f){if(f!=null)ReflectionSet.Remove(f.GetComponent<MeshRenderer>());}
-  foreach(var slot in slots.Values){Drop(slot.road);Drop(slot.walks);Drop(slot.left);Drop(slot.right);}
+  foreach(var slot in slots.Values){if(slot.kit!=null){slot.kit.Release(slot.root.transform);slot.kit=null;}Drop(slot.road);Drop(slot.walks);Drop(slot.left);Drop(slot.right);}
   if(cross!=null){Drop(cross.road);Drop(cross.walks);Drop(cross.skyline);foreach(var f in cross.wall)Drop(f);foreach(var slot in cross.arms){Drop(slot.road);Drop(slot.walks);Drop(slot.left);Drop(slot.right);}}
   if(crossing)Shader.SetGlobalVector(CrossRoadId,Vector4.zero);if(themes!=null)foreach(var t in themes)t.Dispose();
  }

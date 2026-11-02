@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.4.0 — 2026-11-02
+
+Additive per-index segment plan; the legacy `Present(distance, theme, ...)` path, its seeds and `SegmentStreamer.DefaultSeed` are unchanged except for the fire-timing fixes below (fires follow the host delta and reduced motion holds them steady). The director resets the shared fire clock when destroyed.
+
+- `SegmentRole`, `SegmentDescriptor` (Index, Seed, Family, Look, Role, Landmark, Weather, Damage, Flags), `ISegmentPlan.Resolve(long)` (must be pure), `IStreetKit` and
+  `StreetKitRegistry` (new `SegmentPlan.cs`).
+- `SegmentStreamer`: public `Behind = 2` / `Ahead = 6` (`Capacity = Behind + 1 + Ahead`), `FurthestAllocated`, `Plan`, `Present(double distance)` plan mode, `TryDescriptor`.
+  A slot is resolved and dressed once when allocated for an index and never again while it holds it.
+- `StreetStreamer`: plan-mode `Present(double)`, `Plan`, `Stream`; segments of a registered kit family are built and released by the kit.
+- `EnvironmentDirector`: `Initialize(..., ISegmentPlan plan = null)`, plan-mode `Present(distance, time, delta, focus, groundSpeed, reducedMotion)` that blends the look by
+  distance across Transition segments, `Plan`, `BlendProgress`, `ReducedMotion`.
+- Fixes: `FireLight` flickers on a clock the host advances by its delta (`FireLight.Advance`, driven by the director), so pause freezes it (still `Time.time` for hosts that never
+  drive it); `LightBudget` fires flicker on the accumulated delta and hold steady under Reduced Motion (new optional `still` argument).
+- README: Low builds its own lighter blocks; the crossroads set is instantiated lazily; the nonexistent `docs/presentation-provenance.json` reference is gone; the texture and audio
+  regeneration commands run from the repository root; the plan API is documented. EditMode tests cover the plan, slot stability, transition blend, pause, reduced motion,
+  kit budgets, the window constants and the unchanged legacy path.
+
 ## 0.3.0 — 2026-11-02
 
 - `FireLight` from veilbreak-main (same GUID): flickers a fire's point light around its authored intensity, low frequency

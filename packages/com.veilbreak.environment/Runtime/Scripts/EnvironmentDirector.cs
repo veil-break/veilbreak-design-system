@@ -25,16 +25,22 @@ public sealed class EnvironmentDirector:MonoBehaviour {
 
  public StreetStreamer Street {get;private set;}public LightBudget Lights {get;private set;}public Atmospherics Air {get;private set;}
  public Look Current {get;private set;}public int Theme {get;private set;}public bool Blending=>blend<1;
+ /// <summary>0..1 progress of the running look blend (1 when settled): the 8 s timer in legacy mode, the distance across a Transition segment in plan mode.</summary>
+ public float BlendProgress=>blend;
+ /// <summary>The Reduced Motion setting of the last Present. It also holds <see cref="Atmospherics"/> rain down and still the fire lights' flicker in <see cref="LightBudget"/>.</summary>
+ public bool ReducedMotion {get;private set;}
+ /// <summary>Plan mode: the per-index segment plan, or null for the legacy global theme. Set by <see cref="Initialize"/>.</summary>
+ public ISegmentPlan Plan {get=>Street?.Plan;set{if(Street==null)throw new System.InvalidOperationException("Initialize the director before setting its plan");Street.Plan=value;}}
  CityKit kit;StreetTheme[] themes;Camera view;Light moon;bool high;Look from;float blend=1;Transform dome;
  AudioSource rainBed,humBed;
  /// <summary>Ambience level (the consumer's effects level; master belongs on the AudioListener): the rain bed follows the theme's rain, the hum stays low,
  /// and wreck fires crackle positionally. 0 silences the street.</summary>
  public float Volume=1;
 
- public void Initialize(CityKit kit,StreetTheme[] themes,uint seed,Camera view,bool high,int theme=0,SegmentStreamer.SeedFunction segmentSeed=null){
+ public void Initialize(CityKit kit,StreetTheme[] themes,uint seed,Camera view,bool high,int theme=0,SegmentStreamer.SeedFunction segmentSeed=null,ISegmentPlan plan=null){
   if(!keyword){High=GlobalKeyword.Create("_VEIL_HIGH");keyword=true;}
   this.kit=kit;this.themes=themes;this.view=view;this.high=high;Theme=Mathf.Clamp(theme,0,themes.Length-1);Current=Look.From(themes[Theme]);blend=1;
-  Street=Child<StreetStreamer>("Street");Street.Initialize(kit,themes,seed,8,high,segmentSeed);
+  Street=Child<StreetStreamer>("Street");Street.Initialize(kit,themes,seed,8,high,segmentSeed);Street.Plan=plan;
   Lights=Child<LightBudget>("Light budget");Lights.Initialize(high?HighLights:LowLights);
   Air=Child<Atmospherics>("Atmospherics");Air.Initialize(kit,high);
   if(kit.dome!=null&&kit.sky!=null){dome=new GameObject("Sky dome").transform;dome.SetParent(transform,false);dome.localScale=Vector3.one*400;dome.gameObject.AddComponent<MeshFilter>().sharedMesh=kit.dome;var r=dome.gameObject.AddComponent<MeshRenderer>();r.sharedMaterial=kit.sky;r.shadowCastingMode=ShadowCastingMode.Off;r.receiveShadows=false;}
@@ -49,8 +55,27 @@ public sealed class EnvironmentDirector:MonoBehaviour {
  public void Present(double distance,int theme,float time,float delta,Vector3 focus,float groundSpeed,bool reducedMotion){
   theme=Mathf.Clamp(theme,0,themes.Length-1);if(theme!=Theme){from=Current;Theme=theme;blend=0;}
   if(blend<1){blend=Mathf.Min(1,blend+Mathf.Max(0,delta)/BlendSeconds);Current=Look.Lerp(from,Look.From(themes[Theme]),Mathf.SmoothStep(0,1,blend));}else Current=Look.From(themes[Theme]);
-  Street.Present(distance,theme);Publish(distance,time);
-  var look=Current;Lights.Present(Street,focus,look.lampBrightness,time,Mathf.Max(0,delta));Air.Present(Street,look,focus,groundSpeed,Mathf.Max(0,delta),reducedMotion);
+  Street.Present(distance,theme);Finish(distance,time,delta,focus,groundSpeed,reducedMotion);
+ }
+ /// <summary>Plan mode (<see cref="Plan"/> set): moves the street to `distance` metres and takes the look from the plan. The look is the
+ /// <see cref="StreetTheme"/> table entry of the segment under `distance`; across a Transition segment it blends from the previous segment's look to
+ /// its own by how far `distance` is through that segment (progress-synchronised, no timer), so it follows the road and a stopped road holds it.
+ /// `delta` steps lights, air and fires only: 0 freezes them. Without a plan this is the legacy path held on the current theme.</summary>
+ public void Present(double distance,float time,float delta,Vector3 focus,float groundSpeed,bool reducedMotion){
+  if(Plan==null){Present(distance,Theme,time,delta,focus,groundSpeed,reducedMotion);return;}
+  Street.Present(distance);PlanLook(distance);Finish(distance,time,delta,focus,groundSpeed,reducedMotion);
+ }
+ void PlanLook(double distance){
+  long segment=(long)System.Math.Floor(distance/SegmentStreamer.Length);if(!Street.Stream.TryDescriptor(segment,out var now))return;
+  int to=Mathf.Clamp(now.Look,0,themes.Length-1);Theme=to;
+  if(now.Role==SegmentRole.Transition&&Street.Stream.TryDescriptor(segment-1,out var before)){
+   float k=Mathf.Clamp01((float)((distance-segment*(double)SegmentStreamer.Length)/SegmentStreamer.Length));blend=k;
+   Current=Look.Lerp(Look.From(themes[Mathf.Clamp(before.Look,0,themes.Length-1)]),Look.From(themes[to]),Mathf.SmoothStep(0,1,k));if(k>=1)blend=1;
+  }else{blend=1;Current=Look.From(themes[to]);}
+ }
+ void Finish(double distance,float time,float delta,Vector3 focus,float groundSpeed,bool reducedMotion){
+  ReducedMotion=reducedMotion;delta=Mathf.Max(0,delta);FireLight.Advance(delta);Publish(distance,time);
+  var look=Current;Lights.Present(Street,focus,look.lampBrightness,time,delta,reducedMotion);Air.Present(Street,look,focus,groundSpeed,delta,reducedMotion);
   if(dome!=null&&view!=null)dome.position=view.transform.position;
   float level=Mathf.Clamp01(Volume);if(rainBed!=null)rainBed.volume=level*Mathf.Lerp(.15f,.55f,look.rain);if(humBed!=null)humBed.volume=level*.3f;Air.Volume=level;
  }
@@ -68,6 +93,6 @@ public sealed class EnvironmentDirector:MonoBehaviour {
   if(view!=null){view.clearFlags=CameraClearFlags.SolidColor;view.backgroundColor=l.horizon;}
   if(moon!=null){moon.color=l.moon;moon.intensity=l.moonIntensity;moon.transform.rotation=Quaternion.Euler(l.moonAngles.x,l.moonAngles.y,0);moon.shadows=high?LightShadows.Soft:LightShadows.Hard;}
  }
- void OnDestroy(){if(keyword)Shader.SetKeyword(High,false);}
+ void OnDestroy(){if(keyword)Shader.SetKeyword(High,false);FireLight.ResetClock();}
 }
 }

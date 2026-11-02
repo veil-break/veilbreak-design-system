@@ -9,15 +9,17 @@ namespace Veilbreak.Cityscape {
 public sealed class LightBudget:MonoBehaviour {
  Light[] pool=new Light[0];int[] keys=new int[0];float[] levels=new float[0];bool[] wanted=new bool[0];
  readonly List<(int key,Vector3 at,Emitter e)> candidates=new List<(int,Vector3,Emitter)>();readonly List<int> desired=new List<int>();
- Vector3 focus;Comparison<(int key,Vector3 at,Emitter e)> byScore;
+ Vector3 focus;float clock;Comparison<(int key,Vector3 at,Emitter e)> byScore;
  public int Capacity=>pool.Length;
  public int Lit {get{int n=0;foreach(var l in pool)if(l.enabled)n++;return n;}}
  public void Initialize(int capacity){foreach(var l in pool)if(l!=null){if(Application.isPlaying)Destroy(l.gameObject);else DestroyImmediate(l.gameObject);}pool=new Light[capacity];keys=new int[capacity];levels=new float[capacity];wanted=new bool[capacity];
   for(int i=0;i<capacity;i++){var go=new GameObject("Budget light "+i);go.transform.SetParent(transform,false);var l=go.AddComponent<Light>();l.type=LightType.Point;l.shadows=LightShadows.None;l.renderMode=LightRenderMode.ForcePixel;l.enabled=false;pool[i]=l;keys[i]=-1;}}
 
  /// <summary>Gives the pool to the emitters nearest `focus` (fires preferred, signs last) and updates each light.</summary>
- public void Present(StreetStreamer street,Vector3 focus,float lampLevel,float time,float delta){
-  if(pool.Length==0||street==null)return;candidates.Clear();street.Emitters(candidates);
+ /// <param name="time">Kept for compatibility and unused: fires flicker on the clock accumulated from `delta`, so a paused game (delta 0) holds them still.</param>
+ /// <param name="still">Reduced Motion: fires hold their authored intensity.</param>
+ public void Present(StreetStreamer street,Vector3 focus,float lampLevel,float time,float delta,bool still=false){
+  if(pool.Length==0||street==null)return;clock+=Mathf.Max(0,delta);candidates.Clear();street.Emitters(candidates);
   this.focus=focus;byScore??=(a,b)=>Score(a,this.focus).CompareTo(Score(b,this.focus));candidates.Sort(byScore);desired.Clear();
   foreach(var c in candidates){if(desired.Count==pool.Length)break;if(c.e.intensity>0)desired.Add(c.key);}
   for(int p=0;p<pool.Length;p++){wanted[p]=keys[p]>=0&&desired.Remove(keys[p]);}
@@ -26,7 +28,7 @@ public sealed class LightBudget:MonoBehaviour {
    var l=pool[p];int index=keys[p]<0?-1:Find(keys[p]);if(index<0)wanted[p]=false;
    levels[p]=Mathf.MoveTowards(levels[p],wanted[p]?1:0,delta*4);
    if(index<0||levels[p]<=0){l.enabled=false;if(!wanted[p])keys[p]=-1;continue;}
-   var (_,at,e)=candidates[index];float flicker=e.kind==EmitterKind.Fire?.7f+.6f*Mathf.PerlinNoise(time*7,p*3.1f):1;
+   var (_,at,e)=candidates[index];float flicker=e.kind==EmitterKind.Fire&&!still?.7f+.6f*Mathf.PerlinNoise(clock*7,p*3.1f):1;
    l.transform.position=at;l.color=e.color;l.range=e.range;l.intensity=e.intensity*flicker*(e.kind==EmitterKind.Lamp?lampLevel:1)*levels[p];l.enabled=true;
   }
  }

@@ -1,8 +1,8 @@
 {
   "name": "com.veilbreak.environment",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "displayName": "Veilbreak Environment",
-  "description": "Mobile veil cityscape for runner streets: a wet-street shader with puddles and an emissive reflection, lit facades with hashed windows, curbside props baked from project-authored models, a painted sky and skyline, ground fog, embers, pooled lamp lights and theme profiles. Streams on its own bounded SegmentStreamer; the host supplies distance, theme and the per-segment seed.",
+  "description": "Mobile veil cityscape for runner streets: a wet-street shader with puddles and an emissive reflection, lit facades with hashed windows, curbside props baked from project-authored models, a painted sky and skyline, ground fog, embers, pooled lamp lights and theme profiles. Streams on its own bounded SegmentStreamer; the host supplies distance and either a theme and the per-segment seed or a pure per-index segment plan.",
   "unity": "6000.3",
   "dependencies": {
     "com.unity.render-pipelines.universal": "17.3.0",

@@ -6,7 +6,8 @@ T_Noise.png    256 px, tiles: r large fBm (puddles), g fine fBm (grime), b crack
 T_Glow.png     64 px soft radial falloff with a hot core: light pools, halos, embers, fog motes
 T_LensDirt_BC.png  512 px smudges and specks for bloom's lens dirt (ports the donor's procedural T_LensDirt_BC)
 
-Run with Pillow: `uv run --project ../../../tools python Tools~/textures.py` from the package root.
+Run with Pillow from the repository root (Pillow is not in the locked tools project, so `--with` adds it):
+`uv run --with pillow python packages/com.veilbreak.environment/Tools~/textures.py`
 """
 
 import math

@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.0 — 2026-11-02
+
+- Tested version of `com.veilbreak.environment` moves to 0.4.0 (per-index `ISegmentPlan`, `IStreetKit`, pause and reduced-motion fixes). The other three stay.
+
 ## 1.2.0 — 2026-11-02
 
 - Tested version of `com.veilbreak.gui` moves to 0.7.0 (`VbFocus`, the screen-kit generator and vendor pack). The other three stay.
