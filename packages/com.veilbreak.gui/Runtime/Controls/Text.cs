@@ -1,11 +1,11 @@
 using UnityEngine.UIElements;
 namespace Veilbreak.Gui {
-/// <summary>One of the type styles (<c>vb-t-display</c> … <c>vb-t-num</c>).</summary>
-public enum TypeStyle { Display, Title, Label, Badge, Body, Caption, Num }
+/// <summary>One of the type styles (<c>vb-t-display</c> … <c>vb-t-num</c>). The three variants are body (<see cref="Body"/>, <see cref="BodySm"/>, <see cref="Caption"/>), label (<see cref="LabelSm"/> = <see cref="Badge"/>, <see cref="Label"/>, <see cref="LabelLg"/>) and heading (<see cref="HeadingSm"/>, <see cref="Heading"/> = <see cref="Title"/>, <see cref="HeadingLg"/> = <see cref="Display"/>); the old names stay as aliases and the new ones are appended, so no value moves.</summary>
+public enum TypeStyle { Display, Title, Label, Badge, Body, Caption, Num, Heading, HeadingSm, HeadingLg, LabelSm, LabelLg, BodySm }
 /// <summary>A recolour on top of a type style; <see cref="Default"/> keeps the style's own colour.</summary>
 public enum TextTone { Default, Ally, Enemy, Power, Muted }
-/// <summary>The caps eyebrow sizes.</summary>
-public enum LabelSize { Label, Badge }
+/// <summary>The caps eyebrow sizes: the label variant's regular, small (<see cref="Badge"/>) and large sizes.</summary>
+public enum LabelSize { Label, Badge, Large }
 
 /// <summary>Every run of text: a Label with one type style and an optional tone, so UXML reads
 /// <c>&lt;vb:TextComponent type-style="Caption" tone="Muted" text="…"/&gt;</c> instead of juggling <c>vb-t-*</c> classes.
@@ -27,10 +27,11 @@ public enum LabelSize { Label, Badge }
 /// carries the section rhythm (4 units under it), replacing <c>vb-t-label</c> + <c>vb-section__title</c> / <c>vb-page__label</c>.</summary>
 [UxmlElement] public partial class LabelComponent:TextComponent {
  public new const string ClassName="vb-label";
- [UxmlAttribute] public LabelSize Size {get=>TypeStyle==TypeStyle.Badge?LabelSize.Badge:LabelSize.Label;set=>TypeStyle=value==LabelSize.Badge?TypeStyle.Badge:TypeStyle.Label;}
+ [UxmlAttribute] public LabelSize Size {get=>TypeStyle==TypeStyle.Badge?LabelSize.Badge:TypeStyle==TypeStyle.LabelLg?LabelSize.Large:LabelSize.Label;set=>TypeStyle=StyleOf(value);}
+ static TypeStyle StyleOf(LabelSize size)=>size==LabelSize.Badge?TypeStyle.Badge:size==LabelSize.Large?TypeStyle.LabelLg:TypeStyle.Label;
  public override string text {get=>base.text;set=>base.text=(value??"").ToUpperInvariant();}
  public LabelComponent():this(""){}
- public LabelComponent(string text,LabelSize size=LabelSize.Label,TextTone tone=TextTone.Default):base(text,size==LabelSize.Badge?TypeStyle.Badge:TypeStyle.Label,tone){AddToClassList(ClassName);}
+ public LabelComponent(string text,LabelSize size=LabelSize.Label,TextTone tone=TextTone.Default):base(text,StyleOf(size),tone){AddToClassList(ClassName);}
 }
 
 public static partial class Ui {

@@ -46,6 +46,7 @@ jobs:
           uv run --frozen python -m unittest discover -s packages/com.veilbreak.gui/Tools~/handbook/tests
           uv run --frozen python packages/com.veilbreak.gui/Tools~/motion.py --check
           uv run --frozen python packages/com.veilbreak.gui/Tools~/tokens.py --check
+          uv run --frozen python packages/com.veilbreak.gui/Tools~/fluid.py --check
           uv run --frozen python packages/com.veilbreak.gui/Tools~/samples.py --check
           uv run --frozen python packages/com.veilbreak.gui/Tools~/metas.py --check
           uv run --frozen python packages/com.veilbreak.gui/Tools~/screen_kit.py --check

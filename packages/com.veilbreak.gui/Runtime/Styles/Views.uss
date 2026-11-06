@@ -4,13 +4,13 @@
 /* ── every view ────────────────────────────────────────────────────────── */
 /* Drawers docked in a view span the board: past the page's side gutters and its bottom padding. */
 .vb-view > .vb-drawer { bottom: -8px; }
-.vb-page > .vb-view > .vb-drawer { left: -16px; right: -16px; }
+.vb-page > .vb-view > .vb-drawer { left: var(--vb-pad-neg); right: var(--vb-pad-neg); }
 .vb-page > .vb-view--headed > .vb-drawer { left: 0; right: 0; }
 .vb-view { flex-grow: 1; flex-shrink: 1; min-height: 0; }
 /* A headed view spans the board under a page with padding; its content keeps a 12-unit gutter. */
-.vb-page > .vb-view--headed { margin-left: -16px; margin-right: -16px; }
+.vb-page > .vb-view--headed { margin-left: var(--vb-pad-neg); margin-right: var(--vb-pad-neg); }
 .vb-page--headed > .vb-view--headed { margin-left: 0; margin-right: 0; }
-.vb-view--headed > * { margin-left: 12px; margin-right: 12px; }
+.vb-view--headed > * { margin-left: var(--vb-gutter); margin-right: var(--vb-gutter); }
 .vb-view--headed > .vb-header, .vb-view--headed > .vb-drawer { margin-left: 0; margin-right: 0; }
 
 /* Screen layer tints per page name (Navigator.Open). */
@@ -26,14 +26,14 @@
 .vb-menu__right { flex-shrink: 0; }
 .vb-compact .vb-menu__best-wave { display: none; }
 .vb-menu__best { padding: 0 10px; height: 30px; }
-.vb-menu__best .vb-badge__value { -unity-font-definition: var(--vb-font-body-medium); font-size: 14px; margin-right: 8px; }
+.vb-menu__best .vb-badge__value { -unity-font-definition: var(--vb-font-body-medium); font-size: var(--vb-fs-14); margin-right: 8px; }
 .vb-menu__brand { position: absolute; left: 0; right: 0; top: 220px; align-items: center; }
-.vb-menu__arcade { margin-top: -6px; -unity-font-definition: var(--vb-font-display-bold); font-size: 13px; letter-spacing: 61.538px; padding-left: 8px; color: var(--vb-color-ally-text); }
+.vb-menu__arcade { margin-top: -6px; -unity-font-definition: var(--vb-font-display-bold); font-size: var(--vb-fs-13); letter-spacing: 61.538px; padding-left: 8px; color: var(--vb-color-ally-text); }
 .vb-menu__right { flex-direction: row; align-items: center; }
 .vb-menu__exit { margin-left: 8px; }
 .vb-menu-actions { flex-shrink: 0; }
 .vb-menu__checkpoint { margin-bottom: 10px; }
-.vb-menu__checkpoint-line { -unity-font-definition: var(--vb-font-body-medium); font-size: 13px; margin: 2px 0; }
+.vb-menu__checkpoint-line { -unity-font-definition: var(--vb-font-body-medium); font-size: var(--vb-fs-13); margin: 2px 0; }
 .vb-menu__checkpoint .vb-button { width: 120px; min-width: 120px; }
 .vb-menu__play { height: 60px; min-height: 60px; margin-bottom: 10px; }
 .vb-menu__row > .vb-button { min-height: 48px; }
@@ -80,25 +80,22 @@
 /* ── PerkDraftView ─────────────────────────────────────────────────────── */
 .vb-draft { padding-top: 16px; }
 .vb-draft__scroll { flex-grow: 1; }
-.vb-draft__cards { flex-direction: row; justify-content: space-between; margin-top: 6px; margin-bottom: 14px; }
-.vb-draft__cards > .vb-choice { width: 112px; flex-grow: 0; flex-basis: auto; margin: 0; min-height: 236px; --vb-cut: 4; --vb-bw: 0; }
-.vb-draft__cards > .vb-choice.vb-choice--selected { --vb-cut: 12; --vb-bw: 2; }
-.vb-compact .vb-draft__cards > .vb-choice { width: auto; flex-grow: 1; flex-basis: 0; margin: 0 3px; }
-.vb-draft__detail { margin-bottom: 12px; }
+.vb-draft__carousel { margin-top: 6px; margin-bottom: 10px; }
+.vb-draft__card { min-height: 236px; margin: 0; --vb-cut: 12; --vb-bw: 1; }
 .vb-draft__squad { padding: 9px 12px; margin-top: 12px; margin-bottom: 12px; }
 .vb-draft__squad > .vb-label { margin-bottom: 7px; }
 .vb-draft__cell { width: 23%; }
-.vb-draft__code { -unity-font-definition: var(--vb-font-display-bold); font-size: 12px; }
+.vb-draft__code { }
 
 /* ── ResultsView ───────────────────────────────────────────────────────── */
 .vb-results { padding-top: 12px; }
 .vb-results__scroll { flex-grow: 1; }
-.vb-results .vb-t-display { font-size: 40px; letter-spacing: 14.000px; }
+.vb-results .vb-t-display { font-size: var(--vb-fs-40); }
 .vb-results__score { padding: 12px 16px; margin: 10px 0 4px 0; }
 .vb-results__score > .vb-row { margin-bottom: 3px; }
-.vb-results__value { -unity-font-definition: var(--vb-font-body-medium); font-size: 40px; }
-.vb-results__rank { padding: 4px 8px; background-color: var(--vb-color-ally); color: var(--vb-color-on-cta); -unity-font-definition: var(--vb-font-body-medium); -unity-font-style: bold; font-size: 10px; }
-.vb-results__points { -unity-font-definition: var(--vb-font-body-medium); font-size: 12px; }
+.vb-results__value { -unity-font-definition: var(--vb-font-body-medium); font-size: var(--vb-fs-40); }
+.vb-results__rank { padding: 4px 8px; background-color: var(--vb-color-ally); color: var(--vb-color-on-cta); -unity-font-definition: var(--vb-font-body-medium); -unity-font-style: bold; font-size: var(--vb-fs-10); }
+.vb-results__points { -unity-font-definition: var(--vb-font-body-medium); font-size: var(--vb-fs-12); }
 .vb-results__stats { margin-top: 12px; align-items: flex-start; }
 .vb-results__stats > .vb-stat { margin-right: 10px; }
 .vb-results .vb-result { width: 23.5%; }
@@ -117,24 +114,24 @@
 
 /* ── BattleHudView (on BoardLayout) ────────────────────────────────────── */
 .vb-battle__boss { margin: 6px 10px 0 10px; }
-.vb-battle__announcer { height: 26px; flex-shrink: 0; margin-top: 2px; -unity-font-definition: var(--vb-font-body-medium); -unity-font-style: bold; font-size: 11px; letter-spacing: 3.000px; }
+.vb-battle__announcer { height: 26px; flex-shrink: 0; margin-top: 2px; -unity-font-definition: var(--vb-font-body-medium); -unity-font-style: bold; font-size: var(--vb-fs-11); letter-spacing: 3.000px; }
 .vb-battle__cards { flex-direction: row; justify-content: space-between; flex-shrink: 0; padding: 6px 10px 0 10px; }
 .vb-battle__card { flex-grow: 0; width: 88px; height: 202px; }
 .vb-battle__card .vb-operative__skills { flex-direction: row; padding: 0; }
 .vb-battle__card .vb-skill { width: 44px; height: 56px; min-height: 44px; flex-shrink: 0; margin: 0; }
-.vb-battle__card .vb-operative__name { font-size: 12px; letter-spacing: 13.333px; }
+.vb-battle__card .vb-operative__name { font-size: var(--vb-fs-12); }
 .vb-compact .vb-battle__cards { padding-left: 5px; padding-right: 5px; }
 .vb-compact .vb-battle__card { flex-grow: 1; flex-basis: 0; width: auto; min-width: 0; margin: 0 3px; height: 250px; }
 .vb-compact .vb-battle__card .vb-operative__skills { flex-direction: column; padding: 4px 6px 6px 6px; }
 .vb-compact .vb-battle__card .vb-skill { width: auto; height: 44px; margin-top: 3px; }
 .vb-compact .vb-battle__card .vb-skill__icon { margin-top: 6px; width: 16px; height: 16px; }
 .vb-compact .vb-battle__card .vb-operative__band { height: 36px; }
-.vb-compact .vb-battle__card .vb-operative__name { font-size: 10px; letter-spacing: 0; }
+.vb-compact .vb-battle__card .vb-operative__name { font-size: var(--vb-fs-10); }
 
 /* ── active perks, revive, accessibility ───────────────────────────────── */
 .vb-build__summary { flex-direction: row; flex-wrap: wrap; padding: 8px 12px; margin-top: 6px; margin-bottom: 3px; flex-shrink: 0; }
 .vb-build__bonus { flex-direction: row; align-items: center; margin-right: 12px; }
-.vb-build__bonus-value { margin-left: 6px; -unity-font-definition: var(--vb-font-body-medium); font-size: 13px; color: var(--vb-color-ally-text); }
+.vb-build__bonus-value { margin-left: 6px; -unity-font-definition: var(--vb-font-body-medium); font-size: var(--vb-fs-13); color: var(--vb-color-ally-text); }
 .vb-build__list { flex-grow: 0; flex-shrink: 1; max-height: 348px; margin-bottom: 10px; }
 .vb-build__detail { margin-top: 12px; flex-shrink: 0; }
 .vb-revive .vb-grid4 { margin-top: 8px; }
@@ -144,4 +141,13 @@
 .vb-page--leaving { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
 .vb-battle__bottom { position: relative; }
 .vb-board__bottom { position: relative; }
-.vb-battle__cancel { position: absolute; left: 10px; right: 10px; bottom: 100%; height: 40px; margin-bottom: 8px; border-width: 1px; border-color: var(--vb-color-line-strong); background-color: rgba(5, 2, 8, 0.70); -unity-text-align: middle-center; -unity-font-definition: var(--vb-font-body-medium); -unity-font-style: bold; font-size: 11px; letter-spacing: 12.727px; color: var(--vb-color-text-2); }
+.vb-battle__cancel { position: absolute; left: 10px; right: 10px; bottom: 100%; height: 40px; margin-bottom: 8px; border-width: 1px; border-color: var(--vb-color-line-strong); background-color: rgba(5, 2, 8, 0.70); -unity-text-align: middle-center; color: var(--vb-color-text-2); }
+
+/* The carousel's cards overlap, so each is opaque: the card beneath never shows through the one above it (the tier tints, without their alpha). */
+.vb-carousel__card { --vb-fill: var(--vb-color-panel-solid); }
+.vb-carousel__card.vb-perk--operative, .vb-carousel__card.vb-choice--ally { --vb-fill: rgb(6, 24, 25); }
+.vb-carousel__card.vb-perk--rare { --vb-fill: rgb(8, 28, 32); }
+.vb-carousel__card.vb-perk--epic, .vb-carousel__card.vb-choice--power { --vb-fill: rgb(29, 15, 48); }
+.vb-carousel__card.vb-choice--enemy { --vb-fill: rgb(39, 9, 30); }
+/* The cost and cooldown of a skill keep their width, so "20s CD" is not clipped at 320. */
+.vb-details__skill-cost { flex-shrink: 0; }

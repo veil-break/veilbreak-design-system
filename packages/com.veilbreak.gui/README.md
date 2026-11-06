@@ -85,6 +85,7 @@ camera.Pinched += f => rig.ZoomBy(f);                // events carry panel units
 - `uv run --frozen python Tools~/tokens.py` rebuilds `Styles/Tokens.uss`, `Styles/TokensContrast.uss`, `Core/VbTokens.cs` and
   `Documentation~/tokens.md` from `Tokens~/tokens.json`, the design tokens this package owns (`--check` reports stale
   outputs; `--upstream FILE` lists differences from another `tokens.json`).
+- `uv run --frozen python Tools~/fluid.py` rebuilds `Styles/Fluid.uss` (the fluid scale: one `vb-fluid-<width>` class per panel-width step) and `Core/VbFluidSteps.cs` from `Tokens~/fluid.json` and `tokens.json` (`--check` reports stale outputs).
 - `uv run --frozen python Tools~/samples.py` rewrites each sample's scene, UXML and asmdef scaffolding (`--check` reports drift).
 - `Tools~/web/build.sh OUT` rebuilds the design-system artifact's files (see `Documentation~/web-mirror.md`).
 - `uv run --frozen python Tools~/handbook/build_handbook.py . docs` rebuilds the web kit (`Web~/dist`) and the GitHub Pages site (`docs/`).
@@ -125,6 +126,7 @@ uv run --frozen ruff format --check .
 uv run --frozen python -m unittest discover -s Tools~/handbook/tests
 uv run --frozen python Tools~/motion.py --check
 uv run --frozen python Tools~/tokens.py --check
+uv run --frozen python Tools~/fluid.py --check
 uv run --frozen python Tools~/samples.py --check
 uv run --frozen python Tools~/metas.py --check
 uv run --frozen python Tools~/handbook/build_handbook.py . docs

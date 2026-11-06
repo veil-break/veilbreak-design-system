@@ -115,18 +115,7 @@ Poppins with tabular figures. Numbers never jump when they tick.
 | --- | --- | --- | --- | --- | --- |
 | `clock` | 28px / 32px | 600 | 0 (0px) | 0:58 | Match clock and big countdowns. |
 | `numeral` | 20px / 24px | 600 | 0 (0px) | 34/100 | Power value, stat values, cooldown seconds. |
-| `label` | 11px / 14px | 700 | 0.14em (1.54px) | POWER · ROSTER | Section and control labels, set in caps. |
-| `badge` | 10px / 12px | 700 | 0.1em (1px) | AUTO · QUEUE | Badges and button captions, in caps. The smallest size on mobile. |
 | `ui` | 13px / 18px | 600 | 0 (0px) | Fan −18 → 16 left | Live HUD text: chips, aim previews, queue entries. |
-
-### Text (body)
-
-No weight below Regular on mobile.
-
-| Style | Size / line | Weight | Tracking | Sample | Usage |
-| --- | --- | --- | --- | --- | --- |
-| `body` | 14px / 20px | 400 | 0 (0px) | Fires three projectiles in a 12° spread. | Descriptions, item details, rule notes. |
-| `caption` | 12px / 16px | 500 | 0 (0px) | Ranged · skill shots · Lv 7 | Metadata under names and values. |
 
 ### Readout (hud)
 
@@ -137,6 +126,21 @@ Share Tech Mono, the HUD's telemetry face, for section labels, numbers, tags and
 | `readout-label` | 10px / 12px | 400 | 0.22em (2.2px) | TACTICAL · TARGET | Panel headers in the visor (top-left of a frame, followed by a rule). |
 | `readout` | 12px / 16px | 400 | 0.08em (0.96px) | RANGE 240 m · NO CONTACT | Telemetry lines, captions and button labels. |
 | `readout-num` | 22px / 24px | 400 | 0.02em (0.44px) | 176 · 0:58 | Big readouts: clock, power, speed. |
+
+### Variants (body)
+
+Three variants carry every run of text. Body is prose, slightly dimmed (text-2). Label is the small tracked face of buttons, badges, chips, eyebrows and subheadings: 0.88× body, 0.15em tracking, sm and lg beside it. Heading is bold with negative tracking and a 0.9 line (UI Toolkit has no line-height: Gui.uss trims the leading around a single line, and the token is the reference for the web kit). Sizes are the 390-unit board's; the fluid scale (Fluid.uss) moves every one of them with the panel's width.
+
+| Style | Size / line | Weight | Tracking | Sample | Usage |
+| --- | --- | --- | --- | --- | --- |
+| `body` | 13px / 18px | 400 | 0 (0px) | Drag an operative to move. | Prose and descriptions, slightly dimmed. The vb-t-body class. |
+| `body-sm` | 12px / 16px | 400 | 0 (0px) | Fires as Power reaches each cost | Captions, hints and notes. The vb-t-caption class. |
+| `label-sm` | 10px / 12px | 700 | 0.15em (1.5px) | WAVE 07 | Badges, chips, slot letters and tiny captions. The vb-t-badge class. |
+| `label` | 11.5px / 14px | 700 | 0.15em (1.72px) | RESUME · SETTINGS | Buttons (every variant, the primary included), eyebrows, subheadings and field labels. The vb-t-label class. |
+| `label-lg` | 13.5px / 16px | 700 | 0.15em (2.02px) | SQUAD | A label that heads a block: segmented options, large buttons. The vb-t-label-lg class. |
+| `heading-sm` | 13px / 12px | 700 | -0.01em (-0.13px) | ARIA | Names on cards, tiles and rows. The vb-t-heading-sm class. |
+| `heading` | 20px / 18px | 700 | -0.02em (-0.4px) | PAUSED | Screen and sheet titles. The vb-t-heading class. |
+| `heading-lg` | 32px / 29px | 700 | -0.02em (-0.64px) | RUN OVER | Verdicts and full-screen states, one per screen. The vb-t-heading-lg class. |
 
 Each style is `--vb-font-size-<style>`, `--vb-line-height-<style>` and `--vb-tracking-<style>` (px). TextCore reads `letter-spacing` in hundredths of an em (`18px` ≈ 0.18em), so Gui.uss writes tracking per rule; the `vb-t-*` classes (display, title, label, body, caption, num, badge, power, ally, enemy) carry the common combinations.
 
@@ -325,3 +329,15 @@ Fast and ease-out. Reduced motion keeps fades only.
 | `ease-out` | `cubic-bezier(0.215, 0.61, 0.355, 1)` | *reference* | Default for everything (ease-out cubic). |
 | `ease-in-out` | `cubic-bezier(0.37, 0, 0.63, 1)` | *reference* | Camera returns and long loops (ease-in-out sine). |
 | `ease-snap` | `cubic-bezier(0.2, 0.9, 0.1, 1)` | *reference* | Brackets locking on and cards flipping. |
+
+## Layout
+
+Gutters and margins of the 390-unit board. The fluid scale (Fluid.uss) moves them with the panel's width, so a 320 board is tighter and a 430 board looser.
+
+| Token | Value | USS | Usage |
+| --- | --- | --- | --- |
+| `gutter` | `12px` | `--vb-gutter` | Side padding of a page and of a modal layer. |
+| `pad` | `16px` | `--vb-pad` | Padding inside a panel, a card or a sheet. |
+| `pad-neg` | `-16px` | `--vb-pad-neg` | The negative of pad: a headed page's header spans the board by pulling out of the page's padding. |
+| `gap` | `8px` | `--vb-gap` | Gap between siblings in a row, grid or stack. |
+| `margin` | `24px` | `--vb-margin` | Space between page sections. |

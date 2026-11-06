@@ -27,11 +27,11 @@
 /* ── Navigator screens and pages ───────────────────────────────────────── */
 /* The screen layer covers the board inside the safe area (SafeAreaRoot insets it); pages fill it. */
 .vb-screen { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(5, 2, 8, 0.86); }
-.vb-page { flex-grow: 1; padding: 0 16px 8px 16px; }
+.vb-page { flex-grow: 1; padding: 0 var(--vb-pad) var(--vb-gap) var(--vb-pad); }
 .vb-page > .vb-button { flex-shrink: 0; }
 /* Pages under a ScreenHeader: the header spans the board, content keeps a 12-unit gutter. */
 .vb-page--headed { padding-left: 0; padding-right: 0; }
-.vb-page--headed > * { margin-left: 12px; margin-right: 12px; }
+.vb-page--headed > * { margin-left: var(--vb-gutter); margin-right: var(--vb-gutter); }
 .vb-page--headed > .vb-header { margin-left: 0; margin-right: 0; }
 /* Vertical margins only: a shorthand here would reset the headed page's side margins (labels sat on the board edge). */
 .vb-page__label { margin-top: 8px; margin-bottom: 6px; }
@@ -40,7 +40,7 @@
 .vb-page__scroll { flex-grow: 1; flex-shrink: 1; min-height: 0; }
 
 /* ── sections and dialogs ──────────────────────────────────────────────── */
-.vb-section { margin-bottom: 12px; padding: 12px 14px; }
+.vb-section { margin-bottom: var(--vb-gutter); padding: var(--vb-gutter) var(--vb-pad); }
 .vb-section > .vb-t-label { margin-bottom: 4px; height: 18px; }
 .vb-section > .vb-slider { height: 54px; min-height: 54px; flex-shrink: 0; }
 .vb-section > .vb-switch { min-height: 62px; flex-shrink: 0; }
@@ -53,12 +53,17 @@
 /* Every child takes an equal share with 8 between (the first child is marked vb-action-row__first); the row stacks into a column when the
    shares would fall under MinItemWidth. --fixed keeps one fixed width for trailing actions (BUY, SELL). */
 .vb-action-row { flex-direction: row; align-items: stretch; flex-shrink: 0; }
-.vb-action-row > * { flex-grow: 1; flex-basis: 0; flex-shrink: 1; min-width: 0; margin-left: 8px; align-self: stretch; }
+.vb-action-row > * { flex-grow: 1; flex-basis: 0; flex-shrink: 1; min-width: 0; margin-left: var(--vb-gap); align-self: stretch; }
 .vb-action-row > .vb-button { padding-left: 12px; padding-right: 12px; }
 .vb-action-row > .vb-action-row__first { margin-left: 0; }
 .vb-action-row--stacked { flex-direction: column; }
-.vb-action-row--stacked > * { flex-grow: 0; flex-basis: auto; margin-left: 0; margin-top: 8px; }
+.vb-action-row--stacked > * { flex-grow: 0; flex-basis: auto; margin-left: 0; margin-top: var(--vb-gap); }
 .vb-action-row--stacked > .vb-action-row__first { margin-top: 0; }
+.vb-action-row--single { flex-direction: row; }
+.vb-action-row--single > .vb-button { padding-left: 8px; padding-right: 8px; }
+.vb-action-row--single > .vb-button .vb-button__icon { display: none; }
+.vb-action-row--single > .vb-button--icon, .vb-action-row--single > .vb-icon-button { flex-grow: 0; flex-shrink: 0; flex-basis: auto; width: 48px; }
+.vb-action-row--single > .vb-button--icon .vb-button__icon { display: flex; }
 .vb-action-row--fixed { align-items: center; }
 .vb-action-row--fixed > * { flex-grow: 0; flex-shrink: 0; flex-basis: auto; width: 92px; align-self: center; }
 
@@ -67,16 +72,16 @@
 .vb-backdrop__shade { position: absolute; left: 0; right: 0; bottom: 0; height: 36%; --vb-cut: 0; --vb-bw: 0; --vb-fill: rgba(0, 0, 0, 0.01); --vb-fill-to: rgba(0, 0, 0, 0.94); --vb-fill-dir: 90; }
 
 /* ── root classes (SafeAreaRoot.Flags) ─────────────────────────────────── */
-.vb-large-text .vb-t-body { font-size: 15px; }
-.vb-large-text .vb-t-caption { font-size: 13px; }
+.vb-large-text .vb-t-body { font-size: var(--vb-fs-15); }
+.vb-large-text .vb-t-caption { font-size: var(--vb-fs-13); }
 
 /* ── stack, list and board (StackLayout, ListLayout, BoardLayout) ─────── */
 /* A column with one rhythm: every child but the last gets the gap underneath (StackLayout marks the last child). */
 .vb-stack { flex-direction: column; flex-shrink: 0; }
-.vb-stack--4 > * { margin-bottom: 4px; }
-.vb-stack--8 > * { margin-bottom: 8px; }
-.vb-stack--12 > * { margin-bottom: 12px; }
-.vb-stack--16 > * { margin-bottom: 16px; }
+.vb-stack--4 > * { margin-bottom: var(--vb-space-1); }
+.vb-stack--8 > * { margin-bottom: var(--vb-space-2); }
+.vb-stack--12 > * { margin-bottom: var(--vb-space-3); }
+.vb-stack--16 > * { margin-bottom: var(--vb-space-4); }
 .vb-stack > .vb-stack__last { margin-bottom: 0; }
 /* Rows of one kind with 6 between them; the empty line shows while there are none. */
 .vb-list { flex-direction: column; }
