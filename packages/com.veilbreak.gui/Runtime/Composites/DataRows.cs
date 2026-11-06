@@ -14,6 +14,6 @@ public sealed class SquadHealthCell:ViewBase {
 public sealed class SkillSummary:ViewBase {
  readonly VbIcon icon;readonly Label title,slot,description,power,cooldown;
  public SkillSummary(){const string b="vb-details";AddToClassList(b+"__skill");var art=Ui.Frame(this,FrameKind.Slim,b+"__skill-icon");icon=new VbIcon("info",14).Into(art);var text=Ui.Box(this,b+"__skill-text");var line=Ui.Box(text,b+"__skill-line");title=Ui.Text(line,"",b+"__skill-name");slot=Ui.Text(line,"",b+"__skill-slot");description=Ui.Text(text,"",b+"__skill-desc");var cost=Ui.Box(this,b+"__skill-cost");power=Ui.Text(cost,"",b+"__skill-power");cooldown=Ui.Text(cost,"",b+"__skill-cd");}
- public void Bind(SkillView v){tooltip=Markup.Plain(v.fullDescription);icon.Icon=v.icon;title.text=v.label;slot.text=v.slot+" · "+v.kind.ToUpperInvariant();description.text=Markup.Rich(v.description);power.text=v.cost.ToString();cooldown.text=Ui.Seconds(v.cooldownSeconds)+" CD";}
+ public void Bind(SkillView v){tooltip=Markup.Plain(v.fullDescription);icon.Icon=v.icon;title.text=v.label;slot.text=v.slot+" · "+v.kind.ToUpperInvariant();description.text=Markup.Rich(v.description);power.text=v.cost>0?v.cost.ToString():"";cooldown.text=v.cooldownSeconds>0?Ui.Seconds(v.cooldownSeconds)+" CD":"";power.Show(power.text.Length>0);cooldown.Show(cooldown.text.Length>0);}
 }
 }

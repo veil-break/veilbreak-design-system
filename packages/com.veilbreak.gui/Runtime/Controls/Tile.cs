@@ -16,7 +16,7 @@ namespace Veilbreak.Gui {
  public TileComponent():this(ClassName){}
  protected TileComponent(string block){
   Block=block;AddToClassList(block);this.Clickable(()=>Picked?.Invoke());
-  band=Ui.Box(this,block+"__band");portrait=Ui.Box(band,block+"__portrait");Ui.Box(band,block+"__shade");glyph=new VbIcon("",32).Classes(block+"__glyph").Into(band);glyph.Show(false);order=Ui.Text(band,"",block+"__order");order.Show(false);
+  band=Ui.Box(this,block+"__band");new VbClipFill().Classes(block+"__band-fill").Into(band);portrait=new VbClipImage().Classes(block+"__portrait").Into(band);Ui.Box(band,block+"__shade");glyph=new VbIcon("",32).Classes(block+"__glyph").Into(band);glyph.Show(false);order=Ui.Text(band,"",block+"__order");order.Show(false);
   kit=Ui.Box(this,block+"__kit");body=Ui.Box(this,block+"__body");title=Ui.Text(body,"",block+"__name");
   var r=Ui.Box(body,block+"__role");captionIcon=new VbIcon("",12).Into(r);captionIcon.Show(false);caption=Ui.Text(r,"",block+"__role-text");
  }

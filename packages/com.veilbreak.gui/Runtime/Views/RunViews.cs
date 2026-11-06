@@ -3,28 +3,30 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.UIElements;
 namespace Veilbreak.Gui {
-/// <summary>Wave cleared: three perk cards (<see cref="ChoiceCard"/>), the chosen one explained, the squad that carries forward (no healing between waves) and
-/// TAKE PERK, whose line says what the pick does next.</summary>
+/// <summary>Wave cleared: the perk choices as an endless <see cref="Carousel"/> of <see cref="ChoiceCard"/>s (the active card takes most of the width, its neighbours sit beneath it; swipe or tap one to change it), the squad that carries forward
+/// (no healing between waves) and TAKE PERK, whose line says what the pick does next. The active card is the explanation (its effect, its levels and the value after the pick), so nothing under it repeats it.</summary>
 [UxmlElement] public partial class PerkDraftView:ScreenView {
  public const string Block="vb-draft";
- readonly LabelComponent eyebrow;readonly Label caption;readonly VisualElement cards,squad;readonly PerkDetail detail;readonly VbButton take;readonly List<ChoiceCard> choices=new List<ChoiceCard>();PerkDraftViewModel view;int shownPick=-1;
+ readonly LabelComponent eyebrow;readonly Label caption,title;readonly VisualElement squad;readonly Carousel carousel;readonly VbButton take;PerkDraftViewModel view;
  public event Action<int> Picked;
  public event Action Take;
  /// <summary>The carry-forward frame was tapped: show the run's active perks.</summary>
  public event Action Perks;
+ /// <summary>The carousel of perk cards.</summary>
+ public Carousel Choices=>carousel;
  public PerkDraftView():base(Block){
-  var body=Ui.Scroll(this,"vb-page__scroll",Block+"__scroll");eyebrow=new LabelComponent("",LabelSize.Label,TextTone.Ally).Into(body);Ui.Text(body,"CHOOSE A PERK","vb-t-display");caption=Ui.Text(body,"","vb-t-caption","vb-page__caption");
-  cards=Ui.Box(body,Block+"__cards");detail=new PerkDetail().Classes(Block+"__detail").Into(body);
+  var body=Ui.Scroll(this,"vb-page__scroll",Block+"__scroll");eyebrow=new LabelComponent("",LabelSize.Label,TextTone.Ally).Classes(Glitch.TitleClass).Into(body);title=Ui.Text(body,"CHOOSE A PERK","vb-t-display",Glitch.TitleClass);caption=Ui.Text(body,"","vb-t-caption","vb-page__caption");
+  carousel=new Carousel{name="choices"}.Classes(Block+"__carousel").Into(body);carousel.Changed+=i=>Picked?.Invoke(i);
   var carry=Ui.Frame(body,FrameKind.Slim,Block+"__squad").Clickable(()=>Perks?.Invoke());carry.name="carry";carry.tooltip="View active perks";new LabelComponent("Carries forward · no healing between waves",LabelSize.Badge).Into(carry);squad=Ui.Box(carry,"vb-grid4");
   take=new VbButton("TAKE PERK",ButtonVariant.Primary,null,"check",()=>Take?.Invoke()){name="take"}.Into(this);
  }
- protected override IEnumerable<VisualElement> DealItems(){foreach(var c in choices)if(c.style.display!=DisplayStyle.None)yield return c;}
+ protected override IEnumerable<VisualElement> DealItems(){yield return carousel;}
  public PerkDraftView Bind(PerkDraftViewModel v){
   view=v;eyebrow.text="Wave "+v.wave.ToString("00")+" cleared";caption.text="+"+Ui.Number(v.bonus)+" wave bonus · score "+Ui.Number(v.score)+" · perks last the whole run";
-  Keyed.Bind(cards,v.choices,p=>p.id,_=>{var card=new ChoiceCard();card.Picked+=()=>Picked?.Invoke(Array.FindIndex(view.choices,p=>p.id==card.View.id));return card;},(card,p)=>card.Bind(p,Array.IndexOf(v.choices,p)==v.pick),true);choices.Clear();choices.AddRange(cards.Query<ChoiceCard>().ToList());
-  bool has=v.pick>=0&&v.pick<v.choices.Length;VbMotion.Show(detail,has,MotionKind.Rise);
-  if(has){var p=v.choices[v.pick];detail.Bind(p,true);if(shownPick>=0&&shownPick!=v.pick)VbMotion.In(detail,MotionKind.Fade);take.Sub=p.name+" → "+p.next+" · then wave "+(v.wave+1).ToString("00");}
-  shownPick=has?v.pick:-1;take.Blocked=has?"":"Pick a perk";
+  carousel.Bind(v.choices,p=>p.id,()=>new ChoiceCard().Classes(Block+"__card"),(card,p,i)=>((ChoiceCard)card).Bind(p,i==v.pick),v.pick);
+  bool has=v.pick>=0&&v.pick<v.choices.Length;
+  if(has){var p=v.choices[v.pick];take.Sub=p.name+" → "+p.next+" · then wave "+(v.wave+1).ToString("00");}
+  take.Blocked=has?"":"Pick a perk";
   Keyed.Bind(squad,v.squad,a=>a.code,_=>new SquadHealthCell(),(cell,a)=>cell.Bind(a));
   return this;
  }
@@ -36,7 +38,7 @@ namespace Veilbreak.Gui {
  readonly LabelComponent eyebrow,perksTitle;readonly Label value,rank;readonly VisualElement ledger,squad,perks;readonly StatReadout waves,bosses,distance,time;
  public event Action Again,Menu,Squad;
  public ResultsView():base(Block){
-  var body=Ui.Scroll(this,"vb-page__scroll",Block+"__scroll");eyebrow=new LabelComponent("",LabelSize.Label,TextTone.Enemy).Into(body);Ui.Text(body,"RUN OVER","vb-t-display");
+  var body=Ui.Scroll(this,"vb-page__scroll",Block+"__scroll");eyebrow=new LabelComponent("",LabelSize.Label,TextTone.Enemy).Classes(Glitch.TitleClass).Into(body);Ui.Text(body,"RUN OVER","vb-t-display",Glitch.TitleClass);
   var card=Ui.Frame(body,FrameKind.Slim,"vb-frame--solid",Block+"__score");var top=Ui.Box(card,"vb-row","vb-row--between");var left=Ui.Box(top);new LabelComponent("Score").Into(left);value=Ui.Text(left,"0",Block+"__value");rank=Ui.Text(top,"",Block+"__rank");
   ledger=Ui.Box(card,Block+"__ledger");var stats=Ui.Box(card,"vb-row",Block+"__stats");waves=new StatReadout("WAVES","0").Into(stats);bosses=new StatReadout("BOSSES","0").Into(stats);distance=new StatReadout("DISTANCE","").Into(stats);time=new StatReadout("SIM TIME","").Into(stats);
   new LabelComponent("Squad").Classes("vb-page__label").Into(body);squad=Ui.Box(body,"vb-grid4");

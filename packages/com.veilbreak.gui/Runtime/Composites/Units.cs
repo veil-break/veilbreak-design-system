@@ -8,31 +8,38 @@ namespace Veilbreak.Gui {
 /// passives and perks are not statuses (they live in <see cref="UnitDetail"/>).</summary>
 [UxmlElement] public partial class UnitCard:SurfaceView {
  public const string ClassName="vb-operative";
- readonly VisualElement portrait,kit,skills,fallen;readonly StatusPips statuses;readonly Label chip,title,hp,barrier,fallenHint;readonly HealthBar health;readonly SkillButton[] buttons=new SkillButton[2];
+ readonly VisualElement portrait,kit,skills,fallen;readonly StatusRow statuses;readonly Label chip,title,hp,barrier,fallenHint;readonly HealthBar health;readonly SkillButton[] buttons=new SkillButton[2];
  (string,bool) titleKey;(ControlMode,int) chipKey=((ControlMode)(-1),0);(int,int) hpKey=(-1,-1);int barrierKey=-1;
  public OperativeView View {get;private set;}
  /// <summary>0 = active (A), 1 = signature (S). Games attach aim/drag manipulators here.</summary>
  public SkillButton Skill(int index)=>buttons[index];
- /// <summary>The timed statuses on the portrait; tap opens their list.</summary>
- public StatusPips Statuses=>statuses;
+ /// <summary>The timed statuses as a row of small squares above the card; hover, focus or tap opens their list (<see cref="StatusRow"/>).</summary>
+ public StatusRow Statuses=>statuses;
+ /// <summary>Whether a drop in the bound hit points plays the damage effect by itself (<see cref="Damage"/>); on by default. A host that raises its own damage events turns it off.</summary>
+ public bool AutoDamage {get;set;}=true;
+ /// <summary>The unit takes a hit: a translucent red flash over the card and a red border glow (<see cref="VbEdgeFx.Damage"/>), scaled by <paramref name="strength"/> (0 to 1).</summary>
+ public UnitCard Damage(float strength=1){VbEdgeFx.Damage(this,strength);return this;}
  public UnitCard(){
   AddToClassList(ClassName);
-  var band=Ui.Box(this,ClassName+"__band");portrait=Ui.Box(band,ClassName+"__portrait");Ui.Box(band,ClassName+"__shade");
+  var band=Ui.Box(this,ClassName+"__band");new VbClipFill().Classes(ClassName+"__band-fill").Into(band);portrait=new VbClipImage().Classes(ClassName+"__portrait").Into(band);Ui.Box(band,ClassName+"__shade");
   chip=Ui.Text(band,"",ClassName+"__chip");kit=Ui.Box(this,ClassName+"__kit");
   var body=Ui.Box(this,ClassName+"__body");title=Ui.Text(body,"",ClassName+"__name");health=new HealthBar().Into(body);
   var numbers=Ui.Box(body,ClassName+"__numbers");hp=Ui.Text(numbers,"",ClassName+"__hp");barrier=Ui.Text(numbers,"",ClassName+"__barrier");
-  skills=Ui.Box(this,ClassName+"__skills");for(int i=0;i<2;i++)buttons[i]=new SkillButton().Into(skills);
+  skills=Ui.Box(this,ClassName+"__skills");for(int i=0;i<2;i++)buttons[i]=new SkillButton().Into(skills);buttons[1].AddToClassList(ClassName+"__skill-end");
   fallen=Ui.Box(this,ClassName+"__fallen");Ui.Text(fallen,"FALLEN",ClassName+"__fallen-title");fallenHint=Ui.Text(fallen,"Revive via perk",ClassName+"__fallen-hint");
-  statuses=new StatusPips().Classes(ClassName+"__statuses").Into(this);
+  statuses=new StatusRow().Classes(ClassName+"__statuses").Into(this);
   Bind(new OperativeView());
  }
  public UnitCard Bind(OperativeView v){
   View=v;var mode=v.Fallen?ControlMode.Fallen:v.mode;Ui.State(this,ClassName,mode);
-  Ui.Image(portrait,v.portrait);kit.style.backgroundColor=v.kit;if((v.name,v.Fallen)!=titleKey){titleKey=(v.name,v.Fallen);title.text=v.Fallen?"<s>"+v.name.ToUpperInvariant()+"</s>":v.name.ToUpperInvariant();}
+  Ui.Image(portrait,v.portrait);portrait.MarkDirtyRepaint();kit.style.backgroundColor=v.kit;if((v.name,v.Fallen)!=titleKey){titleKey=(v.name,v.Fallen);title.text=v.Fallen?"<s>"+v.name.ToUpperInvariant()+"</s>":v.name.ToUpperInvariant();}
   // Cards are bound every frame: text is rebuilt only when its inputs change. A chip shows only for a mode that is not the default.
   var chipNow=(mode,mode==ControlMode.Manual?Mathf.RoundToInt(v.manualSeconds*10):0);if(chipNow!=chipKey){chipKey=chipNow;chip.text=mode switch{ControlMode.Manual=>v.manualSeconds>0?"MANUAL "+Ui.Seconds(v.manualSeconds):"MANUAL",ControlMode.Aiming=>"AIMING",_=>""};chip.Show(chip.text.Length>0);}
   bool exposed=v.effects.Any(e=>e.definition?.id=="exposed"&&e.Active);health.Set(v.Fallen?0:v.hp,v.maxHp,v.barrier,v.Fallen?0:v.stability/(float)Mathf.Max(1,v.maxStability),exposed);
-  int shownHp=v.Fallen?0:v.hp;if((shownHp,v.maxHp)!=hpKey){hpKey=(shownHp,v.maxHp);hp.style.fontSize=(v.hp.ToString()+v.maxHp).Length>7?10:11;hp.text=shownHp+"<color="+VbTokens.Hex(VbTokens.Text3)+">/"+v.maxHp+"</color>";}
+  int shownHp=v.Fallen?0:v.hp;
+  // A drop in hit points is a hit (a revive or a heal raises them, so it is not): the card flashes by itself unless the host raises its own damage events.
+  if(AutoDamage&&panel!=null&&hpKey.Item1>0&&shownHp<hpKey.Item1)Damage(Mathf.Clamp01((hpKey.Item1-shownHp)/(float)Mathf.Max(1,v.maxHp)*6f+.25f));
+  if((shownHp,v.maxHp)!=hpKey){hpKey=(shownHp,v.maxHp);hp.style.fontSize=(v.hp.ToString()+v.maxHp).Length>7?10:11;hp.text=shownHp+"<color="+VbTokens.Hex(VbTokens.Text3)+">/"+v.maxHp+"</color>";}
   if(v.barrier!=barrierKey){barrierKey=v.barrier;barrier.text=v.barrier>0?"+"+v.barrier:"";}VbMotion.Show(barrier,v.barrier>0,MotionKind.Zoom);
   statuses.Bind(v.Fallen?null:v.effects);
   VbMotion.Show(skills,!v.Fallen);VbMotion.Show(fallen,v.Fallen,MotionKind.Rise);fallenHint.Show(v.canRevive);
@@ -65,11 +72,11 @@ namespace Veilbreak.Gui {
  }
 }
 
-/// <summary>The unit sheet: stats, passive, both skills with cost and cooldown, close and add/remove. Stability shows only when it varies between units;
+/// <summary>The unit sheet: stats, then the passive, the basic attack and both skills (each with its cost and cooldown where it has one), the lore prompt after them, close and add/remove. Stability shows only when it varies between units;
 /// emphasis marks in the passive text render as emphasis (<see cref="Markup"/>).</summary>
 [UxmlElement] public partial class UnitDetail:DetailView {
  public const string ClassName="vb-details";
- readonly VisualElement kit,skills;readonly Label title,role,slot,passive,passiveText;readonly VbIcon roleIcon;readonly StatReadout hp,armor,stability;readonly VbButton toggle;
+ readonly VisualElement kit,skills,loreBox;readonly Label title,role,slot,lore;readonly LabelComponent loreTitle;readonly VbIcon roleIcon;readonly StatReadout hp,armor,stability;readonly VbButton toggle;
  public event Action Closed,Toggled;
  public UnitDetail(){
   AddToClassList(ClassName);
@@ -77,8 +84,14 @@ namespace Veilbreak.Gui {
   var r=Ui.Box(head,ClassName+"__role");roleIcon=new VbIcon("striker",14).Into(r);role=Ui.Text(r,"",ClassName+"__role-text");slot=Ui.Text(head,"",ClassName+"__slot");
   new IconButtonComposite("close","Close details",()=>Closed?.Invoke(),16){Quiet=true}.Classes(ClassName+"__close").Into(head);
   var stats=Ui.Box(this,ClassName+"__stats");hp=new StatReadout("HEALTH","0").Into(stats);armor=new StatReadout("ARMOR","0").Into(stats);stability=new StatReadout("STABILITY","0").Into(stats);armor.AddToClassList("vb-stat--neutral");stability.AddToClassList("vb-stat--neutral");
-  var p=Ui.Box(this,ClassName+"__passive");passive=Ui.Text(p,"",ClassName+"__passive-name");passiveText=Ui.Text(p,"",ClassName+"__passive-text");
-  skills=Ui.Box(this,ClassName+"__skills");toggle=new VbButton("ADD TO SQUAD",ButtonVariant.Light,null,"add",()=>Toggled?.Invoke()).Classes(ClassName+"__toggle");Ui.Actions(this,toggle).AddToClassList(ClassName+"__actions");
+  skills=Ui.Box(this,ClassName+"__skills");loreBox=Ui.Box(this,ClassName+"__lore-box");loreTitle=new LabelComponent("Lore").Into(loreBox);lore=Ui.Text(loreBox,"","vb-t-body",ClassName+"__lore");toggle=new VbButton("ADD TO SQUAD",ButtonVariant.Light,null,"add",()=>Toggled?.Invoke()).Classes(ClassName+"__toggle");Ui.Actions(this,toggle).AddToClassList(ClassName+"__actions");
+ }
+ /// <summary>What the sheet lists, in order: the passive, the basic attack, then the unit's skills. A passive or a basic attack the unit does not have is left out.</summary>
+ public static System.Collections.Generic.List<SkillView> Rows(OperativeView v){
+  var rows=new System.Collections.Generic.List<SkillView>(6);
+  if(!string.IsNullOrEmpty(v.passive))rows.Add(new SkillView{label=v.passive,icon=v.passiveIcon,slot="P",kind="Passive",description=v.passiveText,fullDescription=v.passiveFullText});
+  if(v.basic!=null&&!string.IsNullOrEmpty(v.basic.label))rows.Add(v.basic);
+  if(v.skills!=null)rows.AddRange(v.skills);return rows;
  }
  /// <param name="slot">Squad slot (1–4), or 0 when not in the squad.</param>
  /// <param name="squadFull">Adding is blocked with a reason when the squad already has four.</param>
@@ -87,8 +100,8 @@ namespace Veilbreak.Gui {
   kit.style.backgroundColor=v.kit;title.text=v.name.ToUpperInvariant();role.text=v.role.ToUpperInvariant();roleIcon.Icon=v.roleIcon;
   this.slot.text=slot>0?"SLOT "+slot:"NOT IN SQUAD";this.slot.EnableInClassList(ClassName+"__slot--in",slot>0);
   hp.Set(Ui.Number(v.maxHp),null,v.maxHp/maxHp);armor.Set(v.armor.ToString(),null,v.armor/maxArmor);stability.Set(v.maxStability.ToString(),null,v.maxStability/maxStability);stability.Show(showStability);
-  passive.text="PASSIVE · "+v.passive.ToUpperInvariant();passiveText.text=Markup.Rich(v.passiveText);passiveText.tooltip=Markup.Plain(v.passiveFullText);
-  Keyed.Bind(skills,v.skills,s=>s.slot,_=>new SkillSummary(),(row,s)=>row.Bind(s));
+  Keyed.Bind(skills,Rows(v),s=>s.slot+"/"+s.kind,_=>new SkillSummary(),(row,s)=>row.Bind(s));
+  lore.text=v.lore??"";loreBox.Show(lore.text.Length>0);
   bool inSquad=slot>0;toggle.Title=inSquad?"REMOVE FROM SQUAD":"ADD TO SQUAD";toggle.Icon=inSquad?"remove":"add";toggle.Variant=inSquad?ButtonVariant.Danger:ButtonVariant.Light;toggle.Blocked=!inSquad&&squadFull?"Squad full · remove one first":"";
   return this;
  }

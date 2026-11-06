@@ -13,7 +13,7 @@ public static class Dialog {
 }
 
 /// <summary>Dialog surface shared by recipe sheets and typed confirmation/guide overlays.</summary>
-public sealed class DialogSurface:OverlayView {public DialogSurface(){AddToClassList("vb-dialog");AddToClassList("vb-panel");AddToClassList("vb-frame--slim");AddToClassList("vb-panel--solid");VbShape.Attach(this);}}
+public sealed class DialogSurface:OverlayView {protected override bool AutoPresent=>true;public DialogSurface(){AddToClassList("vb-dialog");AddToClassList("vb-panel");AddToClassList("vb-frame--slim");AddToClassList("vb-panel--solid");VbShape.Attach(this);}}
 
 /// <summary>Full-bleed artwork behind a screen, scaled to cover and dimmed a little, with a gradient shade along the bottom so text over it stays legible.</summary>
 [UxmlElement] public partial class Backdrop:VisualElement {

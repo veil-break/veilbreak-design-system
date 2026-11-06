@@ -19,6 +19,7 @@
 .vb-icon--circle { background-image: url("../Icons/Circle.svg"); }
 .vb-icon--cleanse { background-image: url("../Icons/Cleanse.svg"); }
 .vb-icon--close { background-image: url("../Icons/Close.svg"); }
+.vb-icon--cog { background-image: url("../Icons/Cog.svg"); }
 .vb-icon--cone { background-image: url("../Icons/Cone.svg"); }
 .vb-icon--connection { background-image: url("../Icons/Connection.svg"); }
 .vb-icon--cooldown { background-image: url("../Icons/Cooldown.svg"); }

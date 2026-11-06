@@ -26,15 +26,20 @@ namespace Veilbreak.Gui {
 /// <summary>Cut-corner button. One <see cref="ButtonVariant.Primary"/> per screen (pink→teal glass, gradient outline). Blocked buttons stay legible and say why.</summary>
 [UxmlElement] public partial class VbButton:Button {
  public const string ClassName="vb-button";
- readonly Label title,subtitle;readonly VbIcon glyph;ButtonVariant variant;string sub="",blocked="";bool dimmed;
- [UxmlAttribute] public string Title {get=>title.text;set=>title.text=value??"";}
+ readonly Label title,subtitle;readonly VbIcon glyph;ButtonVariant variant;string sub="",blocked="";bool dimmed,compact;
+ [UxmlAttribute] public string Title {get=>title.text;set{title.text=value??"";Describe();}}
  [UxmlAttribute] public string Sub {get=>sub;set{sub=value??"";Refresh();}}
- [UxmlAttribute] public string Icon {get=>glyph.Icon;set{glyph.Icon=value;glyph.Size(value=="chevron"||value=="play"?12:20);glyph.Show(!string.IsNullOrEmpty(value));if(value=="back"||value=="chevron-left")Lead=true;}}
+ [UxmlAttribute] public string Icon {get=>glyph.Icon;set{glyph.Icon=value;glyph.Size(value=="chevron"||value=="play"?12:20);if(value=="back"||value=="chevron-left")Lead=true;ShowGlyph();}}
+ /// <summary>The glyph is left off to give the label the width (set by an <see cref="ActionRow"/> in <see cref="ActionRow.Single"/> mode, where several buttons share one line); an icon-only button keeps its glyph.</summary>
+ [UxmlAttribute] public bool Compact {get=>compact;set{compact=value;ShowGlyph();}}
+ void ShowGlyph()=>glyph.Show(!string.IsNullOrEmpty(glyph.Icon)&&(!compact||IconOnly));
  /// <summary>The glyph before the label instead of after it. A forward action ends with its chevron (›); an action that goes back or leaves leads with its glyph (‹, ×) or carries none, which is why
  /// the <c>back</c> and <c>chevron-left</c> glyphs lead by themselves.</summary>
  [UxmlAttribute] public bool Lead {get=>ClassListContains(ClassName+"--lead");set=>EnableInClassList(ClassName+"--lead",value);}
  /// <summary>Dims the button and takes it out of play with no reason shown (a price you cannot pay: the dimming says it; <see cref="Blocked"/> says why when that matters).</summary>
  [UxmlAttribute] public bool Dimmed {get=>dimmed;set{dimmed=value;Refresh();}}
+ /// <summary>The button is its glyph alone (a cog for settings): a 48-unit square with no text. The title stays as its accessible name (the tooltip and the focus name), so give it a real label (<c>"Settings"</c>), and set <see cref="Icon"/>.</summary>
+ [UxmlAttribute] public bool IconOnly {get=>ClassListContains(ClassName+"--icon");set{EnableInClassList(ClassName+"--icon",value);Describe();ShowGlyph();}}
  [UxmlAttribute] public ButtonVariant Variant {get=>variant;set{variant=value;Ui.State(this,ClassName,value);}}
  /// <summary>A short reason (under five words). Non-empty disables the button and shows the reason in place of the sub line.</summary>
  [UxmlAttribute] public string Blocked {get=>blocked;set{blocked=value??"";Refresh();}}
@@ -43,8 +48,9 @@ namespace Veilbreak.Gui {
   text="";AddToClassList(ClassName);VbShape.Attach(this);
   var column=Ui.Box(this,ClassName+"__text");this.title=Ui.Text(column,title??"",ClassName+"__label");subtitle=Ui.Text(column,"",ClassName+"__sub");
   glyph=new VbIcon("",20).Classes(ClassName+"__icon").Into(this);
-  Variant=variant;Sub=sub;Icon=icon;if(click!=null)clicked+=click;
+  Variant=variant;Sub=sub;Icon=icon;if(click!=null)clicked+=click;VbEdgeFx.Attach(this);
  }
+ void Describe(){if(IconOnly){tooltip=title.text;}else if(tooltip==title.text)tooltip="";}
  void Refresh(){bool isBlocked=blocked.Length>0;EnableInClassList(ClassName+"--blocked",isBlocked||dimmed);SetEnabled(!isBlocked&&!dimmed);subtitle.text=isBlocked?blocked:sub;subtitle.Show(subtitle.text.Length>0);}
 }
 

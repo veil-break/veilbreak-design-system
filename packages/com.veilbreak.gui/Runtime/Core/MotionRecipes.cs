@@ -9,12 +9,17 @@ public static class MotionRecipes {
  public static readonly MotionRecipe ViewIn=new MotionRecipe(320,0,12,0,1);
  public static readonly MotionRecipe ViewOut=new MotionRecipe(180,0,-8,0,1);
  public static readonly MotionRecipe Deal=new MotionRecipe(420,0,24,-6,0.96f);
- public static readonly MotionRecipe DrawerIn=new MotionRecipe(460,0,80,0,1);
- public static readonly MotionRecipe DrawerOut=new MotionRecipe(300,0,80,0,1);
+ public static readonly MotionRecipe DrawerIn=new MotionRecipe(320,0,80,0,1);
+ public static readonly MotionRecipe DrawerOut=new MotionRecipe(220,0,80,0,1);
  public static readonly MotionRecipe HudTop=new MotionRecipe(320,0,-24,0,1);
  public static readonly MotionRecipe HudCard=new MotionRecipe(360,0,32,-2,0.98f);
+ public static readonly MotionRecipe OverlayIn=new MotionRecipe(220,0,12,0,0.97f);
+ public static readonly MotionRecipe OverlayOut=new MotionRecipe(150,0,6,0,0.98f);
+ public static readonly MotionRecipe PopoverIn=new MotionRecipe(140,0,4,0,0.97f);
+ public static readonly MotionRecipe PopoverOut=new MotionRecipe(90,0,0,0,0.98f);
  public const int Stagger=80,MaxDealDelay=400;
  public const int Rebuild=180;
+ public const int Reveal=2000;
  public static int DealDelay(int index)=>Mathf.Min(Mathf.Max(0,index)*Stagger,MaxDealDelay);
  public static MotionRecipe For(MotionKind kind,bool enter=true)=>kind switch {
   MotionKind.Deal=>Deal,MotionKind.Rise=>new MotionRecipe(enter?320:180,0,12),MotionKind.Drop=>new MotionRecipe(enter?320:180,0,-12),

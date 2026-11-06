@@ -1,8 +1,8 @@
 using System;
 using UnityEngine.UIElements;
 namespace Veilbreak.Gui {
-/// <summary>The thumb-zone block of the menu: the checkpoint card when a run can resume, PLAY (the screen's one primary), then high
-/// scores and settings. RESUME is secondary and lives inside the checkpoint card; nothing else moves when the card appears.</summary>
+/// <summary>The thumb-zone block of the menu: the checkpoint card when a run can resume, PLAY (the screen's one primary), then one row of the
+/// secondary actions, HIGH SCORES filling it and SETTINGS an icon-only cog at its end (<see cref="ActionRow.Single"/>). RESUME is secondary and lives inside the checkpoint card; nothing else moves when the card appears.</summary>
 [UxmlElement] public partial class MenuActionsSectionView:VisualElement {
  public const string ClassName="vb-menu-actions";
  readonly CardComponent checkpoint;readonly Label line,detail,notice;readonly VbButton play;
@@ -12,7 +12,7 @@ namespace Veilbreak.Gui {
   checkpoint=new CardComponent("CHECKPOINT").Classes("vb-menu__checkpoint").Into(this);line=Ui.Text(checkpoint,"","vb-menu__checkpoint-line");detail=Ui.Text(checkpoint,"","vb-t-caption");
   checkpoint.Actions(new VbButton("RESUME",ButtonVariant.Secondary,null,"play",()=>Resume?.Invoke()){name="resume"});
   play=new VbButton("PLAY",ButtonVariant.Primary,null,"chevron",()=>Play?.Invoke()){name="play"}.Classes("vb-menu__play").Into(this);
-  var row=Ui.Actions(this,new VbButton("HIGH SCORES",ButtonVariant.Secondary,null,"ranked",()=>Scores?.Invoke()){name="scores"},new VbButton("SETTINGS",ButtonVariant.Secondary,null,"settings",()=>Settings?.Invoke()){name="settings"}).Classes("vb-menu__row");row.MinItemWidth=96;
+  var row=Ui.Actions(this,new VbButton("HIGH SCORES",ButtonVariant.Secondary,null,"ranked",()=>Scores?.Invoke()){name="scores"},new VbButton("Settings",ButtonVariant.Secondary,null,"cog",()=>Settings?.Invoke()){name="settings",IconOnly=true}).Classes("vb-menu__row");row.Single=true;
   notice=Ui.Text(this,"","vb-t-caption","vb-menu__notice");Bind(null,"",null);
  }
  /// <param name="checkpoint">Null hides the card.</param><param name="squadLine">"Squad · Aria · Sol · Aegis · Nyra" under PLAY.</param>

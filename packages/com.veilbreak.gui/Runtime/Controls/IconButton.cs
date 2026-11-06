@@ -16,7 +16,7 @@ namespace Veilbreak.Gui {
  [UxmlAttribute] public bool Quiet {get=>quiet;set{quiet=value;EnableInClassList(ClassName+"--quiet",value);}}
  public IconButtonComposite():this("close",""){}
  public IconButtonComposite(string icon,string tooltip,Action click=null,float size=20){
-  AddToClassList(ClassName);VbShape.Attach(this);this.Clickable(()=>Clicked?.Invoke());
+  AddToClassList(ClassName);VbShape.Attach(this);this.Clickable(()=>Clicked?.Invoke());focusable=true;
   glyph=new VbIcon("",size).Classes(ClassName+"__icon").Into(this);
   Icon=icon;Text="";this.tooltip=tooltip??"";if(click!=null)Clicked+=click;
  }

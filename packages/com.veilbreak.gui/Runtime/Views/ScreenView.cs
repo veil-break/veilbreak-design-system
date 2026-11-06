@@ -8,8 +8,8 @@ public abstract class ScreenView:ViewBase {
  protected ScreenView(string block,bool headed=false){AddToClassList(ClassName);AddToClassList(block);EnableInClassList(ClassName+"--headed",headed);pickingMode=PickingMode.Ignore;}
  /// <summary>What a deal brings in one after another (perk cards, road signs, offers); empty by default.</summary>
  protected virtual System.Collections.Generic.IEnumerable<VisualElement> DealItems(){yield break;}
- /// <summary>The page deal (guideline 4): heads-up titles glitch in and the deal items rise in <see cref="VbMotion.StaggerStep"/> apart, after
+ /// <summary>The page deal (guideline 4): heads-up titles glitch in, titles marked <c>vb-reveal-title</c> reveal (<see cref="Glitch.Reveal"/>), and the deal items rise in <see cref="VbMotion.StaggerStep"/> apart, after
  /// the page's own entrance. Call it once the view is on its page.</summary>
- public ScreenView Deal(){foreach(var text in this.Query<GlitchText>().ToList())Glitch.In(text);VbMotion.Stagger(new System.Collections.Generic.List<VisualElement>(DealItems()),MotionKind.Deal,0);return this;}
+ public ScreenView Deal(){foreach(var text in this.Query<GlitchText>().ToList())if(!text.ClassListContains(Glitch.TitleClass))Glitch.In(text);Glitch.RevealTitles(this);VbMotion.Stagger(new System.Collections.Generic.List<VisualElement>(DealItems()),MotionKind.Deal,0);return this;}
 }
 }

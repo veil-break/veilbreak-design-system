@@ -64,4 +64,38 @@ public sealed class EffectStrip:ViewBase {
   foreach(var badge in items.Elements)if(badge.Details.IsOpen&&!visible.Exists(e=>e.id==badge.View.id)){var old=all.Find(e=>e.id==badge.View.id);if(old==null){old=badge.View.Expired();}visible.Add(old);}
   items.Bind(visible,true);badges.Show(!Compact);more.Title=Compact?all.Count.ToString():"+"+Math.Max(0,all.Count-1);more.Icon=Compact&&all.Count>0?all[0].definition.icon:"";more.tooltip="All effects · "+all.Count;more.Show(all.Count>(Compact?0:1)||Overflow.IsOpen);VbMotion.Show(this,all.Count>0||visible.Count>0||Overflow.IsOpen,MotionKind.Rise);return this;}
 }
+
+/// <summary>One status as a small square built on the badge: its glyph alone (harm in enemy colour, benefit in ally colour, anything else neutral) and, past one stack, the stack count in the corner. Never colour alone: the glyph says which status it is, and
+/// the row's list gives the word.</summary>
+public sealed class StatusSquare:BadgeComponent {
+ public const string SquareClass="vb-status-square";
+ public StatusSquare(){AddToClassList(SquareClass);}
+ public EffectInstance View {get;private set;}
+ public StatusSquare Bind(EffectInstance e){View=e;var d=e.definition??EffectDefinition.Unknown(e.id);Icon=string.IsNullOrEmpty(d.icon)?"info":d.icon;Text="";Set(e.stacks>1?Ui.Count(e.stacks):"");
+  Tone=d.polarity==EffectPolarity.Harm?BadgeTone.Enemy:d.polarity==EffectPolarity.Benefit?BadgeTone.Ally:BadgeTone.Neutral;return this;}
+ /// <summary>The "+n" square that stands for statuses past the row's maximum.</summary>
+ public StatusSquare Overflow(int hidden){View=null;Icon=null;Text="";Set("+"+Ui.Count(hidden));Tone=BadgeTone.Neutral;return this;}
+}
+/// <summary>The timed statuses of a unit as a row of tiny squares (about 20 × 20, <see cref="StatusSquare"/>, built on <see cref="BadgeComponent"/>), at most <see cref="Max"/> of them and a "+n" square past that. The whole row is one target, 44 units tall
+/// through padding the layout does not take back; hover, keyboard focus or a tap opens one vertical list of every status (<see cref="EffectList"/>) in a <see cref="Popover"/> (<see cref="Details"/>). Passives, perks and effects without a time are not statuses and never
+/// show, so a unit with none shows nothing. A unit card puts it above itself (<see cref="UnitCard.Statuses"/>). Binding takes an array and reuses its squares, so a card bound every frame makes no garbage.</summary>
+public sealed class StatusRow:ViewBase {
+ public const string ClassName="vb-status-row";public const int Max=6;
+ readonly StatusSquare[] squares=new StatusSquare[Max];readonly List<EffectInstance> timed=new List<EffectInstance>();EffectList list;int shownCount=-1;
+ public Popover Details {get;}
+ /// <summary>Every timed status bound, in the order given (the squares show the first <see cref="Max"/>).</summary>
+ public IReadOnlyList<EffectInstance> Timed=>timed;
+ /// <summary>The squares, shown or not; the last one is the "+n" square when there is overflow.</summary>
+ public IReadOnlyList<StatusSquare> Squares=>squares;
+ public StatusRow(){AddToClassList(ClassName);focusable=true;pickingMode=PickingMode.Position;
+  for(int i=0;i<Max;i++)squares[i]=new StatusSquare().Into(this);
+  Details=Popover.Attach(this,()=>timed.Count==0?null:list=new EffectList().Bind(timed),PopoverPlacement.Above);
+  RegisterCallback<KeyDownEvent>(e=>{if(e.keyCode==UnityEngine.KeyCode.Space||e.keyCode==UnityEngine.KeyCode.Return){if(Details.IsOpen)Details.Close();else Details.Open();e.StopPropagation();}});
+  Bind(null);
+ }
+ public StatusRow Bind(EffectInstance[] effects){timed.Clear();if(effects!=null)for(int i=0;i<effects.Length;i++)if(effects[i]!=null&&effects[i].Timed)timed.Add(effects[i]);
+  int overflow=timed.Count>Max?timed.Count-(Max-1):0,shown=overflow>0?Max-1:timed.Count;
+  for(int i=0;i<Max;i++){bool on=i<shown||(overflow>0&&i==Max-1);squares[i].Show(on);if(!on)continue;if(i<shown)squares[i].Bind(timed[i]);else squares[i].Overflow(overflow);}
+  this.Show(timed.Count>0);pickingMode=timed.Count>0?PickingMode.Position:PickingMode.Ignore;if(timed.Count!=shownCount){shownCount=timed.Count;tooltip=shownCount>0?"Statuses · "+shownCount:"";}list?.Bind(timed);return this;}
+}
 }

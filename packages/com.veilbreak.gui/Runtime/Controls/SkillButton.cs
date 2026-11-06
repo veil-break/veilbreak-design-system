@@ -6,7 +6,7 @@ namespace Veilbreak.Gui {
 /// nothing ever runs below the slot's foot: a cooldown fills from the bottom and counts its seconds over the glyph (a windup and a silence count the same way), short-on-Power
 /// dims the slot and puts the shortfall in the corner ("−3"), a queued manual cast puts its place in line there ("#1") and a buffered one an arrow, a fallen operative's skills lock,
 /// an invalid aim strikes its glyph and replaces the cost with the reason, a refused command flashes crimson once and an exposed target inverts the cost.
-/// A windup sweeps left to right. Attach drag/aim manipulators from the game.
+/// A windup sweeps left to right. The charge and the sweep are <see cref="VbClipFill"/>s, so they follow the button's bottom-right cut instead of overflowing it. Attach drag/aim manipulators from the game.
 /// </summary>
 [UxmlElement] public partial class SkillButton:VisualElement {
  public const string ClassName="vb-skill";
@@ -21,7 +21,7 @@ namespace Veilbreak.Gui {
  public Label Seconds=>seconds;
  public SkillButton(){
   AddToClassList(ClassName);focusable=true;VbShape.Attach(this);
-  charge=Ui.Box(this,ClassName+"__charge");sweep=Ui.Box(this,ClassName+"__sweep");slot=Ui.Text(this,"A",ClassName+"__slot");glyph=new VbIcon("projectile",20).Classes(ClassName+"__icon").Into(this);
+  charge=new VbClipFill().Classes(ClassName+"__charge").Into(this);sweep=new VbClipFill().Classes(ClassName+"__sweep").Into(this);slot=Ui.Text(this,"A",ClassName+"__slot");glyph=new VbIcon("projectile",20).Classes(ClassName+"__icon").Into(this);
   seconds=Ui.Text(this,"",ClassName+"__seconds");slash=Ui.Box(this,ClassName+"__slash");badge=Ui.Text(this,"",ClassName+"__badge");value=Ui.Text(this,"",ClassName+"__value");
   RegisterCallback<DetachFromPanelEvent>(_=>{rejected?.Pause();rejected=null;RemoveFromClassList(ClassName+"--flash");});Bind(new SkillView());
  }

@@ -11,6 +11,15 @@
       "web": true
     },
     {
+      "name": "ActionRow",
+      "base": "VisualElement",
+      "kind": "component",
+      "family": "layouts",
+      "level": "layout",
+      "source": "Runtime/Layouts/Layouts.cs",
+      "web": false
+    },
+    {
       "name": "ActivePerksView",
       "base": "ScreenView",
       "kind": "component",
@@ -101,6 +110,33 @@
       "web": false
     },
     {
+      "name": "Carousel",
+      "base": "VisualElement",
+      "kind": "component",
+      "family": "collections",
+      "level": "composite",
+      "source": "Runtime/Composites/Carousel.cs",
+      "web": false
+    },
+    {
+      "name": "ChipRow",
+      "base": "VisualElement",
+      "kind": "component",
+      "family": "badges",
+      "level": "atom",
+      "source": "Runtime/Controls/ChipRow.cs",
+      "web": false
+    },
+    {
+      "name": "ChoiceCard",
+      "base": "CardView",
+      "kind": "component",
+      "family": "collections",
+      "level": "composite",
+      "source": "Runtime/Composites/ChoiceCard.cs",
+      "web": false
+    },
+    {
       "name": "CombatText",
       "base": "Label",
       "kind": "component",
@@ -120,7 +156,7 @@
     },
     {
       "name": "CreditsChip",
-      "base": "BadgeComponent",
+      "base": "ChipRow",
       "kind": "component",
       "family": "badges",
       "level": "composite",
@@ -380,6 +416,15 @@
       "web": false
     },
     {
+      "name": "Markup",
+      "base": "",
+      "kind": "service",
+      "family": "controls",
+      "level": "atom",
+      "source": "Runtime/Core/Markup.cs",
+      "web": false
+    },
+    {
       "name": "MenuActionsSectionView",
       "base": "VisualElement",
       "kind": "component",
@@ -435,7 +480,7 @@
     },
     {
       "name": "OperativeCard",
-      "base": "SurfaceView",
+      "base": "UnitCard",
       "kind": "component",
       "family": "surfaces",
       "level": "composite",
@@ -444,7 +489,7 @@
     },
     {
       "name": "OperativeDetails",
-      "base": "DetailView",
+      "base": "UnitDetail",
       "kind": "component",
       "family": "details",
       "level": "composite",
@@ -453,7 +498,7 @@
     },
     {
       "name": "OperativeStats",
-      "base": "DetailView",
+      "base": "UnitStats",
       "kind": "component",
       "family": "details",
       "level": "composite",
@@ -462,7 +507,7 @@
     },
     {
       "name": "OperativeTile",
-      "base": "TileComponent",
+      "base": "UnitTile",
       "kind": "component",
       "family": "surfaces",
       "level": "composite",
@@ -498,7 +543,7 @@
     },
     {
       "name": "PerkCard",
-      "base": "CardView",
+      "base": "ChoiceCard",
       "kind": "component",
       "family": "surfaces",
       "level": "composite",
@@ -507,7 +552,7 @@
     },
     {
       "name": "PerkChip",
-      "base": "VisualElement",
+      "base": "ChipRow",
       "kind": "component",
       "family": "badges",
       "level": "composite",
@@ -551,6 +596,15 @@
       "web": false
     },
     {
+      "name": "PopoverCard",
+      "base": "ViewBase",
+      "kind": "component",
+      "family": "overlays",
+      "level": "composite",
+      "source": "Runtime/Core/Popover.cs",
+      "web": false
+    },
+    {
       "name": "PowerStrip",
       "base": "VisualElement",
       "kind": "component",
@@ -585,6 +639,33 @@
       "level": "composite",
       "source": "Runtime/Composites/Hud.cs",
       "web": true
+    },
+    {
+      "name": "RebuildSnapshot",
+      "base": "",
+      "kind": "service",
+      "family": "motion",
+      "level": "atom",
+      "source": "Runtime/Core/VbRebuild.cs",
+      "web": false
+    },
+    {
+      "name": "ReorderManipulator",
+      "base": "PointerManipulator",
+      "kind": "service",
+      "family": "input",
+      "level": "atom",
+      "source": "Runtime/Input/ReorderManipulator.cs",
+      "web": false
+    },
+    {
+      "name": "ResultSummary",
+      "base": "SurfaceView",
+      "kind": "component",
+      "family": "surfaces",
+      "level": "composite",
+      "source": "Runtime/Composites/Units.cs",
+      "web": false
     },
     {
       "name": "ResultsView",
@@ -723,7 +804,7 @@
     },
     {
       "name": "SquadResult",
-      "base": "SurfaceView",
+      "base": "ResultSummary",
       "kind": "component",
       "family": "controls",
       "level": "composite",
@@ -732,7 +813,7 @@
     },
     {
       "name": "SquadSlot",
-      "base": "TileComponent",
+      "base": "UnitSlot",
       "kind": "component",
       "family": "surfaces",
       "level": "composite",
@@ -765,6 +846,15 @@
       "level": "atom",
       "source": "Runtime/Controls/Basics.cs",
       "web": true
+    },
+    {
+      "name": "StatRow",
+      "base": "KeyValueRow",
+      "kind": "component",
+      "family": "details",
+      "level": "atom",
+      "source": "Runtime/Controls/StatRow.cs",
+      "web": false
     },
     {
       "name": "StatusChip",
@@ -821,6 +911,51 @@
       "web": false
     },
     {
+      "name": "UnitCard",
+      "base": "SurfaceView",
+      "kind": "component",
+      "family": "surfaces",
+      "level": "composite",
+      "source": "Runtime/Composites/Units.cs",
+      "web": false
+    },
+    {
+      "name": "UnitDetail",
+      "base": "DetailView",
+      "kind": "component",
+      "family": "details",
+      "level": "composite",
+      "source": "Runtime/Composites/Units.cs",
+      "web": false
+    },
+    {
+      "name": "UnitSlot",
+      "base": "TileComponent",
+      "kind": "component",
+      "family": "collections",
+      "level": "composite",
+      "source": "Runtime/Composites/Units.cs",
+      "web": false
+    },
+    {
+      "name": "UnitStats",
+      "base": "DetailView",
+      "kind": "component",
+      "family": "details",
+      "level": "composite",
+      "source": "Runtime/Composites/Units.cs",
+      "web": false
+    },
+    {
+      "name": "UnitTile",
+      "base": "TileComponent",
+      "kind": "component",
+      "family": "collections",
+      "level": "composite",
+      "source": "Runtime/Composites/Units.cs",
+      "web": false
+    },
+    {
       "name": "VbButton",
       "base": "Button",
       "kind": "component",
@@ -830,6 +965,60 @@
       "web": true
     },
     {
+      "name": "VbClip",
+      "base": "",
+      "kind": "service",
+      "family": "controls",
+      "level": "atom",
+      "source": "Runtime/Core/VbClip.cs",
+      "web": false
+    },
+    {
+      "name": "VbClipFill",
+      "base": "VisualElement",
+      "kind": "component",
+      "family": "controls",
+      "level": "atom",
+      "source": "Runtime/Core/VbClip.cs",
+      "web": false
+    },
+    {
+      "name": "VbClipImage",
+      "base": "VisualElement",
+      "kind": "component",
+      "family": "controls",
+      "level": "atom",
+      "source": "Runtime/Core/VbClip.cs",
+      "web": false
+    },
+    {
+      "name": "VbEdgeFx",
+      "base": "",
+      "kind": "service",
+      "family": "motion",
+      "level": "atom",
+      "source": "Runtime/Core/VbEdgeFx.cs",
+      "web": false
+    },
+    {
+      "name": "VbFluid",
+      "base": "",
+      "kind": "service",
+      "family": "controls",
+      "level": "atom",
+      "source": "Runtime/Core/VbFluid.cs",
+      "web": false
+    },
+    {
+      "name": "VbFocus",
+      "base": "",
+      "kind": "service",
+      "family": "input",
+      "level": "atom",
+      "source": "Runtime/Core/VbFocus.cs",
+      "web": false
+    },
+    {
       "name": "VbFrame",
       "base": "VisualElement",
       "kind": "component",
@@ -837,6 +1026,15 @@
       "level": "atom",
       "source": "Runtime/Core/VbShape.cs",
       "web": true
+    },
+    {
+      "name": "VbGauge",
+      "base": "VisualElement",
+      "kind": "component",
+      "family": "controls",
+      "level": "atom",
+      "source": "Runtime/Controls/Gauge.cs",
+      "web": false
     },
     {
       "name": "VbGrid",
@@ -875,12 +1073,12 @@
       "web": true
     },
     {
-      "name": "VbGauge",
-      "base": "VisualElement",
-      "kind": "component",
-      "family": "controls",
+      "name": "VbMotion",
+      "base": "",
+      "kind": "service",
+      "family": "motion",
       "level": "atom",
-      "source": "Runtime/Controls/Gauge.cs",
+      "source": "Runtime/Core/VbMotion.cs",
       "web": false
     },
     {
@@ -893,25 +1091,25 @@
       "web": false
     },
     {
-      "name": "VbMotion",
+      "name": "VbPressGlow",
+      "base": "IDisposable",
+      "kind": "service",
+      "family": "controls",
+      "level": "atom",
+      "source": "Runtime/Core/VbPressGlow.cs",
+      "web": false
+    },
+    {
+      "name": "VbPressGlowOptions",
       "base": "",
       "kind": "service",
-      "family": "motion",
+      "family": "controls",
       "level": "atom",
-      "source": "Runtime/Core/VbMotion.cs",
+      "source": "Runtime/Core/VbPressGlow.cs",
       "web": false
     },
     {
       "name": "VbRebuild",
-      "base": "",
-      "kind": "service",
-      "family": "motion",
-      "level": "atom",
-      "source": "Runtime/Core/VbRebuild.cs",
-      "web": false
-    },
-    {
-      "name": "RebuildSnapshot",
       "base": "",
       "kind": "service",
       "family": "motion",
@@ -938,42 +1136,6 @@
       "web": true
     },
     {
-      "name": "VbVectorShape",
-      "base": "",
-      "kind": "service",
-      "family": "controls",
-      "level": "atom",
-      "source": "Runtime/Core/VbVectorShape.cs",
-      "web": false
-    },
-    {
-      "name": "VbVectorVocabulary",
-      "base": "",
-      "kind": "service",
-      "family": "controls",
-      "level": "atom",
-      "source": "Runtime/Core/VbVectorShape.cs",
-      "web": false
-    },
-    {
-      "name": "VbPressGlow",
-      "base": "IDisposable",
-      "kind": "service",
-      "family": "controls",
-      "level": "atom",
-      "source": "Runtime/Core/VbPressGlow.cs",
-      "web": false
-    },
-    {
-      "name": "VbPressGlowOptions",
-      "base": "",
-      "kind": "service",
-      "family": "controls",
-      "level": "atom",
-      "source": "Runtime/Core/VbPressGlow.cs",
-      "web": false
-    },
-    {
       "name": "VbSlider",
       "base": "Slider",
       "kind": "component",
@@ -990,6 +1152,24 @@
       "level": "atom",
       "source": "Runtime/Controls/Fields.cs",
       "web": true
+    },
+    {
+      "name": "VbVectorShape",
+      "base": "",
+      "kind": "service",
+      "family": "controls",
+      "level": "atom",
+      "source": "Runtime/Core/VbVectorShape.cs",
+      "web": false
+    },
+    {
+      "name": "VbVectorVocabulary",
+      "base": "",
+      "kind": "service",
+      "family": "controls",
+      "level": "atom",
+      "source": "Runtime/Core/VbVectorShape.cs",
+      "web": false
     },
     {
       "name": "ViewBase",

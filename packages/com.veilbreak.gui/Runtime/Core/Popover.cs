@@ -19,7 +19,7 @@ public sealed class Popover {
  static readonly System.Collections.Generic.List<Popover> active=new System.Collections.Generic.List<Popover>();
  public static bool CloseAll(){bool any=active.Count>0;foreach(var p in active.ToArray())p.Close();return any;}
  readonly VisualElement anchor;readonly Func<VisualElement> build;readonly PopoverPlacement placement;readonly bool alignEnd;
- sealed class Popup:OverlayView {public readonly ScrollView scroll=new ScrollView(ScrollViewMode.Vertical);public readonly VisualElement arrow=new VisualElement{pickingMode=PickingMode.Ignore};public Action closing;public Popup(){VbShape.Attach(this);hierarchy.Add(scroll);arrow.AddToClassList(ClassName+"__arrow");hierarchy.Add(arrow);PaintArrow(arrow);}public override void Dismiss(Action done=null){closing?.Invoke();base.Dismiss(done);}}
+ sealed class Popup:OverlayView {public readonly ScrollView scroll=new ScrollView(ScrollViewMode.Vertical);public readonly VisualElement arrow=new VisualElement{pickingMode=PickingMode.Ignore};public Action closing;public override MotionRecipe Entrance=>MotionRecipes.PopoverIn;public override MotionRecipe Exit=>MotionRecipes.PopoverOut;public Popup(){VbShape.Attach(this);hierarchy.Add(scroll);arrow.AddToClassList(ClassName+"__arrow");hierarchy.Add(arrow);PaintArrow(arrow);}public override void Dismiss(Action done=null){closing?.Invoke();base.Dismiss(done);}}
  // The arrow is painted, not bordered: a triangle in the popover's own --vb-fill with its two sides in --vb-edge (both inherited from the popover, so high contrast
  // reaches it), and a one-unit base in the fill that hides the popover's edge under it.
  static void PaintArrow(VisualElement arrow){Color fill=Color.clear,edge=Color.clear;var fillP=new CustomStyleProperty<Color>("--vb-fill");var edgeP=new CustomStyleProperty<Color>("--vb-edge");
@@ -58,7 +58,7 @@ public sealed class Popover {
  public void Open(){
   if(shown!=null||anchor.panel==null)return;
   var content=build?.Invoke();if(content==null)return;var popup=new Popup();var scroll=popup.scroll;scroll.horizontalScrollerVisibility=ScrollerVisibility.Hidden;scroll.verticalScrollerVisibility=ScrollerVisibility.Auto;content.AddToClassList(ClassName+"__content");scroll.Add(content);shown=popup;popup.closing=()=>{if(shown==popup)Close();};
-  active.Add(this);var limit=Limit(anchor.panel.visualTree.worldBound);shown.style.maxWidth=limit.x;shown.style.maxHeight=limit.y;shown.AddToClassList(ClassName);foreach(var c in SafeAreaRoot.RootClasses)if(Ui.Under(anchor,c))shown.AddToClassList(c);shown.pickingMode=PickingMode.Position;shown.style.position=Position.Absolute;
+  active.Add(this);var limit=Limit(anchor.panel.visualTree.worldBound);shown.style.maxWidth=limit.x;shown.style.maxHeight=limit.y;shown.AddToClassList(ClassName);foreach(var c in SafeAreaRoot.RootClasses)if(Ui.Under(anchor,c))shown.AddToClassList(c);VbFluid.Copy(anchor,shown);shown.pickingMode=PickingMode.Position;shown.style.position=Position.Absolute;
   shown.RegisterCallback<PointerEnterEvent>(_=>{hovered=true;pending?.Pause();});shown.RegisterCallback<PointerLeaveEvent>(_=>{hovered=false;Later();});shown.RegisterCallback<FocusOutEvent>(_=>Later());
   eventRoot=Root;eventRoot.RegisterCallback<PointerDownEvent>(Outside,TrickleDown.TrickleDown);eventRoot.RegisterCallback<KeyDownEvent>(Key,TrickleDown.TrickleDown);eventRoot.RegisterCallback<GeometryChangedEvent>(PanelResized);
   OverlayHost.For(anchor).AddPopup(shown);anchor.AddToClassList(OpenClass);

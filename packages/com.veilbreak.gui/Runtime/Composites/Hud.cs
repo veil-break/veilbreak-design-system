@@ -73,6 +73,8 @@ public sealed class QueueList:VisualElement {
  public const string ClassName="vb-header";
  readonly Label title,meta;readonly IconButtonComposite back;bool showBack=true;
  public event Action Back;
+ /// <summary>The title and meta labels (for a host that marks them to reveal, <see cref="Glitch.TitleClass"/>).</summary>
+ public Label TitleLabel=>title;public Label MetaLabel=>meta;
  [UxmlAttribute] public string Title {get=>title.text;set=>title.text=(value??"").ToUpperInvariant();}
  /// <summary>The meta read-out; a change on a shown header swells it once (SAVED, 3 / 4).</summary>
  [UxmlAttribute] public string Meta {get=>meta.text;set{value??="";if(meta.text==value)return;bool change=meta.text.Length>0;meta.text=value;if(change)VbMotion.Pop(meta,.14f);}}

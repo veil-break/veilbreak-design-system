@@ -21,7 +21,11 @@ public enum RarityTier { None, Blue, Violet, Gold }
 }
 
 [Serializable] public sealed class OperativeView {
- public string id="",name="",code="",role="",roleIcon="striker",passive="",passiveText="",passiveFullText="";
+ public string id="",name="",code="",role="",roleIcon="striker",passive="",passiveText="",passiveFullText="",passiveIcon="core";
+ /// <summary>The basic attack, listed in the unit sheet (<see cref="UnitDetail"/>) next to the passive and the two skills; null or an empty label leaves it out. Give it <c>slot="B"</c> and <c>kind="Basic"</c>.</summary>
+ public SkillView basic;
+ /// <summary>A short lore prompt shown after the skills in the unit sheet; empty hides it.</summary>
+ public string lore="";
  public Color kit=Color.white; public Texture2D portrait;
  /// <summary>Whether a fallen operative can be revived (an owned revive perk): the fallen card says how only then.</summary>
  public bool canRevive;

@@ -3,8 +3,7 @@ using System.Linq;
 using UnityEngine.UIElements;
 namespace Veilbreak.Gui {
 /// <summary>The run, frozen: a <see cref="ScreenHeader"/> without a back arrow (RESUME is the one way back), then one overlay panel centred on the screen: wave, score and who
-/// stands (with an info button that opens the seed and rules line), the active perks (tap for details), RESUME (the one primary), settings and ABANDON (danger, confirms) side by
-/// side in an <see cref="ActionRow"/>, and EXIT TO MENU (ghost, led by its ‹). Back (the key or gesture) = Resume.</summary>
+/// stands (with an info button that opens the seed and rules line), the active perks (tap for details), RESUME (the one primary), then one single <see cref="ActionRow"/> of the rest: EXIT TO MENU (led by its ‹), ABANDON (danger, confirms) and the settings cog (icon only). Back (the key or gesture) = Resume.</summary>
 [UxmlElement] public partial class PauseOverlayView:OverlayView {
  public const string Block="vb-pause";
  readonly ScreenHeader header;readonly StatReadout wave,score,standing;readonly VisualElement perks,chips,panel;readonly LabelComponent perksTitle;readonly IconButtonComposite info;string detail="";
@@ -14,8 +13,9 @@ namespace Veilbreak.Gui {
  public VisualElement Panel=>panel;
  /// <summary>The info button's popover (the seed and rules line); hidden while the line is empty.</summary>
  public Popover Info {get;}
+ protected override bool AutoPresent=>true;
  public PauseOverlayView(){AddToClassList("vb-view");AddToClassList("vb-view--headed");AddToClassList(Block);
-  header=new ScreenHeader("PAUSED","","Resume"){ShowBack=false}.Into(this);header.Back+=()=>Resume?.Invoke();
+  header=new ScreenHeader("PAUSED","","Resume"){ShowBack=false}.Into(this);header.TitleLabel.AddToClassList(Glitch.TitleClass);header.MetaLabel.AddToClassList(Glitch.TitleClass);header.Back+=()=>Resume?.Invoke();
   var center=Ui.Box(this,Block+"__center");
   panel=Dialog.Sheet(center,null,null,"vb-t-caption",Block+"__panel");
   var stats=Ui.Box(panel,"vb-row",Block+"__stats");wave=new StatReadout("WAVE","01").Into(stats);score=new StatReadout("SCORE","0").Into(stats);standing=new StatReadout("STANDING","4","/4").Into(stats);
@@ -24,9 +24,10 @@ namespace Veilbreak.Gui {
   var head=Ui.Box(perks,"vb-row","vb-row--between");perksTitle=new LabelComponent("").Into(head);var more=Ui.Box(head,"vb-row");Ui.Text(more,"DETAILS","vb-t-badge","vb-t-ally");new VbIcon("chevron",16).Classes(Block+"__more").Into(more);
   chips=Ui.Box(perks,"vb-row","vb-row--wrap",Block+"__chips");
   new VbButton("RESUME",ButtonVariant.Primary,null,"chevron",()=>Resume?.Invoke()){name="resume"}.Into(panel);
-  Ui.Actions(panel,new VbButton("SETTINGS",ButtonVariant.Secondary,null,"settings",()=>Settings?.Invoke()){name="settings"}.Classes(Block+"__button"),
-   new VbButton("ABANDON",ButtonVariant.Danger,null,"remove",()=>Abandon?.Invoke()){name="abandon"}.Classes(Block+"__button",Block+"__abandon")).Classes(Block+"__row");
-  new VbButton("EXIT TO MENU",ButtonVariant.Ghost,null,"back",()=>Exit?.Invoke()){name="exit"}.Classes(Block+"__exit").Into(panel);
+  // One row for everything that is not the way back: leave (EXIT TO MENU), the destructive one (ABANDON) and the settings cog at the end.
+  var row=Ui.Actions(panel,new VbButton("EXIT TO MENU",ButtonVariant.Secondary,null,"back",()=>Exit?.Invoke()){name="exit"}.Classes(Block+"__button",Block+"__exit"),
+   new VbButton("ABANDON",ButtonVariant.Danger,null,"remove",()=>Abandon?.Invoke()){name="abandon"}.Classes(Block+"__button",Block+"__abandon"),
+   new VbButton("Settings",ButtonVariant.Secondary,null,"cog",()=>Settings?.Invoke()){name="settings",IconOnly=true}.Classes(Block+"__button")).Classes(Block+"__row");row.Single=true;
  }
  public PauseOverlayView Bind(PauseViewModel v){
   header.Meta="WAVE "+v.wave.ToString("00");wave.Set(v.wave.ToString("00"));score.Set(Ui.Number(v.score));standing.Set(v.standing.ToString(),"/"+v.squadSize);

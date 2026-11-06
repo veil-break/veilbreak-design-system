@@ -31,13 +31,15 @@ namespace Veilbreak.Gui {
 /// child takes the full width, the first child on top. <see cref="Fixed"/> keeps the children at one fixed width instead (the trailing BUY and SELL of a list
 /// row). The row re-arranges on every layout change; call <see cref="Arrange"/> yourself to measure in the same frame.</summary>
 [UxmlElement] public partial class ActionRow:VisualElement {
- public const string ClassName="vb-action-row",StackedClass=ClassName+"--stacked",FixedClass=ClassName+"--fixed",FirstClass=ClassName+"__first";
+ public const string ClassName="vb-action-row",StackedClass=ClassName+"--stacked",FixedClass=ClassName+"--fixed",SingleClass=ClassName+"--single",FirstClass=ClassName+"__first";
  /// <summary>The narrowest share a child may take before the row stacks, and the gap between children.</summary>
  public const float DefaultMinItemWidth=112,Gap=8;
- float minItem=DefaultMinItemWidth;VisualElement first;
+ float minItem=DefaultMinItemWidth;VisualElement first;bool single;
  [UxmlAttribute] public float MinItemWidth {get=>minItem;set{minItem=Mathf.Max(0,value);Arrange();}}
  /// <summary>Children keep one fixed width (the row never stacks); for trailing actions that must line up down a list.</summary>
  [UxmlAttribute] public bool Fixed {get=>ClassListContains(FixedClass);set{EnableInClassList(FixedClass,value);Arrange();}}
+ /// <summary>One row, always: the row never stacks, however narrow it is. Buttons share the width, their trailing glyph drops away and their label may wrap, and an icon-only button (<see cref="VbButton.IconOnly"/>, an <see cref="IconButtonComposite"/>) keeps its own 48-unit square at the end. For the secondary buttons of a menu or a pause sheet, which belong on one line.</summary>
+ [UxmlAttribute] public bool Single {get=>ClassListContains(SingleClass);set{EnableInClassList(SingleClass,value);Arrange();}}
  public bool Stacked=>ClassListContains(StackedClass);
  public ActionRow(){AddToClassList(ClassName);pickingMode=PickingMode.Ignore;RegisterCallback<GeometryChangedEvent>(_=>Arrange());}
  public ActionRow(params VisualElement[] actions):this(){foreach(var a in actions)Add(a);}
@@ -46,7 +48,8 @@ namespace Veilbreak.Gui {
  /// <summary>Marks the first visible child and stacks the row when its children no longer fit side by side.</summary>
  public void Arrange(){int n=0;VisualElement now=null;foreach(var child in Children())if(child.style.display!=DisplayStyle.None){n++;now??=child;}
   if(now!=first){first?.RemoveFromClassList(FirstClass);first=now;first?.AddToClassList(FirstClass);}
-  float w=layout.width;if(float.IsNaN(w)||w<=0)return;EnableInClassList(StackedClass,!Fixed&&Stacks(w,n,minItem));}
+  bool want=Single;if(want||single)foreach(var child in Children())if(child is VbButton b&&b.Compact!=want)b.Compact=want;single=want;
+  float w=layout.width;if(float.IsNaN(w)||w<=0)return;EnableInClassList(StackedClass,!Fixed&&!Single&&Stacks(w,n,minItem));}
 }
 
 /// <summary>Rows of the same kind in a scroll (scores, perks, rules, queue entries) with 6 between rows, and one empty-state line.</summary>

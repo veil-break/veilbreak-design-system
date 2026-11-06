@@ -44,7 +44,7 @@ public enum ChoiceSide { Single, Left, Right }
  }
  /// <summary>A perk of the draft: its tier word, glyph, name, effect, level cells and the value after the pick; <paramref name="selected"/> frames it with brackets.</summary>
  public ChoiceCard Bind(PerkView p,bool selected){
-  bool first=View==null;View=p;PerkArt.Tiers(this,p);bool was=Selected;Selected=selected;if(selected&&!was&&!first)VbMotion.Pop(this,.04f);
+  bool first=View==null;View=p;PerkArt.Tiers(this,p);bool was=Selected;Selected=selected;if(selected&&!was&&!first&&!ClassListContains(Carousel.CardClass))VbMotion.Pop(this,.04f);
   Icon=p.icon;Tag=p.tag;Title=p.name;Text=p.effect;Next=p.next==p.effect?"":p.next;Ranks(p.stack,p.max>1?p.max:0,p.stack<p.max);ActionText=null;tooltip=p.name+" · "+PerkArt.Stacks(p,true);return this;
  }
  /// <summary>The tone a road of <paramref name="kind"/> takes: elites and bosses read as danger, markets as power, anything else (a plain fight) as ally.</summary>

@@ -7,6 +7,9 @@ namespace Veilbreak.Gui {
 public sealed class OverlayHost {
  public const string LayerName="modal-layer",LeavingName="modal-layer-leaving";
  sealed class Layer:OverlayView {
+  // The layer dims the page: it fades, and the sheet in it (a DialogSurface) brings its own rise.
+  public override MotionRecipe Entrance=>new MotionRecipe(MotionRecipes.OverlayIn.milliseconds);
+  public override MotionRecipe Exit=>new MotionRecipe(MotionRecipes.OverlayOut.milliseconds);
   public override void Dismiss(Action done=null){var drawer=this.Q<DrawerOverlay>();if(drawer!=null){Phase=OverlayPhase.Closing;drawer.Close(()=>{this.Show(false);Phase=OverlayPhase.Closed;done?.Invoke();});}else base.Dismiss(done);}
  }
  sealed class Entry {public OverlayView view;public VisualElement under,focus;public bool enabled;public Action closed;public bool leaving,finished,restoreFocus;}

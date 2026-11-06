@@ -8,6 +8,8 @@ public sealed class Announcer:IDisposable {
  readonly GlitchText label;readonly Queue<(string text,bool alert,int hold)> pending=new Queue<(string,bool,int)>();
  IVisualElementScheduledItem hold;bool busy,disposed;int serial;string current="";
  public GlitchText Label=>label;
+ /// <summary>How long a notice takes to appear: the title reveal (<see cref="Glitch.Reveal"/>) at this length (700 reads well for a wave banner); 0, the default, keeps the short glitch-in.</summary>
+ public int RevealMilliseconds {get;set;}
  public Announcer(GlitchText label){this.label=label;label.Show(false);label.RegisterCallback<DetachFromPanelEvent>(_=>Dispose());}
  public void Say(string text,bool alert=false,int milliseconds=1800,bool interrupt=false){
   if(disposed||string.IsNullOrEmpty(text))return;
@@ -18,7 +20,7 @@ public sealed class Announcer:IDisposable {
  void Replace(){hold?.Pause();int id=++serial;busy=true;Glitch.Out(label,()=>{if(id==serial)Next();});}
  void Next(){if(disposed)return;if(pending.Count==0){busy=false;current="";label.Show(false);return;}
   var notice=pending.Dequeue();current=notice.text;busy=true;label.text=notice.text;label.EnableInClassList("vb-announcement--alert",notice.alert);int id=++serial;
-  Glitch.In(label,()=>{if(id!=serial||disposed)return;hold=label.schedule.Execute(()=>{if(id!=serial||disposed)return;Glitch.Out(label,()=>{if(id==serial)Next();});});hold.ExecuteLater(notice.hold);});
+  System.Action shown=()=>{if(id!=serial||disposed)return;hold=label.schedule.Execute(()=>{if(id!=serial||disposed)return;Glitch.Out(label,()=>{if(id==serial)Next();});});hold.ExecuteLater(notice.hold);};if(RevealMilliseconds>0)Glitch.Reveal(label,RevealMilliseconds,shown);else Glitch.In(label,shown);
  }
  public void Clear(){if(disposed)return;serial++;pending.Clear();hold?.Pause();Glitch.Cancel(label);label.Show(false);current="";busy=false;}
  public void Dispose(){if(disposed)return;Clear();disposed=true;}

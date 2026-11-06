@@ -33,8 +33,8 @@ public static partial class Ui {
  public static VbSegmented Changed(this VbSegmented field,Action<int> set){field.RegisterValueChangedCallback(e=>set(e.newValue));return field;}
  /// <summary>Makes any element act as a button: pointer click, Enter/Space and focus.</summary>
  public static T Clickable<T>(this T e,Action click) where T:VisualElement {
-  e.focusable=true;e.pickingMode=PickingMode.Position;e.AddManipulator(new Clickable(()=>click?.Invoke()));
-  e.RegisterCallback<KeyDownEvent>(k=>{if(k.keyCode==KeyCode.Return||k.keyCode==KeyCode.KeypadEnter||k.keyCode==KeyCode.Space){click?.Invoke();k.StopPropagation();}});
+  e.focusable=true;e.pickingMode=PickingMode.Position;e.AddManipulator(new Clickable(()=>click?.Invoke()));VbEdgeFx.Attach(e);
+  e.RegisterCallback<KeyDownEvent>(k=>{if(k.keyCode==KeyCode.Return||k.keyCode==KeyCode.KeypadEnter||k.keyCode==KeyCode.Space){VbEdgeFx.Play(e);click?.Invoke();k.StopPropagation();}});
   return e;
  }
  /// <summary>Replaces a state modifier (block--a, block--b …) with the one for <paramref name="state"/>. Class names are built once
@@ -46,7 +46,7 @@ public static partial class Ui {
  }
  /// <summary>A child of <paramref name="frame"/> that holds an illustration at a USS-defined size and offset (a face or bust crop).</summary>
  public static VisualElement Crop(VisualElement frame){var c=frame.Q(className:"vb-crop")??Box(frame,"vb-crop");c.SendToBack();return c;}
- public static void Image(VisualElement e,Texture2D texture)=>e.style.backgroundImage=texture!=null?new StyleBackground(texture):new StyleBackground(StyleKeyword.None);
+ public static void Image(VisualElement e,Texture2D texture){if(e is VbClipImage clip){clip.Image=texture;return;}e.style.backgroundImage=texture!=null?new StyleBackground(texture):new StyleBackground(StyleKeyword.None);}
  public static void Fill(VisualElement e,float fraction,bool vertical=false){var p=Length.Percent(Mathf.Clamp01(fraction)*100);if(vertical)e.style.height=p;else e.style.width=p;}
  public static string Compact(long value)=>value>=1000000000?(value/1000000000d).ToString("0.#",CultureInfo.InvariantCulture)+"B":value>=1000000?(value/1000000d).ToString("0.#",CultureInfo.InvariantCulture)+"M":value>=10000?(value/1000d).ToString("0.#",CultureInfo.InvariantCulture)+"K":Number(value);
  public static string Number(long value)=>value.ToString("N0",CultureInfo.InvariantCulture);
