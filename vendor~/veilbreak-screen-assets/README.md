@@ -9,7 +9,7 @@ this folder is the original pack (34 meshes, no uvs, its own `metadata/tokens.js
 - `art/`: empty menu and courtyard plates; eight individual alpha fighter illustrations; optional sky, skyline and foreground menu layers; asphalt color texture.
 - `ui/`: individual svg icons, cut-corner frames, ability states, selection platforms, team marks, targeting examples and floor decals. no baked text or numbers.
 - `models/`: 34 editable gltf 2.0 binary environment meshes, in metres with y up and ground-centred pivots. all materials embedded; no external dependencies.
-- `metadata/`: semantic tokens, roster bindings, per-file sizes and checksums, image dimensions, mesh statistics and import notes.
+- `metadata/`: semantic tokens, per-file sizes and checksums, image dimensions, mesh statistics and import notes. roster data is not kept here; it comes from the characters projection in `veil-break/characters` `exports/`.
 - the pack's own generator scripts (`source/build_assets.py`, `source/package_assets.py`) were retired in favour of the improved generator above; `git show 26b8452:assets/source-packs/veilbreak-screen-assets/source/build_assets.py` recovers them.
 
 ## what is ready
@@ -26,7 +26,7 @@ the simplest composition uses `menu-boulevard.png` as the full-screen backdrop. 
 
 `menu-sky`, `menu-skyline` and `menu-foreground` are optional separately generated parallax assets; they are not pixel-matched extractions from the baked plate. compose them with a ground plane using the asphalt material. keep any parallax small and disable it for reduced motion. use the baked plate for the low-cost fallback.
 
-use the supplied roster mapping for role and tier. aria, aegis and echo use rare blue, not the violet rare label in the original sketch. left navigation is team, rifts, automation, studio, replays. render wallet/connection status above, inspector to the right and a single battle action below. names, currencies and connection values remain runtime text.
+take role and tier from the characters projection in `veil-break/characters` `exports/`, not from this pack. aria, aegis and echo use rare blue, not the violet rare label in the original sketch. left navigation is team, rifts, automation, studio, replays. render wallet/connection status above, inspector to the right and a single battle action below. names, currencies and connection values remain runtime text.
 
 ## level assembly
 

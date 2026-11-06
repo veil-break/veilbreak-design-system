@@ -4,8 +4,8 @@
   "assets": [
     {
       "path": "README.md",
-      "bytes": 7572,
-      "sha256": "e24c9dd1aaf3798d9499b9c8940d28ffdb47ce87a7d27ffef2ebe98f60ad7a0d"
+      "bytes": 7722,
+      "sha256": "79b11494e2c6790f617c4bf13f2db9e28fe5ac2658b942e512c562d94113e789"
     },
     {
       "path": "art/aegis.png",
@@ -163,11 +163,6 @@
       "path": "metadata/image-prompts.json",
       "bytes": 11053,
       "sha256": "73f15c6bd58ca6ff88fb6db495beb359526223086e7ca05cd7bd16205a6999e7"
-    },
-    {
-      "path": "metadata/roster.json",
-      "bytes": 3570,
-      "sha256": "cbd28998eddf7009cf678c1509213d3145ce50cbe82facc2bb39d50d23415c17"
     },
     {
       "path": "metadata/tokens.json",
