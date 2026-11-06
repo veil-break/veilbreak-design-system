@@ -107,6 +107,14 @@
   #status-legend li { display:flex; flex-wrap:wrap; align-items:center; gap:var(--hb-space-2); font-size:var(--hb-text-sm); }
   #frame-introduction { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--hb-space-5); padding:var(--hb-space-5); background:var(--hb-surface); margin-block:var(--hb-space-6); }
   #frame-introduction h2 { margin-block-start:var(--hb-space-2); font-family:var(--hb-display); font-size:var(--hb-space-5); }
+  #release-notes { padding:var(--hb-space-5); background:var(--hb-surface); margin-block:var(--hb-space-6); }
+  #release-notes > header > p:first-child { font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--hb-ink-3); }
+  #release-notes h2 { margin-block-start:var(--hb-space-2); font-family:var(--hb-display); font-size:var(--hb-space-5); }
+  #release-notes li { font-size:var(--hb-text-sm); margin-block:var(--hb-space-1); }
+  #fluid-host, #motion-stage { overflow-x:auto; padding:var(--hb-space-4); background:var(--hb-surface); min-inline-size:0; }
+  #fluid-host > div { inline-size:max-content; }
+  #motion-card { inline-size:min(100%,260px); padding:var(--hb-space-4); background:var(--panel); }
+  #motion-timings { display:flex; flex-wrap:wrap; gap:var(--hb-space-4); list-style:none; padding:0; font-size:var(--hb-text-sm); }
   #setup-steps { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr)); gap:var(--hb-space-3); max-inline-size:none; list-style-position:inside; padding:0; }
   #setup-steps li { min-inline-size:0; background:var(--hb-surface); padding:var(--hb-space-4); }
   #setup-steps li::marker { color:var(--hb-accent-ink); font-family:var(--hb-mono); }
@@ -158,13 +166,13 @@
   #icon-grid svg { inline-size:28px; block-size:28px; flex:none; }
   #icon-grid code { max-inline-size:100%; overflow-wrap:anywhere; font-size:11px; }
   #icon-grid small { color:var(--hb-proposal-ink); font-size:var(--hb-text-xs); }
-  #type-specimens > div { display:grid; grid-template-columns:170px minmax(0,1fr); column-gap:var(--hb-space-4); border-block-start:var(--hb-border); padding-block:var(--hb-space-4); }
-  #type-specimens dt { color:var(--hb-ink); }
-  #type-specimens dd { margin:0; min-inline-size:0; font-size:var(--hb-text-sm); color:var(--hb-ink-3); }
-  #type-specimens dd:first-of-type { grid-column:1; }
-  #type-specimens dd:last-child { grid-column:2; grid-row:1 / 3; }
-  #type-specimens p { margin:0; }
-  #type-specimens [data-specimen] { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--hb-ink); }
+  [data-type-group] > div { display:grid; grid-template-columns:170px minmax(0,1fr); column-gap:var(--hb-space-4); border-block-start:var(--hb-border); padding-block:var(--hb-space-4); }
+  [data-type-group] dt { color:var(--hb-ink); }
+  [data-type-group] dd { margin:0; min-inline-size:0; font-size:var(--hb-text-sm); color:var(--hb-ink-3); }
+  [data-type-group] dd:first-of-type { grid-column:1; }
+  [data-type-group] dd:last-child { grid-column:2; grid-row:1 / 3; }
+  [data-type-group] p { margin:0; }
+  [data-type-group] [data-specimen] { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--hb-ink); }
   #toast { position:fixed; inset-inline-start:50%; inset-block-end:max(var(--hb-space-5), env(safe-area-inset-bottom)); transform:translateX(-50%); background:var(--hb-surface-3); margin:0; padding:var(--hb-space-3); font:400 var(--hb-text-sm)/1.4 var(--hb-mono); z-index:var(--hb-layer-feedback); max-inline-size:calc(100vw - var(--hb-space-8)); }
   #toast:empty { display:none; }
 }
@@ -183,8 +191,8 @@
     #masthead > fieldset { order:3; margin-inline-start:0; inline-size:100%; }
     #main { padding-block-start:var(--hb-space-6); }
     #frame-introduction { grid-template-columns:minmax(0,1fr); }
-    #type-specimens > div { display:block; }
-    #type-specimens dd:last-child { margin-block-start:var(--hb-space-3); }
+    [data-type-group] > div { display:block; }
+    [data-type-group] dd:last-child { margin-block-start:var(--hb-space-3); }
     #overview-tiers a { min-block-size:var(--hb-target); }
   }
   @media (max-width:520px) {
