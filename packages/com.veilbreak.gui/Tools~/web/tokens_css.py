@@ -3,8 +3,11 @@
 from tokens_css import tokens_css; tokens_css(tokens, font_url=lambda file: 'fonts/' + name)
 """
 
+import json
 import pathlib
 import re
+
+FLUID = json.loads((pathlib.Path(__file__).resolve().parents[2] / 'Tokens~' / 'fluid.json').read_text())
 
 
 def colour_value(v, theme, first):
@@ -38,5 +41,15 @@ def tokens_css(tokens, font_url=lambda f: 'fonts/' + pathlib.Path(f).name):
             root.append(f'--{t["name"]}: {t["value"]};')
     for k, v in tokens['type']['families'].items():
         root.append(f'--font-{k}: {v};')
+    # Type styles (tokens.py writes the same into Tokens.uss) and the fluid scale's baseline: the size ladder and the
+    # heading trims. Fluid.uss overrides them per panel width (.vb-fluid-<w>).
+    for group in tokens['type']['groups']:
+        for s in group['styles']:
+            size = float(s['fontSize'].rstrip('px'))
+            root.append(f'--font-size-{s["name"]}: {s["fontSize"]};')
+            root.append(f'--line-height-{s["name"]}: {s["lineHeight"]};')
+            if s['name'].startswith('heading'):
+                root.append(f'--trim-{s["name"]}: {-round(size * 0.17, 2):g}px;')
+    root += [f'--fs-{n}: {n}px;' for n in FLUID['ladder']]
     css.append(':root { ' + ' '.join(root) + ' }')
     return '\n'.join(css) + '\n'

@@ -81,6 +81,7 @@ kit_js = (
     .read_text()
     .replace('/*@@ICONS@@*/', (GEN / 'icons.js').read_text().rstrip('\n'))
     .replace('/*@@MOTION@@*/', (WEB / 'motion-recipes.js').read_text())
+    .replace('/*@@FLUID@@*/', (WEB / 'fluid-steps.js').read_text())
 )
 api = kit_js.split('var api = {')[1].split('};')[0]
 names = [n for n in re.findall(r'(\w+): \w+', api) if n[0].isupper() and n != 'VbShape']

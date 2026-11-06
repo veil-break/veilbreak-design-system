@@ -32,7 +32,7 @@ if OUT.exists():
 head = '/* @veilbreak/gui — generated from com.veilbreak.gui by Tools~/web/package.py. Do not edit. */\n'
 kit_css = subprocess.run(
     [sys.executable, str(WEB / 'uss2css.py')]
-    + [str(STYLES / f) for f in ('Gui.uss', 'Layout.uss', 'Views.uss', 'World.uss', 'Motion.uss')],
+    + [str(STYLES / f) for f in ('Gui.uss', 'Layout.uss', 'Views.uss', 'World.uss', 'Motion.uss', 'Fluid.uss')],
     check=True,
     capture_output=True,
     text=True,
@@ -53,6 +53,7 @@ kit = (
     .read_text()
     .replace('/*@@ICONS@@*/', icons.rstrip('\n'))
     .replace('/*@@MOTION@@*/', (WEB / 'motion-recipes.js').read_text())
+    .replace('/*@@FLUID@@*/', (WEB / 'fluid-steps.js').read_text())
 )
 (OUT / 'veilbreak.js').write_text(head + kit)
 api = kit.split('var api = {')[1].split('};')[0]
@@ -66,7 +67,7 @@ esm = (
     + '})(window);\n'
     'export const Veilbreak = window.Veilbreak;\nexport default Veilbreak;\n'
     + ''.join(f'export const {n} = Veilbreak.{n};\n' for n in names)
-    + 'export const format = Veilbreak.format;\n'
+    + 'export const format = Veilbreak.format;\nexport const fluid = Veilbreak.fluid;\n'
 )
 (OUT / 'veilbreak.mjs').write_text(esm)
 

@@ -9,6 +9,7 @@
   var useIsoLayout = typeof document !== 'undefined' ? R.useLayoutEffect : R.useEffect;
 /*@@ICONS@@*/
 /*@@MOTION@@*/
+/*@@FLUID@@*/
 
   function cx() { return Array.prototype.filter.call(arguments, Boolean).join(' '); }
   function clamp01(n) { n = Number(n); return isNaN(n) ? 0 : Math.max(0, Math.min(1, n)); }
@@ -140,6 +141,37 @@
     return h(p.as || 'div', props, h('svg', { className: 'vb-paint', 'data-vb-paint': '', 'aria-hidden': true }), p.children);
   });
 
+  /* ── VbFluid: every .vb-root carries vb-fluid-<step> for its width (Fluid.uss overrides the type, spacing and layout tokens) ── */
+  function fluidStep(width) { var at = 0; for (var i = 0; i < FLUID_STEPS.length; i++) if (width >= FLUID_STEPS[i]) at = i; return FLUID_STEPS[at]; }
+  /** VbFluid.Apply: the step class for the root's width, the old one off; true when it changed. */
+  function fluidApply(el) {
+    var width = el && el.offsetWidth; if (!width) return false;
+    var next = 'vb-fluid-' + fluidStep(width);
+    if (el.__vbFluid === next && el.classList.contains(next)) return false;
+    if (el.__vbFluid) el.classList.remove(el.__vbFluid);
+    el.__vbFluid = next; el.classList.add(next); return true;
+  }
+  var fluidSizes = window.ResizeObserver ? new ResizeObserver(function (list) { list.forEach(function (e) { fluidApply(e.target); }); }) : null;
+  var fluidClasses = window.MutationObserver ? new MutationObserver(function (list) { list.forEach(function (m) { fluidApply(m.target); }); }) : null;
+  function fluidWatch(el) {
+    if (el.__vbFluidWatched || el.classList.contains('vb-popover') || !fluidSizes) return;
+    el.__vbFluidWatched = true; fluidSizes.observe(el); fluidClasses.observe(el, { attributes: true, attributeFilter: ['class'] }); fluidApply(el);
+  }
+  function fluidScan(node) {
+    if (!node || node.nodeType !== 1) return;
+    if (node.matches('.vb-root')) fluidWatch(node);
+    Array.prototype.forEach.call(node.querySelectorAll('.vb-root'), fluidWatch);
+  }
+  if (typeof document !== 'undefined' && fluidSizes) {
+    var fluidStart = function () {
+      fluidScan(document.body);
+      new MutationObserver(function (list) { list.forEach(function (m) { Array.prototype.forEach.call(m.addedNodes, fluidScan); }); }).observe(document.body, { childList: true, subtree: true });
+    };
+    if (document.body) fluidStart(); else document.addEventListener('DOMContentLoaded', fluidStart);
+  }
+  /** VbFluid.Copy: the step class an anchor works under, for a layer that lives outside its board. */
+  function fluidOf(el) { var root = el && el.closest('.vb-root'); return root && root.__vbFluid || ''; }
+
   var ROOT_FLAGS = ['vb-compact', 'vb-large-text', 'vb-reduced-motion', 'vb-reduced-flashes', 'vb-contrast'];  // SafeAreaRoot.RootClasses
   // Recipes are generated from the same contract as Unity MotionRecipes.
   function reducedMotion(node) { return !!(node && node.closest('.vb-reduced-motion')) || (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); }
@@ -209,7 +241,7 @@
     };
     var content = open ? build() : null, a = content && anchor.current;
     // Popover.Open: the layer sits outside the board, so it copies the anchor's root flags and theme.
-    var flags = a ? ROOT_FLAGS.filter(function (c) { return a.closest('.' + c); }) : [], themed = a && a.closest('[data-theme]');
+    var flags = a ? ROOT_FLAGS.filter(function (c) { return a.closest('.' + c); }).concat(fluidOf(a) || []) : [], themed = a && a.closest('[data-theme]');
     var layer = content ? window.ReactDOM.createPortal(h('div', {
       ref: pop, role: 'region', 'aria-label': 'Details', onPointerEnter:cancelClose, onPointerLeave:later, onFocus:cancelClose, onBlur:later, className: cx('vb-root vb-popover', flags.join(' ')), 'data-theme': themed ? themed.getAttribute('data-theme') : undefined,
       style: { position: 'fixed', left: at ? at[0] : -9999, top: at ? at[1] : -9999, maxWidth: Math.max(80, window.innerWidth - 16), maxHeight: Math.max(80, window.innerHeight - 32), overflowY: 'auto', zIndex: 50, pointerEvents: 'auto' }
@@ -1057,7 +1089,7 @@
     DrawerOverlay: DrawerOverlay, FieldComposite: FieldComposite, Fieldset: Fieldset, FormComposite: FormComposite, StackLayout: StackLayout, VbGrid: VbGrid, ListLayout: ListLayout, BoardLayout: BoardLayout,
     MainMenuView: MainMenuView, MenuActionsSectionView: MenuActionsSectionView, SquadView: SquadView, SettingsView: SettingsView, PauseOverlayView: PauseOverlayView, ConfirmDialogView: ConfirmDialogView,
     GuideDialogView: GuideDialogView, PerkDraftView: PerkDraftView, ResultsView: ResultsView, HighScoresView: HighScoresView, RouteChoiceView: RouteChoiceView, MerchantScreenView: MerchantScreenView, BattleHudView: BattleHudView,
-    VbShape: Shape, format: { compact: compact, number: num, seconds: seconds, kebab: kebab }
+    VbShape: Shape, fluid: { step: fluidStep, apply: fluidApply, classFor: function (w) { return 'vb-fluid-' + fluidStep(w); } }, format: { compact: compact, number: num, seconds: seconds, kebab: kebab }
   };
   window.Veilbreak = Object.assign(window.Veilbreak || {}, api);
 })();

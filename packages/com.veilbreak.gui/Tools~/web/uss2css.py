@@ -1,4 +1,4 @@
-"""Port com.veilbreak.gui's USS (Gui.uss, Layout.uss, World.uss) to web CSS for the design system artifact.
+"""Port com.veilbreak.gui's USS (Gui.uss, Layout.uss, Views.uss, World.uss, Motion.uss, Fluid.uss) to web CSS for the design system artifact.
 
 Mechanical, so values stay exact: class and --vb-* shape property names are kept (the legacy web kit is renamed to
 vbl- instead), token variables -> the design system's names (--vb-color-text -> --text), :root -> .vb-root,
@@ -69,6 +69,8 @@ def decl(prop, value, selector):
         return [('background-image', value)]
     if prop.startswith('-unity-'):
         raise SystemExit(f'unmapped {prop} in {selector}')
+    if prop.startswith('--vb-') and selector.startswith('.vb-fluid-'):
+        return [('--' + prop[5:], value)]  # Fluid.uss overrides tokens, which the web names without vb-
     if prop.startswith('--vb-'):
         return [(prop, tokens(value))]
     if prop == 'scale':

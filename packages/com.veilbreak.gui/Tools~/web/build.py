@@ -45,7 +45,7 @@ def build(out):
     styles = PKG / 'Runtime' / 'Styles'
     run(
         'uss2css.py',
-        *(styles / f'{name}.uss' for name in ('Gui', 'Layout', 'Views', 'World', 'Motion')),
+        *(styles / f'{name}.uss' for name in ('Gui', 'Layout', 'Views', 'World', 'Motion', 'Fluid')),
         output=generated / 'kit.css',
     )
     run('icons_js.py', PKG / 'Runtime', output=generated / 'icons.js')
