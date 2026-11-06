@@ -55,7 +55,7 @@ public sealed class CompositeTests {
   Assert.IsFalse(Markup.Rich("*a* and *b* and *c*").Contains("*"));}
  [Test] public void EveryDescriptionLabelFormatsEmphasis(){
   var detail=new UnitDetail().Bind(new OperativeView{name="Aria",passive="Momentum Tax",passiveText="Each hit adds one *Taxed* stack.",passiveFullText="*Taxed* stacks slow.",skills=new[]{new SkillView{description="Deals *double* damage."}}},0,false);
-  Assert.IsFalse(Texts(detail).Any(t=>t.Contains("*")),string.Join(" | ",Texts(detail)));Assert.IsFalse(detail.Q<Label>(className:"vb-details__passive-text").tooltip.Contains("*"));
+  Assert.IsFalse(Texts(detail).Any(t=>t.Contains("*")),string.Join(" | ",Texts(detail)));var passiveRow=detail.Query<SkillSummary>().ToList()[0];Assert.IsFalse(passiveRow.tooltip.Contains("*"),"The passive is the first row of the sheet's list");
   var perk=new PerkDetail().Bind(new PerkView{name="Quickdraw",effect="*Faster* skills",now="",next="+12%"},true);Assert.IsFalse(Texts(perk).Any(t=>t.Contains("*")));
   var card=new ChoiceCard().Bind(new PerkView{name="Quickdraw",effect="*Faster* skills"},false);Assert.IsFalse(Texts(card).Any(t=>t.Contains("*")));}
  // ds#34: a pair mirrors; rank cells; a perk says each thing once.
@@ -117,7 +117,7 @@ public sealed class CompositeTests {
   Assert.IsNotNull(m.Q<IconButtonComposite>("exit"),"EXIT is an icon button");Assert.IsNull(m.Q<VbButton>("exit"));Assert.IsNotNull(m.Q(className:"vb-menu__row"),"Hosts add their action to this row");}
  [Test] public void PauseHasNoCaptionNoSubLineAndAnInfoPopoverForTheSeed(){
   var p=new PauseOverlayView().Bind(new PauseViewModel{wave=3,score=10,standing=4,seed="698043EE",detail="rules 7"});Assert.IsFalse(Texts(p).Any(t=>t.Contains("frozen")||t.Contains("Seed")||t.Contains("selected speed")));
-  Assert.AreEqual(DisplayStyle.Flex,p.Q<IconButtonComposite>("run-info").style.display.value);Assert.IsNotNull(p.Info);var row=p.Q<ActionRow>();Assert.IsNotNull(row,"SETTINGS and ABANDON share an action row");Assert.IsNotNull(row.Q<VbButton>("abandon"));
+  Assert.AreEqual(DisplayStyle.Flex,p.Q<IconButtonComposite>("run-info").style.display.value);Assert.IsNotNull(p.Info);var row=p.Q<ActionRow>();Assert.IsNotNull(row,"EXIT, ABANDON and the settings cog share one action row");Assert.IsNotNull(row.Q<VbButton>("abandon"));Assert.IsNotNull(row.Q<VbButton>("settings"));
   Assert.IsTrue(p.Q<VbButton>("exit").ClassListContains("vb-button--lead"),"EXIT TO MENU leads with ‹, it does not trail a chevron");
   p.Bind(new PauseViewModel{wave=3});Assert.AreEqual(DisplayStyle.None,p.Q<IconButtonComposite>("run-info").style.display.value,"No seed line, no info button");}
  [Test] public void SettingsPutClearScoresInADataSectionAndReducedMotionUnderAccessibility(){
