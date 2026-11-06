@@ -460,14 +460,15 @@ One high-score line.
 
 The portrait battle card. It carries the name only (no code over it), up to three timed statuses as icons on the portrait, and two skills.
 
-- **API:** `Bind(OperativeView)`; `Skill(0 | 1)` returns the A and S `SkillButton`s for the game's manipulators; `Statuses` is the `StatusPips`.
+- **API:** `Bind(OperativeView)`; `Skill(0 | 1)` returns the A and S `SkillButton`s for the game's manipulators; `Statuses` is the `StatusRow` above the card; `Damage(strength)` plays the damage edge (`AutoDamage`, on by default, plays it when the bound hit points fall).
 - **View model:** `OperativeView`: `id`, `name`, `code`, `role`, `roleIcon`, `kit`, `portrait`, `hp`, `maxHp`, `barrier`, `armor`, `stability`,
   `maxStability`, `effects`, `mode`, `manualSeconds`, `canRevive`, `skills`, `passive…`.
 - **States:** `vb-operative--auto`, `--manual`, `--aiming` (brackets and glow), `--fallen` (one FALLEN, a greyed portrait, the name struck through; "Revive via perk"
   only while `canRevive`). The mode chip shows only for a non-default mode (MANUAL with seconds, AIMING), truncates inside the card and is hidden for auto and fallen:
   the HUD toggle states autoplay once.
-- **Statuses:** `StatusPips` shows at most three effects that have a time left (`EffectInstance.Timed`); a passive or a perk is not a status and never shows. The strip is
-  one 44-unit target and opens `EffectList`. A unit with no timed status shows nothing.
+- **Statuses:** `StatusRow` is a row of tiny badge squares (about 20 × 20, at most six and a "+n") above the card for the effects that have a time left (`EffectInstance.Timed`);
+  a passive or a perk is not a status and never shows. The row is one 44-unit target and hover, focus or tap opens `EffectList` vertically in a popover. A unit with no timed status shows nothing.
+- **Clipping:** the portrait is a `VbClipImage` and the card's last skill (`vb-operative__skill-end`) takes the card's cut, so nothing overflows the top-left cutout or the bottom-right corner.
 - **USS:** `__band`, `__portrait`, `__shade`, `__chip`, `__kit`, `__body`, `__name`, `__numbers`, `__hp`, `__barrier`, `__skills`, `__fallen`, `__fallen-title`, `__fallen-hint`;
   `vb-pips`, `__icon--harm`, `__icon--benefit`. (The class names keep the `vb-operative` prefix.)
 - **Access:** the mode chip is a word; statuses are glyphs with a tooltip and a list; OUT when fallen.
@@ -500,11 +501,11 @@ The unit sheet.
 - **API:** `Bind(view, slot, squadFull, maxHp, maxArmor, maxStability, showStability)`. Subscribe to `Closed` and `Toggled`.
 - **Shows:**
   - Health and armor bars, scaled to the roster maximums, and stability when `showStability` (`SquadView` passes `SquadView.StabilityVaries(roster)`: hidden while every operative reads the same).
-  - The passive; emphasis marks (`*Taxed*`) render as emphasis through `Markup`.
-  - Both skills, with cost and cooldown.
+  - One list of `SkillSummary` rows: the passive (`passive`, `passiveText`, `passiveIcon`), the basic attack (`OperativeView.basic`, `slot="B"`, `kind="Basic"`) and both skills, with cost and cooldown only where there is one; emphasis marks (`*Taxed*`) render as emphasis through `Markup`. `UnitDetail.Rows(view)` is that list.
+  - A LORE prompt after the skills (`OperativeView.lore`; hidden when empty).
   - ADD TO SQUAD or REMOVE FROM SQUAD (danger). When the squad is full, adding is blocked with "Squad full · remove one first".
 - **USS:** `vb-details`, `__head`, `__kit`, `__name`, `__role`, `__slot`, `__slot--in`, `__close` (a plain icon button, 44 units), `__stats`,
-  `__passive`, `__skills`, `__skill`, `__skill-icon`, `__skill-name`, `__skill-desc`, `__skill-cost`, `__toggle`.
+  `__skills`, `__lore-box`, `__lore`, `__skill`, `__skill-icon`, `__skill-name`, `__skill-desc`, `__skill-cost`, `__toggle`.
 
 ### UnitStats and ResultSummary (were `OperativeStats` and `SquadResult`)
 
@@ -744,12 +745,58 @@ fighters that cannot retain 1 HP cannot trade. Instant rewards are excluded from
 on the right, credits sit beside Power. While an aim is live its hint ("Needle Storm · −18 · replaces auto") is the first line of the cancel band, above RELEASE TO CANCEL. `WaveSlammed` lets the host request its own bounded camera jolt; the GUI has
 no dependency on a camera or arcade simulation. The host must use actual safe-area insets, with a small battle fallback.
 
+## GUI polish (gui 0.9.0, design-system#55)
+
+### Type variants and the fluid scale
+
+Three variants carry every run of text. **Body** is prose, slightly dimmed (`vb-t-body`, `vb-t-body-sm`, `vb-t-caption`; `--vb-font-size-body` 13). **Label** is the small tracked face of buttons (the primary included), badges, chips, eyebrows and subheadings:
+0.88× body (11.5), 0.15em tracking, `vb-t-label-sm` (10, = `vb-t-badge`), `vb-t-label` and `vb-t-label-lg` (13.5). **Heading** is bold with negative tracking and a 0.9 line: `vb-t-heading-sm` (13), `vb-t-heading` (20, = `vb-t-title`)
+and `vb-t-heading-lg` (32, = `vb-t-display`). `Gui.uss` lists each component's text class in its variant's block, so a size changes in one place; `TypeStyle` has a member for each (`LabelSize.Large` for eyebrows).
+UI Toolkit has no `line-height`: a top-level heading trims its leading with a negative margin (`--vb-trim-*`); a heading that wraps keeps the font's own leading. letter-spacing is in hundredths of an em.
+
+Every `font-size` in the sheets reads a token, and the **fluid scale** moves them with the panel's width: `Fluid.uss` (generated by `Tools~/fluid.py` from `Tokens~/fluid.json`) has one class per step, `vb-fluid-320` to `vb-fluid-600`, that overrides the type sizes,
+the spacing and layout tokens (`--vb-gutter` 12, `--vb-pad` 16, `--vb-gap` 8, `--vb-margin` 24) and the size ladder (`--vb-fs-<n>`) with value × factor (0.92 at 320, 1 at 390, 1.06 at 430, 1.18 from 600).
+`VbFluid.Apply(root, width)` sets the class (`SafeAreaRoot.Flags` does it from the panel's width); `VbFluid.Factor(width)` and `ClassFor(width)` are the pure functions. Popovers copy the class from their anchor.
+
+### ActionRow.Single and the icon-only button
+
+`ActionRow.Single` keeps its buttons on one line at any width: they share the row, drop their trailing glyph and may wrap their label, and an icon-only child (`VbButton.IconOnly`, `IconButtonComposite`) keeps its 48-unit square. `VbButton.IconOnly` shows
+the glyph alone; the title is its accessible label (the tooltip). The menu is HIGH SCORES and a settings cog; the pause sheet is RESUME, then EXIT TO MENU, ABANDON and the cog in one row.
+
+### VbEdgeFx
+
+The animated border of the MONO wireframe kit on any shaped element: `VbEdgeFx.Attach(e)` plays it on click or submit (`VbButton` and `Clickable` attach it); `VbEdgeFx.Play(e, tone)`, `VbEdgeFx.Damage(e, strength)` and `UnitCard.Damage` play it by hand. **Activate** (520 ms):
+two heads from opposite points of the cut outline run clockwise with fading tails and a soft glow in the element's edge colours, then an afterglow fades. **Damage** (560 ms): a translucent red flash and a red border glow. Reduced motion lights the whole edge and fades it in 100 ms;
+reduced flashes drop the flash fill. The overlay is one `vb-edgefx` child, added when it plays and removed when it ends; `Active`, `Playing` and `Cancel` read and end it. Real time (`VbMotion.Clock`).
+
+### VbClipFill and VbClipImage
+
+`overflow: hidden` clips to a rectangle, so art that reaches a chamfer used to overflow it. `VbClipFill` (a solid block; its colour is `--vb-fill`) and `VbClipImage` (a picture scaled to fit; set `Image` or `Ui.Image`) paint themselves as polygons clipped to the outline of the nearest
+`VbShape` ancestor (`VbClip.Polygon`, `VbClip.Intersect`). The unit card's portrait, the tile's and slot's picture and a skill's charge and sweep use them.
+
+### StatusRow
+
+`StatusRow` shows the timed statuses of a unit as `StatusSquare`s (about 20 × 20 `BadgeComponent`s: the glyph alone, harm or benefit in the tone, the stack count in the corner; at most six, then a "+n"). The whole row is a 44-unit target; hover, focus or tap opens one vertical
+`EffectList` in `Details`. `Bind(EffectInstance[])` reuses the squares. `UnitCard.Statuses` is one.
+
+### Carousel
+
+Cards in an endless row: the active one takes 64% of the width and sits on top, its neighbours are tucked beneath it and tilted (two a side from five cards), and the row changes by swipe, a tap on a card beneath, the arrow keys or focus; it glides (320 ms, real time) and jumps under reduced motion.
+`Bind(values, key, create, bind, selected)` keeps one element per key; `Select(i)` is the host's own move; `Changed(i)` reports the player's. `Index`, `Slot` (the continuous position), `Count`, `Depth`, `Active`, `Next()`, `Previous()`, and the pure `Offset`, `Pose` and `Shortest` for tests.
+Any element is a card; `PerkDraftView` uses `ChoiceCard`s, which already carry the perk's effect and next value, so the draft shows no second copy of the active card.
+
+### Overlay transitions and the title reveal
+
+One recipe family: `MotionRecipes.OverlayIn` (220 ms) and `OverlayOut` (150), `PopoverIn` (140) and `PopoverOut` (90), `DrawerIn` (320) and `DrawerOut` (220). `OverlayView.Entrance` and `Exit` default to the overlay pair; the modal layer fades and its sheet rises; `AutoPresent` lets a pause sheet or dialog
+present itself on attach. `Glitch.Reveal(e, ms = 2000)` decodes a title or eyebrow out of noise (4-unit sideways jitter, coarse opacity steps, bands and a chromatic split on a `GlitchText`) and ends on the real text at rest; elements with the class `vb-reveal-title` reveal when their overlay
+or screen is presented (`Glitch.RevealTitles`), and `Announcer.RevealMilliseconds` gives heads-up notices the same recipe. Reduced motion or flashes: the whole text with a 300 ms fade.
+
 ## Text, labels, badges, tiles and cards
 
 ### TextComponent and LabelComponent
 
-`TextComponent : Label` carries one type style (`TypeStyle.Display`, `Title`, `Label`, `Badge`, `Body`, `Caption`, `Num`
-→ `vb-t-*`) and a tone (`TextTone.Ally`, `Enemy`, `Power`, `Muted` → `vb-t-ally` …; `Default` adds nothing). UXML:
+`TextComponent : Label` carries one type style (`TypeStyle.Display`, `Title`, `Label`, `Badge`, `Body`, `Caption`, `Num`, `Heading`, `HeadingSm`, `HeadingLg`, `LabelSm`, `LabelLg`, `BodySm`
+→ `vb-t-*`; the three variants are described under GUI polish) and a tone (`TextTone.Ally`, `Enemy`, `Power`, `Muted` → `vb-t-ally` …; `Default` adds nothing). UXML:
 `<vb:TextComponent type-style="Caption" tone="Muted" text="…"/>`. `LabelComponent` is the caps eyebrow: it uppercases its
 text, takes `LabelSize.Label` or `Badge`, and adds `vb-label` (4 units under it). `Ui.Text(parent, text, TypeStyle, tone)`
 and `Ui.Eyebrow(parent, text)` build them.

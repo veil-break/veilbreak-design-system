@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.6.0 — 2026-11-06
+
+- Requires gui 0.9.0: the GUI polish batch (design-system#55): the three text variants and the fluid scale, single-row action rows with an icon-only button, the activation and damage edge effect, content that follows the cut corner, the status badge row, the unit sheet's basic skill, passive and lore, the `Carousel`, one short overlay transition and the glitch title reveal; release 0.20.0.
+
 ## 1.5.0 — 2026-11-06
 
 - Requires gui 0.8.0: the border rule, `ActionRow`, fitted drawers, the restyled popover, merged world labels, draggable squad slots and one shape vocabulary (design-system#38), and the generic composites `UnitCard`, `SkillButton`, `ChoiceCard`, `StatRow`, `ChipRow` with the screen views' text cuts (design-system#39); release 0.18.0.
