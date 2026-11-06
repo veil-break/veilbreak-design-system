@@ -4,8 +4,8 @@ namespace Veilbreak.Cityscape {
 /// <summary>Owns the street for one scene: the streamer, the light budget, the air and the sky dome. Each frame the
 /// consumer passes the road distance, the theme it wants, presentation time and the action focus; the director blends
 /// the look toward that theme over <see cref="BlendSeconds"/> and publishes it: the city shader globals, trilight
-/// ambient, fog, the moon and the camera background. `high` (Standard tier) turns on the mirrored reflection path,
-/// rain ripples and the larger light, particle and fire budgets.</summary>
+/// ambient, fog, the moon and the camera background. `high` (Standard tier) turns on rain ripples and the larger
+/// light, particle and fire budgets. The host may install the mirror feature on either tier.</summary>
 public sealed class EnvironmentDirector:MonoBehaviour {
  public const float BlendSeconds=8;public const int HighLights=8,LowLights=2;
  /// <summary>Every blended value of a <see cref="StreetTheme"/>.</summary>
@@ -40,6 +40,7 @@ public sealed class EnvironmentDirector:MonoBehaviour {
  public void Initialize(CityKit kit,StreetTheme[] themes,uint seed,Camera view,bool high,int theme=0,SegmentStreamer.SeedFunction segmentSeed=null,ISegmentPlan plan=null){
   if(!keyword){High=GlobalKeyword.Create("_VEIL_HIGH");keyword=true;}
   this.kit=kit;this.themes=themes;this.view=view;this.high=high;Theme=Mathf.Clamp(theme,0,themes.Length-1);Current=Look.From(themes[Theme]);blend=1;
+  Shader.SetGlobalTexture(ReflectionTex,Texture2D.blackTexture);
   Street=Child<StreetStreamer>("Street");Street.Initialize(kit,themes,seed,8,high,segmentSeed);Street.Plan=plan;
   Lights=Child<LightBudget>("Light budget");Lights.Initialize(high?HighLights:LowLights);
   Air=Child<Atmospherics>("Atmospherics");Air.Initialize(kit,high);
@@ -84,15 +85,15 @@ public sealed class EnvironmentDirector:MonoBehaviour {
  void Publish(double distance,float time){
   var l=Current;
   Shader.SetGlobalVector(Params,new Vector4((float)(distance%1024),time,l.wetness,l.rain));
-  Shader.SetGlobalVector(LightId,new Vector4(l.windowBrightness,l.lampBrightness,l.skyReflection,high?l.mirrorReflection:0));
+  Shader.SetGlobalVector(LightId,new Vector4(l.windowBrightness,l.lampBrightness,l.skyReflection,l.mirrorReflection));
   Shader.SetGlobalColor(SkyTint,l.skyTint);Shader.SetGlobalColor(Horizon,l.horizon);
   if(kit.noise!=null)Shader.SetGlobalTexture(Noise,kit.noise);if(kit.skyPlate!=null)Shader.SetGlobalTexture(SkyTex,kit.skyPlate);
-  if(!high)Shader.SetGlobalTexture(ReflectionTex,Texture2D.blackTexture);Shader.SetKeyword(High,high);
+  Shader.SetKeyword(High,high);
   RenderSettings.ambientMode=AmbientMode.Trilight;RenderSettings.ambientSkyColor=l.ambientSky;RenderSettings.ambientEquatorColor=l.ambientEquator;RenderSettings.ambientGroundColor=l.ambientGround;
   RenderSettings.fog=true;RenderSettings.fogMode=FogMode.Exponential;RenderSettings.fogColor=l.fog;RenderSettings.fogDensity=l.fogDensity;
   if(view!=null){view.clearFlags=CameraClearFlags.SolidColor;view.backgroundColor=l.horizon;}
   if(moon!=null){moon.color=l.moon;moon.intensity=l.moonIntensity;moon.transform.rotation=Quaternion.Euler(l.moonAngles.x,l.moonAngles.y,0);moon.shadows=high?LightShadows.Soft:LightShadows.Hard;}
  }
- void OnDestroy(){if(keyword)Shader.SetKeyword(High,false);FireLight.ResetClock();}
+ void OnDestroy(){if(keyword)Shader.SetKeyword(High,false);Shader.SetGlobalTexture(ReflectionTex,Texture2D.blackTexture);FireLight.ResetClock();}
 }
 }

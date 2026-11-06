@@ -23,7 +23,7 @@ director.Present(distanceMetres, themeIndex, presentationTime, delta, actionFocu
 `cityKit` is `Runtime/CityKit.asset`. `themes` are `StreetTheme` assets that the consumer owns. Pass simulation time as
 `delta`, so the street, its lights and its air pause and speed up with the game. Set `director.Volume` to the game's
 effects level each frame (master volume belongs on the AudioListener): it levels the rain and hum beds and the
-positional fire crackle. On the Standard tier, add
+positional fire crackle. On either tier, add
 `VeilReflectionFeature` (with `Runtime/Shaders/ReflectionBlur.shader`) to the renderer. Without that feature, puddles
 reflect only the painted sky.
 
@@ -83,7 +83,7 @@ director.Present(distanceMetres, presentationTime, delta, actionFocus, groundSpe
   wrapped to 1024 m, which is a multiple of every pattern period. Patterns therefore run seamlessly across segments.
 - **Budgets.** At most 25k triangles per segment on Standard and 12k on Low. A heavily ruined theme peaks around 13.6k on
   Standard. Low builds its own, lighter blocks (no roof clutter, corner towers or upper-floor facade detail) while keeping the
-  Standard layout of lamps, fires and signs, and it has fewer lights, particles and fires and no mirror pass.
+  Standard layout of lamps, fires and signs, and it has fewer lights, particles and fires and a host-selected lower-resolution mirror pass.
 
 ## Regenerating
 
@@ -102,3 +102,9 @@ director.Present(distanceMetres, presentationTime, delta, actionFocus, groundSpe
   `Tools~/textures.py`.
 - **Audio.** `A_Rain_Loop`, `A_CityHum_Loop` and `A_Fire_Loop` are synthesised by `Tools~/audio.py`.
 - **Ownership.** See `LICENSE.md`.
+
+Full actor reflections: register each renderer with `ReflectionSet.Set(renderer, materials, submeshes, solid: true)`.
+The materials must provide a `VeilReflection` pass with depth writing and the `_VeilMirrorClip` projection.
+Lights retain the vertically blurred path; solid actors draw afterward into the same texture with a depth attachment.
+Register the feature on each renderer that needs mirrors (for example half resolution on Standard and quarter on Low).
+Unregister destroyed or pooled renderers. The host owns actor materials, shadows and quality settings.

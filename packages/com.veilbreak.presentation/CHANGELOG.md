@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.0 — 2026-11-06
+
+- Requires environment 0.5.0: full actor reflections and a mirror pass that the host may enable on either tier.
+
 ## 1.3.0 — 2026-11-02
 
 - Tested version of `com.veilbreak.environment` moves to 0.4.0 (per-index `ISegmentPlan`, `IStreetKit`, pause and reduced-motion fixes). The other three stay.

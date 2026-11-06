@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.5.0 — 2026-11-06
+
+- `ReflectionSet.Set(..., solid: true)` registers full actor silhouettes. Solid reflections draw with a depth attachment
+  after the environmental light blur, preserving body detail and mutual occlusion.
+- The street mirror can run on either tier; the host selects its resolution and registers `VeilReflectionFeature`.
+  Low retains its cheaper geometry, lighting and rain. Scenes without the feature keep the sky reflection only.
+- Reset the mirror texture on environment initialization and destruction. Unity/mobile rendering remains to be verified;
+  no Unity 6000.3 editor is available in the cloud coding environment.
+
 ## 0.4.0 — 2026-11-02
 
 Additive per-index segment plan; the legacy `Present(distance, theme, ...)` path, its seeds and `SegmentStreamer.DefaultSeed` are unchanged except for the fire-timing fixes below (fires follow the host delta and reduced motion holds them steady). The director resets the shared fire clock when destroyed.

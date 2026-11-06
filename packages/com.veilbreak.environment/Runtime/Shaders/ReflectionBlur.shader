@@ -25,7 +25,8 @@ Shader "Hidden/Veilbreak/Environment/ReflectionBlur"
                     c += (SAMPLE_TEXTURE2D_LOD(_BlitTexture, sampler_LinearClamp, i.texcoord + float2(0, o), 0).rgb
                         + SAMPLE_TEXTURE2D_LOD(_BlitTexture, sampler_LinearClamp, i.texcoord - float2(0, o), 0).rgb) * w[k];
                 }
-                return half4(c * 1.1, 1);
+                // Environmental light is additive over sky; solid actors written afterward own coverage in alpha.
+                return half4(c * 1.1, 0);
             }
             ENDHLSL
         }

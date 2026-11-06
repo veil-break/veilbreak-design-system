@@ -1,6 +1,6 @@
 // Wet asphalt and paving for the streamed boulevard. Patterns are laid out in road coordinates (world x, distance along
 // the road), so they run seamlessly across segments: lane paint, cracks, manholes and standing water grown from the
-// shared noise. Water darkens and flattens the surface and reflects the painted sky plus, on Standard, the mirrored
+// shared noise. Water darkens and flattens the surface and reflects the painted sky plus the host's mirrored
 // emissive pass (`_VEIL_HIGH`, set by EnvironmentDirector with the reflection feature). `_SIDEWALK` swaps the lane paint
 // for 1 m paving slabs and keeps curb faces on their mesh normals.
 Shader "Veilbreak/Environment/Street"
@@ -108,11 +108,7 @@ Shader "Veilbreak/Environment/Street"
                 half4 c = UniversalFragmentPBR(input, s);
                 float f = 0.04 + 0.96 * pow(1.0 - saturate(dot(n, input.viewDirectionWS)), 5.0);
                 float k = saturate(lerp(_VeilParams.z * 0.22, 0.92, wet) * lerp(0.55, 1.0, f));
-                #if _VEIL_HIGH
                 half3 reflection = VeilReflect(n, input.viewDirectionWS, VeilMirrorUV(i.w), 1.0 - smooth);
-                #else
-                half3 reflection = VeilReflectedSky(reflect(-input.viewDirectionWS, n)) * _VeilLight.z;
-                #endif
                 c.rgb = c.rgb * (1.0 - k * 0.45) + reflection * k;
                 c.rgb = MixFog(c.rgb, i.fog);
                 return half4(c.rgb, 1);

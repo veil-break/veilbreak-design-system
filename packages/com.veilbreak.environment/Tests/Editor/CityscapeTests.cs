@@ -4,6 +4,11 @@ using UnityEditor;
 using UnityEngine;
 namespace Veilbreak.Cityscape.Tests {
 public sealed class CityscapeTests {
+ [Test] public void SolidReflectionRegistrationIsExplicitAndReplacedWithoutDuplicates(){var host=new GameObject("Mirror body");var renderer=host.AddComponent<MeshRenderer>();var material=new Material(Shader.Find("Veilbreak/Environment/City"));try{
+  ReflectionSet.Set(renderer,new[]{material},new[]{0});Assert.IsFalse(ReflectionSet.Entries.Single(e=>e.renderer==renderer).solid);
+  ReflectionSet.Set(renderer,new[]{material},new[]{0},true);Assert.AreEqual(1,ReflectionSet.Entries.Count(e=>e.renderer==renderer));Assert.IsTrue(ReflectionSet.Entries.Single(e=>e.renderer==renderer).solid);
+  ReflectionSet.Remove(renderer);Assert.IsFalse(ReflectionSet.Entries.Any(e=>e.renderer==renderer));
+ }finally{ReflectionSet.Remove(renderer);Object.DestroyImmediate(host);Object.DestroyImmediate(material);}}
  const string KitPath="Packages/com.veilbreak.environment/Runtime/CityKit.asset";
  /// <summary>Per-segment triangle budgets (plan T4.4): Standard and Low, which drops roof clutter, corner towers and upper-floor facade detail.</summary>
  const int SegmentBudget=25000,LowSegmentBudget=12000;

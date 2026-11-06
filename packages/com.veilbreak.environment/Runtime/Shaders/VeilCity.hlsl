@@ -46,18 +46,18 @@ half3 VeilSky(float3 dir)
 // near-vertical reflections (a high or zoomed-out camera) fall off instead of turning puddles pale.
 half3 VeilReflectedSky(float3 dir) { return VeilSky(dir) * lerp(1.0, 0.3, smoothstep(0.35, 0.85, dir.y)); }
 
-// Wet-surface reflection: the painted sky along the reflected ray plus the mirrored emissive pass (lamps, windows,
-// signs) at this pixel, offset by the surface normal so ripples and roughness break it up.
+// Wet-surface reflection: sky and blurred lights, with solid actor coverage suppressing the sky behind a silhouette.
+// The surface normal offsets the sample so ripples and roughness break it up.
 half3 VeilReflect(float3 normalWS, float3 viewWS, float2 mirrorUV, float roughness)
 {
     float3 r = reflect(-viewWS, normalWS);
     half3 sky = VeilReflectedSky(r) * _VeilLight.z;
     float2 uv = mirrorUV + normalWS.xz * (0.004 + roughness * 0.03);
-    half3 mirror = SAMPLE_TEXTURE2D_LOD(_VeilReflectionTex, sampler_VeilReflectionTex, uv, 0).rgb * _VeilLight.w;
-    return sky + mirror;
+    half4 mirror = SAMPLE_TEXTURE2D_LOD(_VeilReflectionTex, sampler_VeilReflectionTex, uv, 0);
+    return sky * (1 - saturate(mirror.a * _VeilLight.w)) + mirror.rgb * _VeilLight.w;
 }
 
-float2 VeilMirrorUV(float3 positionWS) { float4 p = mul(_VeilMirrorVP, float4(positionWS.x, 0, positionWS.z, 1)); return p.xy / p.w * 0.5 + 0.5; }
+float2 VeilMirrorUV(float3 positionWS) { float4 p = mul(_VeilMirrorVP, float4(positionWS.x, 0, positionWS.z, 1)); return p.xy / max(p.w, 1e-4) * 0.5 + 0.5; }
 
 // Rain rings on standing water: one expanding ring per 0.33 m cell with a random phase and centre.
 float2 VeilRipple(float2 road)
