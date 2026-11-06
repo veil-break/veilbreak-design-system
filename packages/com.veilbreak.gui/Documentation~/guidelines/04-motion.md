@@ -106,6 +106,23 @@ and the epic shimmer. Reduced Flashes also uses fades, removes chromatic splitti
 rarity label and border. High Contrast suppresses decorative channel copies and shimmer. The settings are checked during
 transitions, so changing a setting takes effect without waiting for the next message. Detaching a page cancels its work.
 
+## Feel recipes (gui 0.9.1, design-system#69)
+
+Seven small recipes (`Tokens~/motion.json`, generated into `MotionRecipes` and `Tools~/web/motion-recipes.js`) cover the places that jumped. Each has a branch for reduced motion and one for reduced flashes, reaches the same end state in all four settings
+(full, reduced motion, reduced flashes, both) and leaves nothing behind (`MotionLifecycleTests`).
+
+| Recipe | Time | What moves | Reduced motion | Reduced flashes |
+| --- | --- | --- | --- | --- |
+| `DrawerFit` | 180 ms, real time | a Fit drawer's sheet eases to its new content height | jumps | (no flash) |
+| `LabelMerge`, `LabelSplit` | 180 ms, simulation time | a merged world label swells to 1.12 (members joined) or shrinks to 0.9 (members left) with a brief dip in opacity | opacity dip only | scale only |
+| `DragLift` | 120 ms | a dragged child's ghost rises 4 and grows to 1.05, fading in from 55% | flat, fade only | no fade-in |
+| `DropSettle` | 220 ms | the ghost glides into the slot back to full size, then the slot pops | ghost goes at once | (no flash) |
+| `PressSink` | 100 ms | a pressed skill sinks 1 unit and to 0.92, back on release | does not move, dims 18% | no brightened plate |
+| `Fallen` | 420 ms | a card that falls slumps 6 units and 0.97 back to rest as its colour drains | colour drains only | damage flash without its fill |
+
+`VbMotion.Hold(e, recipe, on)` holds an element in a recipe's pose while it is pressed and eases back on release; `VbMotion.Slump(e, recipe)` eases from a pose to rest. Both run on real time, make no garbage per frame and finish when the element leaves its panel.
+Combat readouts (the label merge) follow the simulation's `delta`, never the clock.
+
 ## Overlays, edges and the title reveal (gui 0.9.0)
 
 Every overlay has a short transition from one recipe family (`MotionRecipes`): a dialog or pause sheet fades and rises in 220 ms (`OverlayIn`) and leaves in 150 (`OverlayOut`), a popover takes 140 and 90 (`PopoverIn`, `PopoverOut`), a drawer slides in 320

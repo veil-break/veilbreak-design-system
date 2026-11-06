@@ -880,7 +880,9 @@
   }
   /** ChoiceCard (ChoiceCard.cs): one option the player takes by tapping it (a road, an extract choice, a perk); the whole card is the button. A short tag, a centred glyph, a title, a few facts (emphasis marks
       render), rank cells (a road's threat, a perk's levels), the value after the pick and the action word at the foot. `side` single | left | right (a pair cuts its outer corners), `tone` ally | enemy | power
-      (the tint and edge). Bind with `road` (a RoadView; `action` defaults to TAKE THIS ROAD) or `perk` (a PerkView; `selected` frames it with brackets), or set the fields directly. */
+      (the tint and edge). Bind with `road` (a RoadView; `action` defaults to TAKE THIS ROAD) or `perk` (a PerkView; `selected` frames it with brackets), or set the fields directly. `compact` is the card as a cell of a two-column
+      grid (no tag, a small glyph, as tall as its content): `owned` binds a perk the run owns (its active value and levels), `offer` a merchant's offer (BUY with the price, SOLD, or the game's reason; with `credits` and `index`) and `sale` a stack the
+      merchant buys (SELL with the payout). `dimmed` greys a card that cannot be taken (and `disabled` takes it out of play); `command` names what picking it does (buy-0, sell-perk-id). */
   function choiceTone(kind) { return kind === 'elite' || kind === 'boss' ? 'enemy' : kind === 'merchant' ? 'power' : 'ally'; }
   function ChoiceCard(p) {
     var c = { tag: p.tag, icon: p.icon, title: p.title, text: p.text, next: p.next, action: p.action, rank: p.rank || 0, ranks: p.ranks || 0, rankNext: !!p.rankNext, rankTone: p.rankTone || 'ally', tooltip: p.tooltip, kind: '', tier: '', tone: p.tone ? kebab(p.tone) : '', id: p.motionId };
@@ -891,9 +893,20 @@
       var k = perk(p.perk); c.tier = tier(k); c.icon = k.icon; c.tag = k.tag; c.title = k.name; c.text = k.effect; c.next = k.next === k.effect ? '' : k.next;
       c.rank = k.stack; c.ranks = k.max > 1 ? k.max : 0; c.rankNext = k.stack < k.max; c.action = null; c.tooltip = k.name + ' · ' + stacks(k, true); c.id = k.id;
     }
+    var compact = !!p.compact, dimmed = !!p.dimmed, command = p.command;
+    if (p.owned) {
+      var o = perk(p.owned); compact = true; c.tier = tier(o); c.icon = o.icon; c.tag = ''; c.title = o.name; c.text = o.stack > 1 && !(o.max > 0) ? o.now + ' ×' + o.stack : o.now; c.next = ''; c.rank = o.stack; c.ranks = o.max > 0 ? o.max : 0; c.rankNext = false;
+      c.action = null; c.tooltip = o.name + ' · ' + stacks(o, false); c.id = o.id;
+    } else if (p.offer) {
+      var f = p.offer, q = perk(f.perk), why = !f.taken && !!f.blocked; compact = true; c.tier = tier(q); c.icon = q.icon; c.tag = ''; c.title = q.name; c.text = q.effect; c.next = ''; c.rank = q.stack; c.ranks = q.max > 1 ? q.max : 0; c.rankNext = q.stack < q.max;
+      c.action = f.taken ? 'SOLD' : why ? f.blocked : 'BUY ' + f.price; dimmed = !!f.taken || why || (p.credits || 0) < f.price; command = 'buy-' + (p.index || 0); c.tooltip = q.name + ' · ' + q.effect; c.id = f.id || q.id + ':' + (p.index || 0);
+    } else if (p.sale) {
+      var w = p.sale, z = perk(w.perk); compact = true; c.tier = tier(z); c.icon = z.icon; c.tag = ''; c.title = z.name; c.text = z.now; c.next = ''; c.rank = z.stack; c.ranks = z.max > 1 ? z.max : 0; c.rankNext = false;
+      c.action = 'SELL +' + w.payout; command = 'sell-perk-' + z.id; c.tooltip = 'Sell ' + z.name + ' for ' + w.payout + ' credits'; c.id = z.id;
+    }
     var side = kebab(p.side || 'single');
-    return h(Shape, Object.assign({ 'data-motion-item': c.id, className: cx('vb-choice', side === 'left' && 'vb-choice--left', side === 'right' && 'vb-choice--right', c.tone && c.tone !== 'default' && 'vb-choice--' + c.tone, c.kind && 'vb-choice--' + c.kind, c.tier, p.selected && 'vb-choice--selected', p.className),
-      style: p.style, title: c.tooltip, onFocus: p.onFocus }, clickable(p.onPick)),
+    return h(Shape, Object.assign({ 'data-motion-item': c.id, 'data-command': command, className: cx('vb-choice', compact && 'vb-choice--compact', dimmed && 'vb-choice--dimmed', side === 'left' && 'vb-choice--left', side === 'right' && 'vb-choice--right', c.tone && c.tone !== 'default' && 'vb-choice--' + c.tone, c.kind && 'vb-choice--' + c.kind, c.tier, p.selected && 'vb-choice--selected', p.className),
+      style: p.style, title: c.tooltip, onFocus: p.onFocus, 'aria-disabled': p.disabled || (p.offer && dimmed) ? true : undefined }, p.disabled || (p.offer && dimmed) ? null : clickable(p.onPick)),
       L('vb-t-badge vb-choice__tag', upper(c.tag || ''), show(!!c.tag)), h(VbIcon, { icon: c.icon || '', size: 28, className: 'vb-choice__glyph' }),
       L('vb-choice__title', upper(c.title || ''), { whiteSpace: 'normal' }), L('vb-t-caption vb-choice__text', rich(c.text), Object.assign({ whiteSpace: 'normal' }, show(!!c.text))),
       c.ranks > 0 ? h(ProgressBar, { className: 'vb-choice__rank', segments: c.ranks, value: c.rank, next: c.rankNext, tone: c.rankTone }) : null, h('div', { className: 'vb-grow' }),
@@ -1171,23 +1184,20 @@
         return h(ChoiceCard, { key: side, motionId: side, side: side ? 'right' : 'left', road: road, onPick: function () { if (!locked.current && p.onChoose) { locked.current = true; p.onChoose(side); } } });
       })));
   }
-  /** MerchantScreen: the rare finds, the stacks to sell and the health trades, each a plated stacked StatRow (the name over its effect, a 44-unit action at the end), and LEAVE MARKET. An offer that cannot be bought
-      is dimmed with no second price; a section with nothing in it does not show; a sale pays in credits (+30). */
+  /** MerchantScreen: the rare finds and the stacks to sell, each a compact ChoiceCard in a two-column grid (the whole card is the button: BUY with the price or SELL with the payout), the health trades, each a plated stacked
+      StatRow with a 44-unit danger action, and LEAVE MARKET. An offer that cannot be bought is dimmed and out of play, with no second price; a section with nothing in it does not show; a sale pays in credits. */
   function MerchantScreen(p) {
     var v = Object.assign({ credits: 0, offers: [], stacks: [], health: [] }, p.view);
     function section(t) { return h(LabelComponent, { key: 's' + t, text: t, className: 'vb-merchant__section' }); }
     return h('div', { className: cx('vb-merchant', p.className), style: p.style },
       h('div', { className: 'vb-merchant__head' }, L('vb-t-title', 'NIGHT MARKET'), h(CreditsChip, { credits: v.credits })),
       h(ListLayout, { className: 'vb-merchant__scroll' },
-        section('Rare finds'), v.offers.map(function (o, i) {
-          var id = o.id || o.perk.id + ':' + i, dim = !!o.taken || v.credits < o.price;
-          return h(StatRow, { key: id, motionId: id, className: 'vb-merchant__offer', plated: true, stacked: true, icon: o.perk.icon, tier: tier(o.perk), label: upper(o.perk.name), value: rich(o.perk.effect), dimmed: dim,
-            action: h(VbButton, { title: o.taken ? 'SOLD' : 'BUY ' + o.price, blocked: o.taken ? '' : o.blocked || '', dimmed: dim, onClick: function () { call(p.onBuy)(i); } }) });
-        }),
-        v.stacks.length ? section('Sell stacks') : null, v.stacks.map(function (k) {
-          return h(StatRow, { key: k.perk.id, className: 'vb-merchant__stack', plated: true, stacked: true, icon: k.perk.icon, tier: tier(k.perk), label: upper(k.perk.name), value: rich(k.perk.now),
-            action: h(VbButton, { title: '+' + k.payout, icon: 'currency', onClick: function () { call(p.onSellPerk)(k.perk.id); } }) });
-        }),
+        section('Rare finds'), h('div', { key: 'o', className: 'vb-grid vb-grid--2 vb-grid--wrap vb-merchant__offers' }, v.offers.map(function (o, i) {
+          return h(ChoiceCard, { key: o.id || o.perk.id + ':' + i, offer: o, index: i, credits: v.credits, className: 'vb-merchant__offer', onPick: function () { call(p.onBuy)(i); } });
+        })),
+        v.stacks.length ? section('Sell stacks') : null, v.stacks.length ? h('div', { key: 'k', className: 'vb-grid vb-grid--2 vb-grid--wrap vb-merchant__stacks' }, v.stacks.map(function (k) {
+          return h(ChoiceCard, { key: k.perk.id, sale: k, className: 'vb-merchant__stack', onPick: function () { call(p.onSellPerk)(k.perk.id); } });
+        })) : null,
         section('Trade health · 25% max HP'), v.health.map(function (x) {
           return h(StatRow, { key: 'h' + x.actor, className: 'vb-merchant__trade', plated: true, stacked: true, icon: 'health', label: upper(x.name), value: x.hp + ' / ' + x.maxHp + ' HP → ' + Math.max(0, x.hp - x.cost) + ' HP', bar: { value: x.hp / Math.max(1, x.maxHp) },
             action: h(VbButton, { title: '+' + x.payout, icon: 'currency', variant: 'danger', blocked: x.blocked || '', onClick: function () { call(p.onSellHealth)(x.actor); } }) });
@@ -1522,10 +1532,10 @@
   }
   /** ResultsView: the score and its ledger, stats, the squad's contribution, the perks, MENU, SQUAD and RUN AGAIN. `view`: ResultsViewModel. */
   function ResultsView(p) {
-    var v = Object.assign({ cause: 'SQUAD DOWN', score: 0, wave: 0, bosses: 0, rank: 0, of: 20, ledger: [], distance: '', simTime: '', squad: [], perks: [] }, p.view), d = (v.distance || '').split(' ');
+    var v = Object.assign({ title: 'RUN OVER', cause: 'SQUAD DOWN', score: 0, wave: 0, bosses: 0, rank: 0, of: 20, ledger: [], distance: '', simTime: '', squad: [], perks: [] }, p.view), d = (v.distance || '').split(' ');
     return View('vb-results', p, [
       h('div', { key: 's', className: 'vb-page__scroll vb-results__scroll', style: { overflowY: 'auto' } },
-        h(LabelComponent, { text: v.cause + ' · wave ' + v.wave, tone: 'enemy', className: 'vb-reveal-title' }), L('vb-t-display vb-reveal-title', 'RUN OVER'),
+        h(LabelComponent, { text: v.cause + ' · wave ' + v.wave, tone: 'enemy', className: 'vb-reveal-title' }), L('vb-t-display vb-reveal-title', upper(v.title || 'RUN OVER')),
         h(Shape, { className: 'vb-panel vb-frame--slim vb-frame--solid vb-results__score' },
           h('div', { className: 'vb-row vb-row--between' }, h('div', null, h(LabelComponent, { text: 'Score' }), L('vb-results__value', num(v.score))), v.rank > 0 && v.score > 0 ? L('vb-results__rank', '#' + v.rank + ' OF ' + v.of) : null),
           h('div', { className: 'vb-results__ledger' }, v.ledger.map(function (l, i) { return h(KeyValueRow, { key: i, label: l.label, value: l.value }); })),
@@ -1571,7 +1581,7 @@
     var v = Object.assign({ wave: 1, perks: [], totals: [], pick: 0 }, p.view), stackCount = v.perks.reduce(function (n, k) { return n + (k.stack || 0); }, 0), totals = v.totals.filter(function (t) { return !zeroTotal(t.value); });
     return View('vb-build', p, [h(ScreenHeader, { key: 'h', title: 'ACTIVE PERKS', meta: stackCount + ' · WAVE ' + pad2(v.wave), onBack: p.onBack }),
       totals.length && v.perks.length ? h(VbFrame, { key: 't', kind: 'slim', className: 'vb-panel vb-build__summary' }, totals.map(function (t) { return h('div', { key: t.label, className: 'vb-build__bonus' }, L('vb-t-badge', t.label), L('vb-build__bonus-value', t.value)); })) : null,
-      h(ListLayout, { key: 'l', className: 'vb-build__list', empty: 'No perks yet. Clear a wave to draft one.' }, v.perks.map(function (e, i) { return h(PerkRow, { key: e.id, view: e, selected: i === v.pick, onPick: function () { call(p.onPick)(i); } }); })),
+      h(ListLayout, { key: 'l', className: 'vb-build__list', empty: 'No perks yet. Clear a wave to draft one.' }, v.perks.length ? h('div', { className: 'vb-grid vb-grid--2 vb-grid--wrap vb-build__grid' }, v.perks.map(function (e, i) { return h(ChoiceCard, { key: e.id, owned: e, selected: i === v.pick, className: 'vb-build__card', onPick: function () { call(p.onPick)(i); } }); })) : null),
       v.perks[v.pick] ? h(PerkDetail, { key: 'd', className: 'vb-build__detail', view: v.perks[v.pick] }) : null], true);
   }
   function RevivePickView(p) { var fallen = p.fallen || []; return View('vb-revive', p, [h(ScreenHeader, { key: 'h', title: 'RESTORE', meta: 'CHOOSE ONE', onBack: p.onBack }), h('p', { key: 'c', className: 'vb-page__caption' }, (p.perk || 'Restore') + ' revives one fallen operative at 35% health.'), h('div', { key: 'g', className: 'vb-grid4 vb-grid4--wrap' }, fallen.map(function (e, i) { return h(UnitTile, { key: e.id, view: e, onPick: function () { call(p.onPick)(i); } }); }))], true); }

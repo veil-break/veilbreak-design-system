@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.9.1 — 2026-11-06
+
+The motion pass of the GUI review (arcade#54) and the follow-ups of the polish batch's adoption (arcade#74); one release, design-system 0.19.1. Arcade adopts these in its next pin.
+
+- **`ChoiceCard` as a compact cell.** `Compact` is the card as a cell of a two-column grid: no tag, a 24-unit glyph, as tall as its content. `BindOwned(PerkView, selected)` shows a perk the run owns (glyph, name, active value, levels), `BindOffer(MerchantOfferView, index, credits)` a
+  merchant's offer (BUY with the price, SOLD, or the game's reason in the action word's place; dimmed and disabled when it cannot be bought, with no second price) and `BindSale(MerchantStackView)` a stack the merchant buys (SELL +payout). `Dimmed` greys a card that cannot be taken, `Command` names what
+  picking it does (`buy-0`, `sell-perk-<id>`) and `Pick()` picks it without a pointer. `ActivePerksView` is a two-column grid of owned `ChoiceCard`s (it was `PerkRow` list rows; `PerkRow` stays) and `MerchantScreen`'s offers and sales are compact `ChoiceCard`s in a two-column grid
+  (they were `StatRow`s); a health trade stays a `StatRow` with its danger button. **Breaking for hosts and tests that address the merchant:** an offer is not a `StatRow` with a `VbButton` named `buy-{index}` any more; it is a `ChoiceCard` (`MerchantScreen.Offer(index)`, `Sale(perkId)`,
+  `ChoiceCard.Command`, `enabledSelf`, `Dimmed`, `ActionText`); a sale's text is `SELL +30` (the button's currency glyph is gone). `sell-hp-{actor}` is unchanged.
+- **`ResultsViewModel.title`.** The heading of `ResultsView` (default "RUN OVER", set in caps by the view; empty keeps the default), for a victory or any ending that is not a squad down.
+- **The 320 draft label clip: reproduced and fixed.** The carry-forward line of `PerkDraftView` ("CARRIES FORWARD · NO HEALING BETWEEN WAVES") is a no-wrap label that measured 282 wide in a 266 box at 320 and ran out of its frame; it wraps now (`.vb-draft__squad > .vb-label`). The same fit test
+  also found `PerkDetail`'s name column sized to its text, a pixel short at 320, which broke a long single-word name mid-word; it takes the rest of the head (`.vb-perk-detail__head-text`). `CloseOutFitTests` measures every shown label of the draft, the active perks and the merchant at 320, 390 and 430 (a box shorter than its lines,
+  a no-wrap label wider than its box, a word wider than its box, a label off the board).
+- **Press-edge test.** `PolishMotionTests.ARealPointerPressThroughClickableClicksAndLightsTheEdge` sends a pointer down and up through the panel to an element made `Clickable`, a `VbButton` and a `ChoiceCard` (and the same under reduced motion): the release clicks once and lights the edge, a press released elsewhere does neither.
+- **Motion recipes** (`Tokens~/motion.json`, so `MotionRecipes` and the web `motion-recipes.js`): `DrawerFit` 180, `LabelMerge` and `LabelSplit` 180, `DragLift` 120, `DropSettle` 220, `PressSink` 100 and `Fallen` 420. Each has a reduced-motion and a reduced-flashes branch and reaches the same end state in all four settings
+  (`MotionLifecycleTests`, 4 settings each); see the motion guideline.
+  - **Fit drawer height.** A Fit `DrawerOverlay` that is open and whose content changes height eases its sheet to the new height (real time) with `vb-drawer--fitting` on, which turns the sheet's USS height transition off so the two do not chase each other; reduced motion jumps. `Fitting` tells.
+  - **Label merge and split.** A merged `WorldLayer` label swells (members joined) or shrinks (members left) once with a brief opacity dip, on simulation time (`EndFrame(delta)`). `WorldLayer.ReducedFlashes` joins `ReducedMotion` (both also read the root classes). `WorldLayer.LabelPose` is the pose.
+  - **Drag lift and drop settle.** `ReorderManipulator`'s ghost rises and grows with a fade-in flash when it lifts, and settles back to full size as it glides into the slot, which then pops once.
+  - **Skill press sink.** `SkillButton` sinks under a press and lets go when the press ends anywhere on the panel (a trickled pointer up or cancel on the panel root, so a game's drag manipulator that holds the pointer does not strand it); the plate brightens while pressed (`vb-skill--press-flash`, not added under reduced flashes). `Pressed` tells.
+    New in `VbMotion`: `Hold(e, recipe, on)` and `Held(e)`.
+  - **Fallen card.** `UnitCard` slumps when it falls while on a panel (`VbMotion.Slump(e, recipe)`), its band, kit stripe and body drain to the fallen look (a 420 ms opacity transition in `Motion.uss`) and the damage flash plays; binding an already fallen card again does nothing.
+- **Public page.** The web kit and the handbook site are rebuilt: `ChoiceCard` takes `owned`, `offer` (with `credits` and `index`), `sale`, `compact`, `dimmed`, `disabled` and `command`; `ActivePerksView` and `MerchantScreen` use it; `ResultsViewModel` has `title`. The motion recipes are Unity-only (the web kit only carries their data).
+- Tests: `CloseOutTests` (EditMode), `CloseOutFitTests` (live boards at 320, 390 and 430), the five recipes' cases in `MotionLifecycleTests` and the press test in `PolishMotionTests`; the merchant tests in `CompositeTests`, `TradeTests` and `ReuseTests` address the cards.
+
 ## 0.9.0 — 2026-11-06
 
 The owner's GUI polish list (design-system#55; one release, design-system 0.19.0). Phase 1, the generic parts; arcade adopts them in arcade#74.

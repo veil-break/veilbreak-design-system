@@ -46,7 +46,7 @@ doc(
 doc(
     'MerchantScreen',
     'Runtime/Composites/RouteMerchant.cs',
-    'A market: priced upgrades, stack sales and explicit HP trades, each a plated stacked StatRow with a 44-unit action.',
+    'A market: priced upgrades and stack sales as compact ChoiceCards in a two-column grid (the whole card is the button), and explicit HP trades as plated stacked StatRows with a 44-unit danger action.',
     '`view` (credits, offers, stacks, health), `onBuy(index)`, `onSellPerk(id)`, `onSellHealth(actor)`, `onLeave`.',
     [
         'The host validates every transaction and updates the view.',
@@ -373,10 +373,11 @@ doc(
     'ChoiceCard',
     'Runtime/Composites/ChoiceCard.cs (ChoiceCard)',
     'One option the player takes by tapping it (a road, an extract choice, a perk); the whole card is the button.',
-    '`road` (RoadView, with `action`, default TAKE THIS ROAD) or `perk` (PerkView) with `selected`; or the fields directly: `tag`, `icon`, `title`, `text`, `next`, `action`, `rank`/`ranks`/`rankNext`/`rankTone`. `side` (`single`, `left`, `right`: a pair cuts its outer corners), `tone` (`ally`, `enemy`, `power`), `onPick`.',
+    '`road` (RoadView, with `action`, default TAKE THIS ROAD) or `perk` (PerkView) with `selected`; `owned` (a perk the run owns), `offer` (with `credits` and `index`) or `sale` (a stack the merchant buys) bind the compact card; `compact`, `dimmed`, `disabled`, `command`; or the fields directly: `tag`, `icon`, `title`, `text`, `next`, `action`, `rank`/`ranks`/`rankNext`/`rankTone`. `side` (`single`, `left`, `right`: a pair cuts its outer corners), `tone` (`ally`, `enemy`, `power`), `onPick`.',
     [
         'A perk is a ChoiceCard wherever it is offered: tier tints the card (general neutral, operative teal, rare cyan, epic violet) and its tag and glyph; a selected card is framed with brackets.',
         'Emphasis marks (`*word*`) in `text` render as emphasis. Only the choice card keeps its edge under the border rule.',
+        '`compact` is the same card as a cell of a two-column grid (the active perks, the merchant): no tag, a small glyph, as tall as its content. A card that cannot be taken is `dimmed` (an offer you cannot pay for) and out of play, with no second price.',
     ],
 )
 doc(
@@ -826,7 +827,7 @@ doc(
 doc(
     'ActivePerksView',
     'Runtime/Views',
-    'Owned perk stacks, category totals and selected explanation.',
+    'Owned perk stacks as compact ChoiceCards in a two-column grid, category totals and the selected perk explained.',
     '`view` or `effects`; callbacks report intent.',
     ['Unity owns the contract; React mirrors it.'],
 )
@@ -936,7 +937,7 @@ export interface ResultSummaryProps { view: ContributionView; pinned?: boolean; 
 export declare function ResultSummary(props: ResultSummaryProps): React.ReactElement;
 export type ChoiceSide = 'single' | 'left' | 'right';
 export type ChoiceTone = 'ally' | 'enemy' | 'power';
-export interface ChoiceCardProps { road?: RoadView; perk?: PerkView; action?: string; selected?: boolean; side?: ChoiceSide; tone?: ChoiceTone; tag?: string; icon?: KitIconName; title?: string; text?: string; next?: string; rank?: number; ranks?: number; rankNext?: boolean; rankTone?: 'ally' | 'enemy' | 'power' | 'neutral'; tooltip?: string; motionId?: string | number; onPick?: () => void; onFocus?: () => void; className?: string; style?: React.CSSProperties }
+export interface ChoiceCardProps { road?: RoadView; perk?: PerkView; owned?: PerkView; offer?: MerchantOfferView; sale?: MerchantStackView; credits?: number; index?: number; compact?: boolean; dimmed?: boolean; disabled?: boolean; command?: string; action?: string; selected?: boolean; side?: ChoiceSide; tone?: ChoiceTone; tag?: string; icon?: KitIconName; title?: string; text?: string; next?: string; rank?: number; ranks?: number; rankNext?: boolean; rankTone?: 'ally' | 'enemy' | 'power' | 'neutral'; tooltip?: string; motionId?: string | number; onPick?: () => void; onFocus?: () => void; className?: string; style?: React.CSSProperties }
 export declare function ChoiceCard(props: ChoiceCardProps): React.ReactElement;
 export interface StatRowProps { label: string; value?: React.ReactNode; good?: boolean; icon?: KitIconName; stacked?: boolean; dimmed?: boolean; plated?: boolean; tier?: string; bar?: { segments?: number; value?: number; next?: boolean; tone?: string } | null; action?: React.ReactNode; motionId?: string | number; className?: string; style?: React.CSSProperties }
 export declare function StatRow(props: StatRowProps): React.ReactElement;
@@ -1016,7 +1017,7 @@ export declare function GuideDialogView(props: Base & { title?: string; steps?: 
 export interface SquadHealthView { code: string; hp: number; maxHp: number; stability?: number }
 export interface PerkDraftViewModel { wave: number; bonus?: number; score?: number; choices: PerkView[]; pick?: number; squad?: SquadHealthView[] }
 export declare function PerkDraftView(props: Base & { view: PerkDraftViewModel; onPick?: (index: number) => void; onTake?: () => void; onPerks?: () => void }): React.ReactElement;
-export interface ResultsViewModel { cause?: string; score: number; wave: number; bosses?: number; rank?: number; of?: number; ledger?: { label: string; value: string }[]; distance?: string; simTime?: string; squad?: ContributionView[]; perks?: PerkView[] }
+export interface ResultsViewModel { title?: string; cause?: string; score: number; wave: number; bosses?: number; rank?: number; of?: number; ledger?: { label: string; value: string }[]; distance?: string; simTime?: string; squad?: ContributionView[]; perks?: PerkView[] }
 export declare function ResultsView(props: Base & { view: ResultsViewModel; onMenu?: () => void; onSquad?: () => void; onAgain?: () => void }): React.ReactElement;
 export declare function HighScoresView(props: Base & { ranked: ScoreView[]; historical?: ScoreView[]; caption?: string; onBack?: () => void }): React.ReactElement;
 export declare function RouteChoiceView(props: Base & { view: RouteView; onChoose?: (side: number) => void }): React.ReactElement;

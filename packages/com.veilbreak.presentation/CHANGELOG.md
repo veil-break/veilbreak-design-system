@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.6.1 — 2026-11-06
+
+- Requires gui 0.9.1: the motion recipes of the feel pass (a Fit drawer easing to its content, merged world labels swelling and shrinking, a lifted and settling drag ghost, a pressed skill sinking, a falling card slumping), the choice card as a compact cell for the active perks and the merchant, the results title and a real-pointer press test for the activation edge (design-system#69; design-system release 0.19.1).
+
 ## 1.6.0 — 2026-11-06
 
 - Requires gui 0.9.0: the GUI polish batch (design-system#55): the three text variants and the fluid scale, single-row action rows with an icon-only button, the activation and damage edge effect, content that follows the cut corner, the status badge row, the unit sheet's basic skill, passive and lore, the `Carousel`, one short overlay transition and the glitch title reveal; release 0.19.0.

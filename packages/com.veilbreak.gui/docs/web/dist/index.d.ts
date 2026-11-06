@@ -89,7 +89,7 @@ export interface ResultSummaryProps { view: ContributionView; pinned?: boolean; 
 export declare function ResultSummary(props: ResultSummaryProps): React.ReactElement;
 export type ChoiceSide = 'single' | 'left' | 'right';
 export type ChoiceTone = 'ally' | 'enemy' | 'power';
-export interface ChoiceCardProps { road?: RoadView; perk?: PerkView; action?: string; selected?: boolean; side?: ChoiceSide; tone?: ChoiceTone; tag?: string; icon?: KitIconName; title?: string; text?: string; next?: string; rank?: number; ranks?: number; rankNext?: boolean; rankTone?: 'ally' | 'enemy' | 'power' | 'neutral'; tooltip?: string; motionId?: string | number; onPick?: () => void; onFocus?: () => void; className?: string; style?: React.CSSProperties }
+export interface ChoiceCardProps { road?: RoadView; perk?: PerkView; owned?: PerkView; offer?: MerchantOfferView; sale?: MerchantStackView; credits?: number; index?: number; compact?: boolean; dimmed?: boolean; disabled?: boolean; command?: string; action?: string; selected?: boolean; side?: ChoiceSide; tone?: ChoiceTone; tag?: string; icon?: KitIconName; title?: string; text?: string; next?: string; rank?: number; ranks?: number; rankNext?: boolean; rankTone?: 'ally' | 'enemy' | 'power' | 'neutral'; tooltip?: string; motionId?: string | number; onPick?: () => void; onFocus?: () => void; className?: string; style?: React.CSSProperties }
 export declare function ChoiceCard(props: ChoiceCardProps): React.ReactElement;
 export interface StatRowProps { label: string; value?: React.ReactNode; good?: boolean; icon?: KitIconName; stacked?: boolean; dimmed?: boolean; plated?: boolean; tier?: string; bar?: { segments?: number; value?: number; next?: boolean; tone?: string } | null; action?: React.ReactNode; motionId?: string | number; className?: string; style?: React.CSSProperties }
 export declare function StatRow(props: StatRowProps): React.ReactElement;
@@ -169,7 +169,7 @@ export declare function GuideDialogView(props: Base & { title?: string; steps?: 
 export interface SquadHealthView { code: string; hp: number; maxHp: number; stability?: number }
 export interface PerkDraftViewModel { wave: number; bonus?: number; score?: number; choices: PerkView[]; pick?: number; squad?: SquadHealthView[] }
 export declare function PerkDraftView(props: Base & { view: PerkDraftViewModel; onPick?: (index: number) => void; onTake?: () => void; onPerks?: () => void }): React.ReactElement;
-export interface ResultsViewModel { cause?: string; score: number; wave: number; bosses?: number; rank?: number; of?: number; ledger?: { label: string; value: string }[]; distance?: string; simTime?: string; squad?: ContributionView[]; perks?: PerkView[] }
+export interface ResultsViewModel { title?: string; cause?: string; score: number; wave: number; bosses?: number; rank?: number; of?: number; ledger?: { label: string; value: string }[]; distance?: string; simTime?: string; squad?: ContributionView[]; perks?: PerkView[] }
 export declare function ResultsView(props: Base & { view: ResultsViewModel; onMenu?: () => void; onSquad?: () => void; onAgain?: () => void }): React.ReactElement;
 export declare function HighScoresView(props: Base & { ranked: ScoreView[]; historical?: ScoreView[]; caption?: string; onBack?: () => void }): React.ReactElement;
 export declare function RouteChoiceView(props: Base & { view: RouteView; onChoose?: (side: number) => void }): React.ReactElement;

@@ -366,7 +366,8 @@ Reorders a container's children by dragging, long-pressing or the keyboard; the 
 - **Gesture:** a press on a child that may move lifts after 8 units of travel or 0.35 s held still. The child dims
   (`vb-reorder-source`), a ghost plate with a selection ring (`vb-reorder-ghost`) follows the pointer over the panel root and the
   slot under it shows a ring (`vb-reorder-over`). The drop slot is the child whose `worldBound` holds the pointer, else the
-  nearest. A tap never lifts. The ghost glides into the slot, or goes at once under reduced motion.
+  nearest. A tap never lifts. The ghost lifts when it appears (`MotionRecipes.DragLift`: it rises 4 units and grows to 1.05 with a brief fade-in flash) and glides into the slot as it settles back to full size (`DropSettle`, 220 ms), then
+  the slot pops once; under reduced motion it stays flat, and reduced flashes drops the fade-in. Reduced motion drops the ghost at once on release.
 - **Keyboard:** Alt+Left/Up and Alt+Right/Down move the focused child one place and keep focus on it.
 - **API:** `Begin`, `Drag`, `End`, `Cancel`, `Nudge(index, step)`, `Lifted`, `Over`, `Ghost`, `ReorderManipulator.IndexAt(rects, point)`.
 
@@ -461,6 +462,8 @@ One high-score line.
 The portrait battle card. It carries the name only (no code over it), up to three timed statuses as icons on the portrait, and two skills.
 
 - **API:** `Bind(OperativeView)`; `Skill(0 | 1)` returns the A and S `SkillButton`s for the game's manipulators; `Statuses` is the `StatusRow` above the card; `Damage(strength)` plays the damage edge (`AutoDamage`, on by default, plays it when the bound hit points fall).
+- **Falling:** a card that falls while it is on a panel slumps (`MotionRecipes.Fallen`: 6 units down and 0.97 of its size, back to rest in 420 ms, `VbMotion.Slump`) as its band, kit stripe and body drain to the fallen look and the damage flash plays. Reduced motion
+  drains the colour only; reduced flashes drops the flash fill. Binding a card that is already fallen again does not move it.
 - **View model:** `OperativeView`: `id`, `name`, `code`, `role`, `roleIcon`, `kit`, `portrait`, `hp`, `maxHp`, `barrier`, `armor`, `stability`,
   `maxStability`, `effects`, `mode`, `manualSeconds`, `canRevive`, `skills`, `passive…`.
 - **States:** `vb-operative--auto`, `--manual`, `--aiming` (brackets and glow), `--fallen` (one FALLEN, a greyed portrait, the name struck through; "Revive via perk"
@@ -547,6 +550,8 @@ One layout in every state (44 × 56, or 44 high in a stacked compact card): the 
   becomes the reason; a refused command flashes crimson once; an exposed target inverts the cost.
 - **API:** `Bind(SkillView)`, `Badge`, `Value`, `Seconds`. **USS:** `vb-skill--{state}`, `__slot`, `__icon`, `__seconds`, `__badge`, `__value`, `__charge`, `__sweep`, `__slash`.
 - **Unaffordable** is a dimmed fill, never a dashed frame.
+- **Press:** the button sinks under a press (`MotionRecipes.PressSink`: 1 unit down and 0.92 of its size in 100 ms, eased out, no bounce) and lets go when the press ends anywhere on the panel, even if the game's drag manipulator holds the pointer; its plate
+  brightens while pressed. Reduced motion does not move it and dims it a little instead; reduced flashes keeps the sink and not the brightening. A fallen or locked skill does not sink. `Pressed` tells.
 
 ### ChoiceCard
 
@@ -555,9 +560,12 @@ One option the player takes by tapping it: a road, an extract choice, a perk. Th
 
 - **Sides:** `ChoiceSide.Left` cuts its top-left and bottom-left corners and aligns its text right; `Right` cuts its top-right and bottom-right corners and aligns its text left; `Single` keeps the regular
   cuts. A pair uses Left and Right (the regular top-left and bottom-right cut is not used for a pair). The cut sides come from `--vb-cut-side` (`VbShape.Left`, `Right`).
+- **Compact:** the same card as a cell of a two-column grid (the active perks, the merchant): `Compact` drops the tag, shrinks the glyph and lets it be as tall as its content. `BindOwned(PerkView, selected)` shows a perk the run owns (its glyph, name,
+  active value and levels), `BindOffer(MerchantOfferView, index, credits)` a merchant's offer (BUY with the price, SOLD, or the game's reason; dimmed and disabled when it cannot be bought, with no second price) and `BindSale(MerchantStackView)` a stack the
+  merchant buys (SELL +payout). `Dimmed` greys a card that cannot be taken; `Command` names what picking it does (`buy-0`, `sell-perk-<id>`); `Pick()` picks it with no pointer.
 - **API:** `Bind(RoadView road, string action)`, `Bind(PerkView, selected)`, `Side`, `Tone`, `Tag`, `Icon`, `Title`, `Text` (emphasis marks render), `Next`, `ActionText`, `Ranks(filled, cells, next, tone)`, `Picked`.
   `RoadView.rank` and `ranks` (default 5) are the threat; 0 hides the cells. `RouteChoice` builds a left and a right card, named `route-left` and `route-right`.
-- **USS:** `vb-choice`, `--left`, `--right`, `--ally`, `--enemy`, `--power`, `--selected`, `__tag`, `__glyph`, `__title`, `__text`, `__rank`, `__next`, `__action`. The text is compact: USS has no line height, so the size does the work.
+- **USS:** `vb-choice`, `--left`, `--right`, `--ally`, `--enemy`, `--power`, `--selected`, `--compact`, `--dimmed`, `__tag`, `__glyph`, `__title`, `__text`, `__rank`, `__next`, `__action`. The text is compact: USS has no line height, so the size does the work.
   A word is never broken inside: the title steps down on a compact board.
 
 ### StatRow
@@ -702,6 +710,8 @@ A `Label` that the layer pools.
 ### WorldLabel
 
 - **API:** `Bind(kind, title, detail, team)`, `ShowDetail(on)`, `Title`, `Detail`, `WorldLabel.Merged(title, count)`.
+- **Merge and split:** when the count of a merged label changes it swells once (members joined, `MotionRecipes.LabelMerge`, 1.12) or shrinks once (members left, `LabelSplit`, 0.9) over 180 ms with a brief dip in opacity, on simulation time (`EndFrame(delta)`).
+  Reduced motion keeps the dip and not the scale; reduced flashes (`ReducedFlashes`, or the class on a parent) keeps the scale and not the dip. `WorldLayer.LabelPose` is the pose.
 - **Merging:** `WorldLayer.Label(…, group)` merges labels with the same group key and title into one "TETHERED ×3" at the
   centroid of their points; a lone one reads as itself.
 - **States:** `vb-world-label--aim`, `--name`, `--telegraph`, `--estimate`, `--blocked` (prefixed with ×), `--elite` (one line:
@@ -735,7 +745,7 @@ A `Label` that the layer pools.
 | `GlitchText` | Ordinary label `text` and USS typography | Eight clipped bands, red/cyan channels. `Glitch.In/Out/Pulse/Slam`; schedules cancel on replacement/detach. |
 | `Announcer` | `Say(text, alert, milliseconds, interrupt)` | Bounded six-notice queue; critical pre-emption; out before replacement, in then hold then out. Dispose with its host. |
 | `RouteChoice` | `RouteView` with wave and two `RoadView`s, shown as a mirrored pair of `ChoiceCard`s (left cut and aligned left, right cut and aligned right; threat as rank cells) | `Chosen(side)` once, left 0 / right 1. Whole-card targets; keyboard Enter/Space. `Choose` supports alternate input. |
-| `MerchantScreen` | `MerchantView` with credits, offers, sellable stacks and HP consequences, each row a `StatRow` with a 44-unit action; an offer that cannot be bought is dimmed with no second price, an empty section hides, a sale pays `+30 ⬡` | `Bought(index)`, `PerkSold(id)`, `HealthSold(actor)`, `Left`. Host validates and rebinds after each transaction. `ScrollOffset` preserves position. |
+| `MerchantScreen` | `MerchantView` with credits, offers, sellable stacks and HP consequences, offers and sales are compact `ChoiceCard`s in a two-column grid (the whole card is the button: BUY 80, SELL +30), health trades are `StatRow`s with a 44-unit danger action; an offer that cannot be bought is dimmed and out of play with no second price, an empty section hides | `Bought(index)`, `PerkSold(id)`, `HealthSold(actor)`, `Left`. Host validates and rebinds after each transaction. `Offer(index)` and `Sale(perkId)` find a card by its command (`buy-0`, `sell-perk-<id>`); a trade's button is `sell-hp-<actor>`. `ScrollOffset` preserves position. |
 | `ChipRow.Credits()` (was `CreditsChip`) | `SetNumber(credits)` | Currency icon and integer; formats on change; read only. |
 
 `PerkTier.Rare` is cyan; `Epic` is violet with a short shimmer. Both have explicit text labels.
@@ -831,7 +841,8 @@ Enter and Space.
 
 `DrawerOverlay` (`vb-drawer`): `__backdrop`, then `Sheet` (`__sheet`, slim solid, at most 88% of the board) with `__grip`
 (`__handle`), `__head` (`__title`, `__meta`, `__close`), `Body` (`__body`, a ScrollView and the content container) and
-`Foot` (`__foot`, an `ActionRow`; `Actions(...)`). `Open(at)` slides it up to `DrawerSnap.Fit` (as tall as its content, at most
+`Foot` (`__foot`, an `ActionRow`; `Actions(...)`). A Fit drawer that is open and whose content changes height eases its sheet to the new height over `MotionRecipes.DrawerFit` (180 ms, real time) with
+`vb-drawer--fitting` on (the sheet's USS height transition is off meanwhile); reduced motion jumps; `Fitting` tells. A drawer being dragged, a Half or Full drawer and one that is still opening do not ease. `Open(at)` slides it up to `DrawerSnap.Fit` (as tall as its content, at most
 90% of the board, the body scrolls only past that; default), `Half` (half the screen, opt-in, `vb-drawer--half`) or `Full`
 (`vb-drawer--full`); `Snap` and `SnapChanged` follow the player, who drags the handle or head up to full, down to the content
 height or below a quarter to close, and taps the handle to toggle full. `Close(done)` slides it down and hides it; `Dismiss()` does what
@@ -868,8 +879,8 @@ events; styles are in `Views.uss`.
 | `ConfirmDialogView` | `Push(nav, title, body, confirm, cancel)` | the confirm and cancel actions, after the layer closes |
 | `GuideDialogView` | `Push(nav, title, steps, ready)`; `DefaultSteps` | READY, after the layer closes |
 | `PerkDraftView` | `PerkDraftViewModel` (wave, bonus, score, choices, pick, squad) | `Picked(i)`, `Take`, `Perks` (the carry frame) |
-| `ResultsView` | `ResultsViewModel` (cause, score, rank, ledger, stats, squad, perks). The rank badge hides on a score of 0; units show FELL Wn only; perks are `ChipRow`s | `Again`, `Menu`, `Squad` |
-| `ActivePerksView` | `ActivePerksViewModel` (wave, perks, pick, totals; zero totals are not listed) | `Picked(i)`, `Back` |
+| `ResultsView` | `ResultsViewModel` (title, cause, score, rank, ledger, stats, squad, perks). `title` is the heading ("RUN OVER" by default; the view sets it in caps). The rank badge hides on a score of 0; units show FELL Wn only; perks are `ChipRow`s | `Again`, `Menu`, `Squad` |
+| `ActivePerksView` | `ActivePerksViewModel` (wave, perks, pick, totals; zero totals are not listed). The stacks are compact `ChoiceCard`s in a two-column grid and the picked one is explained below | `Picked(i)`, `Back` |
 | `RevivePickView` | the fallen operatives to bring back | `Picked(i)`, `Back` |
 | `AccessibilityView` | `AccessibilityViewModel` (reducedFlashes, largerText, highContrast; written back); the header and its one section no longer say the same word three ways | `Changed(model)`, `Back` |
 | `HighScoresView` | `Bind(ranked, historical, caption)` | `Back` |

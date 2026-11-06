@@ -120,7 +120,7 @@
 .vb-drawer--open .vb-drawer__sheet { translate: 0 0; }
 .vb-drawer--half .vb-drawer__sheet { height: 50%; }
 .vb-drawer--full .vb-drawer__sheet { height: 100%; max-height: 100%; }
-.vb-drawer--dragging .vb-drawer__sheet { transition-duration: 0s, 0s; }
+.vb-drawer--dragging .vb-drawer__sheet, .vb-drawer--fitting .vb-drawer__sheet { transition-duration: 0s, 0s; }
 .vb-drawer__grip { height: 24px; align-items: center; justify-content: center; flex-shrink: 0; }
 .vb-drawer__handle { width: 40px; height: 4px; background-color: var(--line-strong); }
 .vb-drawer--full .vb-drawer__handle { background-color: var(--text-3); }
@@ -239,6 +239,7 @@
 .vb-skill--queued .vb-icon { color: var(--power-text); }
 .vb-skill--queued .vb-skill__value { color: var(--power-text); }
 .vb-skill--buffered { --vb-fill: var(--power-soft); --vb-edge: var(--power); --vb-bw: 2; }
+.vb-skill.vb-skill--press-flash { --vb-fill: rgba(250, 238, 244, 0.16); }
 .vb-operative { width: 88px; height: 202px; --vb-cut: 10; --vb-fill: var(--panel); --vb-edge: var(--line); }
 .vb-operative__band { height: 48px; overflow: hidden; }
 .vb-operative__portrait { position: absolute; left: -33px; top: -6px; width: 150px; height: 225px; background-size: contain; background-repeat: no-repeat; background-position: center; }
@@ -350,6 +351,7 @@
 .vb-perk-art { overflow: hidden; }
 .vb-perk-detail { padding: 12px; --vb-fill: var(--panel-solid); --vb-edge: var(--line-strong); }
 .vb-perk-detail__head { flex-direction: row; align-items: center; }
+.vb-perk-detail__head-text { flex-grow: 1; flex-shrink: 1; min-width: 0; }
 .vb-perk-detail__thumb { width: 44px; height: 44px; margin-right: 10px; align-items: center; justify-content: center; --vb-cut: 6; --vb-fill: var(--raised); }
 .vb-perk-detail__thumb .vb-crop { left: -31px; top: -4px; width: 106px; height: 159px; }
 .vb-perk-detail__thumb .vb-icon { width: 24px; height: 24px; }
@@ -737,6 +739,13 @@
 .vb-button--lead .vb-button__icon { margin-left: 0; margin-right: 10px; }
 .vb-choice { flex-grow: 1; flex-basis: 0; min-width: 0; min-height: 196px; margin: 0 4px; padding: 12px 10px 4px 10px; --vb-cut: 12; --vb-bw: 1; --vb-fill: var(--panel); --vb-edge: var(--line-strong); }
 .vb-choice:hover { --vb-edge: rgba(250, 238, 244, 0.70); }
+.vb-choice--compact { flex-grow: 0; flex-basis: auto; min-height: 0; margin: 0; padding: 10px 10px 6px 10px; }
+.vb-choice--compact .vb-choice__glyph { width: 24px; height: 24px; margin-bottom: 6px; }
+.vb-choice--compact .vb-choice__rank { margin: 6px 0 2px 0; }
+.vb-choice--compact .vb-choice__action { min-height: 0; margin-top: 6px; }
+.vb-choice--dimmed { opacity: 0.5; }
+.vb-compact .vb-choice--compact { padding: 10px 7px 6px 7px; }
+.vb-compact .vb-choice--compact .vb-choice__title { font-size: var(--fs-11); }
 .vb-choice--left { --vb-cut-side: 1; }
 .vb-choice--right { --vb-cut-side: 2; }
 .vb-choice--ally { --vb-edge: var(--ally); --vb-fill: rgba(6, 24, 25, 0.92); }
@@ -971,7 +980,7 @@
 .vb-draft__carousel { margin-top: 6px; margin-bottom: 10px; }
 .vb-draft__card { min-height: 236px; margin: 0; --vb-cut: 12; --vb-bw: 1; }
 .vb-draft__squad { padding: 9px 12px; margin-top: 12px; margin-bottom: 12px; }
-.vb-draft__squad > .vb-label { margin-bottom: 7px; }
+.vb-draft__squad > .vb-label { margin-bottom: 7px; white-space: normal; }
 .vb-draft__cell { width: 23%; }
 .vb-results { padding-top: 12px; }
 .vb-results__scroll { flex-grow: 1; }
@@ -1010,6 +1019,8 @@
 .vb-build__bonus { flex-direction: row; align-items: center; margin-right: 12px; }
 .vb-build__bonus-value { margin-left: 6px; font-family: var(--font-body); font-weight: 500; font-size: var(--fs-13); color: var(--ally-text); }
 .vb-build__list { flex-grow: 0; flex-shrink: 1; max-height: 348px; margin-bottom: 10px; }
+.vb-list.vb-build__grid { flex-wrap: wrap; justify-content: space-between; }
+.vb-build__grid > .vb-choice { width: 48.5%; }
 .vb-build__detail { margin-top: 12px; flex-shrink: 0; }
 .vb-revive .vb-grid4 { margin-top: 8px; }
 .vb-accessibility > .vb-form { margin-left: 12px; margin-right: 12px; }
@@ -1083,6 +1094,7 @@
 .vb-switch__knob { transition-property: left, background-color; transition-duration: 0.22s; transition-timing-function: ease-out; }
 .vb-icon-button, .vb-tile, .vb-slot, .vb-choice, .vb-perk-row, .vb-route__sign, .vb-queue-chip, .vb-merchant__offer, .vb-skill { transition-property: scale, opacity; transition-duration: 0.1s, 0.22s; transition-timing-function: ease-out; }
 .vb-icon-button:active, .vb-tile:active, .vb-slot:active, .vb-choice:active, .vb-perk-row:active, .vb-route__sign:active, .vb-queue-chip:active, .vb-merchant__offer:active { scale: 0.97 0.97; }
+.vb-operative__band, .vb-operative__kit, .vb-operative__body { transition-property: opacity; transition-duration: 0.42s; transition-timing-function: ease-out; }
 .vb-meter__fill, .vb-meter__extra, .vb-health__hp .vb-meter__fill, .vb-stat__fill, .vb-focus__fill { transition-property: width; transition-duration: 0.1s; transition-timing-function: ease-out; }
 .vb-meter__preview, .vb-power__reserve { transition-property: left, width, opacity; transition-duration: 0.1s; transition-timing-function: ease-out; }
 .vb-covered { transition-property: opacity, filter; transition-duration: 0.3s; transition-timing-function: ease-out; }
