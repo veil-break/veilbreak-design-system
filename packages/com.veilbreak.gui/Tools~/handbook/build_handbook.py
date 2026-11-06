@@ -177,6 +177,7 @@ for g in tokens['type']['groups']:
                 s,
                 group=g['name'],
                 family=s.get('family', g['family']),
+                note=g.get('note', ''),
                 uss=f'--vb-font-size-{s["name"]}' if f'--vb-font-size-{s["name"]}' in uss_vars else None,
             )
         )
@@ -552,6 +553,9 @@ DATA = {
     'package': json.loads((PKG / 'package.json').read_text()),
     'integration': md((PKG / 'Documentation~' / 'integration.md').read_text().split('\n', 1)[1]),
     'web': md((PKG / 'Web~' / 'README.md').read_text().split('\n', 1)[1]),
+    'fluid': json.loads((PKG / 'Tokens~' / 'fluid.json').read_text()),
+    'motion': json.loads((PKG / 'Tokens~' / 'motion.json').read_text()),
+    'motionGuide': md((PKG / 'Documentation~' / 'guidelines' / '04-motion.md').read_text().split('\n', 1)[1]),
 }
 
 # Data-driven swatches and type specimens are generated CSS, not inline styles.

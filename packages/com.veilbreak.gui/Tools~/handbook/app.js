@@ -85,7 +85,7 @@
   function navHtml() {
     var html = navSection('start', 'Start', navLink('overview', 'Overview') + navLink('setup', 'Unity setup') + navLink('web', 'Web kit') +
       '<li><a href="web/demo/">Web app demo <small aria-hidden="true">↗</small></a></li>' + navLink('name-map', 'Name map', D.entries.length));
-    html += navSection('foundations', 'Foundations', navLink('tokens', 'Tokens', D.tokens.length) + navLink('type', 'Type') + navLink('e-frame', 'Frames: slim & chipped'));
+    html += navSection('foundations', 'Foundations', navLink('tokens', 'Tokens', D.tokens.length) + navLink('type', 'Type') + navLink('fluid', 'Fluid scale') + navLink('motion', 'Motion') + navLink('e-frame', 'Frames: slim & chipped'));
     var families = Array.from(new Set(D.entries.map(function(entry){return entry.family;}))).sort();
     families.forEach(function(family){var entries=D.entries.filter(function(entry){return entry.family===family;});html+=navSection('family-'+family,family.charAt(0).toUpperCase()+family.slice(1)+' · '+entries.length,entries.map(function(entry){return '<li><a href="#e-'+entry.id+'" data-r="e-'+entry.id+'">'+statusDot(entry.status)+esc(entry.name)+'</a></li>';}).join(''));});
     return html + navSection('assets', 'Assets', navLink('icons', 'Icon pack', D.icons.length) + navLink('fonts', 'Fonts & mark'));
@@ -159,7 +159,8 @@
     });
     html += '<section><p><data value="' + D.icons.length + '">' + D.icons.length + '</data> icons</p><h2>Assets</h2><p>Stroke icons, the mark and the fonts, with their USS classes and files.</p><ul><li><a href="#icons">Icon pack</a></li><li><a href="#fonts">Fonts &amp; mark</a></li><li><a href="#tokens">Tokens · ' + D.tokens.length + '</a></li></ul></section></div>';
     html += '<ul id="status-legend">' + Object.keys(totals).map(function (status) { return '<li>' + pill(status) + '<span>' + totals[status] + ' · ' + esc(STATUS_NOTE[status]) + '</span></li>'; }).join('') + '</ul>';
-    html += '<section id="frame-introduction"><header><p>New in 0.3.0 · everything shipped</p><h2>Two kinds of frame, one kit for Unity and the web</h2><p>Containers sit on the <strong>slim</strong> frame: a 4-unit chamfer and no border. The chipped frame stays for what you act on or what is selected. Each component has a React twin in the <a href="#web">web kit</a>.</p><p>Try them together in the <a href="web/demo/">web app demo</a>: menu, squad, battle, pause, perks, results.</p><a href="#e-frame">FrameComponent →</a></header><div id="ov-preview" data-preview></div></section>';
+    html += '<section id="frame-introduction"><header><p>Since 0.3.0 · everything shipped</p><h2>Two kinds of frame, one kit for Unity and the web</h2><p>Containers sit on the <strong>slim</strong> frame: a 4-unit chamfer and no border. The chipped frame stays for what you act on or what is selected. Each component has a React twin in the <a href="#web">web kit</a>.</p><p>Try them together in the <a href="web/demo/">web app demo</a>: menu, squad, battle, pause, perks, results.</p><a href="#e-frame">FrameComponent →</a></header><div id="ov-preview" data-preview></div></section>';
+    html += '<section id="release-notes"><header><p>New in ' + esc(D.package.version) + '</p><h2>Text variants, a fluid scale and the polish recipes</h2></header><ul><li><a href="#type">Three text variants</a>: body, label and heading, each with a small and a large step, drive every text class.</li><li><a href="#fluid">The fluid scale</a> moves every size, gutter and margin with the board\'s width (0.92× at 320 up to 1.18× from 600).</li><li><a href="#motion">Motion</a>: activation and damage edge, overlay and popover transitions, the glitch title reveal and the carousel glide, all with reduced-motion fallbacks.</li>' + ['carousel', 'choice-card', 'unit-card', 'status-row', 'action-row', 'stat-row', 'chip-row'].filter(function (id) { return E[id]; }).map(function (id) { return '<li><a href="#e-' + id + '">' + esc(E[id].name) + '</a>: ' + esc(E[id].summary) + '</li>'; }).join('') + '</ul></section>';
     html += '<section><h2>From an empty scene to a running board</h2><ol id="setup-steps">' +
       step('Reference the package', '<code>"com.veilbreak.gui": "https://github.com/veil-break/veilbreak-design-system.git"</code> in <code>Packages/manifest.json</code>') +
       step('Use the panel settings', '<code>Runtime/Settings/VeilbreakPortrait.asset</code> · 390 × 844, match width, theme <code>VeilbreakGui.tss</code>') +
@@ -255,8 +256,68 @@
   }
 
   function typePage() {
-    render(lead('Foundations', 'Type', 'TeX Gyre Adventor for titles, names and CTAs; Poppins for everything else; Share Tech Mono for HUD numerals. UI Toolkit has no <code>text-transform</code>: caps are passed in code.') +
-      '<dl id="type-specimens">' + D.type.map(function (style, index) { return '<div><dt><code>' + esc(style.name) + '</code></dt><dd><p>' + esc(style.group + ' · ' + style.fontSize + ' / ' + style.lineHeight + ' · ' + style.fontWeight) + '</p>' + (style.uss ? '<code>' + esc(style.uss) + '</code>' : '') + '</dd><dd><p data-specimen="' + index + '">' + esc(style.sample || style.name) + '</p><p>' + esc(style.usage || '') + '</p></dd></div>'; }).join('') + '</dl>', 'type');
+    var groups = Array.from(new Set(D.type.map(function (style) { return style.group; }))).sort(function (a, b) { return (a === 'Variants' ? 0 : 1) - (b === 'Variants' ? 0 : 1); });
+    render(lead('Foundations', 'Type', 'TeX Gyre Adventor for titles, names and CTAs; Poppins for everything else; Share Tech Mono for HUD numerals. UI Toolkit has no <code>text-transform</code>: caps are passed in code. Three variants carry every run of text: <strong>body</strong>, <strong>label</strong> and <strong>heading</strong>. Sizes are the 390-unit board\'s; the <a href="#fluid">fluid scale</a> moves them with the board\'s width.') +
+      groups.map(function (group) {
+        var styles = D.type.map(function (style, index) { return [style, index]; }).filter(function (pair) { return pair[0].group === group; });
+        return '<section><h2>' + esc(group) + '</h2>' + (styles[0][0].note ? '<p>' + esc(styles[0][0].note) + '</p>' : '') + '<dl id="type-specimens-' + esc(group.toLowerCase()) + '" data-type-group>' + styles.map(function (pair) { var style = pair[0], index = pair[1]; return '<div><dt><code>' + esc(style.name) + '</code></dt><dd><p>' + esc(style.group + ' · ' + style.fontSize + ' / ' + style.lineHeight + ' · ' + style.fontWeight) + '</p>' + (style.uss ? '<code>' + esc(style.uss) + '</code>' : '') + '</dd><dd><p data-specimen="' + index + '">' + esc(style.sample || style.name) + '</p><p>' + esc(style.usage || '') + '</p></dd></div>'; }).join('') + '</dl></section>';
+      }).join(''), 'type');
+  }
+
+  /* The fluid scale: Tokens~/fluid.json, the factor per step and a live board that takes the class from its width. */
+  function fluidFactor(width) {
+    var anchors = Object.keys(D.fluid.factors).map(Number).sort(function (a, b) { return a - b; });
+    if (width <= anchors[0]) return D.fluid.factors[anchors[0]];
+    for (var i = 1; i < anchors.length; i++) if (width <= anchors[i]) { var w0 = anchors[i - 1], w1 = anchors[i], f0 = D.fluid.factors[w0], f1 = D.fluid.factors[w1]; return f0 + (f1 - f0) * (width - w0) / (w1 - w0); }
+    return D.fluid.factors[anchors[anchors.length - 1]];
+  }
+  function fluidPage() {
+    var widths = [320, 390, 430, 600], current = Number(store('fluid')) || 390;
+    function px(value) { return Math.round(value * 100) / 100; }
+    var rows = D.fluid.steps.map(function (step) { var f = fluidFactor(step); return '<tr><th scope="row"><code>.vb-fluid-' + step + '</code></th><td>' + f.toFixed(3) + '×</td><td>' + px(13 * f) + '</td><td>' + px(20 * f) + '</td><td>' + px(32 * f) + '</td><td>' + px(16 * f) + '</td></tr>'; }).join('');
+    render(lead('Foundations', 'Fluid scale', 'The text sizes, gutters and margins follow the board\'s width: ' + Object.keys(D.fluid.factors).map(function (w) { return D.fluid.factors[w].toFixed(2) + '× at ' + w; }).join(', ') + ' (the reference is ' + D.fluid.reference + '). UI Toolkit has no <code>clamp()</code>, so the scale is stepped: <code>Fluid.uss</code> has one class per step that overrides the type, spacing and layout tokens and the <code>--vb-fs-&lt;n&gt;</code> ladder.') +
+      '<section><h2>Live board</h2><fieldset id="fluid-widths"><legend>Board width</legend>' + widths.map(function (w) { return '<button type="button" data-width="' + w + '" aria-pressed="' + (w === current) + '">' + w + '</button>'; }).join('') + '</fieldset><p id="fluid-readout" role="status"></p><div id="fluid-host" data-preview></div></section>' +
+      '<section><h2>Steps</h2><p>In Unity <code>VbFluid.Apply(root, width)</code> puts the class of the widest step that is not wider than the panel on the root (<code>SafeAreaRoot.Flags</code> calls it; <code>SafeAreaRoot.Fluid</code> turns it off). On the web every <code>.vb-root</code> takes its class from its own width (<code>Veilbreak.fluid</code>), and layers outside the board copy it from their anchor.</p>' +
+      table(heads(['Class', 'Factor', 'Body', 'Heading', 'Heading lg', 'Ladder 16']) + '<tbody>' + rows + '</tbody>', 'Fluid steps, sizes in px') + '</section>' + inspectorPanel(), 'fluid');
+    var host = document.getElementById('fluid-host');
+    function sample(width) {
+      return h('div', { className: 'vb-root', style: { width: width, padding: 'var(--pad)', boxSizing: 'border-box', background: 'var(--panel)' }, 'data-fluid-sample': '' },
+        h('div', { className: 'vb-l vb-t-label' }, 'LABEL · EYEBROW'),
+        h('div', { className: 'vb-l vb-t-heading' }, 'HEADING LARGE'),
+        h('div', { className: 'vb-l vb-t-body', style: { whiteSpace: 'normal' } }, 'Body text is prose, slightly dimmed. Its size, the gutter around it and the gap below follow the board.'),
+        h('div', { style: { height: 'var(--gap)' } }),
+        h(V.VbButton, { title: 'CONTINUE', variant: 'primary', icon: 'chevron' }));
+    }
+    function draw() {
+      unmount();
+      PREVIEWS.__fluid = function (render) { render(sample(current)); };
+      mountPreview(host, { id: '__fluid', stage: 'free' });
+      var root = host.querySelector('[data-fluid-sample]');
+      setTimeout(function () { var readout = document.getElementById('fluid-readout'); if (!readout) return; var step = root && Array.from(root.classList).filter(function (c) { return c.indexOf('vb-fluid-') === 0; })[0]; readout.textContent = 'Board ' + current + ' wide · class ' + (step || 'vb-fluid-' + current) + ' · ×' + fluidFactor(current).toFixed(3); }, 120);
+    }
+    view.querySelectorAll('[data-width]').forEach(function (button) { button.addEventListener('click', function () { current = Number(button.getAttribute('data-width')); store('fluid', String(current)); view.querySelectorAll('[data-width]').forEach(function (item) { item.setAttribute('aria-pressed', String(item === button)); }); draw(); }); });
+    draw();
+  }
+
+  /* Motion: the recipes of Tokens~/motion.json, each replayable, then the motion guideline from the package. */
+  function motionPage() {
+    var recipes = D.motion.recipes, names = Object.keys(recipes);
+    var rows = names.map(function (name) { var r = recipes[name]; return '<tr><th scope="row"><code>' + esc(name) + '</code></th><td>' + r.milliseconds + ' ms</td><td>' + (r.x || 0) + ', ' + (r.y || 0) + '</td><td>' + (r.rotation || 0) + '°</td><td>' + (r.scale == null ? 1 : r.scale) + '</td><td><button type="button" data-play="' + esc(name) + '">Play</button></td></tr>'; }).join('');
+    var timings = Object.keys(D.motion.timings || {}).map(function (name) { return '<li><code>' + esc(name) + '</code> ' + D.motion.timings[name] + ' ms</li>'; }).join('');
+    render(lead('Foundations', 'Motion', 'Every entrance, exit and deal is a recipe in <code>Tokens~/motion.json</code>, generated into <code>MotionRecipes</code> for Unity and the web kit. Presence, feedback and count are separate channels; reduced motion keeps colour and opacity only.') +
+      '<section><h2>Recipes</h2><p>Deals stagger by ' + D.motion.stagger + ' ms up to ' + D.motion.maxDealDelay + ' ms. Press Play to run a recipe on the sample card' + (flags.motion ? ' (reduced motion is on: 80 ms fades)' : '') + '.</p><div id="motion-stage" data-preview><div id="motion-card" class="vb-root"><div class="vb-l vb-t-label">RECIPE</div><div class="vb-l vb-t-heading" id="motion-name">overlayIn</div></div></div>' +
+      table(heads(['Recipe', 'Duration', 'x, y', 'Rotation', 'Scale', '']) + '<tbody>' + rows + '</tbody>', 'Motion recipes') + '<ul id="motion-timings">' + timings + '</ul></section>' +
+      '<section aria-label="Motion guideline"><h2>Guideline</h2>' + D.motionGuide + '</section>' + inspectorPanel(), 'motion');
+    var card = document.getElementById('motion-card');
+    function play(name) {
+      var r = recipes[name]; document.getElementById('motion-name').textContent = name;
+      if (!card.animate) return;
+      var calm = flags.motion;
+      var from = { opacity: 0, translate: calm ? '0 0' : (r.x || 0) + 'px ' + (r.y || 0) + 'px', rotate: calm ? '0deg' : (r.rotation || 0) + 'deg', scale: calm ? 1 : (r.scale == null ? 1 : r.scale) };
+      card.animate([from, { opacity: 1, translate: '0 0', rotate: '0deg', scale: 1 }], { duration: calm ? 80 : r.milliseconds, easing: 'cubic-bezier(.16,1,.3,1)', fill: 'both' });
+    }
+    view.querySelectorAll('[data-play]').forEach(function (button) { button.addEventListener('click', function () { play(button.getAttribute('data-play')); }); });
+    play('overlayIn');
   }
 
   function iconsPage() {
@@ -313,7 +374,7 @@
     var routeName = (location.hash || '#overview').slice(1);
     side.querySelectorAll('a').forEach(function (link) { if (link.getAttribute('data-r') === routeName) link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current'); });
     if (routeName.indexOf('e-') === 0 && E[routeName.slice(2)]) entry(E[routeName.slice(2)]);
-    else if (routeName === 'tokens') tokensPage(); else if (routeName === 'type') typePage(); else if (routeName === 'icons') iconsPage(); else if (routeName === 'fonts') fontsPage();
+    else if (routeName === 'tokens') tokensPage(); else if (routeName === 'type') typePage(); else if (routeName === 'fluid') fluidPage(); else if (routeName === 'motion') motionPage(); else if (routeName === 'icons') iconsPage(); else if (routeName === 'fonts') fontsPage();
     else if (routeName === 'name-map') nameMap(); else if (routeName === 'setup') setupPage(); else if (routeName === 'web') webPage(); else overview();
     var heading = view.querySelector('h1');
     document.title = heading.textContent + ' · Veilbreak GUI Handbook';
