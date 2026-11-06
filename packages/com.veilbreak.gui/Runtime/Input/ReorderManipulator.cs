@@ -75,12 +75,13 @@ public sealed class ReorderManipulator:PointerManipulator {
  void Place(Vector2 worldPosition){var origin=ghost.parent.worldBound.position;ghost.style.left=worldPosition.x-origin.x;ghost.style.top=worldPosition.y-origin.y;}
  void Mark(int i){if(over>=0&&over<target.childCount)target[over].RemoveFromClassList(OverClass);over=i;if(i!=from&&i<target.childCount)target[i].AddToClassList(OverClass);}
  // The ghost glides into the drop slot over the UI beat and goes; under reduced motion it goes at once.
- void Settle(int to){var plate=ghost;ghost=null;Unlift();int id=pointer;Forget();if(target.HasPointerCapture(id))target.ReleasePointer(id);if(plate==null)return;
+ void Settle(int to){var plate=ghost;ghost=null;var dropped=from>=0&&from<target.childCount?target[from]:null;Unlift();int id=pointer;Forget();if(target.HasPointerCapture(id))target.ReleasePointer(id);if(plate==null)return;
   if(to<0||to>=target.childCount||VbMotion.Calm(target)){plate.RemoveFromHierarchy();return;}
   var slot=target[to];var end=slot.worldBound;var recipe=MotionRecipes.DragLift;var start=new Vector2(plate.resolvedStyle.left,plate.resolvedStyle.top);var origin=plate.parent?.worldBound.position??Vector2.zero;var goal=end.position-origin;double began=VbMotion.Clock();
   IVisualElementScheduledItem timer=null;timer=plate.schedule.Execute(()=>{float p=Mathf.Clamp01((float)((VbMotion.Clock()-began)*1000/Mathf.Max(1,MotionRecipes.DropSettle.milliseconds))),k=VbMotion.Ease(p);var v=Vector2.Lerp(start,goal,k);plate.style.left=v.x;plate.style.top=v.y;
    float scale=Mathf.Lerp(recipe.scale,1,k);plate.style.scale=new Scale(new Vector3(scale,scale,1));plate.style.translate=new Translate(0,recipe.y*(1-k));plate.style.opacity=1-p;
-   if(p>=1){timer.Pause();plate.RemoveFromHierarchy();if(slot.panel!=null)VbMotion.Pop(slot,.04f);}}).Every(16);}
+   if(p>=1){timer.Pause();plate.RemoveFromHierarchy();// The host has rebound by now: the pop lands on the child that was dropped (it is where the host put it), else on whatever sits in the slot.
+    var popped=dropped!=null&&dropped.panel!=null?dropped:to<target.childCount?target[to]:null;if(popped!=null&&popped.panel!=null)VbMotion.Pop(popped,.04f);}}).Every(16);}
  void Unlift(){if(target==null)return;if(from>=0&&from<target.childCount)target[from].RemoveFromClassList(SourceClass);if(over>=0&&over<target.childCount)target[over].RemoveFromClassList(OverClass);ghost?.RemoveFromHierarchy();ghost=null;lifted=false;over=-1;}
  void Forget(){hold?.Pause();hold=null;pointer=-1;from=-1;lifted=false;}
 }

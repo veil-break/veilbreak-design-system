@@ -11,7 +11,7 @@ public static class VbMotion {
  /// <summary>Inject a monotonic clock for deterministic attached-panel tests/captures; restore it afterwards.</summary>
  public static Func<double> Clock=()=>Time.realtimeSinceStartupAsDouble;
  sealed class Track {
-  public bool known,shown,saved,counting,presence,feedback,pending,enabled;public float opacity=1,feedbackValue;public int feedbackKind;
+  public bool known,shown,saved,counting,presence,feedback,pending,focusable;public PickingMode picking;public float opacity=1,feedbackValue;public int feedbackKind;
   public double began,feedbackBegan;public int delay;public float from,to;public MotionRecipe recipe;public Action done,countDone;
   public IVisualElementScheduledItem timer,countTimer;public long count;public int countSerial;
   public bool holdActive,holdMoving,slump;public float holdLevel,holdFrom,holdTo;public double holdBegan,slumpBegan;public MotionRecipe holdRecipe,slumpRecipe;
@@ -48,7 +48,7 @@ public static class VbMotion {
   t.countTimer=label.schedule.Execute(Tick).Every(16);Tick();
  }
  public static void Finish(VisualElement e){if(e!=null&&tracks.TryGetValue(e,out var t))Finish(e,t);}
- static void Finish(VisualElement e,Track t){var done=t.done;t.done=null;t.timer?.Pause();t.timer=null;t.presence=t.feedback=t.holdActive=t.holdMoving=t.slump=false;t.holdLevel=0;t.countTimer?.Pause();t.countTimer=null;t.countSerial++;t.countDone?.Invoke();t.countDone=null;if(t.pending){e.SetEnabled(t.enabled);t.pending=false;}e.RemoveFromClassList("vb-motion-pending");Restore(e,t);if(t.known)e.Show(t.shown);done?.Invoke();}
+ static void Finish(VisualElement e,Track t){var done=t.done;t.done=null;t.timer?.Pause();t.timer=null;t.presence=t.feedback=t.holdActive=t.holdMoving=t.slump=false;t.holdLevel=0;t.countTimer?.Pause();t.countTimer=null;t.countSerial++;t.countDone?.Invoke();t.countDone=null;if(t.pending){e.pickingMode=t.picking;e.focusable=t.focusable;t.pending=false;}e.RemoveFromClassList("vb-motion-pending");Restore(e,t);if(t.known)e.Show(t.shown);done?.Invoke();}
  static void Save(VisualElement e,Track t){if(t.saved)return;t.saved=true;t.translate=e.style.translate;t.rotate=e.style.rotate;t.scale=e.style.scale;t.restOpacity=e.style.opacity;e.AddToClassList("vb-motion-active");}
  static void Restore(VisualElement e,Track t){if(!t.saved)return;t.saved=false;e.style.translate=t.translate;e.style.rotate=t.rotate;e.style.scale=t.scale;e.style.opacity=t.restOpacity;e.RemoveFromClassList("vb-motion-active");}
  static float Progress(double began,int delay,int duration)=>Mathf.Clamp01((float)((Clock()-began)*1000-delay)/Mathf.Max(1,duration));
@@ -68,8 +68,8 @@ public static class VbMotion {
   float away=1-t.opacity;var recipe=t.recipe;e.style.opacity=t.opacity*(calm?1-Mathf.Abs(wave)*.35f:1)*(1-dim);
   if(!calm){e.style.translate=new Translate(recipe.x*away+(t.feedbackKind==1?shake:0),recipe.y*away+holdY+slumpY);e.style.rotate=new Rotate(new Angle(recipe.rotation*away));float scale=(Mathf.Lerp(1,recipe.scale,away)+(t.feedbackKind==0?wave:0))*holdScale*slumpScale;e.style.scale=new Scale(new Vector3(scale,scale,1));}
   else{e.style.translate=t.translate;e.style.rotate=t.rotate;e.style.scale=t.scale;}
-  // Delayed choices are neither pointer nor keyboard targets; the first visible frame enables them.
-  bool pending=t.presence&&t.shown&&t.opacity<=0;if(pending&&!t.pending){t.enabled=e.enabledSelf;e.SetEnabled(false);}else if(!pending&&t.pending)e.SetEnabled(t.enabled);t.pending=pending;e.EnableInClassList("vb-motion-pending",pending);
+  // Delayed choices are neither pointer nor keyboard targets until their first visible frame. This takes their picking and focus, not their enabled state, which stays the host's: a card a rebind disables during its delay is still disabled afterwards.
+  bool pending=t.presence&&t.shown&&t.opacity<=0;if(pending&&!t.pending){t.picking=e.pickingMode;t.focusable=e.focusable;e.pickingMode=PickingMode.Ignore;e.focusable=false;}else if(!pending&&t.pending){e.pickingMode=t.picking;e.focusable=t.focusable;}t.pending=pending;e.EnableInClassList("vb-motion-pending",pending);
   if(!t.presence&&!t.feedback&&!t.holdActive&&!t.slump){t.timer?.Pause();t.timer=null;e.RemoveFromClassList("vb-motion-pending");Restore(e,t);e.Show(t.shown);}
   done?.Invoke();
  }

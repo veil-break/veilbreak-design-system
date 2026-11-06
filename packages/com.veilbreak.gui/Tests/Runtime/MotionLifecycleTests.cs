@@ -29,6 +29,7 @@ public sealed class MotionLifecycleTests {
  IEnumerator Boot(string[] mode,System.Action<VisualElement> build,bool themed=false){if(host!=null)Object.Destroy(host);if(settings!=null)Object.Destroy(settings);yield return null;yield return Panel(root=>{foreach(var c in mode)root.AddToClassList(c);build(root);},themed);}
  // The recipes tick on the scheduler's real-time timers, so the injected clock moves and the test lets a few of them run.
  IEnumerator Advance(double seconds){time+=seconds;yield return new WaitForSecondsRealtime(.06f);yield return null;}
+ static void Finger<T>(VisualElement target,int finger,Vector2 at,TouchPhase phase) where T:PointerEventBase<T>,new(){using(var e=PointerEventBase<T>.GetPooled(new Touch{fingerId=finger,position=at,phase=phase})){e.target=target;target.SendEvent(e);}}
  static void Pointer<T>(VisualElement target,Vector2 at,EventType type) where T:PointerEventBase<T>,new(){var system=new Event{type=type,mousePosition=at,button=0};using(var e=PointerEventBase<T>.GetPooled(system)){e.target=target;target.SendEvent(e);}}
 
  [UnityTest] public IEnumerator AFitDrawerEasesToItsNewContentHeightAndJumpsUnderReducedMotion(){
@@ -86,6 +87,11 @@ public sealed class MotionLifecycleTests {
    Pointer<PointerUpEvent>(other,Vector2.one,EventType.MouseUp);Assert.IsFalse(skill.Pressed,Name(mode));Assert.IsFalse(skill.ClassListContains(SkillButton.PressFlashClass));
    yield return Advance(MotionRecipes.PressSink.milliseconds/1000.0+.1);
    Assert.IsFalse(VbMotion.Held(skill),Name(mode));Assert.IsFalse(VbMotion.Busy(skill));Assert.AreEqual(1,skill.resolvedStyle.scale.value.x,1e-4f,"Back at rest: "+Name(mode));Assert.AreEqual(0,skill.resolvedStyle.translate.y,1e-4f);Assert.AreEqual(1,skill.resolvedStyle.opacity,.01f);
+   // Two fingers: another finger lifting or being cancelled does not let go of the finger that holds the skill, and a second finger on it does not take the press over.
+   Finger<PointerDownEvent>(skill,0,Vector2.one,TouchPhase.Began);Assert.IsTrue(skill.Pressed,"A finger presses it: "+Name(mode));Finger<PointerDownEvent>(skill,1,Vector2.one,TouchPhase.Began);
+   Finger<PointerUpEvent>(other,1,Vector2.one,TouchPhase.Ended);Assert.IsTrue(skill.Pressed,"Finger 1 lifting does not release finger 0: "+Name(mode));
+   using(var cancel=PointerCancelEvent.GetPooled(new Touch{fingerId=1,position=Vector2.one,phase=TouchPhase.Canceled})){cancel.target=other;other.SendEvent(cancel);}Assert.IsTrue(skill.Pressed,"…nor does finger 1 being cancelled");
+   Finger<PointerUpEvent>(other,0,Vector2.one,TouchPhase.Ended);Assert.IsFalse(skill.Pressed,"Finger 0 lifting releases it: "+Name(mode));
    // A second press and a cancel, and a fallen skill that does not sink at all.
    Pointer<PointerDownEvent>(skill,Vector2.one,EventType.MouseDown);Assert.IsTrue(skill.Pressed);using(var cancel=PointerCancelEvent.GetPooled()){cancel.target=other;other.SendEvent(cancel);}Assert.IsFalse(skill.Pressed,"A cancelled press lets go");
    skill.Bind(new SkillView{state=SkillState.Fallen});Pointer<PointerDownEvent>(skill,Vector2.one,EventType.MouseDown);Assert.IsFalse(skill.Pressed,"A locked skill does not sink: "+Name(mode));
@@ -104,6 +110,43 @@ public sealed class MotionLifecycleTests {
    Assert.IsTrue(card.ClassListContains("vb-operative--fallen"),"…in the fallen look");
    // A revive and a second fall slump again; binding a fallen card twice does not.
    card.Bind(new OperativeView{name="Aria",hp=0,maxHp=1000});yield return null;Assert.IsFalse(VbMotion.Busy(card),"A fallen card bound again stays still: "+Name(mode));}}
+
+ // A card that is on a panel when its first real bind is a fallen unit (a checkpoint resume) is not falling: it rests in the fallen look.
+ [UnityTest] public IEnumerator ACardWhoseFirstBindIsFallenDoesNotSlump(){
+  foreach(var mode in Modes){
+   UnitCard card=null;yield return Boot(mode,root=>{card=new UnitCard().Into(root);card.style.width=100;card.style.height=160;});
+   card.Bind(new OperativeView{name="Aria",hp=0,maxHp=1000});yield return null;Assert.IsFalse(VbMotion.Busy(card),"No slump: "+Name(mode));Assert.IsFalse(VbEdgeFx.Active(card),"…and no flash");Assert.AreEqual(0,card.resolvedStyle.translate.y,1e-4f);Assert.IsTrue(card.ClassListContains("vb-operative--fallen"));
+   card.Bind(new OperativeView{name="Aria",hp=500,maxHp=1000});card.Bind(new OperativeView{name="Aria",hp=0,maxHp=1000});Assert.AreEqual(!Calm(mode),VbMotion.Busy(card),"A real fall after that does slump: "+Name(mode));}}
+
+ // The drop pops the child that was dropped, where the host put it, not the one it displaced.
+ [UnityTest] public IEnumerator TheDropPopsTheDroppedChildAfterTheHostReorders(){
+  VisualElement row=null,a=null,b=null,c=null;ReorderManipulator reorder=null;yield return Boot(Modes[0],root=>{row=new VisualElement().Into(root);row.style.flexDirection=FlexDirection.Row;VisualElement Cell(string n){var e=new VisualElement{name=n,focusable=true}.Into(row);e.style.width=80;e.style.height=60;return e;}a=Cell("A");b=Cell("B");c=Cell("C");reorder=new ReorderManipulator();row.AddManipulator(reorder);});
+  yield return null;yield return null;reorder.Reordered+=(from,to)=>{var moved=row[from];moved.RemoveFromHierarchy();row.Insert(to,moved);};
+  var start=a.worldBound.center;Assert.IsTrue(reorder.Begin(1,start));reorder.Drag(start+new Vector2(30,0));yield return Advance(.2);reorder.End(c.worldBound.center);
+  Assert.AreEqual("B,C,A",string.Join(",",row.Children().Select(e=>e.name)),"The host moved A to the end");yield return Advance(1);
+  Assert.IsTrue(VbMotion.Busy(a),"The pop lands on A");Assert.IsFalse(VbMotion.Busy(b),"…not on B");Assert.IsFalse(VbMotion.Busy(c),"…nor C");}
+
+ // A fit in progress yields to a drag at once (the drag owns the height), and a drawer that leaves its panel mid-fit keeps no in-between height.
+ [UnityTest] public IEnumerator AFitYieldsToADragAndALeavingDrawerKeepsNoInBetweenHeight(){
+  for(int scenario=0;scenario<2;scenario++){
+   DrawerOverlay drawer=null;yield return Boot(Modes[0],root=>{root.AddToClassList("vb-root");drawer=new DrawerOverlay{Title="UNIT"}.Into(root);var s=drawer.style;s.position=Position.Absolute;s.left=s.right=s.top=s.bottom=0;Ui.Box(drawer,"first").style.height=60;},true);
+   yield return null;drawer.Open();yield return Advance(1);yield return null;Ui.Box(drawer,"second").style.height=60;yield return null;yield return null;Assert.IsTrue(drawer.Fitting,"Easing");yield return Advance(.05);
+   if(scenario==0){
+    var grip=drawer.Q(className:"vb-drawer__grip");var at=grip.worldBound.center;Pointer<PointerDownEvent>(grip,at,EventType.MouseDown);Assert.IsFalse(drawer.Fitting,"A drag ends the ease");
+    float held=drawer.Sheet.style.height.value.value;yield return Advance(1);Assert.AreEqual(held,drawer.Sheet.style.height.value.value,.01f,"…and the ease does not write over the drag's height");Pointer<PointerUpEvent>(grip,at,EventType.MouseUp);}
+   else{
+    var parent=drawer.parent;drawer.RemoveFromHierarchy();Assert.IsFalse(drawer.Fitting);Assert.AreEqual(StyleKeyword.Null,drawer.Sheet.style.height.keyword,"Leaving the panel mid-ease gives the height back");
+    parent.Add(drawer);yield return null;yield return null;Assert.AreEqual(StyleKeyword.Null,drawer.Sheet.style.height.keyword,"…so a re-attach starts clean");}}}
+
+ // A card a rebind disables during its deal-in delay is still disabled when it arrives, and one it enables is still enabled: the deal-in holds picking and focus, not the enabled state.
+ [UnityTest] public IEnumerator TheDealInLeavesTheFinalEnabledStateToTheHost(){
+  foreach(var mode in Modes){
+   ChoiceCard disabled=null,enabled=null;yield return Boot(mode,root=>{disabled=new ChoiceCard().Into(root);enabled=new ChoiceCard().Into(root);disabled.style.width=enabled.style.width=100;disabled.style.height=enabled.style.height=80;enabled.SetEnabled(false);});yield return null;
+   VbMotion.In(disabled,MotionKind.Deal,400);VbMotion.In(enabled,MotionKind.Deal,400);yield return Advance(.05);
+   if(!Calm(mode)){Assert.IsTrue(disabled.ClassListContains("vb-motion-pending"),"Waiting its turn: "+Name(mode));Assert.AreEqual(PickingMode.Ignore,disabled.pickingMode);Assert.IsFalse(disabled.focusable);}
+   disabled.SetEnabled(false);enabled.SetEnabled(true);yield return Advance(2);
+   Assert.IsFalse(disabled.enabledSelf,"The rebind's disable wins: "+Name(mode));Assert.IsTrue(enabled.enabledSelf,"…and its enable");
+   Assert.AreEqual(PickingMode.Position,disabled.pickingMode,"Picking is given back: "+Name(mode));Assert.IsTrue(disabled.focusable);Assert.IsFalse(disabled.ClassListContains("vb-motion-pending"));}}
 
 }
 }

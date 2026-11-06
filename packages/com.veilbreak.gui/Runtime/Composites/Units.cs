@@ -29,7 +29,7 @@ namespace Veilbreak.Gui {
   skills=Ui.Box(this,ClassName+"__skills");for(int i=0;i<2;i++)buttons[i]=new SkillButton().Into(skills);buttons[1].AddToClassList(ClassName+"__skill-end");
   fallen=Ui.Box(this,ClassName+"__fallen");Ui.Text(fallen,"FALLEN",ClassName+"__fallen-title");fallenHint=Ui.Text(fallen,"Revive via perk",ClassName+"__fallen-hint");
   statuses=new StatusRow().Classes(ClassName+"__statuses").Into(this);
-  Bind(new OperativeView());
+  Bind(new OperativeView());bound=wasFallen=false; // the placeholder bind is not a state the card was in: only a bind after the first one can be a fall
  }
  public UnitCard Bind(OperativeView v){
   View=v;var mode=v.Fallen?ControlMode.Fallen:v.mode;Ui.State(this,ClassName,mode);

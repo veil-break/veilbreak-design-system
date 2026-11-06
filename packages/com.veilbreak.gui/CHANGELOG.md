@@ -22,6 +22,12 @@ The motion pass of the GUI review (arcade#54) and the follow-ups of the polish b
   - **Skill press sink.** `SkillButton` sinks under a press and lets go when the press ends anywhere on the panel (a trickled pointer up or cancel on the panel root, so a game's drag manipulator that holds the pointer does not strand it); the plate brightens while pressed (`vb-skill--press-flash`, not added under reduced flashes). `Pressed` tells.
     New in `VbMotion`: `Hold(e, recipe, on)` and `Held(e)`.
   - **Fallen card.** `UnitCard` slumps when it falls while on a panel (`VbMotion.Slump(e, recipe)`), its band, kit stripe and body drain to the fallen look (a 420 ms opacity transition in `Motion.uss`) and the damage flash plays; binding an already fallen card again does nothing.
+- **Review fixes before landing.**
+  - `SkillButton`'s press ends only on the pointer up or cancel of the pointer that pressed it, so a second finger lifting no longer releases a held sink (a second finger on a pressed skill does not take the press over).
+  - `ReorderManipulator`'s settle pops the child that was dropped, where the host put it, not the neighbour it displaced.
+  - A Fit drawer's ease yields to a drag the moment the handle is pressed (it no longer overwrites the drag's height), and a drawer that leaves its panel mid-ease gives its height back, so a re-attach starts clean.
+  - `VbMotion`'s deal-in (a delayed item waiting its turn) holds the item's picking and focus instead of its enabled state, so the host's last `SetEnabled` wins: a merchant card disabled by a rebind during its delay stays disabled.
+  - `UnitCard`'s first-bind guard is explicit: the constructor's placeholder bind no longer counts, so only a bind after the first real one can be a fall (a card whose first real bind is a fallen unit, as on a checkpoint resume, rests in the fallen look with no slump or flash).
 - **Public page.** The web kit and the handbook site are rebuilt: `ChoiceCard` takes `owned`, `offer` (with `credits` and `index`), `sale`, `compact`, `dimmed`, `disabled` and `command`; `ActivePerksView` and `MerchantScreen` use it; `ResultsViewModel` has `title`. The motion recipes are Unity-only (the web kit only carries their data).
 - Tests: `CloseOutTests` (EditMode), `CloseOutFitTests` (live boards at 320, 390 and 430), the five recipes' cases in `MotionLifecycleTests` and the press test in `PolishMotionTests`; the merchant tests in `CompositeTests`, `TradeTests` and `ReuseTests` address the cards.
 

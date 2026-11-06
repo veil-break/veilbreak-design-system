@@ -607,7 +607,7 @@ show a ringed glyph.
 | `ChoiceCard` (was `PerkCard`) | One of three draft cards: tier tag, glyph, name, effect, level cells and the value after the pick (shown once: not when it repeats the effect) | `Bind(view, selected)`, `Picked` | `vb-choice`, `--selected` (brackets, glow); `__tag`, `__glyph`, `__title`, `__text`, `__rank`, `__next` |
 | `PerkDetail` | Full explanation: draft (Now, when there is a value, then After pick) or owned (Active, stacks, waves picked); each fact is a `StatRow` | `Bind(view, draft)` | `__head`, `__thumb`, `__name`, `__tag`, `__effect`, `__rows`, `__row`, `__key`, `__value`, `__value--good` |
 | `ChipRow` (was `PerkChip`) | Compact owned perk; hover, focus or tap shows `PerkDetail`; 44-unit hit area, tinted plate, no edge | `new ChipRow(alignEnd)`, `Bind(view)`, `Details` | `vb-chip-row`, `__plate`, `__name`, `__count`, `__popover` |
-| `PerkRow` | An active-perk list row | `Bind(view, selected)`, `Picked` | `--selected`; `__thumb`, `__text`, `__line`, `__name`, `__tag`, `__effect`, `__right`, `__value`, `__stacks` |
+| `PerkRow` | A perk as a list row (kept; `ActivePerksView` shows the active perks as compact `ChoiceCard`s) | `Bind(view, selected)`, `Picked` | `--selected`; `__thumb`, `__text`, `__line`, `__name`, `__tag`, `__effect`, `__right`, `__value`, `__stacks` |
 
 Stack wording: `STACK 2 / 3` in a draft, `×2 OF 3` when owned, `RARE DRAW` and `REPEATABLE` otherwise.
 

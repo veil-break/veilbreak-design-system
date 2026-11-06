@@ -13,7 +13,7 @@ namespace Veilbreak.Gui {
  public const string ClassName="vb-skill";
  readonly Label slot,value,seconds,badge;readonly VbIcon glyph;readonly VisualElement charge,sweep,slash;
  public const string PressedClass=ClassName+"--pressed",PressFlashClass=ClassName+"--press-flash";
- SkillState? previousState;IVisualElementScheduledItem rejected;VisualElement pressTree;readonly EventCallback<PointerUpEvent> onUp;readonly EventCallback<PointerCancelEvent> onCancel;
+ SkillState? previousState;IVisualElementScheduledItem rejected;VisualElement pressTree;int pressId=-1;readonly EventCallback<PointerUpEvent> onUp;readonly EventCallback<PointerCancelEvent> onCancel;
  /// <summary>Whether the button is sunk under a press.</summary>
  public bool Pressed=>ClassListContains(PressedClass);
  public SkillView View {get;private set;}
@@ -27,11 +27,11 @@ namespace Veilbreak.Gui {
   AddToClassList(ClassName);focusable=true;VbShape.Attach(this);
   charge=new VbClipFill().Classes(ClassName+"__charge").Into(this);sweep=new VbClipFill().Classes(ClassName+"__sweep").Into(this);slot=Ui.Text(this,"A",ClassName+"__slot");glyph=new VbIcon("projectile",20).Classes(ClassName+"__icon").Into(this);
   seconds=Ui.Text(this,"",ClassName+"__seconds");slash=Ui.Box(this,ClassName+"__slash");badge=Ui.Text(this,"",ClassName+"__badge");value=Ui.Text(this,"",ClassName+"__value");
-  onUp=_=>Sink(false);onCancel=_=>Sink(false);RegisterCallback<PointerDownEvent>(Press,TrickleDown.TrickleDown);
+  onUp=e=>{if(e.pointerId==pressId)Sink(false);};onCancel=e=>{if(e.pointerId==pressId)Sink(false);};RegisterCallback<PointerDownEvent>(Press,TrickleDown.TrickleDown);
   RegisterCallback<DetachFromPanelEvent>(_=>{rejected?.Pause();rejected=null;RemoveFromClassList(ClassName+"--flash");Sink(false);});Bind(new SkillView());
  }
- void Press(PointerDownEvent e){if(e.button!=0||!enabledInHierarchy||View.state==SkillState.Fallen||View.state==SkillState.Disabled)return;Sink(true);}
- /// <summary>Sinks the button under a press or lets it back. The press ends on the next pointer up or cancel anywhere on the panel (trickled, so a captured pointer still ends it).</summary>
+ void Press(PointerDownEvent e){if(e.button!=0||Pressed||!enabledInHierarchy||View.state==SkillState.Fallen||View.state==SkillState.Disabled)return;pressId=e.pointerId;Sink(true);}
+ /// <summary>Sinks the button under a press or lets it back. The press ends on the next pointer up or cancel of the same pointer anywhere on the panel (trickled, so a captured pointer still ends it, and a second finger lifting does not).</summary>
  void Sink(bool on){
   if(on){if(panel==null||Pressed)return;pressTree=panel.visualTree;pressTree.RegisterCallback(onUp,TrickleDown.TrickleDown);pressTree.RegisterCallback(onCancel,TrickleDown.TrickleDown);}
   else{if(pressTree!=null){pressTree.UnregisterCallback(onUp,TrickleDown.TrickleDown);pressTree.UnregisterCallback(onCancel,TrickleDown.TrickleDown);pressTree=null;}if(!Pressed)return;}

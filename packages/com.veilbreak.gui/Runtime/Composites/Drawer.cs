@@ -50,7 +50,7 @@ public enum DrawerSnap { Half, Full, Fit }
   meta=new Label{pickingMode=PickingMode.Ignore};meta.AddToClassList("vb-t-badge");meta.AddToClassList(ClassName+"__meta");head.Add(meta);
   close=new IconButtonComposite("close","Close",()=>Dismiss()).Classes(ClassName+"__close").Into(head);
   body=new ScrollView(ScrollViewMode.Vertical){horizontalScrollerVisibility=ScrollerVisibility.Hidden,verticalScrollerVisibility=ScrollerVisibility.Hidden};body.AddToClassList(ClassName+"__body");sheet.Add(body);
-  foot=new ActionRow().Classes(ClassName+"__foot").Into(sheet);Drag(grip);Drag(head);sheet.RegisterCallback<GeometryChangedEvent>(Refit);sheet.RegisterCallback<DetachFromPanelEvent>(_=>CancelFit());
+  foot=new ActionRow().Classes(ClassName+"__foot").Into(sheet);Drag(grip);Drag(head);sheet.RegisterCallback<GeometryChangedEvent>(Refit);sheet.RegisterCallback<DetachFromPanelEvent>(_=>EndFit());
   this.Show(false);Refresh();RegisterCallback<GeometryChangedEvent>(_=>foot.Show(foot.childCount>0));
  }
  // The sheet's own height changed (its content did) while it sits open at its content height and nobody is dragging it: ease from the old height to the new one. The sheet's own USS height transition (for the snaps) is off meanwhile
@@ -62,11 +62,15 @@ public enum DrawerSnap { Half, Full, Fit }
  }
  void StepFit(){
   float p=Mathf.Clamp01((float)((VbMotion.Clock()-fitBegan)*1000/Mathf.Max(1,MotionRecipes.DrawerFit.milliseconds)));
+  // A drag owns the height from the moment it starts.
+  if(ClassListContains(DraggingClass)){CancelFit();return;}
   if(VbMotion.Calm(this)||fitEnding){CancelFit();sheet.style.height=StyleKeyword.Null;return;}
   // The last frame holds the target height; the next hands the height back to the content.
   if(p>=1){fitEnding=true;sheet.style.height=fitTo;return;}
   sheet.style.height=Mathf.Lerp(fitFrom,fitTo,VbMotion.Ease(p));
  }
+ // Ends an ease and gives the height back to the content (leaving the panel mid-ease must not keep an in-between height).
+ void EndFit(){bool was=fitting;CancelFit();if(was)sheet.style.height=StyleKeyword.Null;}
  void CancelFit(){fitTimer?.Pause();fitTimer=null;if(fitting)RemoveFromClassList(FittingClass);fitting=false;fitEnding=false;}
  static VisualElement Part(VisualElement parent,string cls){var e=new VisualElement{pickingMode=PickingMode.Ignore};e.AddToClassList(cls);parent.hierarchy.Add(e);return e;}
  void Refresh(){meta.Show(meta.text.Length>0);close.Show(closeButton&&dismissible);head.Show(title.text.Length>0||meta.text.Length>0||(closeButton&&dismissible));foot.Show(foot.childCount>0);}
@@ -92,7 +96,7 @@ public enum DrawerSnap { Half, Full, Fit }
   if(h<full*.25f)return null;if(rest==DrawerSnap.Half)return h<full*.75f?DrawerSnap.Half:DrawerSnap.Full;
   return from==DrawerSnap.Full?(h<full*.75f?DrawerSnap.Fit:DrawerSnap.Full):(h>fit+FitSlop?DrawerSnap.Full:DrawerSnap.Fit);}
  void Drag(VisualElement handle){
-  handle.RegisterCallback<PointerDownEvent>(e=>{if(!open)return;dragFrom=e.position.y;dragStart=sheet.resolvedStyle.height;dragH=dragStart;dragFrom0=snap;moved=false;handle.CapturePointer(e.pointerId);AddToClassList(DraggingClass);e.StopPropagation();});
+  handle.RegisterCallback<PointerDownEvent>(e=>{if(!open)return;CancelFit();dragFrom=e.position.y;dragStart=sheet.resolvedStyle.height;dragH=dragStart;dragFrom0=snap;moved=false;handle.CapturePointer(e.pointerId);AddToClassList(DraggingClass);e.StopPropagation();});
   handle.RegisterCallback<PointerMoveEvent>(e=>{if(!handle.HasPointerCapture(e.pointerId))return;float dy=e.position.y-dragFrom;moved|=Mathf.Abs(dy)>4;
    dragH=Mathf.Clamp(dragStart-dy,dismissible?0:Mathf.Min(dragStart,resolvedStyle.height*.5f),resolvedStyle.height);sheet.style.height=dragH;});
   handle.RegisterCallback<PointerUpEvent>(e=>{if(!handle.HasPointerCapture(e.pointerId))return;handle.ReleasePointer(e.pointerId);RemoveFromClassList(DraggingClass);
