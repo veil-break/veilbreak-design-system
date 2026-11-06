@@ -1,3 +1,4 @@
+using UnityEngine;
 using UnityEngine.UIElements;
 namespace Veilbreak.Gui {
 /// <summary>Children in a column with a fixed rhythm: <c>vb-stack vb-stack--{4|8|12|16}</c> puts the gap under every child but the
@@ -23,6 +24,29 @@ namespace Veilbreak.Gui {
  [UxmlAttribute] public bool Wrap {get=>ClassListContains(ClassName+"--wrap");set=>EnableInClassList(ClassName+"--wrap",value);}
  public VbGrid():this(4){}
  public VbGrid(int columns,bool wrap=false){AddToClassList(ClassName);pickingMode=PickingMode.Ignore;Columns=columns;Wrap=wrap;}
+}
+
+/// <summary>Buttons side by side that fill the row: every visible child takes an equal share (<c>flex-grow:1; flex-basis:0; min-width:0</c>), with 8 between, so
+/// a pair never leaves half a row empty. Below <see cref="MinItemWidth"/> per child the row stacks into a column (<c>vb-action-row--stacked</c>) and each
+/// child takes the full width, the first child on top. <see cref="Fixed"/> keeps the children at one fixed width instead (the trailing BUY and SELL of a list
+/// row). The row re-arranges on every layout change; call <see cref="Arrange"/> yourself to measure in the same frame.</summary>
+[UxmlElement] public partial class ActionRow:VisualElement {
+ public const string ClassName="vb-action-row",StackedClass=ClassName+"--stacked",FixedClass=ClassName+"--fixed",FirstClass=ClassName+"__first";
+ /// <summary>The narrowest share a child may take before the row stacks, and the gap between children.</summary>
+ public const float DefaultMinItemWidth=112,Gap=8;
+ float minItem=DefaultMinItemWidth;VisualElement first;
+ [UxmlAttribute] public float MinItemWidth {get=>minItem;set{minItem=Mathf.Max(0,value);Arrange();}}
+ /// <summary>Children keep one fixed width (the row never stacks); for trailing actions that must line up down a list.</summary>
+ [UxmlAttribute] public bool Fixed {get=>ClassListContains(FixedClass);set{EnableInClassList(FixedClass,value);Arrange();}}
+ public bool Stacked=>ClassListContains(StackedClass);
+ public ActionRow(){AddToClassList(ClassName);pickingMode=PickingMode.Ignore;RegisterCallback<GeometryChangedEvent>(_=>Arrange());}
+ public ActionRow(params VisualElement[] actions):this(){foreach(var a in actions)Add(a);}
+ /// <summary>Whether a row of <paramref name="count"/> children in <paramref name="width"/> units has to stack.</summary>
+ public static bool Stacks(float width,int count,float minItemWidth)=>count>1&&width<count*minItemWidth+(count-1)*Gap-.5f;
+ /// <summary>Marks the first visible child and stacks the row when its children no longer fit side by side.</summary>
+ public void Arrange(){int n=0;VisualElement now=null;foreach(var child in Children())if(child.style.display!=DisplayStyle.None){n++;now??=child;}
+  if(now!=first){first?.RemoveFromClassList(FirstClass);first=now;first?.AddToClassList(FirstClass);}
+  float w=layout.width;if(float.IsNaN(w)||w<=0)return;EnableInClassList(StackedClass,!Fixed&&Stacks(w,n,minItem));}
 }
 
 /// <summary>Rows of the same kind in a scroll (scores, perks, rules, queue entries) with 6 between rows, and one empty-state line.</summary>
@@ -56,6 +80,8 @@ public static partial class Ui {
  public static StackLayout Stack(VisualElement parent,int gap=8,params string[] classes)=>new StackLayout(gap).Classes(classes).Into(parent);
  /// <summary>A <see cref="VbGrid"/> on <paramref name="parent"/>.</summary>
  public static VbGrid Grid(VisualElement parent,int columns,bool wrap=false,params string[] classes)=>new VbGrid(columns,wrap).Classes(classes).Into(parent);
+ /// <summary>An <see cref="ActionRow"/> on <paramref name="parent"/> holding <paramref name="actions"/>.</summary>
+ public static ActionRow Actions(VisualElement parent,params VisualElement[] actions)=>new ActionRow(actions).Into(parent);
  /// <summary>A <see cref="ListLayout"/> on <paramref name="parent"/>: rows go in it, the empty line shows while it has none.</summary>
  public static ListLayout List(VisualElement parent,string empty=null,params string[] classes)=>new ListLayout(empty).Classes(classes).Into(parent);
 }

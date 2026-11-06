@@ -31,9 +31,7 @@
 .vb-menu__checkpoint-line { -unity-font-definition: var(--vb-font-body-medium); font-size: 13px; margin: 2px 0; }
 .vb-menu__checkpoint .vb-button { width: 120px; min-width: 120px; }
 .vb-menu__play { height: 60px; min-height: 60px; margin-bottom: 10px; }
-.vb-menu__row { justify-content: flex-start; }
-.vb-menu__row > .vb-button { min-height: 48px; width: 124px; min-width: 124px; margin-right: 60px; }
-.vb-compact .vb-menu__row > .vb-button { margin-right: 12px; }
+.vb-menu__row > .vb-button { min-height: 48px; }
 .vb-menu__notice { margin-top: 10px; color: var(--vb-color-text-3); }
 
 /* ── SquadView ─────────────────────────────────────────────────────────── */
@@ -54,7 +52,7 @@
 .vb-pause__panel > * { margin-bottom: 10px; }
 .vb-pause__stats > .vb-stat { margin-right: 12px; }
 .vb-pause__perks { padding: 10px 12px; }
-.vb-pause__perks:hover { --vb-bw: 1; --vb-edge: rgba(29, 217, 160, 0.70); }
+.vb-pause__perks:hover { --vb-fill: var(--vb-color-ally-soft); }
 .vb-pause__perks > .vb-row--between { margin-bottom: 8px; }
 .vb-pause__more { -unity-background-image-tint-color: var(--vb-color-ally-text); }
 .vb-pause__chips { max-height: 76px; overflow: hidden; }
@@ -91,13 +89,11 @@
 .vb-results__value { -unity-font-definition: var(--vb-font-body-medium); font-size: 40px; }
 .vb-results__rank { padding: 4px 8px; background-color: var(--vb-color-ally); color: var(--vb-color-on-cta); -unity-font-definition: var(--vb-font-body-medium); -unity-font-style: bold; font-size: 10px; }
 .vb-results__points { -unity-font-definition: var(--vb-font-body-medium); font-size: 12px; }
-.vb-results__stats { margin-top: 8px; padding-top: 8px; border-top-width: 1px; border-top-color: var(--vb-color-line); align-items: flex-start; }
+.vb-results__stats { margin-top: 12px; align-items: flex-start; }
 .vb-results__stats > .vb-stat { margin-right: 10px; }
 .vb-results .vb-result { width: 23.5%; }
 .vb-results__perks > .vb-perk-chip { margin: 0 6px 6px 0; }
 .vb-results__row { flex-shrink: 0; margin-top: 8px; }
-.vb-results__menu { min-width: 94px; margin-right: 10px; }
-.vb-results__again { flex-grow: 1; }
 
 /* ── HighScoresView ────────────────────────────────────────────────────── */
 .vb-scores .vb-score { margin-left: 0; margin-right: 0; }

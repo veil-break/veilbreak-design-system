@@ -32,7 +32,8 @@ namespace Veilbreak.Gui {
  }
 }
 
-/// <summary>One shape for every confirmation: the question, its consequence, the destructive action and the way back.
+/// <summary>One shape for every confirmation: the question, its consequence, the destructive action and the way back, in one <see cref="ActionRow"/>
+/// (equal widths, stacked on a narrow sheet).
 /// <see cref="Push"/> puts it on a modal layer (blurred page under it, focus returns on close); both actions close it first.</summary>
 public sealed class ConfirmDialogView:OverlayView {
  public const string ClassName="vb-confirm";
@@ -40,7 +41,8 @@ public sealed class ConfirmDialogView:OverlayView {
  public VbButton Cancel {get;}
  public ConfirmDialogView(string title,string body,(string label,string icon,string sub) confirm,(string label,string icon) cancel,Action onConfirm,Action onCancel,ButtonVariant confirmVariant=ButtonVariant.Danger){
   AddToClassList(ClassName);pickingMode=PickingMode.Ignore;var sheet=Dialog.Sheet(this,title,body);
-  Confirm=new VbButton(confirm.label,confirmVariant,confirm.sub,confirm.icon,onConfirm){name="confirm"}.Into(sheet);Cancel=new VbButton(cancel.label,ButtonVariant.Secondary,null,cancel.icon,onCancel){name="cancel"}.Into(sheet);
+  Confirm=new VbButton(confirm.label,confirmVariant,confirm.sub,confirm.icon,onConfirm){name="confirm"};Cancel=new VbButton(cancel.label,ButtonVariant.Secondary,null,cancel.icon,onCancel){name="cancel"};
+  Ui.Actions(sheet,Confirm,Cancel).AddToClassList(ClassName+"__actions");
  }
  /// <summary>Pushes the dialog over the navigator's page. <paramref name="cancel"/>'s action is optional; closing always pops the layer.</summary>
  public static ConfirmDialogView Push(Navigator nav,string title,string body,(string label,string icon,Action action) confirm,(string label,string icon) cancel,string confirmSub=null,Action onCancel=null,ButtonVariant confirmVariant=ButtonVariant.Danger){
@@ -54,7 +56,7 @@ public sealed class GuideDialogView:OverlayView {
  public GuideDialogView(string title,string[] steps,Action ready){
   AddToClassList(ClassName);pickingMode=PickingMode.Ignore;var sheet=Dialog.Sheet(this,title,null);var list=Ui.Stack(sheet,8,ClassName+"__steps");
   for(int i=0;i<steps.Length;i++){var row=Ui.Box(list,"vb-row",ClassName+"__step");new BadgeComponent(Ui.Count(i+1),null,null,BadgeTone.Ally).Classes(ClassName+"__index").Into(row);Ui.Text(row,steps[i],"vb-t-body",ClassName+"__text");}
-  new VbButton("READY",ButtonVariant.Primary,null,"check",ready){name="ready"}.Into(sheet);
+  Ui.Actions(sheet,new VbButton("READY",ButtonVariant.Primary,null,"check",ready){name="ready"}).AddToClassList(ClassName+"__actions");
  }
  /// <summary>Pushes the guide on a modal layer; READY closes it, then runs <paramref name="ready"/>.</summary>
  public static GuideDialogView Push(Navigator nav,string title,string[] steps,Action ready){var layer=nav.Push();return new GuideDialogView(title,steps,()=>{nav.Modals.Pop();ready?.Invoke();}).Into(layer);}

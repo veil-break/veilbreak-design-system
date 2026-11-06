@@ -41,9 +41,9 @@ namespace Veilbreak.Gui {
   ledger=Ui.Box(card,Block+"__ledger");var stats=Ui.Box(card,"vb-row",Block+"__stats");waves=new StatReadout("WAVES","0").Into(stats);bosses=new StatReadout("BOSSES","0").Into(stats);distance=new StatReadout("DISTANCE","").Into(stats);time=new StatReadout("SIM TIME","").Into(stats);
   new LabelComponent("Squad · hover or tap for contribution").Classes("vb-page__label").Into(body);squad=Ui.Box(body,"vb-grid4");
   perksTitle=new LabelComponent("").Classes("vb-page__label").Into(body);perks=Ui.Box(body,"vb-row","vb-row--wrap",Block+"__perks");
-  var row=Ui.Box(this,"vb-row",Block+"__row");new VbButton("MENU",ButtonVariant.Secondary,null,null,()=>Menu?.Invoke()){name="menu"}.Classes(Block+"__menu").Into(row);
-  new VbButton("SQUAD",ButtonVariant.Secondary,null,null,()=>Squad?.Invoke()){name="squad"}.Classes(Block+"__menu").Into(row);
-  new VbButton("RUN AGAIN",ButtonVariant.Primary,null,"chevron",()=>Again?.Invoke()){name="again"}.Classes(Block+"__again").Into(row);
+  var row=Ui.Actions(this,new VbButton("MENU",ButtonVariant.Secondary,null,null,()=>Menu?.Invoke()){name="menu"}.Classes(Block+"__menu"),
+   new VbButton("SQUAD",ButtonVariant.Secondary,null,null,()=>Squad?.Invoke()){name="squad"}.Classes(Block+"__menu"),
+   new VbButton("RUN AGAIN",ButtonVariant.Primary,null,"chevron",()=>Again?.Invoke()){name="again"}.Classes(Block+"__again")).Classes(Block+"__row");row.MinItemWidth=104;
  }
  public ResultsView Bind(ResultsViewModel v){
   eyebrow.text=v.cause+" · wave "+v.wave;value.text=Ui.Number(v.score);rank.text=v.rank>0?"#"+v.rank+" OF "+v.of:"";rank.Show(v.rank>0);

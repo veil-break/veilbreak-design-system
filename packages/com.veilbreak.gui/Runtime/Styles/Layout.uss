@@ -49,6 +49,19 @@
 .vb-dialog > * { margin-bottom: 12px; }
 .vb-dialog .vb-button--secondary, .vb-dialog .vb-button--danger { align-self: flex-start; min-height: 48px; }
 
+/* ── ActionRow: buttons that fill the row ──────────────────────────────── */
+/* Every child takes an equal share with 8 between (the first child is marked vb-action-row__first); the row stacks into a column when the
+   shares would fall under MinItemWidth. --fixed keeps one fixed width for trailing actions (BUY, SELL). */
+.vb-action-row { flex-direction: row; align-items: stretch; flex-shrink: 0; }
+.vb-action-row > * { flex-grow: 1; flex-basis: 0; flex-shrink: 1; min-width: 0; margin-left: 8px; align-self: stretch; }
+.vb-action-row > .vb-button { padding-left: 12px; padding-right: 12px; }
+.vb-action-row > .vb-action-row__first { margin-left: 0; }
+.vb-action-row--stacked { flex-direction: column; }
+.vb-action-row--stacked > * { flex-grow: 0; flex-basis: auto; margin-left: 0; margin-top: 8px; }
+.vb-action-row--stacked > .vb-action-row__first { margin-top: 0; }
+.vb-action-row--fixed { align-items: center; }
+.vb-action-row--fixed > * { flex-grow: 0; flex-shrink: 0; flex-basis: auto; width: 92px; align-self: center; }
+
 /* ── backdrop ──────────────────────────────────────────────────────────── */
 .vb-backdrop { position: absolute; left: 0; right: 0; top: 0; bottom: 0; -unity-background-scale-mode: scale-and-crop; -unity-background-image-tint-color: rgb(215, 215, 215); }
 .vb-backdrop__shade { position: absolute; left: 0; right: 0; bottom: 0; height: 36%; --vb-cut: 0; --vb-bw: 0; --vb-fill: rgba(0, 0, 0, 0.01); --vb-fill-to: rgba(0, 0, 0, 0.94); --vb-fill-dir: 90; }
@@ -80,8 +93,18 @@
 /* Containers read as quiet tonal planes (cut-xs, no edge); the chipped look is left for what you act on or what is selected. */
 .vb-section, .vb-dialog, .vb-details, .vb-score, .vb-perk-row, .vb-rule, .vb-result, .vb-queue__row, .vb-merchant__exchange { --vb-cut: 4; --vb-bw: 0; }
 /* States that are selections or warnings keep an edge. */
-.vb-score--current, .vb-perk-row--selected, .vb-rule--warning, .vb-rule--draft, .vb-queue__row--next, .vb-queue__row--manual { --vb-bw: 1; }
+.vb-score--current, .vb-perk-row--selected, .vb-rule--warning, .vb-rule--draft { --vb-bw: 1; }
 .vb-contrast .vb-section, .vb-contrast .vb-dialog, .vb-contrast .vb-details, .vb-contrast .vb-score, .vb-contrast .vb-perk-row,
 .vb-contrast .vb-rule, .vb-contrast .vb-result, .vb-contrast .vb-queue__row, .vb-contrast .vb-merchant__exchange { --vb-bw: 1; --vb-edge: var(--vb-color-line-strong); }
 .vb-contrast .vb-score--current, .vb-contrast .vb-perk-row--selected { --vb-edge: var(--vb-color-ally); }
 .vb-contrast .vb-rule--warning { --vb-edge: var(--vb-color-warn); }
+/* Nested surfaces (the border rule in Gui.uss): high contrast gives every one its edge back. */
+/* nest:contrast:begin */
+.vb-contrast .vb-nest, .vb-contrast .vb-tile, .vb-contrast .vb-slot, .vb-contrast .vb-operative .vb-skill, .vb-contrast .vb-queue-chip,
+.vb-contrast .vb-queue__row, .vb-contrast .vb-hud__resources, .vb-contrast .vb-perk-chip, .vb-contrast .vb-perk-detail__thumb,
+.vb-contrast .vb-perk-row__thumb, .vb-contrast .vb-contribution__portrait, .vb-contrast .vb-details__skill-icon, .vb-contrast .vb-details__close,
+.vb-contrast .vb-result, .vb-contrast .vb-status, .vb-contrast .vb-effect--ready, .vb-contrast .vb-popover .vb-button--secondary,
+.vb-contrast .vb-dialog .vb-button--secondary, .vb-contrast .vb-drawer__sheet .vb-button--secondary, .vb-contrast .vb-section .vb-button--secondary { --vb-bw: 1; --vb-edge: var(--vb-color-line-strong); }
+/* nest:contrast:end */
+/* A focus ring keeps its own colour and weight. */
+.vb-contrast .vb-tile--focused, .vb-contrast .vb-tile--focused:hover { --vb-bw: 2; --vb-edge: var(--vb-color-ally); }

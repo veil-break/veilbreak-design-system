@@ -12,7 +12,7 @@ namespace Veilbreak.Gui {
   checkpoint=new CardComponent("CHECKPOINT").Classes("vb-menu__checkpoint").Into(this);line=Ui.Text(checkpoint,"","vb-menu__checkpoint-line");detail=Ui.Text(checkpoint,"","vb-t-caption");
   checkpoint.Actions(new VbButton("RESUME",ButtonVariant.Secondary,null,"play",()=>Resume?.Invoke()){name="resume"});
   play=new VbButton("PLAY",ButtonVariant.Primary,null,"chevron",()=>Play?.Invoke()){name="play"}.Classes("vb-menu__play").Into(this);
-  var row=Ui.Box(this,"vb-row","vb-menu__row");new VbButton("HIGH SCORES",ButtonVariant.Secondary,null,null,()=>Scores?.Invoke()){name="scores"}.Into(row);new VbButton("SETTINGS",ButtonVariant.Secondary,null,"settings",()=>Settings?.Invoke()){name="settings"}.Into(row);
+  var row=Ui.Actions(this,new VbButton("HIGH SCORES",ButtonVariant.Secondary,null,null,()=>Scores?.Invoke()){name="scores"},new VbButton("SETTINGS",ButtonVariant.Secondary,null,"settings",()=>Settings?.Invoke()){name="settings"}).Classes("vb-menu__row");row.MinItemWidth=96;
   notice=Ui.Text(this,"","vb-t-caption","vb-menu__notice");Bind(null,"",null);
  }
  /// <param name="checkpoint">Null hides the card.</param><param name="squadLine">"Squad · Aria · Sol · Aegis · Nyra" under PLAY.</param>

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -9,8 +10,11 @@ namespace Veilbreak.Gui
     /// Chamfered vector shapes for any element, painted with Painter2D and styled from USS custom properties, so a screen's stylesheet
     /// owns every colour. UI Toolkit has no clip-path, so the outline is painted; the element's content box and hit area stay its
     /// rectangle. This is the richer sibling of <see cref="VbShape"/> (the mesh painter behind <c>--vb-*</c>): a choice of which two
-    /// corners are cut, lock-on brackets, a focus ring, glass and glow. The property names are <see cref="VbVectorVocabulary.Prefix"/> followed by
-    /// (<c>--vb-vector-</c> by default; veilbreak's AR HUD reads the bare <c>--cut</c>, <c>--fill</c> and so on):
+    /// corners are cut, lock-on brackets, a focus ring, glass and glow. One vocabulary serves both painters: the canonical names are
+    /// <c>--vb-cut</c>, <c>--vb-fill</c>, <c>--vb-edge</c>, <c>--vb-bw</c>, <c>--vb-bracket</c> and <c>--vb-glow</c> (plus <c>--vb-fill-to</c>, <c>--vb-fill-dir</c> and
+    /// <c>--vb-bracket-len</c>). <see cref="Default"/> reads <see cref="VbVectorVocabulary.Prefix"/> followed by the property (<c>--vb-vector-stroke</c>)
+    /// as an alias first, then the canonical name, then ar-hud's bare name (<c>--stroke</c>). A vocabulary of your own (ar-hud's bare <c>--cut</c>,
+    /// <c>--fill</c> and so on) reads only its prefix. The names below are the aliases:
     ///   cut (chamfer size) flip (1: cut top-right/bottom-left instead of top-left/bottom-right)
     ///   fill [fill-to fill-dir (degrees, 0 = left to right, 90 = top to bottom)] stroke stroke-width glow
     ///   bracket [bracket-2 (the second corner) bracket-mask (1 TL, 2 TR, 4 BR, 8 BL; 0 = the two square corners)
@@ -26,53 +30,59 @@ namespace Veilbreak.Gui
         public const string ClassName = "vb-vector";
         public const string PropertyPrefix = "--vb-vector-";
         /// <summary>The gui vocabulary: <c>--vb-vector-*</c> properties and the <c>vb-vector</c> class.</summary>
-        public static readonly VbVectorVocabulary Default = new VbVectorVocabulary(PropertyPrefix, ClassName);
+        public static readonly VbVectorVocabulary Default = new VbVectorVocabulary(PropertyPrefix, ClassName, .2f, true);
+
+        /// <summary>A custom number read from the first of its names that the element resolves: the vocabulary's own, then (gui's own
+        /// vocabulary only) the canonical <c>--vb-*</c> name shared with <see cref="VbShape"/>, then ar-hud's bare name.</summary>
+        internal sealed class NumberChain
+        {
+            private readonly CustomStyleProperty<float>[] names;
+            public NumberChain(string[] names) { this.names = names.Select(name => new CustomStyleProperty<float>(name)).ToArray(); }
+            public bool TryGet(ICustomStyle style, out float value)
+            {
+                foreach (var name in names) if (style.TryGetValue(name, out value)) return true;
+                value = 0; return false;
+            }
+        }
+
+        /// <summary>The colour counterpart of <see cref="NumberChain"/>.</summary>
+        internal sealed class ColourChain
+        {
+            private readonly CustomStyleProperty<Color>[] names;
+            public ColourChain(string[] names) { this.names = names.Select(name => new CustomStyleProperty<Color>(name)).ToArray(); }
+            public bool TryGet(ICustomStyle style, out Color value)
+            {
+                foreach (var name in names) if (style.TryGetValue(name, out value)) return true;
+                value = default; return false;
+            }
+        }
 
         internal sealed class Properties
         {
-            public readonly CustomStyleProperty<float> Cut;
-            public readonly CustomStyleProperty<float> StrokeWidth;
-            public readonly CustomStyleProperty<float> Flip;
-            public readonly CustomStyleProperty<float> FillDir;
-            public readonly CustomStyleProperty<float> BracketMask;
-            public readonly CustomStyleProperty<float> BracketLength;
-            public readonly CustomStyleProperty<float> BracketWidth;
-            public readonly CustomStyleProperty<float> BracketOut;
-            public readonly CustomStyleProperty<Color> Fill;
-            public readonly CustomStyleProperty<Color> FillTo;
-            public readonly CustomStyleProperty<Color> Stroke;
-            public readonly CustomStyleProperty<Color> Glow;
-            public readonly CustomStyleProperty<Color> Bracket;
-            public readonly CustomStyleProperty<Color> Bracket2;
-            public readonly CustomStyleProperty<Color> Ring;
-            public readonly CustomStyleProperty<Color> RingGap;
-            public readonly CustomStyleProperty<Color> Sheen;
-            public readonly CustomStyleProperty<Color> Scan;
-            public readonly CustomStyleProperty<Color> Halo;
-            public readonly CustomStyleProperty<float> ScanPitch;
-            public Properties(string prefix)
+            public readonly NumberChain Cut, StrokeWidth, Flip, FillDir, BracketMask, BracketLength, BracketWidth, BracketOut, ScanPitch;
+            public readonly ColourChain Fill, FillTo, Stroke, Glow, Bracket, Bracket2, Ring, RingGap, Sheen, Scan, Halo;
+            private readonly string prefix; private readonly bool shared;
+            public Properties(string prefix, bool shared)
             {
-                Cut = new CustomStyleProperty<float>(prefix + "cut");
-                StrokeWidth = new CustomStyleProperty<float>(prefix + "stroke-width");
-                Flip = new CustomStyleProperty<float>(prefix + "flip");
-                FillDir = new CustomStyleProperty<float>(prefix + "fill-dir");
-                BracketMask = new CustomStyleProperty<float>(prefix + "bracket-mask");
-                BracketLength = new CustomStyleProperty<float>(prefix + "bracket-len");
-                BracketWidth = new CustomStyleProperty<float>(prefix + "bracket-w");
-                BracketOut = new CustomStyleProperty<float>(prefix + "bracket-out");
-                Fill = new CustomStyleProperty<Color>(prefix + "fill");
-                FillTo = new CustomStyleProperty<Color>(prefix + "fill-to");
-                Stroke = new CustomStyleProperty<Color>(prefix + "stroke");
-                Glow = new CustomStyleProperty<Color>(prefix + "glow");
-                Bracket = new CustomStyleProperty<Color>(prefix + "bracket");
-                Bracket2 = new CustomStyleProperty<Color>(prefix + "bracket-2");
-                Ring = new CustomStyleProperty<Color>(prefix + "ring");
-                RingGap = new CustomStyleProperty<Color>(prefix + "ring-gap");
-                Sheen = new CustomStyleProperty<Color>(prefix + "sheen");
-                Scan = new CustomStyleProperty<Color>(prefix + "scan");
-                Halo = new CustomStyleProperty<Color>(prefix + "halo");
-                ScanPitch = new CustomStyleProperty<float>(prefix + "scan-pitch");
+                this.prefix = prefix; this.shared = shared;
+                Cut = Number("cut", "cut"); StrokeWidth = Number("stroke-width", "bw", "stroke-width"); Flip = Number("flip"); FillDir = Number("fill-dir", "fill-dir");
+                BracketMask = Number("bracket-mask"); BracketLength = Number("bracket-len", "bracket-len"); BracketWidth = Number("bracket-w"); BracketOut = Number("bracket-out"); ScanPitch = Number("scan-pitch");
+                Fill = Colour("fill", "fill"); FillTo = Colour("fill-to", "fill-to"); Stroke = Colour("stroke", "edge", "stroke"); Glow = Colour("glow", "glow");
+                Bracket = Colour("bracket", "bracket"); Bracket2 = Colour("bracket-2"); Ring = Colour("ring"); RingGap = Colour("ring-gap"); Sheen = Colour("sheen"); Scan = Colour("scan"); Halo = Colour("halo");
             }
+            /// <summary>The names tried for <paramref name="name"/>, in order.</summary>
+            public string[] Names(string name, string canonical = null, string bare = null)
+            {
+                var names = new List<string> { prefix + name };
+                if (shared)
+                {
+                    if (canonical != null) names.Add("--vb-" + canonical);
+                    names.Add("--" + (bare ?? name));
+                }
+                return names.Distinct().ToArray();
+            }
+            private NumberChain Number(string name, string canonical = null, string bare = null) => new NumberChain(Names(name, canonical, bare));
+            private ColourChain Colour(string name, string canonical = null, string bare = null) => new ColourChain(Names(name, canonical, bare));
         }
 
         private static readonly Color Ground = new Color(.02f, .008f, .03f, 1);
@@ -137,8 +147,8 @@ namespace Veilbreak.Gui
             element.RegisterCallback<CustomStyleResolvedEvent>(_ =>
             {
                 var style = element.customStyle; var next = new Paint();
-                float Number(CustomStyleProperty<float> property, float fallback) => style.TryGetValue(property, out var value) ? value : fallback;
-                Color Colour(CustomStyleProperty<Color> property) => style.TryGetValue(property, out var value) ? value : Color.clear;
+                float Number(VbVectorShape.NumberChain property, float fallback) => property.TryGet(style, out var value) ? value : fallback;
+                Color Colour(VbVectorShape.ColourChain property) => property.TryGet(style, out var value) ? value : Color.clear;
                 next.cut = Number(props.Cut, 10); next.strokeWidth = Number(props.StrokeWidth, 1); next.flip = Number(props.Flip, 0) > .5f; next.dir = Number(props.FillDir, 0);
                 next.mask = Mathf.RoundToInt(Number(props.BracketMask, 0)); next.bracketLength = Number(props.BracketLength, 8); next.bracketWidth = Number(props.BracketWidth, 2); next.bracketOut = Number(props.BracketOut, 3);
                 next.fill = Colour(props.Fill); next.fillTo = Colour(props.FillTo); next.stroke = Colour(props.Stroke); next.glow = Colour(props.Glow);
@@ -233,9 +243,23 @@ namespace Veilbreak.Gui
         public readonly string Prefix, ClassName;
         public readonly float Blend;
         internal readonly VbVectorShape.Properties properties;
-        public VbVectorVocabulary(string prefix, string className, float blend = .2f)
+        public VbVectorVocabulary(string prefix, string className, float blend = .2f) : this(prefix, className, blend, false) { }
+        internal VbVectorVocabulary(string prefix, string className, float blend, bool shared)
         {
-            Prefix = prefix; ClassName = className; Blend = blend; properties = new VbVectorShape.Properties(prefix);
+            Prefix = prefix; ClassName = className; Blend = blend; properties = new VbVectorShape.Properties(prefix, shared);
+        }
+        /// <summary>The custom property names tried for <paramref name="name"/> (such as <c>stroke</c>), in order. A vocabulary made with the public
+        /// constructor tries only its own prefix, so ar-hud's bare vocabulary reads exactly what it always read; gui's <see cref="VbVectorShape.Default"/>
+        /// also accepts the canonical <c>--vb-*</c> name, then ar-hud's bare name.</summary>
+        public string[] Candidates(string name)
+        {
+            switch (name)
+            {
+                case "stroke": return properties.Names("stroke", "edge");
+                case "stroke-width": return properties.Names("stroke-width", "bw");
+                case "cut": case "fill": case "fill-to": case "fill-dir": case "glow": case "bracket": case "bracket-len": return properties.Names(name, name);
+                default: return properties.Names(name);
+            }
         }
     }
 }

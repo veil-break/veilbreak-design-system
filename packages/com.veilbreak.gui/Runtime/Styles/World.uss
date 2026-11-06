@@ -24,16 +24,20 @@
 .vb-combat-text--break { font-size: 13px; color: var(--vb-color-warn); }
 
 /* ── labels ────────────────────────────────────────────────────────────── */
-.vb-world-label { position: absolute; translate: -50% -100%; align-items: center; padding: 3px 7px; background-color: rgba(5, 2, 8, 0.72); border-left-width: 2px; border-color: var(--vb-color-ally); }
+/* Plain text on a dark underlay, no edge (the border budget); ownership reads from the text colour. */
+.vb-world-label { position: absolute; translate: -50% -100%; align-items: center; padding: 3px 7px; background-color: rgba(5, 2, 8, 0.72); }
 .vb-world-label__title { -unity-font-definition: var(--vb-font-body-bold); font-size: 10px; letter-spacing: 10px; color: var(--vb-color-text); padding: 0; margin: 0; }
 .vb-world-label__detail { -unity-font-definition: var(--vb-font-body-medium); font-size: 10px; color: var(--vb-color-text-2); padding: 0; margin: 0; }
-.vb-world-label--enemy { border-color: var(--vb-color-enemy); }
-.vb-world-label--aim { border-color: var(--vb-color-power); }
-.vb-world-label--telegraph { border-color: var(--vb-color-enemy); }
-.vb-world-label--telegraph .vb-world-label__title { color: var(--vb-color-enemy-text); border-bottom-width: 1px; border-color: var(--vb-color-enemy-text); }
+.vb-world-label__mark { margin-right: 5px; -unity-background-image-tint-color: var(--vb-color-amber-400); }
+.vb-world-label--ally .vb-world-label__title { color: var(--vb-color-ally-text); }
+.vb-world-label--enemy .vb-world-label__title { color: var(--vb-color-enemy-text); }
+.vb-world-label--aim .vb-world-label__title { color: var(--vb-color-power-text); }
+.vb-world-label--telegraph .vb-world-label__title { color: var(--vb-color-enemy-text); }
 .vb-world-label--estimate .vb-world-label__title { color: var(--vb-color-ally-text); }
-.vb-world-label--blocked { border-color: var(--vb-color-line-strong); }
 .vb-world-label--blocked .vb-world-label__title { color: var(--vb-color-text-2); }
+/* An elite trait is one line: a diamond and the trait, softer underlay. */
+.vb-world-label--elite { flex-direction: row; padding: 2px 6px; background-color: rgba(5, 2, 8, 0.56); }
+.vb-world-label--elite .vb-world-label__title { color: var(--vb-color-amber-400); }
 
 /* ── markers ───────────────────────────────────────────────────────────── */
 .vb-world-marker { position: absolute; width: 28px; height: 28px; translate: -50% -50%; }

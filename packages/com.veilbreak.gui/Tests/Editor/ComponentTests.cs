@@ -41,8 +41,13 @@ public sealed class ComponentTests {
   Assert.IsNull(p.Q<DrawerOverlay>(),"The pause menu is not a drawer");Assert.IsTrue(p.ClassListContains("vb-view--headed"));Assert.AreEqual("WAVE 07",p.Header.Meta);
   var back=p.Header.Q<IconButtonComposite>("back");Assert.IsNotNull(back,"Same back square as Settings and High Scores");Assert.AreEqual("Resume",back.tooltip);
   Assert.IsTrue(p.Panel.parent.ClassListContains("vb-pause__center"));Assert.IsNotNull(p.Panel.Q<VbButton>("resume"));Assert.IsNotNull(p.Panel.Q<VbButton>("exit"));Assert.IsFalse(resumed);}
- [Test] public void DrawersOpenAtHalfAndSnapByHeight(){var d=new DrawerOverlay().Open();Assert.AreEqual(DrawerSnap.Half,d.Snap);Assert.IsFalse(d.ClassListContains(DrawerOverlay.FullClass));
-  d.Snap=DrawerSnap.Full;Assert.IsTrue(d.ClassListContains(DrawerOverlay.FullClass));d.Close();d.Open();Assert.AreEqual(DrawerSnap.Half,d.Snap,"Every open starts at half");
-  Assert.IsNull(DrawerOverlay.SnapFor(150,844),"Below a quarter closes");Assert.AreEqual(DrawerSnap.Half,DrawerOverlay.SnapFor(500,844));Assert.AreEqual(DrawerSnap.Full,DrawerOverlay.SnapFor(700,844));}
+ [Test] public void DrawersOpenAtTheirContentHeightAndSnapByHeight(){var d=new DrawerOverlay().Open();Assert.AreEqual(DrawerSnap.Fit,d.Snap);Assert.IsFalse(d.ClassListContains(DrawerOverlay.FullClass));Assert.IsFalse(d.ClassListContains(DrawerOverlay.HalfClass));
+  d.Snap=DrawerSnap.Full;Assert.IsTrue(d.ClassListContains(DrawerOverlay.FullClass));d.Close();d.Open();Assert.AreEqual(DrawerSnap.Fit,d.Snap,"Every open starts fitted");
+  d.Close();d.Open(DrawerSnap.Half);Assert.AreEqual(DrawerSnap.Half,d.Snap,"Half is opt-in");Assert.IsTrue(d.ClassListContains(DrawerOverlay.HalfClass));
+  Assert.IsNull(DrawerOverlay.SnapFor(150,844),"Below a quarter closes");Assert.AreEqual(DrawerSnap.Half,DrawerOverlay.SnapFor(500,844));Assert.AreEqual(DrawerSnap.Full,DrawerOverlay.SnapFor(700,844));
+  Assert.IsNull(DrawerOverlay.SnapFor(200,844,DrawerSnap.Fit,DrawerSnap.Fit,380),"A fitted sheet pulled below a quarter closes");
+  Assert.AreEqual(DrawerSnap.Fit,DrawerOverlay.SnapFor(390,844,DrawerSnap.Fit,DrawerSnap.Fit,380),"Within the slop it settles back on its content");
+  Assert.AreEqual(DrawerSnap.Full,DrawerOverlay.SnapFor(600,844,DrawerSnap.Fit,DrawerSnap.Fit,380),"Pulled up it goes full");
+  Assert.AreEqual(DrawerSnap.Fit,DrawerOverlay.SnapFor(500,844,DrawerSnap.Full,DrawerSnap.Fit,0),"Pulled down from full it returns to its content height");Assert.AreEqual(DrawerSnap.Full,DrawerOverlay.SnapFor(700,844,DrawerSnap.Full,DrawerSnap.Fit,0));}
 }
 }

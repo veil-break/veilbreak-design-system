@@ -1,3 +1,4 @@
+using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -34,5 +35,19 @@ public sealed class WorldLayerTests {
 
  [Test] public void LabelsAndMarkersCarryKindTeamAndShape(){var label=new WorldLabel().Bind(WorldLabelKind.Blocked,"NO TARGET","Out of range");Assert.AreEqual("× NO TARGET",label.Title);Assert.IsTrue(label.ClassListContains("vb-world-label--blocked"));label.ShowDetail(false);Assert.AreEqual(DisplayStyle.None,label.Q<Label>(className:"vb-world-label__detail").style.display.value);
   var marker=new WorldMarker().Bind(WorldMarkerKind.Enemy,40);Assert.IsTrue(marker.Q<VbIcon>().ClassListContains("vb-icon--diamond"),"Enemies are diamonds");Assert.AreEqual(40,marker.style.width.value.value);Assert.IsTrue(new WorldMarker().Bind(WorldMarkerKind.Ally).Q<VbIcon>().ClassListContains("vb-icon--circle"),"Allies are circles");}
+ [Test] public void SameTitleLabelsInAGroupMergeAtTheirCentroid(){var layer=Layer();
+  layer.BeginFrame();for(int i=0;i<3;i++)layer.Label(10+i,new Vector3(i*30,0,100),WorldLabelKind.Name,"TETHERED",null,WorldTeam.Enemy,"tether");layer.Label(20,new Vector3(0,0,50),WorldLabelKind.Name,"RELAY SHEPHERD","3 tethers",WorldTeam.Enemy);layer.EndFrame(.1f);
+  Assert.AreEqual(2,layer.Labels,"Three tethers and the source are two labels");var labels=layer.Query<WorldLabel>().ToList();var merged=labels.Find(l=>l.Title.StartsWith("TETHERED"));Assert.AreEqual("TETHERED ×3",merged.Title);Assert.AreEqual("",merged.Detail,"A merged label drops its detail");
+  Assert.AreEqual(30,merged.style.left.value.value,1e-3f,"At the centroid of its members");Assert.AreEqual(100-layer.LabelLift,merged.style.top.value.value,1e-3f);Assert.AreEqual("3 tethers",labels.Find(l=>l.Title=="RELAY SHEPHERD").Detail,"An ungrouped label is untouched");
+  layer.BeginFrame();layer.Label(10,new Vector3(40,0,10),WorldLabelKind.Name,"TETHERED","Aria",WorldTeam.Enemy,"tether");layer.Label(11,new Vector3(0,0,10),WorldLabelKind.Name,"CHARGED",null,WorldTeam.Enemy,"tether");layer.EndFrame(.1f);
+  Assert.AreEqual(2,layer.Labels,"The same group key with another title is its own label");Assert.AreSame(merged,layer.Query<WorldLabel>().Where(l=>l.Title=="TETHERED").First(),"The merged element is kept and reads as itself when one remains");Assert.AreEqual("Aria",merged.Detail);
+  layer.BeginFrame();layer.EndFrame(.1f);Assert.AreEqual(0,layer.Labels,"Groups that are not refreshed go");Assert.AreEqual(0,layer.Query<WorldLabel>().ToList().Count);
+  var behind=new WorldLayer{Project=_=>null};behind.BeginFrame();var hidden=behind.Label(1,Vector3.zero,WorldLabelKind.Name,"TETHERED",null,WorldTeam.Enemy,"tether");behind.EndFrame(.1f);Assert.AreEqual(DisplayStyle.None,hidden.style.display.value,"A group with no visible member hides");}
+
+ [Test] public void EliteLabelsAreOneLineWithADiamondAndNoEdge(){var label=new WorldLabel().Bind(WorldLabelKind.Elite,"ELITE","Voltaic",WorldTeam.Enemy);Assert.AreEqual("Voltaic",label.Title,"The trait is the line");Assert.AreEqual("",label.Detail);Assert.IsTrue(label.ClassListContains("vb-world-label--elite"));
+  Assert.AreEqual(DisplayStyle.Flex,label.Q<VbIcon>().style.display.value,"The diamond mark shows");Assert.AreEqual("ELITE",new WorldLabel().Bind(WorldLabelKind.Elite,"ELITE").Title);
+  Assert.AreEqual(DisplayStyle.None,new WorldLabel().Bind(WorldLabelKind.Name,"ARIA").Q<VbIcon>().style.display.value,"Other kinds have no mark");
+  var uss=System.IO.File.ReadAllText(PackageFiles.Path("Runtime/Styles/World.uss"));var rules=System.Text.RegularExpressions.Regex.Matches(uss,@"\.vb-world-label[^{]*\{[^}]*\}");Assert.Greater(rules.Count,6);
+  foreach(System.Text.RegularExpressions.Match m in rules)StringAssert.DoesNotContain("border",m.Value,"World labels are unbordered text on an underlay");}
 }
 }

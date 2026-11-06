@@ -6,7 +6,7 @@ public enum WorldTeam { Ally, Enemy }
 public enum WorldRank { Normal, Elite, Boss }
 /// <summary>Damage dealt reads in text colour; damage taken carries a minus in enemy text; crits pop; execute and break flare.</summary>
 public enum CombatTextKind { Damage, Taken, Crit, Exposed, Heal, Barrier, Power, Miss, Execute, Break }
-public enum WorldLabelKind { Aim, Name, Telegraph, Estimate, Blocked }
+public enum WorldLabelKind { Aim, Name, Telegraph, Estimate, Blocked, Elite }
 public enum WorldMarkerKind { Ally, Enemy, Selected, Queued, Move }
 
 /// <summary>A fighter's world bar: health in team colour, barrier drawn after it, and a ghost trail of recent damage.
@@ -38,14 +38,19 @@ public enum WorldMarkerKind { Ally, Enemy, Selected, Queued, Move }
   return kind switch{CombatTextKind.Taken=>"−"+n,CombatTextKind.Crit=>n+"!",CombatTextKind.Exposed=>"EXPOSED "+n,CombatTextKind.Heal=>"+"+n,CombatTextKind.Barrier=>"BLOCKED "+n,CombatTextKind.Power=>"+"+n+" POWER",CombatTextKind.Miss=>"MISS",CombatTextKind.Execute=>"EXECUTE "+n,CombatTextKind.Break=>"BREAK",_=>n};}
 }
 
-/// <summary>Billboard text tied to a fighter or a point: aim chips, name tags, telegraph timers, move estimates and blocked markers.
-/// Constant screen size; when labels crowd, <see cref="WorldLayer"/> stacks them upward and drops their detail first.</summary>
+/// <summary>Billboard text tied to a fighter or a point: aim chips, name tags, telegraph timers, move estimates, blocked markers and elite traits.
+/// Plain text on a dark underlay, no edge; ownership reads from the text colour. <see cref="WorldLabelKind.Elite"/> is one line, a diamond mark then
+/// the detail (or the title when there is none), so ("ELITE", "Voltaic") reads "◆ Voltaic". Constant screen size; when labels crowd,
+/// <see cref="WorldLayer"/> stacks them upward and drops their detail first, and merges labels that share a group key.</summary>
 [UxmlElement] public partial class WorldLabel:VisualElement {
  public const string ClassName="vb-world-label";
- readonly Label title,detail;
- public WorldLabel(){AddToClassList(ClassName);pickingMode=PickingMode.Ignore;title=Ui.Text(this,"",ClassName+"__title");detail=Ui.Text(this,"",ClassName+"__detail");Bind(WorldLabelKind.Name,"");}
+ readonly Label title,detail;readonly VbIcon mark;
+ public WorldLabel(){AddToClassList(ClassName);pickingMode=PickingMode.Ignore;mark=new VbIcon("diamond",8).Classes(ClassName+"__mark").Into(this);title=Ui.Text(this,"",ClassName+"__title");detail=Ui.Text(this,"",ClassName+"__detail");Bind(WorldLabelKind.Name,"");}
+ /// <summary>"TETHERED ×3": the title with the number of labels it stands for.</summary>
+ public static string Merged(string title,int count)=>title+" ×"+count.ToString(CultureInfo.InvariantCulture);
  public string Title=>title.text;public string Detail=>detail.text;
- public WorldLabel Bind(WorldLabelKind kind,string title,string detail=null,WorldTeam team=WorldTeam.Ally){Ui.State(this,ClassName,kind);Ui.State(this,ClassName,team);this.title.text=kind==WorldLabelKind.Blocked?"× "+title:title;this.detail.text=detail??"";ShowDetail(true);return this;}
+ public WorldLabel Bind(WorldLabelKind kind,string title,string detail=null,WorldTeam team=WorldTeam.Ally){Ui.State(this,ClassName,kind);Ui.State(this,ClassName,team);bool elite=kind==WorldLabelKind.Elite;mark.Show(elite);
+  this.title.text=kind==WorldLabelKind.Blocked?"× "+title:elite&&!string.IsNullOrEmpty(detail)?detail:title;this.detail.text=elite?"":detail??"";ShowDetail(true);return this;}
  /// <summary>Hides the detail line (crowding); it returns on the next <see cref="Bind"/>.</summary>
  public void ShowDetail(bool on)=>detail.Show(on&&detail.text.Length>0);
 }

@@ -27,10 +27,12 @@ public sealed class WorldLayer:VisualElement {
  sealed class Number {public CombatText label;public int target,amount,stack;public CombatTextKind kind;public Vector3 position;public float age=-1,quiet;public bool Live=>age>=0;}
  readonly Dictionary<int,Slot<WorldHealthBar>> bars=new Dictionary<int,Slot<WorldHealthBar>>();readonly Dictionary<int,Slot<WorldLabel>> labels=new Dictionary<int,Slot<WorldLabel>>();
  readonly Dictionary<int,Slot<WorldMarker>> markers=new Dictionary<int,Slot<WorldMarker>>();readonly Dictionary<int,Slot<OffscreenIndicator>> chips=new Dictionary<int,Slot<OffscreenIndicator>>();
+ sealed class Group {public WorldLabel element;public int frame,count;public Vector2 sum;public WorldLabelKind kind;public WorldTeam team;public string title,detail,shown,shownTitle;public int shownCount;}
+ readonly Dictionary<string,Group> groups=new Dictionary<string,Group>();readonly List<string> staleGroups=new List<string>();
  readonly List<Number> numbers=new List<Number>();readonly List<int> stale=new List<int>();readonly List<Rect> placed=new List<Rect>();int frame;
 
  public WorldLayer(){AddToClassList(ClassName);pickingMode=PickingMode.Ignore;}
- public int Bars=>bars.Count;public int Labels=>labels.Count;public int Markers=>markers.Count;public int Chips=>chips.Count;
+ public int Bars=>bars.Count;public int Labels=>labels.Count+groups.Count;public int Markers=>markers.Count;public int Chips=>chips.Count;
  public int LiveTexts {get{int n=0;foreach(var t in numbers)if(t.Live)n++;return n;}}
  /// <summary>The layer's size in its own units (zero before layout).</summary>
  public Vector2 Size=>float.IsNaN(layout.width)?Vector2.zero:layout.size;
@@ -39,7 +41,21 @@ public sealed class WorldLayer:VisualElement {
  public WorldHealthBar Bar(int id,Vector3 world,float health,float barrier=0,WorldTeam team=WorldTeam.Enemy,WorldRank rank=WorldRank.Normal){var bar=Keep(bars,id,()=>new WorldHealthBar());bar.Team(team).Rank(rank).Set(health,barrier);Place(bar,Project?.Invoke(world),BarLift);return bar;}
  /// <summary>A bar at a point already in layer units, for callers that project themselves.</summary>
  public WorldHealthBar BarAt(int id,Vector2 point,float health,float barrier=0,WorldTeam team=WorldTeam.Enemy,WorldRank rank=WorldRank.Normal){var bar=Keep(bars,id,()=>new WorldHealthBar());bar.Team(team).Rank(rank).Set(health,barrier);Place(bar,point,BarLift);return bar;}
- public WorldLabel Label(int id,Vector3 world,WorldLabelKind kind,string title,string detail=null,WorldTeam team=WorldTeam.Ally){var label=Keep(labels,id,()=>new WorldLabel());label.Bind(kind,title,detail,team);Place(label,Project?.Invoke(world),LabelLift);return label;}
+ /// <param name="group">Labels with the same group key and title merge into one, "TETHERED ×3", placed at the centroid of their points; a lone label reads as itself.
+ /// The merged label is returned for each call and drops its detail line; a null key keeps the label on its own.</param>
+ public WorldLabel Label(int id,Vector3 world,WorldLabelKind kind,string title,string detail=null,WorldTeam team=WorldTeam.Ally,string group=null){
+  if(group!=null)return Merge(group,world,kind,title,detail,team);
+  var label=Keep(labels,id,()=>new WorldLabel());label.Bind(kind,title,detail,team);Place(label,Project?.Invoke(world),LabelLift);return label;}
+ WorldLabel Merge(string key,Vector3 world,WorldLabelKind kind,string title,string detail,WorldTeam team){key=key+"\n"+title;
+  if(!groups.TryGetValue(key,out var g))groups[key]=g=new Group{element=new WorldLabel().Into(this),frame=-1};
+  if(g.frame!=frame){g.frame=frame;g.count=0;g.sum=Vector2.zero;}
+  var p=Project?.Invoke(world);if(p.HasValue){g.count++;g.sum+=p.Value;}g.kind=kind;g.team=team;g.title=title;g.detail=detail;return g.element;}
+ // Each merged label is bound once its members are known: a lone one reads as itself, several as "title ×n" at their centroid, none hides it.
+ void Settle(){foreach(var g in groups.Values){if(g.frame!=frame)continue;g.element.Show(g.count>0);if(g.count==0)continue;
+   if(g.count>1){if(g.shown==null||g.shownCount!=g.count||g.shownTitle!=g.title){g.shownCount=g.count;g.shownTitle=g.title;g.shown=WorldLabel.Merged(g.title,g.count);}g.element.Bind(g.kind,g.shown,null,g.team);}
+   else g.element.Bind(g.kind,g.title,g.detail,g.team);
+   Place(g.element,g.sum/g.count,LabelLift);}
+  staleGroups.Clear();foreach(var pair in groups)if(pair.Value.frame!=frame)staleGroups.Add(pair.Key);foreach(var key in staleGroups){groups[key].element.RemoveFromHierarchy();groups.Remove(key);}}
  public WorldMarker Marker(int id,Vector3 world,WorldMarkerKind kind,float size=0){var marker=Keep(markers,id,()=>new WorldMarker());marker.Bind(kind,size);Place(marker,Project?.Invoke(world),0);return marker;}
  /// <summary>A chip on the board edge toward <paramref name="world"/>; hidden while that point is on the board or behind the view.</summary>
  public OffscreenIndicator Offscreen(int id,Vector3 world,string name,WorldTeam team=WorldTeam.Enemy,float metres=-1,bool threat=false){var chip=Keep(chips,id,()=>new OffscreenIndicator());chip.Bind(name,team,metres,threat);
@@ -51,7 +67,7 @@ public sealed class WorldLayer:VisualElement {
   var slot=live>=PerTarget?oldest:numbers.Find(t=>!t.Live);if(slot==null){if(numbers.Count>=TextLimit)return;slot=new Number{label=new CombatText().Into(this)};numbers.Add(slot);}
   slot.stack=live>=PerTarget?slot.stack:live;slot.target=target;slot.kind=kind;slot.amount=amount;slot.position=world;slot.age=0;slot.quiet=0;slot.label.Bind(kind,amount);slot.label.Show(false);}
 
- public void EndFrame(float delta){Sweep(bars);Sweep(labels);Sweep(markers);Sweep(chips);foreach(var slot in bars.Values)slot.element.Step(delta);
+ public void EndFrame(float delta){Settle();Sweep(bars);Sweep(labels);Sweep(markers);Sweep(chips);foreach(var slot in bars.Values)slot.element.Step(delta);
   foreach(var t in numbers){if(!t.Live)continue;t.age+=delta;t.quiet+=delta;if(t.age>=TextSeconds){t.age=-1;t.label.Show(false);continue;}var p=Project?.Invoke(t.position);t.label.Show(p.HasValue);if(!p.HasValue)continue;
    float k=t.age/TextSeconds;At(t.label,p.Value+new Vector2(18,-TextLift-t.stack*StackStep-(ReducedMotion?0:Rise*k)));t.label.style.opacity=Mathf.Min(1,(1-k)*3);
    bool flare=t.kind==CombatTextKind.Crit||t.kind==CombatTextKind.Execute||t.kind==CombatTextKind.Break;float pop=!ReducedMotion&&flare&&t.age<.15f?1.3f-2*t.age:1;t.label.style.scale=new Scale(new Vector3(pop,pop,1));}
@@ -70,9 +86,10 @@ public sealed class WorldLayer:VisualElement {
  static void Place(VisualElement e,Vector2? point,float lift){e.Show(point.HasValue);if(point.HasValue)At(e,point.Value-new Vector2(0,lift));}
  static void At(VisualElement e,Vector2 p){e.style.left=p.x;e.style.top=p.y;}
  // Labels anchor at their bottom centre; one that overlaps a label placed before it this frame steps up and drops its detail line.
- void Declutter(){placed.Clear();foreach(var slot in labels.Values){var label=slot.element;if(label.style.display==DisplayStyle.None)continue;var size=label.layout.size;if(float.IsNaN(size.x)||size.x<=0)continue;
+ void Declutter(){placed.Clear();foreach(var slot in labels.Values)Stack(slot.element);foreach(var g in groups.Values)if(g.frame==frame)Stack(g.element);}
+ void Stack(WorldLabel label){if(label.style.display==DisplayStyle.None)return;var size=label.layout.size;if(float.IsNaN(size.x)||size.x<=0)return;
   var r=new Rect(label.style.left.value.value-size.x/2,label.style.top.value.value-size.y,size.x,size.y);bool moved=false;
   for(int i=0;i<4;i++){bool hit=false;foreach(var q in placed)if(q.Overlaps(r)){r.y=q.yMin-r.height-2;hit=moved=true;}if(!hit)break;}
-  label.ShowDetail(!moved);if(moved)label.style.top=r.yMax;placed.Add(r);}}
+  label.ShowDetail(!moved);if(moved)label.style.top=r.yMax;placed.Add(r);}
 }
 }

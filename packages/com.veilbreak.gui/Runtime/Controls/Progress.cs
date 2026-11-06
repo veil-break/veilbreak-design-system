@@ -48,7 +48,7 @@ public enum ProgressTone { Ally, Power, Enemy, Neutral }
  public ListRow(string title,string caption=null,string icon=null,string value=null){
   AddToClassList(ClassName);lead=Ui.Text(this,"",ClassName+"__lead");lead.Show(false);glyph=new VbIcon("",20).Classes(ClassName+"__icon").Into(this);
   text=Ui.Box(this,ClassName+"__text");this.title=Ui.Text(text,"",ClassName+"__title");this.caption=Ui.Text(text,"","vb-t-caption",ClassName+"__caption");
-  this.value=Ui.Text(this,"",ClassName+"__value");trail=Ui.Box(this,ClassName+"__trail");Title=title;Caption=caption;Icon=icon;Value=value;
+  this.value=Ui.Text(this,"",ClassName+"__value");trail=new ActionRow{Fixed=true}.Classes(ClassName+"__trail").Into(this);Title=title;Caption=caption;Icon=icon;Value=value;
   RegisterCallback<GeometryChangedEvent>(_=>trail.Show(trail.childCount>0));
  }
  /// <summary>Makes the whole row a target (tap, click, Enter, Space).</summary>

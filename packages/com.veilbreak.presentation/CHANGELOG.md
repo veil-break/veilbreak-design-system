@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.5.0 — 2026-11-06
+
+- Requires gui 0.8.0: the border rule, `ActionRow`, fitted drawers, the restyled popover, merged world labels, draggable squad slots and one shape vocabulary (design-system 0.18.0).
+
 ## 1.4.1 — 2026-11-06
 
 - Requires environment 0.5.1 (the City shader's reflection pass is found again).

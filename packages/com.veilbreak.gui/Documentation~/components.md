@@ -43,7 +43,12 @@ The Veil cut shape: top-left and bottom-right chamfers, painted as a mesh becaus
   | `--vb-bracket`, `--vb-bracket-len` | L marks on the two square corners |
   | `--vb-glow` | Soft outer bleed |
 
-  `.vb-shape` resets them all, because custom properties inherit.
+  `.vb-shape` resets them all, because custom properties inherit. These names are canonical for both painters:
+  `VbVectorShape` reads its `--vb-vector-*` alias first, then the canonical name, then ar-hud's bare name.
+- **Border rule:** a surface inside another surface sets `--vb-bw: 0` (no dashes, brackets or glow) and takes a fill one tone up.
+  `Gui.uss` lists them between `nest:begin` and `nest:end`; `.vb-nest` opts any element in; `.vb-contrast` restores the
+  edges (`Layout.uss`). Edges stay on floating surfaces, the one primary action, choice cards, selection and focus rings,
+  danger actions and the empty drop target.
 - **Notes:** the content box and hit area stay the element's rectangle. Token colours work directly:
   `--vb-edge: var(--vb-color-ally)`.
 
@@ -57,14 +62,18 @@ use `Ui.Panel(parent, classes…)`.
 
 ### Popover
 
-Hover, focus and tap popovers. Content is built on demand and placed on the panel root, so it is never clipped, and
-clamped inside the panel's edges.
+Hover, focus and tap popovers. Content is built on demand and placed on the panel root, so it is never clipped. A popover is
+one solid surface with padding, one edge and a small painted arrow toward its anchor (`vb-popover__arrow--up` or `--down`);
+it is clamped to the panel (at most 340 wide, the panel's height less its margins, the content scrolls past that) and placed
+again whenever the popover, the anchor or the panel changes size.
 
 - **Build:** `Popover.Attach(anchor, () => content, PopoverPlacement.Below | Above, alignEnd)`.
 - **API:**
   - `Open()`, `Close()`, `IsOpen`.
   - `Pin()` keeps it open (galleries, tutorials, captures).
   - `Popover.CloseAll()` returns whether any were open.
+- **Content:** gets `vb-popover__content` (no surface of its own). `PopoverCard(title, hint)` is the title, hint and flat rows
+  layout (`Row(key, value)`, `Rows`). `Popover.Fit` and `Popover.Limit` are the pure placement and size limit.
 - **States:** the anchor carries `vb-popover-open`. The content is wrapped in a `ScrollView` with `vb-popover`.
 - **Access:** a mouse opens it on hover. Touch toggles it on tap. Focus opens it and blur closes it. It copies the
   anchor's root flags (`SafeAreaRoot.RootClasses`), so contrast, larger text and the motion settings reach it.
@@ -348,6 +357,19 @@ One-pointer press, drag and release with capture, for aiming and moving.
 - **States:** the target carries `vb-dragging` meanwhile.
 - **Notes:** the left button or a touch only. Lost capture runs `cancel`. Hosts cancel drags when a page opens.
 
+### ReorderManipulator
+
+Reorders a container's children by dragging, long-pressing or the keyboard; the host owns the state.
+
+- **Build:** `container.AddManipulator(new ReorderManipulator { CanLift = i => … })`, then `Reordered += (from, to) => …` and bind
+  again. `SquadView.SlotMoved(from, to)` and `SquadView.Reorder` are the squad's.
+- **Gesture:** a press on a child that may move lifts after 8 units of travel or 0.35 s held still. The child dims
+  (`vb-reorder-source`), a ghost plate with a selection ring (`vb-reorder-ghost`) follows the pointer over the panel root and the
+  slot under it shows a ring (`vb-reorder-over`). The drop slot is the child whose `worldBound` holds the pointer, else the
+  nearest. A tap never lifts. The ghost glides into the slot, or goes at once under reduced motion.
+- **Keyboard:** Alt+Left/Up and Alt+Right/Down move the focused child one place and keep focus on it.
+- **API:** `Begin`, `Drag`, `End`, `Cancel`, `Nudge(index, step)`, `Lifted`, `Over`, `Ghost`, `ReorderManipulator.IndexAt(rects, point)`.
+
 ### GestureSurface
 
 Camera gestures on a surface that also hosts a targeting drag.
@@ -548,6 +570,8 @@ Full-bleed artwork behind a screen, scaled to cover, with a gradient shade along
 | `vb-grid4` | Four tiles or slots per row (wraps) |
 | `vb-grid2`, `__cell`, `--end` | Two-column grid |
 | `vb-section` | A titled settings panel |
+| `vb-action-row`, `--stacked`, `--fixed` | `ActionRow`: buttons that fill the row in equal shares, stacked below 112 units each; `--fixed` keeps one width (92) |
+| `vb-nest` | A surface inside another surface: no edge, one tone up |
 | `vb-large-text` | Larger body and caption type |
 
 ---
@@ -583,7 +607,7 @@ The world-space HUD over the 3D view; see [world space](guidelines/02-world-spac
 
 - **API:**
   - Per frame: `BeginFrame()`; then `Bar(id, world, health01, barrier01, team, rank)`, `BarAt(id, point, …)`,
-    `Label(id, world, kind, title, detail, team)`, `Marker(id, world, kind, size)` and
+    `Label(id, world, kind, title, detail, team, group)`, `Marker(id, world, kind, size)` and
     `Offscreen(id, world, name, team, metres, threat)`; then `EndFrame(simulationDelta)`.
   - Event-driven: `Text(target, world, amount, kind)`.
   - Static: `WorldLayer.Pin(point, size, insets, edge, out pinned, out degrees)`.
@@ -611,10 +635,13 @@ A `Label` that the layer pools.
 
 ### WorldLabel
 
-- **API:** `Bind(kind, title, detail, team)`, `ShowDetail(on)`, `Title`, `Detail`.
-- **States:** `vb-world-label--aim`, `--name`, `--telegraph`, `--estimate`, `--blocked` (prefixed with ×), and
-  `--ally` or `--enemy`.
-- **USS:** `__title`, `__detail`.
+- **API:** `Bind(kind, title, detail, team)`, `ShowDetail(on)`, `Title`, `Detail`, `WorldLabel.Merged(title, count)`.
+- **Merging:** `WorldLayer.Label(…, group)` merges labels with the same group key and title into one "TETHERED ×3" at the
+  centroid of their points; a lone one reads as itself.
+- **States:** `vb-world-label--aim`, `--name`, `--telegraph`, `--estimate`, `--blocked` (prefixed with ×), `--elite` (one line:
+  a diamond and the detail, so "ELITE" and "Voltaic" read "◆ Voltaic") and `--ally` or `--enemy`. Labels are unbordered text on a
+  dark underlay; ownership reads from the text colour.
+- **USS:** `__title`, `__detail`, `__mark`.
 
 ### WorldMarker
 
@@ -692,9 +719,10 @@ Enter and Space.
 
 `DrawerOverlay` (`vb-drawer`): `__backdrop`, then `Sheet` (`__sheet`, slim solid, at most 88% of the board) with `__grip`
 (`__handle`), `__head` (`__title`, `__meta`, `__close`), `Body` (`__body`, a ScrollView and the content container) and
-`Foot` (`__foot`; `Actions(...)`). `Open(at)` slides it up to `DrawerSnap.Half` (half the screen, default) or `Full`
-(`vb-drawer--full`); `Snap` and `SnapChanged` follow the player, who drags the handle or head up to full, down to half or
-below a quarter to close, and taps the handle to toggle. `Close(done)` slides it down and hides it; `Dismiss()` does what
+`Foot` (`__foot`, an `ActionRow`; `Actions(...)`). `Open(at)` slides it up to `DrawerSnap.Fit` (as tall as its content, at most
+90% of the board, the body scrolls only past that; default), `Half` (half the screen, opt-in, `vb-drawer--half`) or `Full`
+(`vb-drawer--full`); `Snap` and `SnapChanged` follow the player, who drags the handle or head up to full, down to the content
+height or below a quarter to close, and taps the handle to toggle full. `Close(done)` slides it down and hides it; `Dismiss()` does what
 the backdrop, × and a closing drag do: close, then raise `Dismissed`.
 `Dismissible`, `CloseButton` and `Backdrop` (off: docked inline, `vb-drawer--inline`, only the sheet takes input) are
 UXML attributes. `DrawerOverlay.Push(nav, title, closed)` puts one on a modal layer (`vb-modal--drawer`) that Back pops.

@@ -72,7 +72,7 @@ namespace Veilbreak.Gui {
   new IconButtonComposite("close","Close details",()=>Closed?.Invoke(),12).Classes(ClassName+"__close").Into(head);
   var stats=Ui.Box(this,ClassName+"__stats");hp=new StatReadout("HEALTH","0").Into(stats);armor=new StatReadout("ARMOR","0").Into(stats);stability=new StatReadout("STABILITY","0").Into(stats);armor.AddToClassList("vb-stat--neutral");stability.AddToClassList("vb-stat--neutral");
   var p=Ui.Box(this,ClassName+"__passive");passive=Ui.Text(p,"",ClassName+"__passive-name");passiveText=Ui.Text(p,"",ClassName+"__passive-text");
-  skills=Ui.Box(this,ClassName+"__skills");toggle=new VbButton("ADD TO SQUAD",ButtonVariant.Light,null,"add",()=>Toggled?.Invoke()).Classes(ClassName+"__toggle").Into(this);
+  skills=Ui.Box(this,ClassName+"__skills");toggle=new VbButton("ADD TO SQUAD",ButtonVariant.Light,null,"add",()=>Toggled?.Invoke()).Classes(ClassName+"__toggle");Ui.Actions(this,toggle).AddToClassList(ClassName+"__actions");
  }
  /// <param name="slot">Squad slot (1–4), or 0 when not in the squad.</param>
  /// <param name="squadFull">Adding is blocked with a reason when the squad already has four.</param>
