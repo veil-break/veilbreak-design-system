@@ -17,6 +17,13 @@ public static class MotionRecipes {
  public static readonly MotionRecipe OverlayOut=new MotionRecipe(150,0,6,0,0.98f);
  public static readonly MotionRecipe PopoverIn=new MotionRecipe(140,0,4,0,0.97f);
  public static readonly MotionRecipe PopoverOut=new MotionRecipe(90,0,0,0,0.98f);
+ public static readonly MotionRecipe DrawerFit=new MotionRecipe(180,0,0,0,1);
+ public static readonly MotionRecipe LabelMerge=new MotionRecipe(180,0,0,0,1.12f);
+ public static readonly MotionRecipe LabelSplit=new MotionRecipe(180,0,0,0,0.9f);
+ public static readonly MotionRecipe DragLift=new MotionRecipe(120,0,-4,0,1.05f);
+ public static readonly MotionRecipe DropSettle=new MotionRecipe(220,0,0,0,1);
+ public static readonly MotionRecipe PressSink=new MotionRecipe(100,0,1,0,0.92f);
+ public static readonly MotionRecipe Fallen=new MotionRecipe(420,0,6,0,0.97f);
  public const int Stagger=80,MaxDealDelay=400;
  public const int Rebuild=180;
  public const int Reveal=2000;

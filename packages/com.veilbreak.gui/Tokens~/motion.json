@@ -56,6 +56,35 @@
     "popoverOut": {
       "milliseconds": 90,
       "scale": 0.98
+    },
+    "drawerFit": {
+      "milliseconds": 180
+    },
+    "labelMerge": {
+      "milliseconds": 180,
+      "scale": 1.12
+    },
+    "labelSplit": {
+      "milliseconds": 180,
+      "scale": 0.9
+    },
+    "dragLift": {
+      "milliseconds": 120,
+      "y": -4,
+      "scale": 1.05
+    },
+    "dropSettle": {
+      "milliseconds": 220
+    },
+    "pressSink": {
+      "milliseconds": 100,
+      "y": 1,
+      "scale": 0.92
+    },
+    "fallen": {
+      "milliseconds": 420,
+      "y": 6,
+      "scale": 0.97
     }
   }
 }

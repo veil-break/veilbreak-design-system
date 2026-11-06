@@ -6,7 +6,8 @@ using PointerType=UnityEngine.UIElements.PointerType;
 namespace Veilbreak.Gui {
 /// <summary>Lets the player reorder a container's children. Dragging a child past <see cref="Slop"/>, or holding it for <see cref="LongPressSeconds"/>, lifts a ghost
 /// (a selection-ringed plate over the panel root) and dims the child; the child under the ghost, found from the children's <c>worldBound</c>, is the drop slot; releasing
-/// raises <see cref="Reordered"/> (from, to) and glides the ghost into the slot, or removes it at once under reduced motion. Alt+arrow on a focused child raises the same event
+/// raises <see cref="Reordered"/> (from, to) and glides the ghost into the slot (<see cref="MotionRecipes.DropSettle"/>) as it settles back to full size, then the slot child pops once, or removes the ghost at once under reduced motion. The ghost lifts
+/// when it appears (<see cref="MotionRecipes.DragLift"/>: it rises and grows, with a brief fade-in flash); reduced motion keeps it flat, and reduced flashes drops the fade-in. Alt+arrow on a focused child raises the same event
 /// for its neighbour and follows it with focus (Left and Up step back, Right and Down forward). The manipulator never moves a child: state stays with the host, which binds again.
 /// A tap, which never lifts, still reaches the child's own click. Register it on the container; <see cref="CanLift"/> says which children may move.</summary>
 public sealed class ReorderManipulator:PointerManipulator {
@@ -60,16 +61,26 @@ public sealed class ReorderManipulator:PointerManipulator {
 
  void Lift(){hold?.Pause();hold=null;if(from<0||from>=target.childCount)return;lifted=true;over=from;if(!target.HasPointerCapture(pointer))target.CapturePointer(pointer);
   var child=target[from];child.AddToClassList(SourceClass);var root=target.panel?.visualTree;
-  if(root!=null){var b=child.worldBound;ghost=VbShape.Attach(new VisualElement{pickingMode=PickingMode.Ignore}.Classes(GhostClass));ghost.style.position=Position.Absolute;ghost.style.width=b.width;ghost.style.height=b.height;root.Add(ghost);Place(b.position);}
+  if(root!=null){var b=child.worldBound;ghost=VbShape.Attach(new VisualElement{pickingMode=PickingMode.Ignore}.Classes(GhostClass));ghost.style.position=Position.Absolute;ghost.style.width=b.width;ghost.style.height=b.height;root.Add(ghost);Place(b.position);LiftGhost(ghost);}
   Mark(from);}
+ // The ghost rises and grows over the lift recipe and fades in from 55% (the flash). Reduced motion: it neither rises nor grows; reduced flashes: it does not fade in.
+ void LiftGhost(VisualElement plate){
+  bool calm=VbMotion.Calm(target),flashless=Ui.Under(target,SafeAreaRoot.ReducedFlashes);if(calm&&flashless)return;
+  var recipe=MotionRecipes.DragLift;double began=VbMotion.Clock();IVisualElementScheduledItem timer=null;
+  void Tick(){if(plate.panel==null||plate!=ghost){timer?.Pause();return;}float p=Mathf.Clamp01((float)((VbMotion.Clock()-began)*1000/Mathf.Max(1,recipe.milliseconds))),k=VbMotion.Ease(p);
+   if(!calm){float scale=Mathf.Lerp(1,recipe.scale,k);plate.style.scale=new Scale(new Vector3(scale,scale,1));plate.style.translate=new Translate(0,recipe.y*k);}
+   if(!flashless)plate.style.opacity=Mathf.Lerp(.55f,1,k);if(p>=1)timer?.Pause();}
+  timer=plate.schedule.Execute(Tick).Every(16);Tick();}
  void Follow(){if(!lifted)return;var b=target[from].worldBound;if(ghost!=null)Place(b.position+(at-press));int i=IndexAt(at);if(i>=0)Mark(i);}
  void Place(Vector2 worldPosition){var origin=ghost.parent.worldBound.position;ghost.style.left=worldPosition.x-origin.x;ghost.style.top=worldPosition.y-origin.y;}
  void Mark(int i){if(over>=0&&over<target.childCount)target[over].RemoveFromClassList(OverClass);over=i;if(i!=from&&i<target.childCount)target[i].AddToClassList(OverClass);}
  // The ghost glides into the drop slot over the UI beat and goes; under reduced motion it goes at once.
  void Settle(int to){var plate=ghost;ghost=null;Unlift();int id=pointer;Forget();if(target.HasPointerCapture(id))target.ReleasePointer(id);if(plate==null)return;
   if(to<0||to>=target.childCount||VbMotion.Calm(target)){plate.RemoveFromHierarchy();return;}
-  var end=target[to].worldBound;var start=new Vector2(plate.resolvedStyle.left,plate.resolvedStyle.top);var origin=plate.parent?.worldBound.position??Vector2.zero;var goal=end.position-origin;double began=VbMotion.Clock();
-  IVisualElementScheduledItem timer=null;timer=plate.schedule.Execute(()=>{float p=Mathf.Clamp01((float)((VbMotion.Clock()-began)*1000/VbTokens.DurUi));var v=Vector2.Lerp(start,goal,VbMotion.Ease(p));plate.style.left=v.x;plate.style.top=v.y;plate.style.opacity=1-p;if(p>=1){timer.Pause();plate.RemoveFromHierarchy();}}).Every(16);}
+  var slot=target[to];var end=slot.worldBound;var recipe=MotionRecipes.DragLift;var start=new Vector2(plate.resolvedStyle.left,plate.resolvedStyle.top);var origin=plate.parent?.worldBound.position??Vector2.zero;var goal=end.position-origin;double began=VbMotion.Clock();
+  IVisualElementScheduledItem timer=null;timer=plate.schedule.Execute(()=>{float p=Mathf.Clamp01((float)((VbMotion.Clock()-began)*1000/Mathf.Max(1,MotionRecipes.DropSettle.milliseconds))),k=VbMotion.Ease(p);var v=Vector2.Lerp(start,goal,k);plate.style.left=v.x;plate.style.top=v.y;
+   float scale=Mathf.Lerp(recipe.scale,1,k);plate.style.scale=new Scale(new Vector3(scale,scale,1));plate.style.translate=new Translate(0,recipe.y*(1-k));plate.style.opacity=1-p;
+   if(p>=1){timer.Pause();plate.RemoveFromHierarchy();if(slot.panel!=null)VbMotion.Pop(slot,.04f);}}).Every(16);}
  void Unlift(){if(target==null)return;if(from>=0&&from<target.childCount)target[from].RemoveFromClassList(SourceClass);if(over>=0&&over<target.childCount)target[over].RemoveFromClassList(OverClass);ghost?.RemoveFromHierarchy();ghost=null;lifted=false;over=-1;}
  void Forget(){hold?.Pause();hold=null;pointer=-1;from=-1;lifted=false;}
 }

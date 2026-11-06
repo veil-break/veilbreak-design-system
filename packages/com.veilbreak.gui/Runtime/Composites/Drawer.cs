@@ -11,11 +11,15 @@ public enum DrawerSnap { Half, Full, Fit }
 /// foot of actions (an <see cref="ActionRow"/>). Drag the handle or head: up snaps to the full screen, down snaps back to the content height or, from
 /// below a quarter, closes it; a tap on the handle toggles full and back. <see cref="DrawerSnap.Half"/> (half the screen) is opt-in. Tapping the
 /// backdrop or the close square dismisses it too (<see cref="Dismissed"/>); Back pops it when it was pushed. Children go to the body.
-/// Inline (<see cref="Backdrop"/> off) it docks inside a view without blocking what is above the sheet.</summary>
+/// Inline (<see cref="Backdrop"/> off) it docks inside a view without blocking what is above the sheet. A Fit drawer that is open and whose content changes height (an operative swapped for another, a section opened) eases its
+/// sheet to the new height (<see cref="MotionRecipes.DrawerFit"/>, real time) instead of jumping; reduced motion jumps, and the recipe has no flash to reduce.</summary>
 [UxmlElement] public partial class DrawerOverlay:OverlayView {
- public const string ClassName="vb-drawer",OpenClass=ClassName+"--open",DraggingClass=ClassName+"--dragging",FullClass=ClassName+"--full",HalfClass=ClassName+"--half";
+ public const string ClassName="vb-drawer",OpenClass=ClassName+"--open",DraggingClass=ClassName+"--dragging",FittingClass=ClassName+"--fitting",FullClass=ClassName+"--full",HalfClass=ClassName+"--half";
  /// <summary>Units a released sheet may sit above its content height before it settles on Full.</summary>
  public const float FitSlop=24;
+ /// <summary>Whether the sheet is easing to a new content height.</summary>
+ public bool Fitting=>fitting;
+ bool fitting,fitEnding;double fitBegan;float fitFrom,fitTo;IVisualElementScheduledItem fitTimer;
 
  readonly VisualElement backdrop,sheet,grip,head;readonly ActionRow foot;readonly ScrollView body;readonly Label title,meta;readonly IconButtonComposite close;
  bool open,dismissible=true,hasBackdrop=true,closeButton=true,moved;float dragFrom,dragStart,dragH;DrawerSnap snap=DrawerSnap.Fit,rest=DrawerSnap.Fit,dragFrom0=DrawerSnap.Fit;
@@ -28,7 +32,7 @@ public enum DrawerSnap { Half, Full, Fit }
  public ActionRow Foot=>foot;
  public bool IsOpen=>open;
  /// <summary>The content height (default), half the screen or the full screen; the player changes it by dragging or tapping the handle.</summary>
- [UxmlAttribute] public DrawerSnap Snap {get=>snap;set{snap=value;EnableInClassList(FullClass,value==DrawerSnap.Full);EnableInClassList(HalfClass,value==DrawerSnap.Half);sheet.style.height=StyleKeyword.Null;SnapChanged?.Invoke(value);}}
+ [UxmlAttribute] public DrawerSnap Snap {get=>snap;set{snap=value;EnableInClassList(FullClass,value==DrawerSnap.Full);EnableInClassList(HalfClass,value==DrawerSnap.Half);CancelFit();sheet.style.height=StyleKeyword.Null;SnapChanged?.Invoke(value);}}
  public event Action<DrawerSnap> SnapChanged;
  [UxmlAttribute] public string Title {get=>title.text;set{title.text=(value??"").ToUpperInvariant();Refresh();}}
  [UxmlAttribute] public string Meta {get=>meta.text;set{meta.text=value??"";Refresh();}}
@@ -46,9 +50,24 @@ public enum DrawerSnap { Half, Full, Fit }
   meta=new Label{pickingMode=PickingMode.Ignore};meta.AddToClassList("vb-t-badge");meta.AddToClassList(ClassName+"__meta");head.Add(meta);
   close=new IconButtonComposite("close","Close",()=>Dismiss()).Classes(ClassName+"__close").Into(head);
   body=new ScrollView(ScrollViewMode.Vertical){horizontalScrollerVisibility=ScrollerVisibility.Hidden,verticalScrollerVisibility=ScrollerVisibility.Hidden};body.AddToClassList(ClassName+"__body");sheet.Add(body);
-  foot=new ActionRow().Classes(ClassName+"__foot").Into(sheet);Drag(grip);Drag(head);
+  foot=new ActionRow().Classes(ClassName+"__foot").Into(sheet);Drag(grip);Drag(head);sheet.RegisterCallback<GeometryChangedEvent>(Refit);sheet.RegisterCallback<DetachFromPanelEvent>(_=>CancelFit());
   this.Show(false);Refresh();RegisterCallback<GeometryChangedEvent>(_=>foot.Show(foot.childCount>0));
  }
+ // The sheet's own height changed (its content did) while it sits open at its content height and nobody is dragging it: ease from the old height to the new one. The sheet's own USS height transition (for the snaps) is off meanwhile
+ // (--fitting): left on, it chases every height this sets and the sheet is still short of its content when the height is handed back.
+ void Refit(GeometryChangedEvent e){
+  if(fitting||!open||Phase!=OverlayPhase.Open||snap!=DrawerSnap.Fit||ClassListContains(DraggingClass)||sheet.style.height.keyword!=StyleKeyword.Null)return;
+  float from=e.oldRect.height,to=e.newRect.height;if(!(from>0)||!(to>0)||Mathf.Abs(to-from)<1.5f||VbMotion.Calm(this))return;
+  fitting=true;fitEnding=false;fitFrom=from;fitTo=to;fitBegan=VbMotion.Clock();AddToClassList(FittingClass);sheet.style.height=from;fitTimer?.Pause();fitTimer=sheet.schedule.Execute(StepFit).Every(16);
+ }
+ void StepFit(){
+  float p=Mathf.Clamp01((float)((VbMotion.Clock()-fitBegan)*1000/Mathf.Max(1,MotionRecipes.DrawerFit.milliseconds)));
+  if(VbMotion.Calm(this)||fitEnding){CancelFit();sheet.style.height=StyleKeyword.Null;return;}
+  // The last frame holds the target height; the next hands the height back to the content.
+  if(p>=1){fitEnding=true;sheet.style.height=fitTo;return;}
+  sheet.style.height=Mathf.Lerp(fitFrom,fitTo,VbMotion.Ease(p));
+ }
+ void CancelFit(){fitTimer?.Pause();fitTimer=null;if(fitting)RemoveFromClassList(FittingClass);fitting=false;fitEnding=false;}
  static VisualElement Part(VisualElement parent,string cls){var e=new VisualElement{pickingMode=PickingMode.Ignore};e.AddToClassList(cls);parent.hierarchy.Add(e);return e;}
  void Refresh(){meta.Show(meta.text.Length>0);close.Show(closeButton&&dismissible);head.Show(title.text.Length>0||meta.text.Length>0||(closeButton&&dismissible));foot.Show(foot.childCount>0);}
  /// <summary>Adds actions to the foot and returns the drawer.</summary>
@@ -60,7 +79,7 @@ public enum DrawerSnap { Half, Full, Fit }
  /// <summary>Reversible recipe-driven sheet entrance; inline drawers leave surrounding input available.</summary>
  public DrawerOverlay Open(DrawerSnap at=DrawerSnap.Fit){open=true;rest=at==DrawerSnap.Half?DrawerSnap.Half:DrawerSnap.Fit;Snap=at;this.Show(true);AddToClassList(OpenClass);Phase=OverlayPhase.Opening;
   VbMotion.In(sheet,Entrance,0,()=>Phase=OverlayPhase.Open);VbMotion.In(backdrop,new MotionRecipe(Entrance.milliseconds));return this;}
- public void Close(Action done=null){open=false;RemoveFromClassList(DraggingClass);Phase=OverlayPhase.Closing;
+ public void Close(Action done=null){open=false;CancelFit();RemoveFromClassList(DraggingClass);Phase=OverlayPhase.Closing;
   VbMotion.Out(backdrop,new MotionRecipe(Exit.milliseconds));VbMotion.Out(sheet,Exit,()=>{if(open)return;RemoveFromClassList(OpenClass);this.Show(false);sheet.style.height=StyleKeyword.Null;Phase=OverlayPhase.Closed;done?.Invoke();});}
  public bool Dismiss(){if(!open||!dismissible)return false;Dismissed?.Invoke();if(Owner==null)Close();return true;}
  /// <summary>The snap a released sheet of height <paramref name="h"/> settles on, in a drawer <paramref name="full"/> tall, for a half-height drawer: below a

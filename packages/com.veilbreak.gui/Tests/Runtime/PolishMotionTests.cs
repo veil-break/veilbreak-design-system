@@ -27,6 +27,21 @@ public sealed class PolishMotionTests {
   // Anything made clickable plays it too, from the keyboard as well.
   int taps=0;var tile=new VisualElement().Into(root);tile.style.width=80;tile.style.height=60;tile.Clickable(()=>taps++);yield return null;
   using(var key=KeyDownEvent.GetPooled('\n',KeyCode.Return,EventModifiers.None)){key.target=tile;tile.SendEvent(key);}Assert.AreEqual(1,taps);Assert.IsTrue(VbEdgeFx.Active(tile),"A clickable element plays the edge when it is activated");VbEdgeFx.Cancel(tile);}
+ static void Pointer<T>(VisualElement target,Vector2 at,EventType type) where T:PointerEventBase<T>,new(){var system=new Event{type=type,mousePosition=at,button=0};using(var e=PointerEventBase<T>.GetPooled(system)){e.target=target;target.SendEvent(e);}}
+ // ds#69: the edge plays from a pointer press that goes down and up on the element (Clickable, Ui.cs), not only from VbEdgeFx.Play; a press that is dragged off before it is released is no click and plays nothing.
+ [UnityTest] public IEnumerator ARealPointerPressThroughClickableClicksAndLightsTheEdge(){
+  yield return Panel();int taps=0;var tile=new VisualElement().Into(root);tile.style.width=80;tile.style.height=60;tile.Clickable(()=>taps++);var button=new VbButton("GO",ButtonVariant.Secondary,null,null,()=>taps+=10).Into(root);button.style.width=120;button.style.height=48;var card=new ChoiceCard().Into(root);card.style.width=120;card.style.height=80;int picks=0;card.Picked+=()=>picks++;yield return null;yield return null;
+  var at=tile.worldBound.center;Pointer<PointerDownEvent>(tile,at,EventType.MouseDown);Assert.AreEqual(0,taps,"A press alone is not a click");Assert.IsFalse(VbEdgeFx.Active(tile),"…and does not light the edge");
+  Pointer<PointerUpEvent>(tile,at,EventType.MouseUp);Assert.AreEqual(1,taps,"Down and up on the element clicks once");Assert.IsTrue(VbEdgeFx.Active(tile),"…and the release lights the edge");Assert.AreEqual(EdgeFxKind.Activate,VbEdgeFx.Playing(tile));Assert.AreEqual(1,Layers(tile));
+  yield return Advance(VbEdgeFx.ActivateMilliseconds/1000.0+.1);Assert.IsFalse(VbEdgeFx.Active(tile),"It runs out");Assert.AreEqual(0,Layers(tile));
+  // Pressed on the element and released far from it: nothing.
+  Pointer<PointerDownEvent>(tile,at,EventType.MouseDown);Pointer<PointerUpEvent>(tile,at+new Vector2(400,400),EventType.MouseUp);Assert.AreEqual(1,taps,"A press released elsewhere is no click");Assert.IsFalse(VbEdgeFx.Active(tile));
+  // The kit's own controls take the same path: a VbButton and a ChoiceCard.
+  var b=button.worldBound.center;Pointer<PointerDownEvent>(button,b,EventType.MouseDown);Pointer<PointerUpEvent>(button,b,EventType.MouseUp);Assert.AreEqual(11,taps,"The button clicked");Assert.IsTrue(VbEdgeFx.Active(button));VbEdgeFx.Cancel(button);
+  var c=card.worldBound.center;Pointer<PointerDownEvent>(card,c,EventType.MouseDown);Pointer<PointerUpEvent>(card,c,EventType.MouseUp);Assert.AreEqual(1,picks,"The card was picked");Assert.IsTrue(VbEdgeFx.Active(card),"A choice card lights its edge when it is picked");VbEdgeFx.Cancel(card);}
+ [UnityTest] public IEnumerator ARealPointerPressUnderReducedMotionStillLightsAndEndsTheEdge(){
+  yield return Panel(SafeAreaRoot.ReducedMotion);int taps=0;var tile=new VisualElement().Into(root);tile.style.width=80;tile.style.height=60;tile.Clickable(()=>taps++);yield return null;yield return null;
+  var at=tile.worldBound.center;Pointer<PointerDownEvent>(tile,at,EventType.MouseDown);Pointer<PointerUpEvent>(tile,at,EventType.MouseUp);Assert.AreEqual(1,taps);Assert.IsTrue(VbEdgeFx.Active(tile));yield return Advance(VbEdgeFx.CalmMilliseconds/1000.0+.1);Assert.IsFalse(VbEdgeFx.Active(tile),"The calm edge is over in "+VbEdgeFx.CalmMilliseconds+" ms");Assert.AreEqual(0,Layers(tile));}
  [UnityTest] public IEnumerator ReducedMotionLightsTheEdgeAtOnceAndFadesInAHundredMilliseconds(){
   yield return Panel(SafeAreaRoot.ReducedMotion);var button=new VbButton("PLAY").Into(root);yield return null;VbEdgeFx.Play(button);Assert.IsTrue(VbEdgeFx.Active(button));
   yield return Advance(.05);Assert.IsTrue(VbEdgeFx.Active(button));yield return Advance(.08);Assert.IsFalse(VbEdgeFx.Active(button),"The calm effect is over in "+VbEdgeFx.CalmMilliseconds+" ms");Assert.AreEqual(0,Layers(button));}

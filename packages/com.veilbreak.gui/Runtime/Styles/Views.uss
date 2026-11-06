@@ -83,7 +83,8 @@
 .vb-draft__carousel { margin-top: 6px; margin-bottom: 10px; }
 .vb-draft__card { min-height: 236px; margin: 0; --vb-cut: 12; --vb-bw: 1; }
 .vb-draft__squad { padding: 9px 12px; margin-top: 12px; margin-bottom: 12px; }
-.vb-draft__squad > .vb-label { margin-bottom: 7px; }
+/* The carry-forward line is the longest label of the draft: at 320 it wraps instead of running out of the frame (design-system#69). */
+.vb-draft__squad > .vb-label { margin-bottom: 7px; white-space: normal; }
 .vb-draft__cell { width: 23%; }
 .vb-draft__code { }
 
@@ -133,6 +134,8 @@
 .vb-build__bonus { flex-direction: row; align-items: center; margin-right: 12px; }
 .vb-build__bonus-value { margin-left: 6px; -unity-font-definition: var(--vb-font-body-medium); font-size: var(--vb-fs-13); color: var(--vb-color-ally-text); }
 .vb-build__list { flex-grow: 0; flex-shrink: 1; max-height: 348px; margin-bottom: 10px; }
+.vb-list.vb-build__grid { flex-wrap: wrap; justify-content: space-between; }
+.vb-build__grid > .vb-choice { width: 48.5%; }
 .vb-build__detail { margin-top: 12px; flex-shrink: 0; }
 .vb-revive .vb-grid4 { margin-top: 8px; }
 .vb-accessibility > .vb-form { margin-left: 12px; margin-right: 12px; }

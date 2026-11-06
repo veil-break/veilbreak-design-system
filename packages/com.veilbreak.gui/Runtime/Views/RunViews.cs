@@ -35,10 +35,10 @@ namespace Veilbreak.Gui {
 /// <summary>Run over: the score and how it was made, the squad's contribution (hover or tap a cell), the perks, then MENU and RUN AGAIN.</summary>
 [UxmlElement] public partial class ResultsView:ScreenView {
  public const string Block="vb-results";
- readonly LabelComponent eyebrow,perksTitle;readonly Label value,rank;readonly VisualElement ledger,squad,perks;readonly StatReadout waves,bosses,distance,time;
+ readonly LabelComponent eyebrow,perksTitle;readonly Label heading,value,rank;readonly VisualElement ledger,squad,perks;readonly StatReadout waves,bosses,distance,time;
  public event Action Again,Menu,Squad;
  public ResultsView():base(Block){
-  var body=Ui.Scroll(this,"vb-page__scroll",Block+"__scroll");eyebrow=new LabelComponent("",LabelSize.Label,TextTone.Enemy).Classes(Glitch.TitleClass).Into(body);Ui.Text(body,"RUN OVER","vb-t-display",Glitch.TitleClass);
+  var body=Ui.Scroll(this,"vb-page__scroll",Block+"__scroll");eyebrow=new LabelComponent("",LabelSize.Label,TextTone.Enemy).Classes(Glitch.TitleClass).Into(body);heading=Ui.Text(body,"RUN OVER","vb-t-display",Glitch.TitleClass);
   var card=Ui.Frame(body,FrameKind.Slim,"vb-frame--solid",Block+"__score");var top=Ui.Box(card,"vb-row","vb-row--between");var left=Ui.Box(top);new LabelComponent("Score").Into(left);value=Ui.Text(left,"0",Block+"__value");rank=Ui.Text(top,"",Block+"__rank");
   ledger=Ui.Box(card,Block+"__ledger");var stats=Ui.Box(card,"vb-row",Block+"__stats");waves=new StatReadout("WAVES","0").Into(stats);bosses=new StatReadout("BOSSES","0").Into(stats);distance=new StatReadout("DISTANCE","").Into(stats);time=new StatReadout("SIM TIME","").Into(stats);
   new LabelComponent("Squad").Classes("vb-page__label").Into(body);squad=Ui.Box(body,"vb-grid4");
@@ -48,7 +48,7 @@ namespace Veilbreak.Gui {
    new VbButton("RUN AGAIN",ButtonVariant.Primary,null,"chevron",()=>Again?.Invoke()){name="again"}.Classes(Block+"__again")).Classes(Block+"__row");row.MinItemWidth=104;
  }
  public ResultsView Bind(ResultsViewModel v){
-  eyebrow.text=v.cause+" · wave "+v.wave;value.text=Ui.Number(v.score);bool ranked=v.rank>0&&v.score>0;rank.text=ranked?"#"+v.rank+" OF "+v.of:"";rank.Show(ranked);
+  heading.text=string.IsNullOrEmpty(v.title)?"RUN OVER":v.title.ToUpperInvariant();eyebrow.text=v.cause+" · wave "+v.wave;value.text=Ui.Number(v.score);bool ranked=v.rank>0&&v.score>0;rank.text=ranked?"#"+v.rank+" OF "+v.of:"";rank.Show(ranked);
   Keyed.Bind(ledger,v.ledger,l=>l.label,_=>new KeyValueRow(),(r,l)=>{r.Key=l.label;r.Value=l.value;});
   waves.Set(v.wave.ToString());bosses.Set(v.bosses.ToString());distance.Show(!string.IsNullOrEmpty(v.distance));if(!string.IsNullOrEmpty(v.distance)){var parts=v.distance.Split(' ');distance.Set(parts[0],parts.Length>1?parts[1]:null);}
   time.Show(!string.IsNullOrEmpty(v.simTime));time.Set(v.simTime??"");
@@ -77,22 +77,22 @@ namespace Veilbreak.Gui {
  }
 }
 
-/// <summary>The run's perks: category totals, the stacks (tap one) and the picked one explained. Opens from the draft and from pause.</summary>
+/// <summary>The run's perks: category totals, the stacks as compact <see cref="ChoiceCard"/>s in a two-column grid (tap one) and the picked one explained. Opens from the draft and from pause.</summary>
 [UxmlElement] public partial class ActivePerksView:ScreenView {
  public const string Block="vb-build";
- readonly ScreenHeader header;readonly VisualElement totals;readonly ListLayout list;readonly PerkDetail detail;readonly List<PerkRow> rows=new List<PerkRow>();ActivePerksViewModel current;int shownPick=-1;
+ readonly ScreenHeader header;readonly VisualElement totals;readonly ListLayout list;readonly PerkDetail detail;ActivePerksViewModel current;int shownPick=-1;
  public event Action<int> Picked;
  public event Action Back;
  public ActivePerksView():base(Block,true){
   header=new ScreenHeader("ACTIVE PERKS","").Into(this);header.Back+=()=>Back?.Invoke();totals=Ui.Frame(this,FrameKind.Slim,Block+"__summary");
-  list=Ui.List(this,"No perks yet. Clear a wave to draft one.",Block+"__list");detail=new PerkDetail().Classes(Block+"__detail").Into(this);
+  list=Ui.List(this,"No perks yet. Clear a wave to draft one.",Block+"__list");list.contentContainer.AddToClassList(Block+"__grid");list.contentContainer.style.flexDirection=FlexDirection.Row;/* a ScrollView sets its own content direction, which a sheet rule does not beat */detail=new PerkDetail().Classes(Block+"__detail").Into(this);
  }
  /// <summary>A total that says nothing ("+0%", "0"): none of its digits is above zero. Such totals are not listed.</summary>
  public static bool Zero(string value){if(string.IsNullOrEmpty(value))return true;foreach(var c in value)if(c>='1'&&c<='9')return false;return true;}
  public ActivePerksView Bind(ActivePerksViewModel v){
   int stacks=0;foreach(var p in v.perks)stacks+=p.stack;header.Meta=stacks+" · WAVE "+v.wave.ToString("00");
   var shownTotals=v.totals.Where(t=>!Zero(t.value)).ToArray();Keyed.Bind(totals,shownTotals,t=>t.label,_=>new FactCell(Block+"__bonus","vb-t-badge",Block+"__bonus-value"),(cell,t)=>cell.Bind(t.label,t.value));totals.Show(shownTotals.Length>0&&v.perks.Length>0);
-  current=v;Keyed.Bind(list.contentContainer,v.perks,p=>p.id,p=>{var row=new PerkRow();string id=p.id;row.Picked+=()=>Picked?.Invoke(Array.FindIndex(current.perks,x=>x.id==id));return row;},(row,p)=>row.Bind(p,Array.IndexOf(v.perks,p)==v.pick),true);
+  current=v;Keyed.Bind(list.contentContainer,v.perks,p=>p.id,p=>{var card=new ChoiceCard{Compact=true}.Classes(Block+"__card");string id=p.id;card.Picked+=()=>Picked?.Invoke(Array.FindIndex(current.perks,x=>x.id==id));return card;},(card,p)=>card.BindOwned(p,Array.IndexOf(v.perks,p)==v.pick),true);
   bool has=v.pick>=0&&v.pick<v.perks.Length;VbMotion.Show(detail,has,MotionKind.Rise);if(has){detail.Bind(v.perks[v.pick],false);if(shownPick>=0&&shownPick!=v.pick)VbMotion.In(detail,MotionKind.Fade);}shownPick=has?v.pick:-1;
   return this;
  }

@@ -101,6 +101,8 @@ public enum RarityTier { None, Blue, Violet, Gold }
 [Serializable] public sealed class AccessibilityViewModel { public bool reducedFlashes,largerText,highContrast; }
 [Serializable] public sealed class LedgerLine { public string label="",value=""; }
 [Serializable] public sealed class ResultsViewModel {
+ /// <summary>The heading over the result (a run ending, a victory); empty keeps "RUN OVER". Normal case is fine: the view sets it in caps.</summary>
+ public string title="RUN OVER";
  public string cause="SQUAD DOWN",distance="",simTime=""; public long score,wave,bosses; public int rank,of=20;
  public LedgerLine[] ledger=Array.Empty<LedgerLine>(); public ContributionView[] squad=Array.Empty<ContributionView>(); public PerkView[] perks=Array.Empty<PerkView>();
 }

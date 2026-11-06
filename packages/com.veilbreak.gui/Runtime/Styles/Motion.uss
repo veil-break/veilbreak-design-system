@@ -45,6 +45,13 @@
     scale: 0.97 0.97;
 }
 
+/* A unit card that falls drains to the fallen look over the Fallen recipe (420 ms); the slump itself is code (VbMotion.Slump). Opacity still settles under reduced motion. */
+.vb-operative__band, .vb-operative__kit, .vb-operative__body {
+    transition-property: opacity;
+    transition-duration: 0.42s;
+    transition-timing-function: ease-out;
+}
+
 /* Meters: Power and health settle onto a new value instead of jumping; previews and reserves fade. */
 .vb-meter__fill, .vb-meter__extra, .vb-health__hp .vb-meter__fill, .vb-stat__fill, .vb-focus__fill {
     transition-property: width;

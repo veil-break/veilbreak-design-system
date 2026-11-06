@@ -6,12 +6,16 @@ namespace Veilbreak.Gui {
 /// nothing ever runs below the slot's foot: a cooldown fills from the bottom and counts its seconds over the glyph (a windup and a silence count the same way), short-on-Power
 /// dims the slot and puts the shortfall in the corner ("−3"), a queued manual cast puts its place in line there ("#1") and a buffered one an arrow, a fallen operative's skills lock,
 /// an invalid aim strikes its glyph and replaces the cost with the reason, a refused command flashes crimson once and an exposed target inverts the cost.
-/// A windup sweeps left to right. The charge and the sweep are <see cref="VbClipFill"/>s, so they follow the button's bottom-right cut instead of overflowing it. Attach drag/aim manipulators from the game.
+/// A windup sweeps left to right. Pressing the button sinks it (<see cref="MotionRecipes.PressSink"/>, eased out, no bounce) and lets it back when the press ends anywhere on the panel, even when a game's drag manipulator has captured the
+/// pointer; under reduced motion it does not move and dims a little while pressed, and under reduced flashes it does not brighten its plate. The charge and the sweep are <see cref="VbClipFill"/>s, so they follow the button's bottom-right cut instead of overflowing it. Attach drag/aim manipulators from the game.
 /// </summary>
 [UxmlElement] public partial class SkillButton:VisualElement {
  public const string ClassName="vb-skill";
  readonly Label slot,value,seconds,badge;readonly VbIcon glyph;readonly VisualElement charge,sweep,slash;
- SkillState? previousState;IVisualElementScheduledItem rejected;
+ public const string PressedClass=ClassName+"--pressed",PressFlashClass=ClassName+"--press-flash";
+ SkillState? previousState;IVisualElementScheduledItem rejected;VisualElement pressTree;readonly EventCallback<PointerUpEvent> onUp;readonly EventCallback<PointerCancelEvent> onCancel;
+ /// <summary>Whether the button is sunk under a press.</summary>
+ public bool Pressed=>ClassListContains(PressedClass);
  public SkillView View {get;private set;}
  /// <summary>The corner overlay: the shortfall ("−3"), the queue place ("#1") or a buffered arrow; empty hides it.</summary>
  public Label Badge=>badge;
@@ -23,7 +27,15 @@ namespace Veilbreak.Gui {
   AddToClassList(ClassName);focusable=true;VbShape.Attach(this);
   charge=new VbClipFill().Classes(ClassName+"__charge").Into(this);sweep=new VbClipFill().Classes(ClassName+"__sweep").Into(this);slot=Ui.Text(this,"A",ClassName+"__slot");glyph=new VbIcon("projectile",20).Classes(ClassName+"__icon").Into(this);
   seconds=Ui.Text(this,"",ClassName+"__seconds");slash=Ui.Box(this,ClassName+"__slash");badge=Ui.Text(this,"",ClassName+"__badge");value=Ui.Text(this,"",ClassName+"__value");
-  RegisterCallback<DetachFromPanelEvent>(_=>{rejected?.Pause();rejected=null;RemoveFromClassList(ClassName+"--flash");});Bind(new SkillView());
+  onUp=_=>Sink(false);onCancel=_=>Sink(false);RegisterCallback<PointerDownEvent>(Press,TrickleDown.TrickleDown);
+  RegisterCallback<DetachFromPanelEvent>(_=>{rejected?.Pause();rejected=null;RemoveFromClassList(ClassName+"--flash");Sink(false);});Bind(new SkillView());
+ }
+ void Press(PointerDownEvent e){if(e.button!=0||!enabledInHierarchy||View.state==SkillState.Fallen||View.state==SkillState.Disabled)return;Sink(true);}
+ /// <summary>Sinks the button under a press or lets it back. The press ends on the next pointer up or cancel anywhere on the panel (trickled, so a captured pointer still ends it).</summary>
+ void Sink(bool on){
+  if(on){if(panel==null||Pressed)return;pressTree=panel.visualTree;pressTree.RegisterCallback(onUp,TrickleDown.TrickleDown);pressTree.RegisterCallback(onCancel,TrickleDown.TrickleDown);}
+  else{if(pressTree!=null){pressTree.UnregisterCallback(onUp,TrickleDown.TrickleDown);pressTree.UnregisterCallback(onCancel,TrickleDown.TrickleDown);pressTree=null;}if(!Pressed)return;}
+  EnableInClassList(PressedClass,on);EnableInClassList(PressFlashClass,on&&!Ui.Under(this,SafeAreaRoot.ReducedFlashes));VbMotion.Hold(this,MotionRecipes.PressSink,on);
  }
  static readonly string[] Hashes={"#0","#1","#2","#3","#4","#5","#6","#7","#8"};
  static readonly string[] Shortfalls=new string[1000];

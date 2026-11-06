@@ -5,11 +5,12 @@ using UnityEngine.UIElements;
 namespace Veilbreak.Gui {
 /// <summary>The portrait battle card: face, control mode, health/barrier/stability, up to three timed statuses as icons on the portrait and two skills (or one "fallen" once out).
 /// The name is the only identifier (no code over it); a mode chip shows only for a non-default mode (MANUAL with its seconds, AIMING), because the HUD toggle states autoplay once;
-/// passives and perks are not statuses (they live in <see cref="UnitDetail"/>).</summary>
+/// passives and perks are not statuses (they live in <see cref="UnitDetail"/>). A card that falls while on a panel slumps (<see cref="MotionRecipes.Fallen"/>) as its colour drains to the fallen look and the damage flash plays; reduced motion drains the colour only,
+/// and reduced flashes drop the flash fill.</summary>
 [UxmlElement] public partial class UnitCard:SurfaceView {
  public const string ClassName="vb-operative";
  readonly VisualElement portrait,kit,skills,fallen;readonly StatusRow statuses;readonly Label chip,title,hp,barrier,fallenHint;readonly HealthBar health;readonly SkillButton[] buttons=new SkillButton[2];
- (string,bool) titleKey;(ControlMode,int) chipKey=((ControlMode)(-1),0);(int,int) hpKey=(-1,-1);int barrierKey=-1;
+ (string,bool) titleKey;(ControlMode,int) chipKey=((ControlMode)(-1),0);(int,int) hpKey=(-1,-1);int barrierKey=-1;bool wasFallen,bound;
  public OperativeView View {get;private set;}
  /// <summary>0 = active (A), 1 = signature (S). Games attach aim/drag manipulators here.</summary>
  public SkillButton Skill(int index)=>buttons[index];
@@ -32,6 +33,7 @@ namespace Veilbreak.Gui {
  }
  public UnitCard Bind(OperativeView v){
   View=v;var mode=v.Fallen?ControlMode.Fallen:v.mode;Ui.State(this,ClassName,mode);
+  if(bound&&v.Fallen&&!wasFallen&&panel!=null)VbMotion.Slump(this,MotionRecipes.Fallen);wasFallen=v.Fallen;bound=true;
   Ui.Image(portrait,v.portrait);portrait.MarkDirtyRepaint();kit.style.backgroundColor=v.kit;if((v.name,v.Fallen)!=titleKey){titleKey=(v.name,v.Fallen);title.text=v.Fallen?"<s>"+v.name.ToUpperInvariant()+"</s>":v.name.ToUpperInvariant();}
   // Cards are bound every frame: text is rebuilt only when its inputs change. A chip shows only for a mode that is not the default.
   var chipNow=(mode,mode==ControlMode.Manual?Mathf.RoundToInt(v.manualSeconds*10):0);if(chipNow!=chipKey){chipKey=chipNow;chip.text=mode switch{ControlMode.Manual=>v.manualSeconds>0?"MANUAL "+Ui.Seconds(v.manualSeconds):"MANUAL",ControlMode.Aiming=>"AIMING",_=>""};chip.Show(chip.text.Length>0);}

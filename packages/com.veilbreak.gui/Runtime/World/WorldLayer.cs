@@ -20,14 +20,16 @@ public sealed class WorldLayer:VisualElement {
  public float Edge=10;
  /// <summary>Edges off-screen chips stay clear of (left, top, right, bottom), such as a HUD band over the layer.</summary>
  public Vector4 Insets;
- /// <summary>Combat text fades in place, crits do not pop.</summary>
+ /// <summary>Combat text fades in place, crits do not pop; a merged label that gains or loses members only fades. A layer under <c>vb-reduced-motion</c> counts too.</summary>
  public bool ReducedMotion;
+ /// <summary>A merged label that gains or loses members does not dip its opacity for a beat. A layer under <c>vb-reduced-flashes</c> counts too.</summary>
+ public bool ReducedFlashes;
 
  sealed class Slot<T> where T:VisualElement {public T element;public int frame;}
  sealed class Number {public CombatText label;public int target,amount,stack;public CombatTextKind kind;public Vector3 position;public float age=-1,quiet;public bool Live=>age>=0;}
  readonly Dictionary<int,Slot<WorldHealthBar>> bars=new Dictionary<int,Slot<WorldHealthBar>>();readonly Dictionary<int,Slot<WorldLabel>> labels=new Dictionary<int,Slot<WorldLabel>>();
  readonly Dictionary<int,Slot<WorldMarker>> markers=new Dictionary<int,Slot<WorldMarker>>();readonly Dictionary<int,Slot<OffscreenIndicator>> chips=new Dictionary<int,Slot<OffscreenIndicator>>();
- sealed class Group {public WorldLabel element;public int frame,count;public Vector2 sum;public WorldLabelKind kind;public WorldTeam team;public string title,detail,shown,shownTitle;public int shownCount;}
+ sealed class Group {public WorldLabel element;public int frame,count;public Vector2 sum;public WorldLabelKind kind;public WorldTeam team;public string title,detail,shown,shownTitle;public int shownCount,last;public float pulse;public bool merge;}
  readonly Dictionary<string,Group> groups=new Dictionary<string,Group>();readonly List<string> staleGroups=new List<string>();
  readonly List<Number> numbers=new List<Number>();readonly List<int> stale=new List<int>();readonly List<Rect> placed=new List<Rect>();int frame;
 
@@ -41,7 +43,8 @@ public sealed class WorldLayer:VisualElement {
  public WorldHealthBar Bar(int id,Vector3 world,float health,float barrier=0,WorldTeam team=WorldTeam.Enemy,WorldRank rank=WorldRank.Normal){var bar=Keep(bars,id,()=>new WorldHealthBar());bar.Team(team).Rank(rank).Set(health,barrier);Place(bar,Project?.Invoke(world),BarLift);return bar;}
  /// <summary>A bar at a point already in layer units, for callers that project themselves.</summary>
  public WorldHealthBar BarAt(int id,Vector2 point,float health,float barrier=0,WorldTeam team=WorldTeam.Enemy,WorldRank rank=WorldRank.Normal){var bar=Keep(bars,id,()=>new WorldHealthBar());bar.Team(team).Rank(rank).Set(health,barrier);Place(bar,point,BarLift);return bar;}
- /// <param name="group">Labels with the same group key and title merge into one, "TETHERED ×3", placed at the centroid of their points; a lone label reads as itself.
+ /// <param name="group">Labels with the same group key and title merge into one, "TETHERED ×3", placed at the centroid of their points; a lone label reads as itself. When the count changes the label
+ /// swells (members joined, <see cref="MotionRecipes.LabelMerge"/>) or shrinks (members left, <see cref="MotionRecipes.LabelSplit"/>) once, on simulation time (<see cref="EndFrame"/>'s delta).
  /// The merged label is returned for each call and drops its detail line; a null key keeps the label on its own.</param>
  public WorldLabel Label(int id,Vector3 world,WorldLabelKind kind,string title,string detail=null,WorldTeam team=WorldTeam.Ally,string group=null){
   if(group!=null)return Merge(group,world,kind,title,detail,team);
@@ -51,7 +54,8 @@ public sealed class WorldLayer:VisualElement {
   if(g.frame!=frame){g.frame=frame;g.count=0;g.sum=Vector2.zero;}
   var p=Project?.Invoke(world);if(p.HasValue){g.count++;g.sum+=p.Value;}g.kind=kind;g.team=team;g.title=title;g.detail=detail;return g.element;}
  // Each merged label is bound once its members are known: a lone one reads as itself, several as "title ×n" at their centroid, none hides it.
- void Settle(){foreach(var g in groups.Values){if(g.frame!=frame)continue;g.element.Show(g.count>0);if(g.count==0)continue;
+ void Settle(){foreach(var g in groups.Values){if(g.frame!=frame)continue;g.element.Show(g.count>0);if(g.count==0){g.last=0;continue;}
+   if(g.last>0&&g.count!=g.last){g.merge=g.count>g.last;g.pulse=(g.merge?MotionRecipes.LabelMerge:MotionRecipes.LabelSplit).milliseconds/1000f;}g.last=g.count;
    if(g.count>1){if(g.shown==null||g.shownCount!=g.count||g.shownTitle!=g.title){g.shownCount=g.count;g.shownTitle=g.title;g.shown=WorldLabel.Merged(g.title,g.count);}g.element.Bind(g.kind,g.shown,null,g.team);}
    else g.element.Bind(g.kind,g.title,g.detail,g.team);
    Place(g.element,g.sum/g.count,LabelLift);}
@@ -67,7 +71,17 @@ public sealed class WorldLayer:VisualElement {
   var slot=live>=PerTarget?oldest:numbers.Find(t=>!t.Live);if(slot==null){if(numbers.Count>=TextLimit)return;slot=new Number{label=new CombatText().Into(this)};numbers.Add(slot);}
   slot.stack=live>=PerTarget?slot.stack:live;slot.target=target;slot.kind=kind;slot.amount=amount;slot.position=world;slot.age=0;slot.quiet=0;slot.label.Bind(kind,amount);slot.label.Show(false);}
 
- public void EndFrame(float delta){Settle();Sweep(bars);Sweep(labels);Sweep(markers);Sweep(chips);foreach(var slot in bars.Values)slot.element.Step(delta);
+ /// <summary>The pose of a merged label <paramref name="left"/> of <paramref name="seconds"/> into its swell or shrink: its scale, and the opacity it dips to for the first beat (the flash). Reduced motion keeps the opacity and leaves the scale; reduced flashes
+ /// keep the scale and leave the opacity; both end at rest (1, 1) when the time is up.</summary>
+ public static void LabelPose(bool merge,float left,bool calm,bool flashless,out float scale,out float opacity){
+  var recipe=merge?MotionRecipes.LabelMerge:MotionRecipes.LabelSplit;float total=recipe.milliseconds/1000f,k=total>0?Mathf.Clamp01(1-left/total):1;
+  scale=calm||k>=1?1:1+(recipe.scale-1)*Mathf.Sin(k*Mathf.PI);opacity=flashless||k>=1?1:1-.45f*(1-k)*(1-k);}
+ void Pulse(float delta){
+  foreach(var g in groups.Values){if(g.pulse<=0)continue;g.pulse=Mathf.Max(0,g.pulse-delta);var e=g.element;
+   if(g.pulse<=0){e.style.scale=StyleKeyword.Null;e.style.opacity=StyleKeyword.Null;continue;}
+   bool calm=ReducedMotion||Ui.Under(e,SafeAreaRoot.ReducedMotion),flashless=ReducedFlashes||Ui.Under(e,SafeAreaRoot.ReducedFlashes);
+   LabelPose(g.merge,g.pulse,calm,flashless,out float scale,out float opacity);e.style.scale=new Scale(new Vector3(scale,scale,1));e.style.opacity=opacity;}}
+ public void EndFrame(float delta){Settle();Pulse(delta);Sweep(bars);Sweep(labels);Sweep(markers);Sweep(chips);foreach(var slot in bars.Values)slot.element.Step(delta);
   foreach(var t in numbers){if(!t.Live)continue;t.age+=delta;t.quiet+=delta;if(t.age>=TextSeconds){t.age=-1;t.label.Show(false);continue;}var p=Project?.Invoke(t.position);t.label.Show(p.HasValue);if(!p.HasValue)continue;
    float k=t.age/TextSeconds;At(t.label,p.Value+new Vector2(18,-TextLift-t.stack*StackStep-(ReducedMotion?0:Rise*k)));t.label.style.opacity=Mathf.Min(1,(1-k)*3);
    bool flare=t.kind==CombatTextKind.Crit||t.kind==CombatTextKind.Execute||t.kind==CombatTextKind.Break;float pop=!ReducedMotion&&flare&&t.age<.15f?1.3f-2*t.age:1;t.label.style.scale=new Scale(new Vector3(pop,pop,1));}
