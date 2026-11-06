@@ -134,5 +134,6 @@ Shader "Veilbreak/Environment/City"
             ENDHLSL
         }
     }
-    FallBack "Hidden/Universal Render Pipeline/FallbackError"
+    // No FallBack: with one, Material.FindPass sees only the fallback pass in the editor and in play, so ReflectionSet could not find VeilReflection.
+    FallBack Off
 }

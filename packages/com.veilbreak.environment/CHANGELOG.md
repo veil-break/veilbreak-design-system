@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.5.1 — 2026-11-06
+
+- `City.shader` no longer declares `FallBack "Hidden/Universal Render Pipeline/FallbackError"`: with a fallback, `Material.FindPass`
+  saw only the fallback's single unnamed pass, so `ReflectionSet.Set` never found `VeilReflection` for City materials and registered
+  no lights (verified headless in 6000.3.27f1 on Metal and with the null device). The mirror lights register again, and
+  `CityscapeTests.SolidReflectionRegistrationIsExplicitAndReplacedWithoutDuplicates` passes. Hosts whose own shaders expose a
+  `VeilReflection` pass must not declare a `FallBack` either.
+
 ## 0.5.0 — 2026-11-06
 
 - `ReflectionSet.Set(..., solid: true)` registers full actor silhouettes. Solid reflections draw with a depth attachment

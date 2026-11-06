@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.1 — 2026-11-06
+
+- Requires environment 0.5.1 (the City shader's reflection pass is found again).
+
 ## 1.4.0 — 2026-11-06
 
 - Requires environment 0.5.0: full actor reflections and a mirror pass that the host may enable on either tier.
