@@ -2,12 +2,17 @@ using System;
 using System.Collections.Generic;
 using UnityEngine.UIElements;
 namespace Veilbreak.Gui {
-/// <summary>Shared detail surface; updates in place while its effect changes or expires.</summary>
+/// <summary>Shared detail surface; updates in place while its effect changes or expires. It prints only what is known: the title, the description (emphasis marks render,
+/// <see cref="Markup"/>), the source, the magnitude and the time left; nothing stands in for a missing value, and a plain active effect carries no state line.</summary>
 public sealed class EffectDetails:DetailView {
+ public const string TitleClass="vb-effect-detail__title";
  readonly Label title,description,source,value,time,state;
- public EffectDetails(){AddToClassList("vb-effect-detail");title=Ui.Text(this,"","vb-t-title");description=Ui.Text(this,"","vb-t-body");source=Ui.Text(this,"","vb-t-caption");value=Ui.Text(this,"","vb-t-label");time=Ui.Text(this,"","vb-t-caption");state=Ui.Text(this,"","vb-t-badge");}
- public EffectDetails Bind(EffectInstance e){var d=e.definition??EffectDefinition.Unknown(e.id);title.text=d.title;description.text=d.description;source.text=string.IsNullOrEmpty(e.source)?"Source unavailable":"Source · "+e.source;
-  value.text=e.magnitude+(e.stacks>1?" · ×"+e.stacks:"");value.Show(value.text.Length>0);time.text=e.remainingSeconds.HasValue?Ui.Seconds(e.remainingSeconds.Value)+" remaining"+(e.totalSeconds.HasValue?" / "+Ui.Seconds(e.totalSeconds.Value):""):"Duration unavailable or persistent";state.text=d.scope+" · "+e.activation;return this;}
+ public EffectDetails(){AddToClassList("vb-effect-detail");title=Ui.Text(this,"",TitleClass);description=Ui.Text(this,"","vb-t-body");source=Ui.Text(this,"","vb-t-caption");value=Ui.Text(this,"","vb-t-label");time=Ui.Text(this,"","vb-t-caption");state=Ui.Text(this,"","vb-t-badge");}
+ public EffectDetails Bind(EffectInstance e){var d=e.definition??EffectDefinition.Unknown(e.id);title.text=d.title.ToUpperInvariant();description.text=Markup.Rich(d.description);description.Show(description.text.Length>0);
+  source.text=string.IsNullOrEmpty(e.source)?"":"Source · "+e.source;source.Show(source.text.Length>0);
+  value.text=e.magnitude+(e.stacks>1?" · ×"+e.stacks:"");value.Show(value.text.Length>0);
+  time.text=e.remainingSeconds.HasValue?Ui.Seconds(e.remainingSeconds.Value)+" remaining"+(e.totalSeconds.HasValue?" / "+Ui.Seconds(e.totalSeconds.Value):""):"";time.Show(time.text.Length>0);
+  state.text=e.activation==EffectActivation.Active?"":e.activation.ToString().ToUpperInvariant();state.Show(state.text.Length>0);return this;}
 }
 /// <summary>44-unit inspectable badge. Hover, focus, touch and keyboard use the same details.</summary>
 public sealed class EffectBadge:BadgeComponent {
@@ -24,7 +29,26 @@ public sealed class EffectList:ViewBase {
  readonly KeyedList<EffectInstance,EffectRow> rows;
  public EffectList(){AddToClassList("vb-effect-list");rows=new KeyedList<EffectInstance,EffectRow>(this,e=>e.id,_=>new EffectRow(),(r,e)=>r.Bind(e));}
  public EffectList Bind(IEnumerable<EffectInstance> effects){var current=new List<EffectInstance>(effects);foreach(var row in rows.Elements)if(row.Badge.Details.IsOpen&&!current.Exists(e=>e.id==row.Badge.View.id))current.Add(row.Badge.View.Expired());rows.Bind(current);return this;}
- sealed class EffectRow:ViewBase {public EffectBadge Badge=>badge;readonly EffectBadge badge;readonly Label title,detail;public EffectRow(){AddToClassList("vb-effect-row");badge=new EffectBadge().Into(this);var text=Ui.Box(this);title=Ui.Text(text,"","vb-t-label");detail=Ui.Text(text,"","vb-t-caption");}public void Bind(EffectInstance e){badge.Bind(e);title.text=(e.definition??EffectDefinition.Unknown(e.id)).title;detail.text=e.magnitude+" · "+(e.remainingSeconds.HasValue?Ui.Seconds(e.remainingSeconds.Value):e.activation.ToString());}}
+ sealed class EffectRow:ViewBase {public EffectBadge Badge=>badge;readonly EffectBadge badge;readonly Label title,detail;public EffectRow(){AddToClassList("vb-effect-row");badge=new EffectBadge().Into(this);var text=Ui.Box(this);title=Ui.Text(text,"","vb-t-label");detail=Ui.Text(text,"","vb-t-caption");}public void Bind(EffectInstance e){badge.Bind(e);title.text=(e.definition??EffectDefinition.Unknown(e.id)).title;detail.text=e.remainingSeconds.HasValue?(e.magnitude.Length>0?e.magnitude+" · ":"")+Ui.Seconds(e.remainingSeconds.Value):e.magnitude+(e.activation==EffectActivation.Active||e.magnitude.Length==0?"":" · "+e.activation);detail.Show(detail.text.Length>0);}}
+}
+/// <summary>Up to <see cref="Max"/> timed statuses as small icons on a card's portrait (harm in enemy colour, benefit in ally colour); the whole strip is one target that opens
+/// the list of them (<see cref="Details"/>). Passives, perks and other effects without a time are not statuses and never show here, so a unit with none shows nothing.
+/// Binding takes an array so a card bound every frame makes no garbage.</summary>
+public sealed class StatusPips:ViewBase {
+ public const string ClassName="vb-pips";public const int Max=3;
+ readonly VbIcon[] icons=new VbIcon[Max];readonly List<EffectInstance> timed=new List<EffectInstance>();EffectList list;int shownCount=-1;
+ public Popover Details {get;}
+ /// <summary>The statuses shown (all of the timed ones, in the order given); the icons show the first <see cref="Max"/>.</summary>
+ public IReadOnlyList<EffectInstance> Timed=>timed;
+ public StatusPips(){AddToClassList(ClassName);focusable=true;pickingMode=PickingMode.Position;
+  for(int i=0;i<Max;i++)icons[i]=new VbIcon("",12).Classes(ClassName+"__icon").Into(this);
+  Details=Popover.Attach(this,()=>timed.Count==0?null:list=new EffectList().Bind(timed),PopoverPlacement.Above);
+  RegisterCallback<KeyDownEvent>(e=>{if(e.keyCode==UnityEngine.KeyCode.Space||e.keyCode==UnityEngine.KeyCode.Return){if(Details.IsOpen)Details.Close();else Details.Open();e.StopPropagation();}});
+  Bind(null);
+ }
+ public StatusPips Bind(EffectInstance[] effects){timed.Clear();if(effects!=null)for(int i=0;i<effects.Length;i++)if(effects[i]!=null&&effects[i].Timed)timed.Add(effects[i]);
+  for(int i=0;i<Max;i++){bool on=i<timed.Count;icons[i].Show(on);if(on){var d=timed[i].definition;icons[i].Icon=d?.icon??"info";Ui.State(icons[i],ClassName+"__icon",d?.polarity??EffectPolarity.Neutral);}}
+  this.Show(timed.Count>0);pickingMode=timed.Count>0?PickingMode.Position:PickingMode.Ignore;if(timed.Count!=shownCount){shownCount=timed.Count;tooltip=shownCount>0?"Statuses · "+shownCount:"";}list?.Bind(timed);return this;}
 }
 /// <summary>One compact badge and an inspectable summary. Overflow contains every effect with no whitelist or truncation.</summary>
 public sealed class EffectStrip:ViewBase {

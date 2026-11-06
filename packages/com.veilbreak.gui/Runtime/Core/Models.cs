@@ -4,7 +4,6 @@ namespace Veilbreak.Gui {
 // Plain view models. Games map their own state onto these; the kit never reads game types.
 public enum SkillState { Ready, Aiming, Cooldown, Short, Silenced, Fallen, Casting, Disabled, Queued, Buffered, Windup, Invalid, Rejected, Exposed }
 public enum ControlMode { Auto, Manual, Aiming, Fallen }
-public enum PerkTier { General, Operative, Rare, Epic }
 public enum ButtonVariant { Primary, Secondary, Light, Danger, Ghost }
 public enum StatusKind { Exposed, Silenced, Rooted, Slowed, Interrupted, Barrier }
 public enum MeterSize { Hud, World, Large }
@@ -24,6 +23,8 @@ public enum RarityTier { None, Blue, Violet, Gold }
 [Serializable] public sealed class OperativeView {
  public string id="",name="",code="",role="",roleIcon="striker",passive="",passiveText="",passiveFullText="";
  public Color kit=Color.white; public Texture2D portrait;
+ /// <summary>Whether a fallen operative can be revived (an owned revive perk): the fallen card says how only then.</summary>
+ public bool canRevive;
  public int hp,maxHp=1,barrier,armor,stability=100,maxStability=100;
  public EffectInstance[] effects=Array.Empty<EffectInstance>(); public ControlMode mode; public float manualSeconds;
  public SkillView[] skills={new SkillView(),new SkillView{slot="S",kind="Signature"}};
@@ -48,7 +49,8 @@ public enum RarityTier { None, Blue, Violet, Gold }
  public float focus=100; public int previewFrom=-1,previewTo=-1; public QueueView[] queue=Array.Empty<QueueView>(); public string queueTitle="AUTOPLAY QUEUE",queueHint="Fires as Power reaches each cost";
 }
 
-[Serializable] public sealed class RoadView { public string kind="combat",title="Combat",icon="battle",hint="Common cache · occasional rare"; }
+/// <summary>One road of the crossroads. <see cref="rank"/> (0 hides it) is its severity out of <see cref="ranks"/>, shown as rank cells.</summary>
+[Serializable] public sealed class RoadView { public string kind="combat",title="Combat",icon="battle",hint="Common cache · occasional rare"; public int rank,ranks=5; }
 [Serializable] public sealed class RouteView { public long wave; public RoadView left=new RoadView(),right=new RoadView(); }
 [Serializable] public sealed class MerchantOfferView { public string id=""; public PerkView perk=new PerkView(); public int price; public bool taken; public string blocked=""; }
 [Serializable] public sealed class MerchantStackView { public PerkView perk=new PerkView(); public int payout; }

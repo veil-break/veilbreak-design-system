@@ -21,11 +21,16 @@
 
 /* ── MainMenuView, MenuActionsSectionView ─────────────────────────────── */
 .vb-menu__top { flex-direction: row; justify-content: space-between; align-items: center; margin-top: 8px; }
+/* The status line gives way (it wraps) before the BEST chip and EXIT leave the board. */
+.vb-menu__top > .vb-t-badge { flex-shrink: 1; min-width: 0; white-space: normal; }
+.vb-menu__right { flex-shrink: 0; }
+.vb-compact .vb-menu__best-wave { display: none; }
 .vb-menu__best { padding: 0 10px; height: 30px; }
 .vb-menu__best .vb-badge__value { -unity-font-definition: var(--vb-font-body-medium); font-size: 14px; margin-right: 8px; }
 .vb-menu__brand { position: absolute; left: 0; right: 0; top: 220px; align-items: center; }
 .vb-menu__arcade { margin-top: -6px; -unity-font-definition: var(--vb-font-display-bold); font-size: 13px; letter-spacing: 61.538px; padding-left: 8px; color: var(--vb-color-ally-text); }
-.vb-menu__exit { position: absolute; right: 16px; top: 44px; min-height: 44px; padding: 8px; }
+.vb-menu__right { flex-direction: row; align-items: center; }
+.vb-menu__exit { margin-left: 8px; }
 .vb-menu-actions { flex-shrink: 0; }
 .vb-menu__checkpoint { margin-bottom: 10px; }
 .vb-menu__checkpoint-line { -unity-font-definition: var(--vb-font-body-medium); font-size: 13px; margin: 2px 0; }
@@ -37,6 +42,11 @@
 /* ── SquadView ─────────────────────────────────────────────────────────── */
 .vb-squad-view > * { flex-shrink: 0; }
 .vb-squad-view__start { flex-shrink: 0; margin-top: 8px; }
+/* The roster takes the free height (no empty third above START RUN): the tiles grow into it, up to a limit, and START RUN stays at the foot. */
+.vb-squad-view > .vb-squad-view__roster { flex-grow: 1; flex-shrink: 1; align-content: stretch; }
+.vb-squad-view > .vb-squad-view__slots { margin-top: 8px; margin-bottom: 12px; }
+.vb-squad-view__roster > .vb-tile { height: auto; min-height: 112px; max-height: 250px; }
+.vb-squad-view__roster .vb-tile__band { flex-grow: 1; height: auto; min-height: 72px; }
 /* Operative details open in a drawer: the drawer is the frame, so the sheet drops its own. */
 .vb-squad-view__drawer .vb-details { width: auto; height: auto; min-height: 0; flex-shrink: 0; padding: 0; --vb-fill: rgba(0, 0, 0, 0); --vb-bw: 0; --vb-glow: rgba(0, 0, 0, 0); }
 
@@ -51,14 +61,13 @@
 .vb-pause__caption { -unity-text-align: middle-center; margin-bottom: 12px; }
 .vb-pause__panel > * { margin-bottom: 10px; }
 .vb-pause__stats > .vb-stat { margin-right: 12px; }
+.vb-pause__info { margin-left: auto; flex-shrink: 0; --vb-bw: 0; --vb-fill: rgba(0, 0, 0, 0); }
 .vb-pause__perks { padding: 10px 12px; }
 .vb-pause__perks:hover { --vb-fill: var(--vb-color-ally-soft); }
 .vb-pause__perks > .vb-row--between { margin-bottom: 8px; }
 .vb-pause__more { -unity-background-image-tint-color: var(--vb-color-ally-text); }
 .vb-pause__chips { max-height: 76px; overflow: hidden; }
 .vb-pause__chip { margin: 0 6px 6px 0; --vb-fill: rgb(14, 9, 20); }
-.vb-pause__row > .vb-half { margin: 0; }
-.vb-pause__row > .vb-pause__abandon { margin-left: 10px; }
 .vb-pause__button { min-height: 48px; }
 .vb-pause__panel > .vb-pause__exit { align-self: center; min-height: 44px; margin-bottom: 0; }
 
@@ -72,8 +81,9 @@
 .vb-draft { padding-top: 16px; }
 .vb-draft__scroll { flex-grow: 1; }
 .vb-draft__cards { flex-direction: row; justify-content: space-between; margin-top: 6px; margin-bottom: 14px; }
-.vb-draft__cards > .vb-perk-card { width: 112px; height: auto; min-height: 236px; }
-.vb-compact .vb-draft__cards > .vb-perk-card { width: auto; flex-grow: 1; flex-basis: 0; margin: 0 3px; }
+.vb-draft__cards > .vb-choice { width: 112px; flex-grow: 0; flex-basis: auto; margin: 0; min-height: 236px; --vb-cut: 4; --vb-bw: 0; }
+.vb-draft__cards > .vb-choice.vb-choice--selected { --vb-cut: 12; --vb-bw: 2; }
+.vb-compact .vb-draft__cards > .vb-choice { width: auto; flex-grow: 1; flex-basis: 0; margin: 0 3px; }
 .vb-draft__detail { margin-bottom: 12px; }
 .vb-draft__squad { padding: 9px 12px; margin-top: 12px; margin-bottom: 12px; }
 .vb-draft__squad > .vb-label { margin-bottom: 7px; }
@@ -92,7 +102,7 @@
 .vb-results__stats { margin-top: 12px; align-items: flex-start; }
 .vb-results__stats > .vb-stat { margin-right: 10px; }
 .vb-results .vb-result { width: 23.5%; }
-.vb-results__perks > .vb-perk-chip { margin: 0 6px 6px 0; }
+.vb-results__perks > .vb-chip-row { margin: 0 6px 0 0; }
 .vb-results__row { flex-shrink: 0; margin-top: 8px; }
 
 /* ── HighScoresView ────────────────────────────────────────────────────── */
@@ -102,6 +112,7 @@
 
 /* ── RouteChoiceView, MerchantScreenView ───────────────────────────────── */
 .vb-route-view, .vb-merchant-view { padding-top: 8px; }
+.vb-route__roads > .vb-choice { min-height: 240px; }
 .vb-merchant-view > .vb-merchant { flex-grow: 1; }
 
 /* ── BattleHudView (on BoardLayout) ────────────────────────────────────── */

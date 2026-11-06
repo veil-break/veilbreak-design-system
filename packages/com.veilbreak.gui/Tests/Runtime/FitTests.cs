@@ -30,7 +30,7 @@ public sealed class FitTests {
 
  [UnityTest] public IEnumerator PopoversCarryTheRootAccessibilityFlags(){
   settings=ScriptableObject.CreateInstance<PanelSettings>();target=new RenderTexture(390,844,0);settings.targetTexture=target;host=new GameObject("Popover board");var document=host.AddComponent<UIDocument>();document.panelSettings=settings;yield return null;
-  var board=Ui.Box(document.rootVisualElement,"vb-root");new SafeAreaRoot(board,settings).Flags(true,false,true,true);var chip=new PerkChip().Into(board).Bind(new PerkView{name="Overclock",now="+12% damage",stack=2,max=3});chip.Details.Pin();yield return null;
+  var board=Ui.Box(document.rootVisualElement,"vb-root");new SafeAreaRoot(board,settings).Flags(true,false,true,true);var chip=new ChipRow().Into(board).Bind(new PerkView{name="Overclock",now="+12% damage",stack=2,max=3});chip.Details.Pin();yield return null;
   var shown=document.rootVisualElement.panel.visualTree.Q(className:Popover.ClassName);Assert.IsNotNull(shown,"The pinned popover opens on the panel root");Assert.AreNotSame(board,shown.hierarchy.parent,"Popovers live outside the board");
   foreach(var c in new[]{SafeAreaRoot.Contrast,SafeAreaRoot.LargeText,SafeAreaRoot.ReducedFlashes})Assert.IsTrue(shown.ClassListContains(c),c+" reaches the popover");Assert.IsFalse(shown.ClassListContains(SafeAreaRoot.ReducedMotion));chip.Details.Close();}
 
@@ -103,9 +103,9 @@ public sealed class FitTests {
 
  // ds#22: what is nested paints no edge, what means a selection keeps its ring, and high contrast gives every edge back.
  [UnityTest] public IEnumerator NestedSurfacesPaintNoEdgeUnlessContrast(){
-  yield return Boot(390);var card=new OperativeCard().Into(board);card.Bind(new OperativeView{name="Aria",skills=new[]{new SkillView{slot="A"},new SkillView{slot="S"}}});
-  var tiles=Ui.Box(board,"vb-grid4");var idle=new OperativeTile().Into(tiles);idle.Bind(new OperativeView{name="Idle",role="Striker"},0,false);var focused=new OperativeTile().Into(tiles);focused.Bind(new OperativeView{name="Focus",role="Striker"},1,true);
-  var filled=new SquadSlot().Into(tiles);filled.Bind(new OperativeView{name="Slot",role="Striker"},1);var empty=new SquadSlot().Into(tiles);empty.Bind(null,2);yield return Frames();
+  yield return Boot(390);var card=new UnitCard().Into(board);card.Bind(new OperativeView{name="Aria",skills=new[]{new SkillView{slot="A"},new SkillView{slot="S"}}});
+  var tiles=Ui.Box(board,"vb-grid4");var idle=new UnitTile().Into(tiles);idle.Bind(new OperativeView{name="Idle",role="Striker"},0,false);var focused=new UnitTile().Into(tiles);focused.Bind(new OperativeView{name="Focus",role="Striker"},1,true);
+  var filled=new UnitSlot().Into(tiles);filled.Bind(new OperativeView{name="Slot",role="Striker"},1);var empty=new UnitSlot().Into(tiles);empty.Bind(null,2);yield return Frames();
   float Width(VisualElement e)=>e.customStyle.TryGetValue(new CustomStyleProperty<float>("--vb-bw"),out var w)?w:-1;float Dash(VisualElement e)=>e.customStyle.TryGetValue(new CustomStyleProperty<float>("--vb-dash"),out var d)?d:-1;
   var skill=card.Skill(0);Assert.AreEqual(0,Width(skill),"A skill button inside a battle card has no edge");Assert.AreEqual(0,Width(idle),"An idle tile has no edge");Assert.AreEqual(0,Width(filled),"A filled squad slot has no edge");
   Assert.AreEqual(2,Width(focused),"A focused tile keeps its selection ring");Assert.AreEqual(1,Dash(empty),"An empty slot keeps its dashed drop target");Assert.Greater(Width(card),0,"The floating battle card keeps its edge");
@@ -117,7 +117,7 @@ public sealed class FitTests {
  [UnityTest] public IEnumerator SquadSlotsReorderByDragging(){
   yield return Boot(390,0,SafeAreaRoot.ReducedMotion);var view=new SquadView().Into(board);var roster=new OperativeView[4];for(int i=0;i<4;i++)roster[i]=new OperativeView{name="Op"+i,role="Striker"};
   view.Bind(new SquadViewModel{roster=roster,selected=new[]{0,1,-1,-1}});var moves=new List<(int,int)>();view.SlotMoved+=(a,b)=>moves.Add((a,b));yield return Frames();
-  var grid=view.Reorder;var slots=board.Query<SquadSlot>().ToList();Assert.AreEqual(4,slots.Count);Vector2 C(int i)=>slots[i].worldBound.center;
+  var grid=view.Reorder;var slots=board.Query<UnitSlot>().ToList();Assert.AreEqual(4,slots.Count);Vector2 C(int i)=>slots[i].worldBound.center;
   Assert.IsTrue(grid.Begin(1,C(0)));grid.End(C(0));Assert.AreEqual(0,moves.Count,"A tap never lifts");Assert.AreEqual(-1,grid.Lifted);
   Assert.IsTrue(grid.Begin(1,C(0)));grid.Drag(C(0)+new Vector2(3,0));Assert.AreEqual(-1,grid.Lifted,"Under the slop nothing lifts");grid.Drag(C(1));Assert.AreEqual(0,grid.Lifted);Assert.AreEqual(1,grid.Over);
   Assert.IsNotNull(grid.Ghost);Assert.IsTrue(slots[0].ClassListContains(ReorderManipulator.SourceClass));Assert.IsTrue(slots[1].ClassListContains(ReorderManipulator.OverClass));Assert.IsNotNull(grid.Ghost.panel);
@@ -139,7 +139,7 @@ public sealed class FitTests {
   var screen=Ui.Box(board);screen.style.flexGrow=1;var nav=new Navigator(screen);var page=nav.Open("settings");new ScreenHeader("SETTINGS","SAVED").Into(page);page.AddToClassList("vb-page--headed");var body=Ui.Scroll(page,"vb-page__scroll").contentContainer;
   var camera=Ui.Section(body,"CAMERA");new VbSegmented(new[]{("FULL","Parallax"),("REDUCED","No drift"),("OFF","Fixed")},0).Into(camera);new VbSlider("Sensitivity",.5f).Into(camera);new VbSwitch("REDUCED MOTION","No camera shake",false).Into(camera);parts.Add(camera);
   parts.Add(new RuleRow().Into(body).Bind(new RuleView{conditions=new[]{new RuleCondition{text="Power ≥",value="80"},new RuleCondition{text="enemy within",value="6",after="m"}},action="Zero Line",cost=40,note="Runs only at 80+ Power: 40 cost + 40 reserve"}));
-  var grid=Ui.Box(body,"vb-grid4");for(int i=0;i<4;i++)new OperativeTile().Into(grid).Bind(new OperativeView{name="Operative",role="Striker"},i+1,i==0,(RarityTier)(i%4));parts.Add(grid);
+  var grid=Ui.Box(body,"vb-grid4");for(int i=0;i<4;i++)new UnitTile().Into(grid).Bind(new OperativeView{name="Operative",role="Striker"},i+1,i==0,(RarityTier)(i%4));parts.Add(grid);
   var sheet=Dialog.Push(nav,"LEAVE GAME?","Your profile is saved. Resume returns to the last completed-wave checkpoint.");new VbButton("EXIT GAME",ButtonVariant.Primary,null,"back").Into(sheet);new VbButton("CANCEL",ButtonVariant.Secondary,null,"close").Into(sheet);parts.Add(sheet);
   return parts;}
 }

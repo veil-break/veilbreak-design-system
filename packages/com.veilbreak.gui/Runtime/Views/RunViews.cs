@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.UIElements;
 namespace Veilbreak.Gui {
-/// <summary>Wave cleared: three perk cards, the chosen one explained, the squad that carries forward (no healing between waves) and
+/// <summary>Wave cleared: three perk cards (<see cref="ChoiceCard"/>), the chosen one explained, the squad that carries forward (no healing between waves) and
 /// TAKE PERK, whose line says what the pick does next.</summary>
 [UxmlElement] public partial class PerkDraftView:ScreenView {
  public const string Block="vb-draft";
- readonly LabelComponent eyebrow;readonly Label caption;readonly VisualElement cards,squad;readonly PerkDetail detail;readonly VbButton take;readonly List<PerkCard> choices=new List<PerkCard>();PerkDraftViewModel view;int shownPick=-1;
+ readonly LabelComponent eyebrow;readonly Label caption;readonly VisualElement cards,squad;readonly PerkDetail detail;readonly VbButton take;readonly List<ChoiceCard> choices=new List<ChoiceCard>();PerkDraftViewModel view;int shownPick=-1;
  public event Action<int> Picked;
  public event Action Take;
  /// <summary>The carry-forward frame was tapped: show the run's active perks.</summary>
@@ -21,9 +21,9 @@ namespace Veilbreak.Gui {
  protected override IEnumerable<VisualElement> DealItems(){foreach(var c in choices)if(c.style.display!=DisplayStyle.None)yield return c;}
  public PerkDraftView Bind(PerkDraftViewModel v){
   view=v;eyebrow.text="Wave "+v.wave.ToString("00")+" cleared";caption.text="+"+Ui.Number(v.bonus)+" wave bonus · score "+Ui.Number(v.score)+" · perks last the whole run";
-  Keyed.Bind(cards,v.choices,p=>p.id,_=>{var card=new PerkCard();card.Picked+=()=>Picked?.Invoke(Array.FindIndex(view.choices,p=>p.id==card.View.id));return card;},(card,p)=>card.Bind(p,Array.IndexOf(v.choices,p)==v.pick),true);choices.Clear();choices.AddRange(cards.Query<PerkCard>().ToList());
+  Keyed.Bind(cards,v.choices,p=>p.id,_=>{var card=new ChoiceCard();card.Picked+=()=>Picked?.Invoke(Array.FindIndex(view.choices,p=>p.id==card.View.id));return card;},(card,p)=>card.Bind(p,Array.IndexOf(v.choices,p)==v.pick),true);choices.Clear();choices.AddRange(cards.Query<ChoiceCard>().ToList());
   bool has=v.pick>=0&&v.pick<v.choices.Length;VbMotion.Show(detail,has,MotionKind.Rise);
-  if(has){var p=v.choices[v.pick];detail.Bind(p,true);if(shownPick>=0&&shownPick!=v.pick)VbMotion.In(detail,MotionKind.Fade);take.Sub=p.name+" → "+p.next+" · then wave "+(v.wave+1).ToString("00")+", focus refills";}
+  if(has){var p=v.choices[v.pick];detail.Bind(p,true);if(shownPick>=0&&shownPick!=v.pick)VbMotion.In(detail,MotionKind.Fade);take.Sub=p.name+" → "+p.next+" · then wave "+(v.wave+1).ToString("00");}
   shownPick=has?v.pick:-1;take.Blocked=has?"":"Pick a perk";
   Keyed.Bind(squad,v.squad,a=>a.code,_=>new SquadHealthCell(),(cell,a)=>cell.Bind(a));
   return this;
@@ -39,19 +39,19 @@ namespace Veilbreak.Gui {
   var body=Ui.Scroll(this,"vb-page__scroll",Block+"__scroll");eyebrow=new LabelComponent("",LabelSize.Label,TextTone.Enemy).Into(body);Ui.Text(body,"RUN OVER","vb-t-display");
   var card=Ui.Frame(body,FrameKind.Slim,"vb-frame--solid",Block+"__score");var top=Ui.Box(card,"vb-row","vb-row--between");var left=Ui.Box(top);new LabelComponent("Score").Into(left);value=Ui.Text(left,"0",Block+"__value");rank=Ui.Text(top,"",Block+"__rank");
   ledger=Ui.Box(card,Block+"__ledger");var stats=Ui.Box(card,"vb-row",Block+"__stats");waves=new StatReadout("WAVES","0").Into(stats);bosses=new StatReadout("BOSSES","0").Into(stats);distance=new StatReadout("DISTANCE","").Into(stats);time=new StatReadout("SIM TIME","").Into(stats);
-  new LabelComponent("Squad · hover or tap for contribution").Classes("vb-page__label").Into(body);squad=Ui.Box(body,"vb-grid4");
+  new LabelComponent("Squad").Classes("vb-page__label").Into(body);squad=Ui.Box(body,"vb-grid4");
   perksTitle=new LabelComponent("").Classes("vb-page__label").Into(body);perks=Ui.Box(body,"vb-row","vb-row--wrap",Block+"__perks");
   var row=Ui.Actions(this,new VbButton("MENU",ButtonVariant.Secondary,null,null,()=>Menu?.Invoke()){name="menu"}.Classes(Block+"__menu"),
    new VbButton("SQUAD",ButtonVariant.Secondary,null,null,()=>Squad?.Invoke()){name="squad"}.Classes(Block+"__menu"),
    new VbButton("RUN AGAIN",ButtonVariant.Primary,null,"chevron",()=>Again?.Invoke()){name="again"}.Classes(Block+"__again")).Classes(Block+"__row");row.MinItemWidth=104;
  }
  public ResultsView Bind(ResultsViewModel v){
-  eyebrow.text=v.cause+" · wave "+v.wave;value.text=Ui.Number(v.score);rank.text=v.rank>0?"#"+v.rank+" OF "+v.of:"";rank.Show(v.rank>0);
+  eyebrow.text=v.cause+" · wave "+v.wave;value.text=Ui.Number(v.score);bool ranked=v.rank>0&&v.score>0;rank.text=ranked?"#"+v.rank+" OF "+v.of:"";rank.Show(ranked);
   Keyed.Bind(ledger,v.ledger,l=>l.label,_=>new KeyValueRow(),(r,l)=>{r.Key=l.label;r.Value=l.value;});
   waves.Set(v.wave.ToString());bosses.Set(v.bosses.ToString());distance.Show(!string.IsNullOrEmpty(v.distance));if(!string.IsNullOrEmpty(v.distance)){var parts=v.distance.Split(' ');distance.Set(parts[0],parts.Length>1?parts[1]:null);}
   time.Show(!string.IsNullOrEmpty(v.simTime));time.Set(v.simTime??"");
-  Keyed.Bind(squad,v.squad,c=>c.operative.id,_=>new SquadResult(),(r,c)=>r.Bind(c),true);
-  perksTitle.text="Perks · "+v.perks.Length;perksTitle.Show(v.perks.Length>0);Keyed.Bind(perks,v.perks,p=>p.id,_=>new PerkChip(),(r,p)=>r.Bind(p),true);
+  Keyed.Bind(squad,v.squad,c=>c.operative.id,_=>new ResultSummary(),(r,c)=>r.Bind(c),true);
+  perksTitle.text="Perks · "+v.perks.Length;perksTitle.Show(v.perks.Length>0);Keyed.Bind(perks,v.perks,p=>p.id,_=>new ChipRow(),(r,p)=>r.Bind(p),true);
   return this;
  }
 }
@@ -63,7 +63,7 @@ namespace Veilbreak.Gui {
  public event Action Back;
  public HighScoresView():base(Block,true){
   header=new ScreenHeader("HIGH SCORES","TOP 20").Into(this);header.Back+=()=>Back?.Invoke();caption=Ui.Text(this,"On this device. Ties break by wave, then shortest sim time.","vb-t-caption","vb-page__caption");
-  list=Ui.List(this);rankedRows=Ui.Box(list);older=new LabelComponent("Older rules").Classes(Block+"__older").Into(list);oldRows=Ui.Box(list);Ui.Text(this,"Local scores only · not an online ranking","vb-t-caption","vb-page__footer");
+  list=Ui.List(this);rankedRows=Ui.Box(list);older=new LabelComponent("Older rules").Classes(Block+"__older").Into(list);oldRows=Ui.Box(list);
  }
  /// <param name="ranked">Ranked runs (the view shows at most 20).</param><param name="historical">Runs under older rules, listed after a label.</param>
  public HighScoresView Bind(IReadOnlyList<ScoreView> ranked,IReadOnlyList<ScoreView> historical=null,string caption=null){
@@ -84,11 +84,12 @@ namespace Veilbreak.Gui {
  public ActivePerksView():base(Block,true){
   header=new ScreenHeader("ACTIVE PERKS","").Into(this);header.Back+=()=>Back?.Invoke();totals=Ui.Frame(this,FrameKind.Slim,Block+"__summary");
   list=Ui.List(this,"No perks yet. Clear a wave to draft one.",Block+"__list");detail=new PerkDetail().Classes(Block+"__detail").Into(this);
-  Ui.Text(this,"Percent bonuses add within a category, then apply once","vb-t-caption","vb-page__footer");
  }
+ /// <summary>A total that says nothing ("+0%", "0"): none of its digits is above zero. Such totals are not listed.</summary>
+ public static bool Zero(string value){if(string.IsNullOrEmpty(value))return true;foreach(var c in value)if(c>='1'&&c<='9')return false;return true;}
  public ActivePerksView Bind(ActivePerksViewModel v){
   int stacks=0;foreach(var p in v.perks)stacks+=p.stack;header.Meta=stacks+" · WAVE "+v.wave.ToString("00");
-  Keyed.Bind(totals,v.totals,t=>t.label,_=>new FactCell(Block+"__bonus","vb-t-badge",Block+"__bonus-value"),(cell,t)=>cell.Bind(t.label,t.value));totals.Show(v.totals.Length>0&&v.perks.Length>0);
+  var shownTotals=v.totals.Where(t=>!Zero(t.value)).ToArray();Keyed.Bind(totals,shownTotals,t=>t.label,_=>new FactCell(Block+"__bonus","vb-t-badge",Block+"__bonus-value"),(cell,t)=>cell.Bind(t.label,t.value));totals.Show(shownTotals.Length>0&&v.perks.Length>0);
   current=v;Keyed.Bind(list.contentContainer,v.perks,p=>p.id,p=>{var row=new PerkRow();string id=p.id;row.Picked+=()=>Picked?.Invoke(Array.FindIndex(current.perks,x=>x.id==id));return row;},(row,p)=>row.Bind(p,Array.IndexOf(v.perks,p)==v.pick),true);
   bool has=v.pick>=0&&v.pick<v.perks.Length;VbMotion.Show(detail,has,MotionKind.Rise);if(has){detail.Bind(v.perks[v.pick],false);if(shownPick>=0&&shownPick!=v.pick)VbMotion.In(detail,MotionKind.Fade);}shownPick=has?v.pick:-1;
   return this;
@@ -105,7 +106,7 @@ namespace Veilbreak.Gui {
  /// <param name="fallen">The fallen operatives; <see cref="Picked"/> reports an index into it.</param>
  public RevivePickView Bind(string perk,OperativeView[] fallen){
   caption.text=perk+" revives one fallen operative at 35% health.";
-  Keyed.Bind(grid,fallen.Select((v,i)=>(view:v,index:i)),x=>x.view.id,x=>{var tile=new OperativeTile();tile.Picked+=()=>Picked?.Invoke(Array.FindIndex(currentFallen,a=>a.id==tile.ViewId));return tile;},(tile,x)=>{tile.ViewId=x.view.id;tile.Bind(x.view,0,false);},true);currentFallen=fallen;
+  Keyed.Bind(grid,fallen.Select((v,i)=>(view:v,index:i)),x=>x.view.id,x=>{var tile=new UnitTile();tile.Picked+=()=>Picked?.Invoke(Array.FindIndex(currentFallen,a=>a.id==tile.ViewId));return tile;},(tile,x)=>{tile.ViewId=x.view.id;tile.Bind(x.view,0,false);},true);currentFallen=fallen;
   return this;
  }
 }

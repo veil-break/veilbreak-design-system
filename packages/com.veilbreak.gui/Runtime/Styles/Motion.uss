@@ -10,7 +10,7 @@
 
 /* Labels and glyphs that change colour with their control's state. */
 .vb-button, .vb-icon-button__text, .vb-hud__auto-label, .vb-hud__auto-state, .vb-segmented__label, .vb-segmented__sub,
-.vb-skill__slot, .vb-skill__top, .vb-skill__value, .vb-operative__chip, .vb-operative__name, .vb-header__meta, .vb-tile__name,
+.vb-skill__slot, .vb-skill__badge, .vb-skill__seconds, .vb-skill__value, .vb-operative__chip, .vb-operative__name, .vb-header__meta, .vb-tile__name,
 .vb-switch__label, .vb-route__kind, .vb-merchant__price, .vb-queue-chip__skill, .vb-score__score {
     transition-property: color, scale, translate, opacity;
     transition-duration: 0.22s, 0.1s, 0.1s, 0.22s;
@@ -35,12 +35,12 @@
 }
 
 /* Press feedback on everything tappable that is not a VbButton (which scales in Gui.uss). */
-.vb-icon-button, .vb-tile, .vb-slot, .vb-perk-card, .vb-perk-row, .vb-route__sign, .vb-queue-chip, .vb-merchant__offer, .vb-skill {
+.vb-icon-button, .vb-tile, .vb-slot, .vb-choice, .vb-perk-row, .vb-route__sign, .vb-queue-chip, .vb-merchant__offer, .vb-skill {
     transition-property: scale, opacity;
     transition-duration: 0.1s, 0.22s;
     transition-timing-function: ease-out;
 }
-.vb-icon-button:active, .vb-tile:active, .vb-slot:active, .vb-perk-card:active, .vb-perk-row:active, .vb-route__sign:active,
+.vb-icon-button:active, .vb-tile:active, .vb-slot:active, .vb-choice:active, .vb-perk-row:active, .vb-route__sign:active,
 .vb-queue-chip:active, .vb-merchant__offer:active {
     scale: 0.97 0.97;
 }
@@ -66,12 +66,12 @@
 
 /* Reduced Motion: colour and opacity still settle, nothing scales or slides. */
 .vb-reduced-motion .vb-button, .vb-reduced-motion .vb-icon-button, .vb-reduced-motion .vb-tile, .vb-reduced-motion .vb-slot,
-.vb-reduced-motion .vb-perk-card, .vb-reduced-motion .vb-perk-row, .vb-reduced-motion .vb-route__sign,
+.vb-reduced-motion .vb-choice, .vb-reduced-motion .vb-perk-row, .vb-reduced-motion .vb-route__sign,
 .vb-reduced-motion .vb-queue-chip, .vb-reduced-motion .vb-merchant__offer, .vb-reduced-motion .vb-skill {
     transition-property: color, opacity;
 }
 .vb-reduced-motion .vb-button:active, .vb-reduced-motion .vb-icon-button:active, .vb-reduced-motion .vb-tile:active,
-.vb-reduced-motion .vb-slot:active, .vb-reduced-motion .vb-perk-card:active, .vb-reduced-motion .vb-perk-row:active,
+.vb-reduced-motion .vb-slot:active, .vb-reduced-motion .vb-choice:active, .vb-reduced-motion .vb-perk-row:active,
 .vb-reduced-motion .vb-route__sign:active, .vb-reduced-motion .vb-queue-chip:active, .vb-reduced-motion .vb-merchant__offer:active {
     scale: 1 1;
 }

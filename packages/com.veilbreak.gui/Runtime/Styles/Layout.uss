@@ -101,7 +101,7 @@
 /* Nested surfaces (the border rule in Gui.uss): high contrast gives every one its edge back. */
 /* nest:contrast:begin */
 .vb-contrast .vb-nest, .vb-contrast .vb-tile, .vb-contrast .vb-slot, .vb-contrast .vb-operative .vb-skill, .vb-contrast .vb-queue-chip,
-.vb-contrast .vb-queue__row, .vb-contrast .vb-hud__resources, .vb-contrast .vb-perk-chip, .vb-contrast .vb-perk-detail__thumb,
+.vb-contrast .vb-queue__row, .vb-contrast .vb-hud__resources, .vb-contrast .vb-chip-row__plate, .vb-contrast .vb-stat-row--plated, .vb-contrast .vb-perk-detail__thumb,
 .vb-contrast .vb-perk-row__thumb, .vb-contrast .vb-contribution__portrait, .vb-contrast .vb-details__skill-icon, .vb-contrast .vb-details__close,
 .vb-contrast .vb-result, .vb-contrast .vb-status, .vb-contrast .vb-effect--ready, .vb-contrast .vb-popover .vb-button--secondary,
 .vb-contrast .vb-dialog .vb-button--secondary, .vb-contrast .vb-drawer__sheet .vb-button--secondary, .vb-contrast .vb-section .vb-button--secondary { --vb-bw: 1; --vb-edge: var(--vb-color-line-strong); }

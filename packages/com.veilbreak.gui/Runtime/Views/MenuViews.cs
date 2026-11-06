@@ -12,7 +12,7 @@ namespace Veilbreak.Gui {
   checkpoint=new CardComponent("CHECKPOINT").Classes("vb-menu__checkpoint").Into(this);line=Ui.Text(checkpoint,"","vb-menu__checkpoint-line");detail=Ui.Text(checkpoint,"","vb-t-caption");
   checkpoint.Actions(new VbButton("RESUME",ButtonVariant.Secondary,null,"play",()=>Resume?.Invoke()){name="resume"});
   play=new VbButton("PLAY",ButtonVariant.Primary,null,"chevron",()=>Play?.Invoke()){name="play"}.Classes("vb-menu__play").Into(this);
-  var row=Ui.Actions(this,new VbButton("HIGH SCORES",ButtonVariant.Secondary,null,null,()=>Scores?.Invoke()){name="scores"},new VbButton("SETTINGS",ButtonVariant.Secondary,null,"settings",()=>Settings?.Invoke()){name="settings"}).Classes("vb-menu__row");row.MinItemWidth=96;
+  var row=Ui.Actions(this,new VbButton("HIGH SCORES",ButtonVariant.Secondary,null,"ranked",()=>Scores?.Invoke()){name="scores"},new VbButton("SETTINGS",ButtonVariant.Secondary,null,"settings",()=>Settings?.Invoke()){name="settings"}).Classes("vb-menu__row");row.MinItemWidth=96;
   notice=Ui.Text(this,"","vb-t-caption","vb-menu__notice");Bind(null,"",null);
  }
  /// <param name="checkpoint">Null hides the card.</param><param name="squadLine">"Squad · Aria · Sol · Aegis · Nyra" under PLAY.</param>
@@ -24,18 +24,18 @@ namespace Veilbreak.Gui {
  }
 }
 
-/// <summary>The title screen: the offline badge and best score, the mark, then the menu actions; EXIT is a ghost, top-right.</summary>
+/// <summary>The title screen: the offline badge and best score, the mark, then the menu actions. HIGH SCORES and SETTINGS carry their own glyphs (a game's third action brings its own); EXIT is an icon button in the header, top-right.</summary>
 [UxmlElement] public partial class MainMenuView:ScreenView {
  public const string Block="vb-menu";
- readonly Label status,subtitle,bestWave;readonly BadgeComponent best;readonly VbButton exit;
+ readonly Label status,subtitle,bestWave;readonly BadgeComponent best;readonly IconButtonComposite exit;
  public MenuActionsSectionView Actions {get;}
  public event Action Play,Resume,Scores,Settings,Exit;
  public MainMenuView():base(Block){
-  var top=Ui.Box(this,Block+"__top");status=Ui.Text(top,"","vb-t-badge");best=new BadgeComponent("BEST").Classes(Block+"__best").Into(top);bestWave=Ui.Text(best,"","vb-t-badge","vb-t-ally",Block+"__best-wave");
+  var top=Ui.Box(this,Block+"__top");status=Ui.Text(top,"","vb-t-badge");var right=Ui.Box(top,Block+"__right");best=new BadgeComponent("BEST").Classes(Block+"__best").Into(right);bestWave=Ui.Text(best,"","vb-t-badge","vb-t-ally",Block+"__best-wave");
   var brand=Ui.Box(this,Block+"__brand");new VbMark(240).Into(brand);subtitle=Ui.Text(brand,"",Block+"__arcade");
   Ui.Spacer(this);Actions=new MenuActionsSectionView().Into(this);
   Actions.Play+=()=>Play?.Invoke();Actions.Resume+=()=>Resume?.Invoke();Actions.Scores+=()=>Scores?.Invoke();Actions.Settings+=()=>Settings?.Invoke();
-  exit=new VbButton("EXIT",ButtonVariant.Ghost,null,null,()=>Exit?.Invoke()){name="exit"}.Classes(Block+"__exit").Into(this);
+  exit=new IconButtonComposite("close","Exit game",()=>Exit?.Invoke()){Quiet=true,name="exit"}.Classes(Block+"__exit").Into(right);
   Bind(new MainMenuViewModel());
  }
  public MainMenuView Bind(MainMenuViewModel v){

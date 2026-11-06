@@ -11,7 +11,7 @@ public sealed class PortTests {
   b.Bind(new SkillView{state=SkillState.Windup,progress=.25f,seconds=.6f});Assert.IsTrue(b.ClassListContains("vb-skill--windup"));var sweep=b.Q(className:"vb-skill__sweep");Assert.AreEqual(DisplayStyle.Flex,sweep.style.display.value);Assert.AreEqual(25,sweep.style.width.value.value,1e-3f);
   b.Bind(new SkillView{state=SkillState.Invalid,reason="Out of range",icon="fan"});Assert.AreEqual("OUT OF RANGE",Text(b,"vb-skill__value"));Assert.IsTrue(b.Q<VbIcon>().ClassListContains("vb-icon--no-target"),"Invalid aim strikes the crosshair");StringAssert.Contains("Out of range",b.tooltip);Assert.AreEqual(DisplayStyle.None,sweep.style.display.value);
   b.Bind(new SkillView{state=SkillState.Rejected,cost=18});Assert.IsTrue(b.ClassListContains("vb-skill--flash"),"A refused command flashes once");Assert.AreEqual("18",Text(b,"vb-skill__value"));
-  b.Bind(new SkillView{state=SkillState.Exposed,cost=30});Assert.AreEqual("EXPOSED",Text(b,"vb-skill__top"));Assert.IsFalse(b.ClassListContains("vb-skill--rejected"));}
+  b.Bind(new SkillView{state=SkillState.Exposed,cost=30});Assert.IsTrue(b.ClassListContains("vb-skill--exposed"),"An exposed target inverts the cost line");Assert.AreEqual("30",Text(b,"vb-skill__value"));Assert.IsFalse(b.ClassListContains("vb-skill--rejected"));}
 
  [Test] public void QueueChipsCancelOnlyManualEntries(){var chip=new QueueChip();int cancelled=0;chip.Cancelled+=()=>cancelled++;
   chip.Bind(new QueueView{skill="Needle Storm",who="AR",cost=18,eta="0.8s"},1);Assert.IsTrue(chip.ClassListContains("vb-queue-chip--next"));Assert.AreEqual("NEEDLE STORM",Text(chip,"vb-queue-chip__skill"));Assert.IsFalse(chip.Cancel(),"Autoplay estimates cannot be cancelled");
@@ -31,7 +31,7 @@ public sealed class PortTests {
   stat.Delta("−4");Assert.IsTrue(delta.ClassListContains("vb-stat__delta--down"));stat.Delta("+5",up:false);Assert.IsTrue(delta.ClassListContains("vb-stat__delta--down"),"Lower is better for costs");stat.Delta("same");Assert.IsFalse(delta.ClassListContains("vb-stat__delta--up")||delta.ClassListContains("vb-stat__delta--down"));
   Assert.AreEqual("2.1s",Text(new StatusChip(StatusKind.Silenced,"SILENCED","no skills","2.1s"),"vb-status__time"));}
 
- [Test] public void TilesShowTierAndStayVisibleWhenLocked(){var tile=new OperativeTile().Bind(new OperativeView{name="Mira",role="Disruptor"},2,false,RarityTier.Gold,"Pull in rifts");Assert.IsTrue(tile.ClassListContains("vb-tile--gold")&&tile.ClassListContains("vb-tile--locked"));Assert.IsFalse(tile.ClassListContains("vb-tile--in"),"A locked operative is not in the squad");Assert.AreEqual("PULL IN RIFTS",Text(tile,"vb-tile__role-text"));
+ [Test] public void TilesShowTierAndStayVisibleWhenLocked(){var tile=new UnitTile().Bind(new OperativeView{name="Mira",role="Disruptor"},2,false,RarityTier.Gold,"Pull in rifts");Assert.IsTrue(tile.ClassListContains("vb-tile--gold")&&tile.ClassListContains("vb-tile--locked"));Assert.IsFalse(tile.ClassListContains("vb-tile--in"),"A locked operative is not in the squad");Assert.AreEqual("PULL IN RIFTS",Text(tile,"vb-tile__role-text"));
   tile.Bind(new OperativeView{name="Mira",role="Disruptor"},1,true);Assert.IsFalse(tile.ClassListContains("vb-tile--gold")||tile.ClassListContains("vb-tile--locked"));Assert.IsTrue(tile.ClassListContains("vb-tile--in"));}
 
  [Test] public void RevealCardsNameTiersAndFlip(){Assert.AreEqual("LEGENDARY",RevealCard.TierWord(RarityTier.Gold,false));Assert.AreEqual("MAGIC ITEM",RevealCard.TierWord(RarityTier.Blue,true));

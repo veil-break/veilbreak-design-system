@@ -6,7 +6,7 @@ namespace Veilbreak.Gui {
 [Flags] public enum TileState { Idle=0, In=1, Focused=2, Locked=4, Empty=8 }
 
 /// <summary>A square-ish, pickable cell: a picture or a glyph, a short name, a caption with its own glyph, a state.
-/// Rosters, squad slots and inventories extend it (<see cref="OperativeTile"/>, <see cref="SquadSlot"/>).
+/// Rosters, squad slots and inventories extend it (<see cref="UnitTile"/>, <see cref="UnitSlot"/>).
 /// Tiles are chipped (something you pick); focused = brackets + glow; locked tiles stay visible and say how to unlock.</summary>
 [UxmlElement] public partial class TileComponent:SurfaceView {
  public const string ClassName="vb-tile";

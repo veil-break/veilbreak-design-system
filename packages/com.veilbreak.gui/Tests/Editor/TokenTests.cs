@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.UIElements;
 namespace Veilbreak.Gui.Tests {
 /// <summary>Tokens.uss and VbTokens are generated from Tokens~/tokens.json by Tools~/tokens.py; these fail when either drifts.</summary>
 public sealed class TokenTests {
@@ -32,11 +33,11 @@ public sealed class TokenTests {
   var text=css.Substring(a,b-a);int brace=text.IndexOf('{');return (text.Substring(0,brace).Split(',').Select(x=>x.Trim()).Where(x=>x.Length>0).ToArray(),text.Substring(brace));}
  [Test] public void NestedSurfacesDropTheirEdge(){var (nested,body)=Block("Runtime/Styles/Gui.uss","/* nest:begin */","/* nest:end */");
   foreach(var rule in new[]{"--vb-bw: 0","--vb-dash: 0","--vb-glow: rgba(0, 0, 0, 0)","--vb-bracket: rgba(0, 0, 0, 0)"})StringAssert.Contains(rule,body,"A nested surface has no edge width, dashes, glow or brackets");
-  foreach(var selector in new[]{".vb-nest",".vb-tile",".vb-slot",".vb-operative .vb-skill",".vb-queue-chip",".vb-queue__row",".vb-hud__resources",".vb-perk-chip",".vb-perk-detail__thumb",".vb-perk-row__thumb",".vb-contribution__portrait",".vb-details__skill-icon",".vb-result",".vb-dialog .vb-button--secondary",".vb-drawer__sheet .vb-button--secondary"})CollectionAssert.Contains(nested,selector,"The report's border budget lists "+selector);
+  foreach(var selector in new[]{".vb-nest",".vb-tile",".vb-slot",".vb-operative .vb-skill",".vb-queue-chip",".vb-queue__row",".vb-hud__resources",".vb-chip-row__plate",".vb-perk-detail__thumb",".vb-perk-row__thumb",".vb-contribution__portrait",".vb-details__skill-icon",".vb-result",".vb-dialog .vb-button--secondary",".vb-drawer__sheet .vb-button--secondary"})CollectionAssert.Contains(nested,selector,"The report's border budget lists "+selector);
   var (contrast,contrastBody)=Block("Runtime/Styles/Layout.uss","/* nest:contrast:begin */","/* nest:contrast:end */");CollectionAssert.AreEqual(nested.Select(x=>".vb-contrast "+x).ToArray(),contrast,"Every nested surface has its high-contrast edge");StringAssert.Contains("--vb-bw: 1",contrastBody);StringAssert.Contains("--vb-edge: var(--vb-color-line-strong)",contrastBody);
   var gui=File.ReadAllText(Package("Runtime/Styles/Gui.uss"));
   // Selections, the one primary, danger and an empty drop target keep an edge: their rules come after the nest block and set one.
-  int nestAt=gui.IndexOf("/* nest:end */");foreach(var keeper in new[]{".vb-tile--focused, .vb-tile--focused:hover {",".vb-slot--empty { --vb-dash: 1; --vb-bw: 1;",".vb-perk-card--selected {",".vb-button--primary {",".vb-button--danger {",".vb-operative--aiming {"}){int at=gui.IndexOf(keeper,System.StringComparison.Ordinal);Assert.Greater(at,nestAt,keeper+" follows the nest rule so it keeps its edge");}
+  int nestAt=gui.IndexOf("/* nest:end */");foreach(var keeper in new[]{".vb-tile--focused, .vb-tile--focused:hover {",".vb-slot--empty { --vb-dash: 1; --vb-bw: 1;",".vb-choice--selected {",".vb-button--primary {",".vb-button--danger {",".vb-operative--aiming {"}){int at=gui.IndexOf(keeper,System.StringComparison.Ordinal);Assert.Greater(at,nestAt,keeper+" follows the nest rule so it keeps its edge");}
   // Hairline separators inside a bordered surface are spacing now: none of the nested parts carries a CSS border.
   foreach(var part in new[]{".vb-skill__charge",".vb-meter__preview",".vb-skill__sweep",".vb-details__skill ",".vb-contribution__grid",".vb-perk-detail__rows",".vb-results__stats"}){var m=Regex.Match(gui+File.ReadAllText(Package("Runtime/Styles/Views.uss")),"(?m)^"+Regex.Escape(part)+"\\s*\\{[^}]*\\}");Assert.IsTrue(m.Success,part);StringAssert.DoesNotContain("border",m.Value,part+" is a surface inside a surface");}
   // A blocked action is dimmed, not dashed.
@@ -48,7 +49,15 @@ public sealed class TokenTests {
   var tokens=Regex.Matches(File.ReadAllText(Package("Runtime/Styles/Tokens.uss")),"--vb-font-([a-z-]+):\\s*url\\(").Cast<Match>().Select(m=>m.Groups[1].Value).Distinct().OrderBy(x=>x).ToArray();
   Assert.IsNotEmpty(tokens);CollectionAssert.AreEquivalent(tokens,FontPrimer.Faces);var gui=File.ReadAllText(Package("Runtime/Styles/Gui.uss"));
   foreach(var face in FontPrimer.Faces)StringAssert.Contains($".vb-font-primer__{face} {{ -unity-font-definition: var(--vb-font-{face});",gui);
-  foreach(var c in "SQUAD 0123456789·×…")StringAssert.Contains(c.ToString(),FontPrimer.Glyphs);
+  foreach(var c in "SQUAD 0123456789·×…−›‹")StringAssert.Contains(c.ToString(),FontPrimer.Glyphs);
  }
+ // ds#26: a popover or card title is primed in its own face and size too, mixed case included (the glyph run is every printable ASCII letter), so its tracking does not depend on what was drawn first.
+ [Test] public void FontPrimerPrimesTheTitleStylesAtTheirOwnSize(){
+  var gui=File.ReadAllText(Package("Runtime/Styles/Gui.uss"))+File.ReadAllText(Package("Runtime/Styles/Views.uss"));
+  foreach(var style in FontPrimer.Styles)StringAssert.Contains("."+style+" {",gui,style+" is a real text style");
+  CollectionAssert.Contains(FontPrimer.Styles,EffectDetails.TitleClass,"The effect popover's title is primed");CollectionAssert.Contains(FontPrimer.Styles,"vb-popover-card__title");CollectionAssert.Contains(FontPrimer.Styles,"vb-choice__title");
+  foreach(var c in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")StringAssert.Contains(c.ToString(),FontPrimer.Glyphs);StringAssert.Contains(".vb-font-primer__style",gui);
+  var host=new VisualElement();FontPrimer.Prime(host);var box=host.Q(className:FontPrimer.ClassName);Assert.IsNotNull(box);Assert.AreEqual(FontPrimer.Faces.Length+FontPrimer.Styles.Length,box.childCount,"One label per face and per style");
+  foreach(var style in FontPrimer.Styles)Assert.IsNotNull(box.Q(className:style),style);}
 }
 }

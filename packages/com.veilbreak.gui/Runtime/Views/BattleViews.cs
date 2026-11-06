@@ -10,12 +10,12 @@ namespace Veilbreak.Gui {
 [UxmlElement] public partial class BattleHudView:BoardLayout {
  public new const string ClassName="vb-battle";
  readonly EffectStrip targetEffects;readonly Label targetTitle;
- readonly OperativeCard[] cards=new OperativeCard[4];
+ readonly UnitCard[] cards=new UnitCard[4];
  public HudTop Hud {get;}
  public BossBar Boss {get;}
  /// <summary>The heads-up lane; feed confirmed events with <c>Announcer.Say</c>.</summary>
  public Announcer Announcer {get;}
- /// <summary>"RELEASE HERE TO CANCEL · NO POWER SPENT": a release over it cancels an aim.</summary>
+ /// <summary>"RELEASE TO CANCEL", under the aim's own line when the HUD has a hint ("NEEDLE STORM · −18 · REPLACES AUTO"): a release over it cancels an aim.</summary>
  public Label CancelBand {get;}
  public event Action Pause,Auto,Speed;
  public event Action<QueueView> QueueCancel;
@@ -25,20 +25,24 @@ namespace Veilbreak.Gui {
   Boss=new BossBar().Classes(ClassName+"__boss").Into(Top);Boss.Show(false);
   targetTitle=Ui.Text(Top,"","vb-t-badge");targetEffects=new EffectStrip().Into(Top);TargetEffects("",null);
   var lane=new GlitchText("").Classes("vb-announcement",ClassName+"__announcer").Into(Top);lane.name="hud-message";Announcer=new Announcer(lane);
-  var row=Ui.Box(Bottom,ClassName+"__cards");for(int i=0;i<4;i++)cards[i]=new OperativeCard().Classes(ClassName+"__card").Into(row);
-  CancelBand=Ui.Text(Bottom,"RELEASE HERE TO CANCEL · NO POWER SPENT",ClassName+"__cancel");CancelBand.name="cancel-hint";CancelBand.Show(false);
+  var row=Ui.Box(Bottom,ClassName+"__cards");for(int i=0;i<4;i++)cards[i]=new UnitCard().Classes(ClassName+"__card").Into(row);
+  CancelBand=Ui.Text(Bottom,CancelText,ClassName+"__cancel");CancelBand.name="cancel-hint";CancelBand.Show(false);
  }
+ const string CancelText="RELEASE TO CANCEL";
+ bool aiming;string bandHint="\0";
  /// <summary>0–3, for attaching aim and move manipulators to its skills.</summary>
- public OperativeCard Card(int index)=>cards[index];
+ public UnitCard Card(int index)=>cards[index];
  public void TargetEffects(string title,EffectInstance[] effects){targetTitle.text=title;targetTitle.Show(!string.IsNullOrEmpty(title));targetEffects.Bind(effects);}
  /// <param name="boss">Null hides the boss bar; mutable cached models are read on every bind.</param>
  public BattleHudView Bind(HudView hud,OperativeView[] operatives,BossView boss=null){
-  Hud.Bind(hud);VbMotion.Show(Boss,boss!=null,MotionKind.Drop);if(boss!=null)Boss.Bind(boss);
+  Hud.Bind(hud,!aiming);BandHint(hud.hint);VbMotion.Show(Boss,boss!=null,MotionKind.Drop);if(boss!=null)Boss.Bind(boss);
   for(int i=0;i<4;i++){bool on=operatives!=null&&i<operatives.Length&&operatives[i]!=null;VbMotion.Show(cards[i],on,MotionKind.Rise);if(on)cards[i].Bind(operatives[i]);}
   return this;
  }
  /// <summary>Shows the cancel band while an aim is live.</summary>
- public BattleHudView Aiming(bool on){VbMotion.Show(CancelBand,on,MotionKind.Rise);return this;}
+ public BattleHudView Aiming(bool on){aiming=on;VbMotion.Show(CancelBand,on,MotionKind.Rise);return this;}
+ // The aim hint ("Needle Storm · −18 · replaces auto") is the band's first line while an aim is live; the band is rebuilt only when the hint changes.
+ void BandHint(string hint){if(hint==bandHint)return;bandHint=hint;CancelBand.text=string.IsNullOrEmpty(hint)?CancelText:hint.ToUpperInvariant()+"\n"+CancelText;}
  /// <summary>Fades the HUD band and the cards to <paramref name="shown"/> (0–1) and makes them unpickable while hidden.</summary>
  public BattleHudView Reveal(float shown){shown=UnityEngine.Mathf.Clamp01(shown);VbMotion.Scrub(Top,shown,MotionRecipes.HudTop);for(int i=0;i<cards.Length;i++)VbMotion.Scrub(cards[i],UnityEngine.Mathf.Clamp01(shown*1.25f-i*.08f),MotionRecipes.HudCard);Bottom.visible=shown>0;return this;}
  /// <summary>Shows or hides the band and cards at once (menus keep the board for the world's gestures).</summary>

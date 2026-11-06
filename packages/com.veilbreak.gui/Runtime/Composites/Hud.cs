@@ -3,36 +3,37 @@ using UnityEngine;
 using UnityEngine.UIElements;
 namespace Veilbreak.Gui {
 /// <summary>
-/// Translucent portrait HUD band: wave/score, autoplay toggle, pause, then shared Power and focus.
+/// Translucent portrait HUD band: wave/score, the autoplay toggle (which reads AUTO or MANUAL: the one place autoplay is stated), pause, then shared Power and focus.
 /// Hovering, focusing or tapping the resources panel shows the queue; tapping a manual entry raises <see cref="QueueCancel"/>.
 /// </summary>
 [UxmlElement] public partial class HudTop:VisualElement {
  public const string ClassName="vb-hud";
- readonly Label waveWord,score;readonly GlitchText wave;readonly CreditsChip credits;long wantedWave=-1;public event Action WaveSlammed; readonly IconButtonComposite speed; public bool ShowFocus {get=>focus.resolvedStyle.display!=DisplayStyle.None;set=>focus.Show(value);}readonly IconButtonComposite auto;readonly VisualElement resources;readonly PowerStrip power;readonly FocusMeter focus;readonly float[] mark=new float[1];HudView view;
+ readonly Label waveWord,score;readonly GlitchText wave;readonly ChipRow credits;long wantedWave=-1;public event Action WaveSlammed; readonly IconButtonComposite speed; public bool ShowFocus {get=>focus.resolvedStyle.display!=DisplayStyle.None;set=>focus.Show(value);}readonly IconButtonComposite auto;readonly VisualElement resources;readonly PowerStrip power;readonly FocusMeter focus;readonly float[] mark=new float[1];HudView view;
  public Popover Queue {get;}
  public event Action AutoClicked,PauseClicked,SpeedClicked;
  public event Action<QueueView> QueueCancel;
  public HudTop(){
   AddToClassList(ClassName);pickingMode=PickingMode.Ignore;var row=Ui.Box(this,ClassName+"__row");
   var pause=new IconButtonComposite("pause","Pause",()=>PauseClicked?.Invoke()){Quiet=true,name="pause"}.Classes(ClassName+"__pause").Into(row);
-  auto=new IconButtonComposite("automation","Autoplay",()=>AutoClicked?.Invoke()){Quiet=true,name="auto"}.Classes(ClassName+"__auto").Into(row);
+  auto=new IconButtonComposite("automation","Autoplay",()=>AutoClicked?.Invoke()){Quiet=true,name="auto"}.Classes(ClassName+"__auto").Into(row);auto.TextLabel.AddToClassList(ClassName+"__auto-label");
   var stats=Ui.Box(row,ClassName+"__stats");var w=Ui.Box(stats,ClassName+"__stat");waveWord=Ui.Text(w,"WAVE",ClassName+"__key");wave=new GlitchText("01").Classes(ClassName+"__wave").Into(w);wave.name="wave-number";
   var s=Ui.Box(stats,ClassName+"__stat");Ui.Text(s,"SCORE",ClassName+"__key");score=Ui.Text(s,"0",ClassName+"__score");
   speed=new IconButtonComposite("","Toggle simulation speed",()=>SpeedClicked?.Invoke()){Text="1×",name="speed"}.Classes(ClassName+"__speed").Into(row);speed.TextLabel.AddToClassList(ClassName+"__auto-state");
   resources=VbShape.Attach(Ui.Box(this,ClassName+"__resources"));resources.focusable=true;resources.pickingMode=PickingMode.Position;
-  var resourceRow=Ui.Box(resources,ClassName+"__resource-row");power=new PowerStrip().Into(resourceRow);credits=new CreditsChip().Into(resourceRow);focus=new FocusMeter().Into(resources);
+  var resourceRow=Ui.Box(resources,ClassName+"__resource-row");power=new PowerStrip().Into(resourceRow);credits=ChipRow.Credits().Into(resourceRow);focus=new FocusMeter().Into(resources);
   Queue=Popover.Attach(resources,()=>view!=null&&view.queue.Length>0?new QueueList().Bind(view.queue,view.queueTitle,view.queueHint,q=>QueueCancel?.Invoke(q)):null);
  }
  long shownWave=-1,shownScore=-1;int shownSpeed;bool? shownAuto;
- public HudTop Bind(HudView v){
+ /// <param name="showHint">False while an aim is live: the hint then goes to the cancel band (<see cref="BattleHudView"/>), which has the width.</param>
+ public HudTop Bind(HudView v,bool showHint=true){
   view=v;EnableInClassList(ClassName+"--boss",v.boss);waveWord.text=v.boss?"BOSS":"WAVE";
   // Numbers are formatted only when they change: the band is bound every frame.
   if(v.wave!=wantedWave){wantedWave=v.wave;long next=v.wave;if(shownWave<0){shownWave=next;wave.text=next.ToString("00");}else Glitch.Out(wave,()=>{shownWave=next;wave.text=next.ToString("00");Glitch.Slam(wave);if(!Ui.Under(this,SafeAreaRoot.ReducedMotion)){Glitch.Jitter(this);WaveSlammed?.Invoke();}});}if(v.score!=shownScore){shownScore=v.score;VbMotion.Count(score,v.score,Ui.Compact);score.tooltip=Ui.Number(v.score);}
   if(v.speed!=shownSpeed){if(shownSpeed>0)VbMotion.Pop(speed);shownSpeed=v.speed;speed.Text=v.speed==1?"1×":v.speed==2?"2×":v.speed+"×";}
   if(v.auto!=shownAuto){if(shownAuto.HasValue)VbMotion.Pop(auto);shownAuto=v.auto;}
-  auto.EnableInClassList(ClassName+"__auto--on",v.auto);auto.Active=v.auto;auto.tooltip=v.auto?"Autoplay on · tap to disable":"Autoplay off · tap to enable";credits.Set(v.credits);
+  auto.EnableInClassList(ClassName+"__auto--on",v.auto);auto.Active=v.auto;auto.Text=v.auto?"AUTO":"MANUAL";auto.tooltip=v.auto?"Autoplay on · tap to disable":"Autoplay off · tap to enable";credits.SetNumber(v.credits);
   float[] marks=null;if(v.queue.Length>0){mark[0]=v.queue[0].cost/(float)Mathf.Max(1,v.maxPower);marks=mark;}
-  power.Set(v.power,v.maxPower,v.regen,v.hint,v.previewFrom,v.previewTo,marks);focus.Set(v.focus,v.slow);
+  power.Set(v.power,v.maxPower,v.regen,showHint?v.hint:null,v.previewFrom,v.previewTo,marks);focus.Set(v.focus,v.slow);
   return this;
  }
 }
@@ -67,17 +68,19 @@ public sealed class QueueList:VisualElement {
  }
 }
 
-/// <summary>Screen header: back, title, a short meta read-out.</summary>
+/// <summary>Screen header: back, title, a short meta read-out. A screen that has its own way back (the pause overlay's RESUME) hides the arrow with <see cref="ShowBack"/>.</summary>
 [UxmlElement] public partial class ScreenHeader:VisualElement {
  public const string ClassName="vb-header";
- readonly Label title,meta;
+ readonly Label title,meta;readonly IconButtonComposite back;bool showBack=true;
  public event Action Back;
  [UxmlAttribute] public string Title {get=>title.text;set=>title.text=(value??"").ToUpperInvariant();}
  /// <summary>The meta read-out; a change on a shown header swells it once (SAVED, 3 / 4).</summary>
  [UxmlAttribute] public string Meta {get=>meta.text;set{value??="";if(meta.text==value)return;bool change=meta.text.Length>0;meta.text=value;if(change)VbMotion.Pop(meta,.14f);}}
+ /// <summary>Whether the back arrow shows (default true). Hidden, the title takes its place and the header has no way back of its own.</summary>
+ [UxmlAttribute] public bool ShowBack {get=>showBack;set{showBack=value;back.Show(value);EnableInClassList(ClassName+"--no-back",!value);}}
  public ScreenHeader():this("",""){}
  public ScreenHeader(string title,string meta,string backLabel="Back"){
-  AddToClassList(ClassName);new IconButtonComposite("back",backLabel,()=>Back?.Invoke()){name="back"}.Classes(ClassName+"__back").Into(this);
+  AddToClassList(ClassName);back=new IconButtonComposite("back",backLabel,()=>Back?.Invoke()){name="back"}.Classes(ClassName+"__back").Into(this);
   this.title=Ui.Text(this,"",ClassName+"__title");this.meta=Ui.Text(this,"",ClassName+"__meta");Title=title;Meta=meta;
  }
  public ScreenHeader Accent(bool on){meta.EnableInClassList(ClassName+"__meta--accent",on);return this;}

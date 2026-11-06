@@ -3,7 +3,7 @@
    Custom property values are literals; ordinary properties use the token variables. UI Toolkit has no text-transform: code passes caps. */
 
 .vb-shape {
-    --vb-cut: 10; --vb-bw: 1; --vb-fill-dir: 0; --vb-dash: 0; --vb-bracket-len: 8;
+    --vb-cut: 10; --vb-cut-side: 0; --vb-bw: 1; --vb-fill-dir: 0; --vb-dash: 0; --vb-bracket-len: 8;
     --vb-fill: rgba(0, 0, 0, 0); --vb-fill-to: rgba(0, 0, 0, 0); --vb-edge: rgba(0, 0, 0, 0); --vb-edge-to: rgba(0, 0, 0, 0);
     --vb-bracket: rgba(0, 0, 0, 0); --vb-glow: rgba(0, 0, 0, 0);
     background-color: rgba(0, 0, 0, 0); border-width: 0; border-radius: 0;
@@ -21,10 +21,12 @@
    that mean a selection (`--focused`, `--selected`), danger or an empty slot come after this block and draw their edge again; high
    contrast gives every nested surface its edge back in Layout.uss. TokenTests.NestedSurfacesDropTheirEdge reads this list. */
 /* nest:begin */
-.vb-nest, .vb-tile, .vb-slot, .vb-operative .vb-skill, .vb-queue-chip, .vb-queue__row, .vb-hud__resources, .vb-perk-chip, .vb-perk-detail__thumb, .vb-perk-row__thumb,
+.vb-nest, .vb-tile, .vb-slot, .vb-operative .vb-skill, .vb-queue-chip, .vb-queue__row, .vb-hud__resources, .vb-chip-row__plate, .vb-stat-row--plated, .vb-perk-detail__thumb, .vb-perk-row__thumb,
 .vb-contribution__portrait, .vb-details__skill-icon, .vb-details__close, .vb-result, .vb-status, .vb-effect--ready, .vb-popover .vb-button--secondary,
 .vb-dialog .vb-button--secondary, .vb-drawer__sheet .vb-button--secondary, .vb-section .vb-button--secondary { --vb-bw: 0; --vb-dash: 0; --vb-bracket: rgba(0, 0, 0, 0); --vb-glow: rgba(0, 0, 0, 0); }
 /* nest:end */
+/* A secondary button inside a surface has no edge, so it sits one tone above it. */
+.vb-popover .vb-button--secondary, .vb-dialog .vb-button--secondary, .vb-drawer__sheet .vb-button--secondary, .vb-section .vb-button--secondary { --vb-fill: var(--vb-color-raised); }
 
 .unity-label { margin: 0; padding: 0; -unity-font-style: normal; }
 
@@ -167,7 +169,7 @@
 .vb-field__help { margin-top: 4px; }
 .vb-form { flex-grow: 1; flex-shrink: 1; min-height: 0; }
 .vb-form__status { align-self: flex-end; margin-bottom: 6px; color: var(--vb-color-ally-text); }
-.vb-form__scroll .unity-scroll-view__content-container { padding-top: 12px; }
+.vb-form__scroll .unity-scroll-view__content-container { padding-top: 12px; padding-bottom: 16px; }
 .vb-form__note { flex-direction: row; align-items: flex-start; padding: 8px 12px; margin-bottom: 12px; --vb-cut: 4; }
 .vb-form__note > .vb-icon { margin-right: 10px; margin-top: 1px; -unity-background-image-tint-color: var(--vb-color-text-2); }
 .vb-form__note > .vb-t-caption { flex-shrink: 1; }
@@ -267,53 +269,54 @@
 .vb-focus--slow .vb-focus__rate { color: var(--vb-color-text); }
 
 /* ── skill button ──────────────────────────────────────────────────────── */
+/* One layout in every state: the slot letter, the glyph and one cost line. States are overlays on it: the seconds over the glyph, a corner badge (the shortfall "−3", the
+   queue place "#1"), a dimmed fill; nothing is added below the foot, so nothing clips at any width. */
 .vb-skill { width: 44px; height: 56px; align-items: center; overflow: hidden; --vb-cut: 6; --vb-fill: var(--vb-color-raised); --vb-edge: var(--vb-color-line-strong); }
 .vb-skill__charge { position: absolute; left: 0; right: 0; bottom: 0; background-color: rgba(29, 217, 160, 0.26); }
 .vb-skill__slot { position: absolute; left: 4px; top: 2px; font-size: 10px; color: var(--vb-color-text-3); -unity-font-definition: var(--vb-font-body-medium); -unity-font-style: bold; }
 .vb-skill__icon { width: 20px; height: 20px; margin-top: 13px; }
+.vb-skill__seconds { position: absolute; left: 0; right: 0; top: 13px; height: 20px; -unity-text-align: middle-center; -unity-font-definition: var(--vb-font-body-medium); -unity-font-style: bold; font-size: 11px; color: var(--vb-color-text); text-shadow: 0 1px 3px rgba(0,0,0,0.85); }
 .vb-skill__slash { position: absolute; left: 7px; right: 7px; top: 22px; height: 2px; background-color: var(--vb-color-warn); rotate: -35deg; }
-.vb-skill__foot { margin-top: auto; margin-bottom: 3px; align-items: center; }
-.vb-skill__top, .vb-skill__value { -unity-font-definition: var(--vb-font-body-medium); -unity-font-style: bold; font-size: 9px; letter-spacing: 8.889px; -unity-text-align: middle-center; }
-.vb-skill__value { font-size: 11px; color: var(--vb-color-power-text); }
+.vb-skill__badge { position: absolute; right: 2px; top: 2px; min-width: 14px; height: 13px; padding: 0 3px; -unity-text-align: middle-center; -unity-font-definition: var(--vb-font-body-medium); -unity-font-style: bold; font-size: 9px; background-color: var(--vb-color-power); color: var(--vb-color-on-cta); }
+.vb-skill__value { margin-top: auto; margin-bottom: 3px; max-width: 40px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; -unity-text-align: middle-center; -unity-font-definition: var(--vb-font-body-medium); -unity-font-style: bold; font-size: 11px; color: var(--vb-color-power-text); }
 .vb-skill--aiming { --vb-fill: var(--vb-color-ally-soft); --vb-edge: var(--vb-color-ally); --vb-bw: 2; --vb-glow: rgba(29, 217, 160, 0.45); }
 .vb-skill--aiming .vb-icon { -unity-background-image-tint-color: var(--vb-color-ally-text); }
 .vb-skill--aiming .vb-skill__value { color: var(--vb-color-ally-text); }
 .vb-skill--cooldown { --vb-fill: var(--vb-color-panel); --vb-edge: var(--vb-color-line); }
-.vb-skill--cooldown .vb-skill__icon { opacity: 0.6; }
+.vb-skill--cooldown .vb-skill__icon { opacity: 0.35; }
 .vb-skill--cooldown .vb-skill__value { color: var(--vb-color-text-3); }
-.vb-skill--short { --vb-fill: var(--vb-color-power-soft); }
-.vb-skill--short .vb-icon { -unity-background-image-tint-color: var(--vb-color-power-text); }
-.vb-skill--short .vb-skill__top { color: var(--vb-color-power-text); }
+.vb-skill--short { --vb-fill: var(--vb-color-panel); }
+.vb-skill--short .vb-skill__icon { opacity: 0.45; }
+.vb-skill--short .vb-skill__value { color: var(--vb-color-text-3); }
 .vb-skill--silenced { --vb-fill: rgba(255, 195, 90, 0.12); }
-.vb-skill--silenced .vb-skill__icon { opacity: 0.6; }
-.vb-skill--silenced .vb-skill__top, .vb-skill--silenced .vb-skill__value { color: var(--vb-color-warn); }
+.vb-skill--silenced .vb-skill__icon { opacity: 0.35; }
+.vb-skill--silenced .vb-skill__seconds, .vb-skill--silenced .vb-skill__value { color: var(--vb-color-warn); }
 .vb-skill--fallen { --vb-fill: rgba(250, 238, 244, 0.05); opacity: 0.6; }
 .vb-skill--fallen .vb-icon { -unity-background-image-tint-color: var(--vb-color-text-3); }
-.vb-skill--fallen .vb-skill__value { color: var(--vb-color-text-3); }
 .vb-skill.vb-dragging { --vb-edge: var(--vb-color-ally); --vb-bw: 2; }
 .vb-skill--queued { --vb-fill: rgba(43, 29, 57, 0.90); }
 .vb-skill--queued .vb-icon { -unity-background-image-tint-color: var(--vb-color-power-text); }
-.vb-skill--queued .vb-skill__top, .vb-skill--queued .vb-skill__value { color: var(--vb-color-power-text); }
+.vb-skill--queued .vb-skill__value { color: var(--vb-color-power-text); }
 .vb-skill--buffered { --vb-fill: var(--vb-color-power-soft); --vb-edge: var(--vb-color-power); --vb-bw: 2; }
-.vb-skill--buffered .vb-skill__top { color: var(--vb-color-power-text); }
 
-/* ── operative card (portrait battle HUD) ──────────────────────────────── */
+/* ── unit card (portrait battle HUD) ───────────────────────────────────── */
 .vb-operative { width: 88px; height: 202px; overflow: hidden; --vb-cut: 10; --vb-fill: var(--vb-color-panel); --vb-edge: var(--vb-color-line); }
 .vb-operative__band { height: 48px; overflow: hidden; background-color: var(--vb-color-scene-fog); }
 .vb-operative__portrait { position: absolute; left: -33px; top: -6px; width: 150px; height: 225px; -unity-background-scale-mode: scale-to-fit; }
 .vb-operative__shade { position: absolute; left: 0; right: 0; bottom: 0; height: 18px; background-color: rgba(14, 9, 20, 0.55); }
-.vb-operative__code { position: absolute; left: 5px; bottom: 2px; -unity-font-definition: var(--vb-font-display-bold); font-size: 12px; letter-spacing: 4.167px; }
-.vb-operative__chip { position: absolute; right: 3px; top: 3px; padding: 1px 4px; -unity-font-definition: var(--vb-font-body-medium); -unity-font-style: bold; font-size: 9px; letter-spacing: 6.667px; background-color: var(--vb-color-ally-soft); color: var(--vb-color-ally-text); }
+/* The mode chip (MANUAL with seconds, AIMING) sits inside the card: it never grows past the band, and truncates before it overruns. */
+.vb-operative__chip { position: absolute; right: 3px; top: 3px; max-width: 82px; padding: 1px 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; -unity-font-definition: var(--vb-font-body-medium); -unity-font-style: bold; font-size: 9px; letter-spacing: 1px; background-color: var(--vb-color-ally-soft); color: var(--vb-color-ally-text); }
 .vb-operative__kit { height: 2px; }
 .vb-operative__body { padding: 4px 6px 0 6px; }
 .vb-operative__name { -unity-font-definition: var(--vb-font-display-bold); font-size: 12px; letter-spacing: 13.333px; margin-bottom: 3px; }
 .vb-operative__numbers { flex-direction: row; align-items: flex-end; margin-top: 3px; }
 .vb-operative__hp { -unity-font-definition: var(--vb-font-body-medium); font-size: 10px; color: var(--vb-color-text); }
 .vb-operative__barrier { margin-left: auto; -unity-font-definition: var(--vb-font-body-medium); font-size: 10px; color: var(--vb-color-barrier); }
-.vb-operative__statuses { flex-direction: row; align-items: center; height: 44px; margin-top: 3px; }
-.vb-operative__status { width: 14px; height: 14px; margin-right: 4px; -unity-background-image-tint-color: var(--vb-color-warn); }
-.vb-operative__status--barrier { -unity-background-image-tint-color: var(--vb-color-barrier); }
-.vb-operative__status--exposed { -unity-background-image-tint-color: var(--vb-color-text); }
+/* Timed statuses: up to three small icons over the portrait; the strip is one 44-unit-tall target that opens the list. */
+.vb-pips { position: absolute; left: 0; right: 0; top: 0; height: 44px; flex-direction: row; align-items: flex-start; padding: 4px 0 0 4px; }
+.vb-pips__icon { width: 14px; height: 14px; margin-right: 3px; -unity-background-image-tint-color: var(--vb-color-text); }
+.vb-pips__icon--harm { -unity-background-image-tint-color: var(--vb-color-enemy-text); }
+.vb-pips__icon--benefit { -unity-background-image-tint-color: var(--vb-color-ally-text); }
 .vb-operative__clear { -unity-font-definition: var(--vb-font-body-medium); -unity-font-style: bold; font-size: 9px; color: var(--vb-color-text-3); letter-spacing: 8.889px; }
 .vb-operative__skills { margin-top: auto; flex-direction: row; }
 .vb-operative__fallen { margin-top: auto; height: 56px; padding: 0 6px 6px 6px; justify-content: flex-end; }
@@ -324,8 +327,7 @@
 .vb-operative--aiming { --vb-edge: var(--vb-color-ally); --vb-bw: 2; --vb-bracket: var(--vb-color-ally); --vb-glow: rgba(29, 217, 160, 0.35); }
 .vb-operative--aiming .vb-operative__chip { background-color: var(--vb-color-ally); color: var(--vb-color-on-cta); }
 .vb-operative--fallen .vb-operative__band, .vb-operative--fallen .vb-operative__kit, .vb-operative--fallen .vb-operative__body { opacity: 0.5; }
-.vb-operative--fallen .vb-operative__portrait { -unity-background-image-tint-color: rgb(150, 140, 150); }
-.vb-operative--fallen .vb-operative__chip { background-color: var(--vb-color-enemy-soft); color: var(--vb-color-enemy-text); }
+.vb-operative--fallen .vb-operative__portrait { -unity-background-image-tint-color: rgb(120, 112, 120); }
 
 /* ── roster tile, squad slot, details sheet ────────────────────────────── */
 .vb-tile { width: 84px; height: 112px; overflow: hidden; --vb-fill: var(--vb-color-panel); --vb-edge: var(--vb-color-line); }
@@ -342,6 +344,9 @@
 .vb-tile__role .vb-icon { width: 12px; height: 12px; margin-right: 4px; -unity-background-image-tint-color: var(--vb-color-text-2); }
 .vb-tile__role-text { -unity-font-definition: var(--vb-font-body-medium); -unity-font-style: bold; font-size: 9px; letter-spacing: 8.889px; color: var(--vb-color-text-2); }
 .vb-tile--in { --vb-fill: var(--vb-color-ally-soft); }
+/* A narrow board shows a tile's role as its icon alone (the text cut at the tile's edge); a locked tile keeps its reason. */
+.vb-compact .vb-tile__role-text { display: none; }
+.vb-compact .vb-tile--locked .vb-tile__role-text { display: flex; flex-grow: 1; flex-shrink: 1; flex-basis: 0; min-width: 0; white-space: normal; font-size: 8px; letter-spacing: 0; }
 .vb-tile:hover { --vb-fill: var(--vb-color-raised); }
 .vb-tile--in:hover { --vb-fill: var(--vb-color-ally-soft); }
 .vb-tile--focused, .vb-tile--focused:hover { --vb-fill: var(--vb-color-ally-soft); --vb-edge: var(--vb-color-ally); --vb-bw: 2; --vb-bracket: var(--vb-color-ally); --vb-glow: rgba(29, 217, 160, 0.35); }
@@ -375,8 +380,9 @@
 .vb-details__role-text { -unity-font-definition: var(--vb-font-body-medium); -unity-font-style: bold; font-size: 10px; letter-spacing: 10.000px; color: var(--vb-color-text-2); }
 .vb-details__slot { margin-left: auto; margin-right: 10px; -unity-font-definition: var(--vb-font-body-medium); -unity-font-style: bold; font-size: 10px; letter-spacing: 10.000px; color: var(--vb-color-text-3); }
 .vb-details__slot--in { color: var(--vb-color-ally-text); }
-.vb-details__close { width: 44px; height: 44px; align-items: center; justify-content: center; --vb-cut: 6; --vb-fill: var(--vb-color-raised); }
-.vb-details__close .vb-icon { width: 18px; height: 18px; }
+/* The close is a plain icon button: no plate, no edge, the full 44-unit target. */
+.vb-details__close { width: 44px; height: 44px; margin-left: -8px; align-items: center; justify-content: center; --vb-cut: 6; --vb-fill: rgba(0, 0, 0, 0); }
+.vb-details__close .vb-icon { width: 16px; height: 16px; }
 .vb-details__stats { flex-direction: row; margin-bottom: 10px; }
 .vb-details__stats .vb-stat { margin-right: 12px; }
 .vb-details__passive { margin-bottom: 2px; }
@@ -422,11 +428,6 @@
 /* ── perks ─────────────────────────────────────────────────────────────── */
 .vb-perk-art { overflow: hidden; }
 
-.vb-perk--operative .vb-perk-card__tag { border-color: var(--vb-color-ally-text); color: var(--vb-color-ally-text); }
-.vb-perk--rare.vb-perk-card { --vb-edge: var(--vb-color-tier-violet); }
-.vb-perk--rare .vb-perk-card__tag { border-color: var(--vb-color-tier-violet); color: var(--vb-color-tier-violet); }
-.vb-perk-card:hover { --vb-edge: rgba(250, 238, 244, 0.70); }
-.vb-perk-card.vb-perk-card--selected { --vb-fill: var(--vb-color-ally-soft); --vb-edge: var(--vb-color-ally); --vb-bw: 2; --vb-bracket: var(--vb-color-ally); --vb-glow: rgba(29, 217, 160, 0.35); }
 
 .vb-perk-detail { padding: 12px; --vb-fill: var(--vb-color-panel-solid); --vb-edge: var(--vb-color-line-strong); }
 .vb-perk-detail__head { flex-direction: row; align-items: center; }
@@ -446,13 +447,6 @@
 .vb-perk--rare.vb-perk-detail { --vb-edge: var(--vb-color-tier-violet); }
 .vb-perk--rare .vb-perk-detail__tag { color: var(--vb-color-tier-violet); }
 
-.vb-perk-chip { flex-direction: row; align-items: center; height: 28px; padding: 0 10px; margin: 0 6px 6px 0; --vb-cut: 6; --vb-fill: var(--vb-color-raised); }
-.vb-perk-chip .vb-icon { width: 14px; height: 14px; margin-right: 6px; -unity-background-image-tint-color: var(--vb-color-text-2); }
-.vb-perk-chip__name { -unity-font-definition: var(--vb-font-body-medium); -unity-font-style: bold; font-size: 9px; letter-spacing: 10.000px; color: var(--vb-color-text-2); }
-.vb-perk-chip__count { -unity-font-definition: var(--vb-font-body-medium); -unity-font-style: bold; font-size: 9px; color: var(--vb-color-ally-text); margin-left: 4px; }
-.vb-perk--operative .vb-perk-chip .vb-icon, .vb-perk--operative.vb-perk-chip .vb-icon { -unity-background-image-tint-color: var(--vb-color-ally-text); }
-.vb-perk-chip:hover, .vb-perk-chip.vb-popover-open { --vb-fill: var(--vb-color-ally-soft); }
-.vb-perk-chip__popover { width: 260px; }
 
 .vb-perk-row { flex-direction: row; align-items: center; height: 64px; padding: 0 12px 0 10px; --vb-cut: 6; --vb-fill: var(--vb-color-panel); --vb-edge: var(--vb-color-line); }
 .vb-perk-row__thumb { width: 44px; height: 44px; margin-right: 10px; align-items: center; justify-content: center; --vb-cut: 6; --vb-fill: var(--vb-color-raised); }
@@ -581,11 +575,11 @@
 .vb-modal { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(5,2,8,0.45); justify-content: flex-end; padding: 0 12px; }
 .vb-hud__speed { min-width: 44px; min-height: 44px; padding: 8px; margin-right: 4px; flex-shrink: 0; justify-content: center; align-items: center; --vb-fill: var(--vb-color-raised); --vb-edge: var(--vb-color-line-strong); --vb-cut: 6; }
 .vb-skill--casting, .vb-skill--disabled { opacity: 1; }
+.vb-skill--disabled .vb-skill__icon { opacity: 0.5; }
 
 /* Export reference typography: real Poppins weights rather than a synthetic default face. */
 .vb-t-label, .vb-t-badge, .vb-button__label, .vb-switch__label, .vb-header__meta,
 .vb-hud__key, .vb-hud__auto-label, .vb-hud__auto-state, .vb-operative__chip,
-.vb-perk-card__category, .vb-perk-card__tag, .vb-perk-detail__tag, .vb-perk-row__tag,
 .vb-details__role-text, .vb-details__slot, .vb-details__passive-name, .vb-stat__label {
  -unity-font-definition: var(--vb-font-body-bold); -unity-font-style: normal;
 }
@@ -603,6 +597,8 @@
 .vb-font-primer__body-semibold { -unity-font-definition: var(--vb-font-body-semibold); white-space: nowrap; }
 .vb-font-primer__body-bold { -unity-font-definition: var(--vb-font-body-bold); white-space: nowrap; }
 .vb-font-primer__hud-regular { -unity-font-definition: var(--vb-font-hud-regular); white-space: nowrap; }
+/* The primed text styles keep their own face and size; only the wrapping is off. */
+.vb-font-primer__style { white-space: nowrap; flex-shrink: 0; }
 /* Text that sits straight on the world or a backdrop carries the prototype's soft drop shadow. */
 .vb-header__title, .vb-header__meta, .vb-hud__key, .vb-hud__wave, .vb-hud__score { text-shadow: 0 1px 3px rgba(0,0,0,0.65); }
 
@@ -651,13 +647,14 @@
 .vb-skill__sweep { position: absolute; left: 0; top: 0; bottom: 0; background-color: rgba(192, 132, 252, 0.30); }
 .vb-skill--windup { --vb-fill: var(--vb-color-power-soft); }
 .vb-skill--windup .vb-icon { -unity-background-image-tint-color: var(--vb-color-power-text); }
-.vb-skill--windup .vb-skill__value { color: var(--vb-color-power-text); }
+.vb-skill--windup .vb-skill__seconds, .vb-skill--windup .vb-skill__value { color: var(--vb-color-power-text); }
+.vb-skill--windup .vb-skill__icon { opacity: 0.35; }
 .vb-skill--invalid { --vb-edge: var(--vb-color-line-strong); }
 .vb-skill--invalid .vb-icon { -unity-background-image-tint-color: var(--vb-color-text-3); }
 .vb-skill--invalid .vb-skill__value { font-size: 8px; letter-spacing: 0; color: var(--vb-color-text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 40px; }
 .vb-skill--rejected { --vb-fill: var(--vb-color-enemy-soft); }
 .vb-skill--flash { --vb-fill: rgba(240, 80, 154, 0.35); --vb-glow: rgba(240, 80, 154, 0.55); }
-.vb-skill--exposed .vb-skill__top { color: var(--vb-color-on-cta); background-color: var(--vb-color-exposed); padding: 0 2px; letter-spacing: 0; font-size: 8px; }
+.vb-skill--exposed .vb-skill__value { color: var(--vb-color-on-cta); background-color: var(--vb-color-exposed); padding: 0 3px; }
 
 /* QueueChip: one Power queue entry; the × is the chip's full height. */
 .vb-queue-chip { flex-direction: row; align-items: center; height: var(--vb-queue-chip-height); padding-left: 6px; margin: 0 4px 4px 0; flex-grow: 1; flex-shrink: 1; flex-basis: 40%; min-width: 0; --vb-cut: 5; --vb-fill: var(--vb-color-power-soft); --vb-edge: rgba(192, 132, 252, 0.30); }
@@ -810,7 +807,7 @@
 .vb-merchant__scroll { flex-grow: 1; min-height: 0; }
 .vb-merchant__section { margin-top: 18px; margin-bottom: 8px; color: var(--vb-color-glitch-cyan); }
 .vb-merchant__offers { flex-direction: row; align-items: stretch; }
-.vb-merchant__offer { flex-grow: 1; flex-basis: 0; min-width: 0; margin: 0 3px; }
+.vb-merchant__offer, .vb-merchant__stack, .vb-merchant__trade { flex-shrink: 0; }
 .vb-merchant__buy { min-height: 48px; margin-top: 5px; padding: 6px 4px; font-size: 11px; }
 .vb-merchant__buy .vb-button__sub { font-size: 9px; white-space: normal; }
 .vb-merchant__exchange { flex-direction: row; align-items: center; padding: 8px; margin-bottom: 6px; min-height: 64px; --vb-cut: 6; }
@@ -818,10 +815,9 @@
 .vb-merchant__info .vb-t-caption { white-space: normal; }
 .vb-merchant__sell { min-width: 86px; min-height: 44px; padding: 8px; font-size: 11px; flex-shrink: 0; }
 .vb-merchant__leave { margin-top: 10px; flex-shrink: 0; }
-.vb-perk--rare.vb-perk-card, .vb-perk--rare.vb-perk-detail, .vb-perk--rare.vb-perk-chip { --vb-edge: var(--vb-color-glitch-cyan); }
-.vb-perk--rare .vb-perk-card__tag, .vb-perk--rare .vb-perk-detail__tag, .vb-perk--rare .vb-perk-row__tag { color: var(--vb-color-glitch-cyan); border-color: var(--vb-color-glitch-cyan); }
-.vb-perk--epic.vb-perk-card, .vb-perk--epic.vb-perk-detail, .vb-perk--epic.vb-perk-chip { --vb-edge: var(--vb-color-tier-violet); }
-.vb-perk--epic .vb-perk-card__tag, .vb-perk--epic .vb-perk-detail__tag, .vb-perk--epic .vb-perk-row__tag { color: var(--vb-color-tier-violet); border-color: var(--vb-color-tier-violet); }
+.vb-perk--rare.vb-perk-detail { --vb-edge: var(--vb-color-glitch-cyan); }
+.vb-perk--epic.vb-perk-detail { --vb-edge: var(--vb-color-tier-violet); }
+.vb-perk--epic .vb-perk-detail__tag, .vb-perk--epic .vb-perk-row__tag { color: var(--vb-color-tier-violet); border-color: var(--vb-color-tier-violet); }
 
 /* Compact top-left controls; the automation glyph keeps its full touch target on narrow phones. */
 .vb-hud__pause { margin-right: 4px; }
@@ -871,16 +867,6 @@
 .vb-contrast .vb-list-row { --vb-bw: 1; --vb-edge: var(--vb-color-line-strong); }
 
 /* ── minimal perk card and market (0.3.2) ── */
-.vb-perk-card { width: 112px; height: auto; min-height: 196px; padding: 12px 10px 10px 10px; --vb-cut: 4; --vb-bw: 0; --vb-fill: var(--vb-color-panel); }
-.vb-perk-card__tag { margin-bottom: 14px; }
-.vb-perk-card__glyph { width: 28px; height: 28px; margin-bottom: 10px; -unity-background-image-tint-color: var(--vb-color-text-2); }
-.vb-perk-card__name { -unity-font-definition: var(--vb-font-display-bold); font-size: 13px; letter-spacing: 8.000px; white-space: normal; margin-bottom: 4px; }
-.vb-perk-card__effect { white-space: normal; }
-.vb-perk-card__levels { margin: 10px 0 6px 0; }
-.vb-perk-card__next { -unity-font-definition: var(--vb-font-body-medium); font-size: 12px; color: var(--vb-color-ally-text); white-space: normal; }
-.vb-perk-card--selected { --vb-cut: 10; --vb-bw: 2; --vb-edge: var(--vb-color-ally); --vb-bracket: var(--vb-color-ally); }
-.vb-perk--rare.vb-perk-card .vb-perk-card__glyph, .vb-perk--rare .vb-perk-card__tag { -unity-background-image-tint-color: var(--vb-color-glitch-cyan); color: var(--vb-color-glitch-cyan); }
-.vb-perk--epic.vb-perk-card .vb-perk-card__glyph, .vb-perk--epic .vb-perk-card__tag { -unity-background-image-tint-color: var(--vb-color-tier-violet); color: var(--vb-color-tier-violet); }
 .vb-merchant__head { flex-direction: row; justify-content: space-between; align-items: center; margin-bottom: 8px; }
 .vb-merchant__section { margin-top: 10px; }
 .vb-merchant__leave { flex-shrink: 0; margin-top: 8px; }
@@ -895,8 +881,105 @@
 .vb-effect-strip { flex-wrap: wrap; }
 .vb-effect-strip__badges { flex-wrap: wrap; }
 .vb-effect-detail, .vb-effect-list { max-width: 320px; padding: 12px; }
+/* The effect title is caps in the body face: mixed case in the wide-tracked display face read unevenly (design-system#26). */
+.vb-effect-detail__title { -unity-font-definition: var(--vb-font-body-medium); -unity-font-style: bold; font-size: 12px; letter-spacing: 12px; color: var(--vb-color-text); white-space: normal; margin-bottom: 4px; }
 .vb-effect-row { min-height: 44px; margin-bottom: 6px; }
 .vb-effect-row > VisualElement { flex-shrink: 1; }
 .vb-effect-detail .unity-label, .vb-effect-row .unity-label { white-space: normal; }
 .vb-effect--spent .vb-icon, .vb-effect--expired .vb-icon { opacity: 0.5; }
 .vb-effect--ready { --vb-fill: var(--vb-color-ally-soft); }
+
+/* ── 0.8.0 composites (design-system#39) ───────────────────────────────── */
+/* HUD autoplay: the toggle reads AUTO or MANUAL, so the cards need not. The label is shown at every width (a narrow board hides only the glyph). */
+.vb-hud__auto, .vb-compact .vb-hud__auto { width: auto; min-width: 45px; padding: 6px 8px; }
+.vb-hud__auto .vb-icon, .vb-compact .vb-hud__auto .vb-icon { margin-right: 5px; }
+.vb-hud__auto-label { font-size: 9px; letter-spacing: 6px; }
+.vb-compact .vb-hud__auto .vb-icon { display: none; }
+.vb-compact .vb-hud__auto-label { display: flex; font-size: 8px; letter-spacing: 3px; }
+
+/* A glyph that goes back (‹) or leaves leads its label; a forward action keeps its chevron (›) at the end. */
+.vb-button--lead { flex-direction: row-reverse; }
+.vb-button--lead .vb-button__icon { margin-left: 0; margin-right: 10px; }
+
+/* ── choice card (ChoiceCard): a road, an extract choice, a perk ─────────── */
+/* The whole card is the button, so it keeps its own edge. A pair mirrors: the left card cuts its left corners and aligns its text right, the right card cuts its right
+   corners and aligns its text left; the glyph is centred, the text is compact and each tone tints the fill a little. */
+.vb-choice { flex-grow: 1; flex-basis: 0; min-width: 0; min-height: 196px; margin: 0 4px; padding: 12px 10px 4px 10px; --vb-cut: 12; --vb-bw: 1; --vb-fill: var(--vb-color-panel); --vb-edge: var(--vb-color-line-strong); }
+.vb-choice:hover { --vb-edge: rgba(250, 238, 244, 0.70); }
+.vb-choice--left { --vb-cut-side: 1; }
+.vb-choice--right { --vb-cut-side: 2; }
+.vb-choice--ally { --vb-edge: var(--vb-color-ally); --vb-fill: rgba(6, 24, 25, 0.92); }
+.vb-choice--enemy { --vb-edge: var(--vb-color-enemy); --vb-fill: rgba(39, 9, 30, 0.92); }
+.vb-choice--power { --vb-edge: var(--vb-color-tier-violet); --vb-fill: rgba(29, 15, 48, 0.92); }
+.vb-choice__tag { margin-bottom: 10px; }
+.vb-choice__glyph { width: 32px; height: 32px; align-self: center; margin-bottom: 10px; -unity-background-image-tint-color: var(--vb-color-text-2); }
+.vb-choice--ally .vb-choice__glyph { -unity-background-image-tint-color: var(--vb-color-glitch-cyan); }
+.vb-choice--enemy .vb-choice__glyph { -unity-background-image-tint-color: var(--vb-color-enemy-text); }
+.vb-choice--power .vb-choice__glyph { -unity-background-image-tint-color: var(--vb-color-tier-violet); }
+.vb-choice__title { -unity-font-definition: var(--vb-font-display-bold); font-size: 13px; letter-spacing: 1.5px; white-space: normal; margin-bottom: 4px; }
+.vb-choice__text { font-size: 11px; white-space: normal; }
+.vb-choice__rank { width: 72px; height: 6px; margin: 10px 0 4px 0; }
+.vb-choice__next { -unity-font-definition: var(--vb-font-body-medium); font-size: 11px; color: var(--vb-color-ally-text); white-space: normal; margin-top: 6px; }
+.vb-choice__action { min-height: 44px; margin-top: 4px; -unity-text-align: middle-left; -unity-font-definition: var(--vb-font-body-medium); -unity-font-style: bold; font-size: 11px; letter-spacing: 8px; color: var(--vb-color-ally-text); white-space: normal; }
+.vb-choice--left .vb-choice__tag, .vb-choice--left .vb-choice__title, .vb-choice--left .vb-choice__text, .vb-choice--left .vb-choice__next, .vb-choice--left .vb-choice__action { -unity-text-align: upper-right; }
+.vb-choice--right .vb-choice__tag, .vb-choice--right .vb-choice__title, .vb-choice--right .vb-choice__text, .vb-choice--right .vb-choice__next { -unity-text-align: upper-left; }
+.vb-choice--right .vb-choice__action { -unity-text-align: middle-left; }
+.vb-choice--left .vb-choice__rank { align-self: flex-end; }
+.vb-choice--left .vb-choice__action { -unity-text-align: middle-right; }
+.vb-compact .vb-choice { padding: 10px 8px 2px 8px; }
+.vb-compact .vb-choice__title { font-size: 12px; letter-spacing: 0.5px; }
+.vb-compact .vb-choice__text { font-size: 10px; }
+.vb-compact .vb-choice__action { font-size: 10px; letter-spacing: 4px; }
+/* Perks: the draft's cards are quiet until selected, tinted by their tier; rank cells are their levels. */
+.vb-perk--operative .vb-choice__tag { color: var(--vb-color-ally-text); }
+.vb-perk--rare.vb-choice { --vb-edge: var(--vb-color-glitch-cyan); --vb-fill: rgba(8, 28, 32, 0.92); }
+.vb-perk--rare .vb-choice__tag { color: var(--vb-color-glitch-cyan); }
+.vb-perk--rare .vb-choice__glyph { -unity-background-image-tint-color: var(--vb-color-glitch-cyan); }
+.vb-perk--epic.vb-choice { --vb-edge: var(--vb-color-tier-violet); --vb-fill: rgba(29, 15, 48, 0.92); }
+.vb-perk--epic .vb-choice__tag { color: var(--vb-color-tier-violet); }
+.vb-perk--epic .vb-choice__glyph { -unity-background-image-tint-color: var(--vb-color-tier-violet); }
+.vb-choice.vb-choice--selected { --vb-cut: 12; --vb-bw: 2; --vb-edge: var(--vb-color-ally); --vb-bracket: var(--vb-color-ally); --vb-glow: rgba(29, 217, 160, 0.35); }
+.vb-contrast .vb-choice { --vb-bw: 1; --vb-edge: var(--vb-color-line-strong); }
+
+/* ── chip row (ChipRow): a glyph, a word and a value on one plate; rarity is a tint, never an edge ─ */
+/* The element is the hit area (44 tall, the plate 30 inside it); a static chip (credits) is as tall as its plate. */
+.vb-chip-row { flex-direction: row; align-items: center; align-self: flex-start; min-height: 44px; margin: 0 6px 0 0; flex-shrink: 0; }
+.vb-chip-row--static { min-height: 0; margin: 0; }
+.vb-chip-row__plate { flex-direction: row; align-items: center; height: 30px; padding: 0 10px; --vb-cut: 6; --vb-fill: var(--vb-color-raised); }
+.vb-chip-row .vb-icon { width: 14px; height: 14px; margin-right: 6px; -unity-background-image-tint-color: var(--vb-color-text-2); }
+.vb-chip-row__name { -unity-font-definition: var(--vb-font-body-medium); -unity-font-style: bold; font-size: 9px; letter-spacing: 10.000px; color: var(--vb-color-text-2); }
+.vb-chip-row__count { -unity-font-definition: var(--vb-font-body-medium); -unity-font-style: bold; font-size: 9px; color: var(--vb-color-ally-text); margin-left: 4px; }
+.vb-perk--operative.vb-chip-row .vb-chip-row__plate { --vb-fill: rgba(16, 38, 40, 0.95); }
+.vb-perk--operative.vb-chip-row .vb-icon { -unity-background-image-tint-color: var(--vb-color-ally-text); }
+.vb-perk--rare.vb-chip-row .vb-chip-row__plate { --vb-fill: rgba(10, 40, 46, 0.95); }
+.vb-perk--rare.vb-chip-row .vb-icon { -unity-background-image-tint-color: var(--vb-color-glitch-cyan); }
+.vb-perk--epic.vb-chip-row .vb-chip-row__plate { --vb-fill: rgba(43, 29, 57, 0.95); }
+.vb-perk--epic.vb-chip-row .vb-icon { -unity-background-image-tint-color: var(--vb-color-tier-violet); }
+.vb-chip-row:hover .vb-chip-row__plate, .vb-chip-row.vb-popover-open .vb-chip-row__plate { --vb-fill: var(--vb-color-ally-soft); }
+.vb-chip-row--static:hover .vb-chip-row__plate { --vb-fill: var(--vb-color-raised); }
+.vb-chip-row__popover { width: 260px; }
+.vb-credits .vb-chip-row__plate { height: auto; padding: 4px 8px; --vb-cut: 4; --vb-fill: rgba(14, 9, 20, 0.75); }
+.vb-credits .vb-icon { margin-right: 5px; -unity-background-image-tint-color: var(--vb-color-glitch-cyan); }
+.vb-credits .vb-chip-row__count { font-size: 12px; margin-left: 0; color: var(--vb-color-glitch-cyan); }
+.vb-contrast .vb-chip-row__plate { --vb-bw: 1; --vb-edge: var(--vb-color-line-strong); }
+
+/* ── stat row (StatRow): a key that keeps its width, a value that wraps beside it, an optional 44-unit action ─ */
+.vb-stat-row { flex-direction: row; align-items: center; justify-content: flex-start; min-height: 22px; }
+.vb-stat-row__icon { width: 20px; height: 20px; margin-right: 10px; -unity-background-image-tint-color: var(--vb-color-text-2); }
+.vb-stat-row__text { flex-direction: row; flex-grow: 1; flex-shrink: 1; min-width: 0; justify-content: space-between; align-items: flex-start; }
+.vb-stat-row .vb-kv__key { flex-shrink: 0; margin-right: 8px; }
+.vb-stat-row .vb-kv__value { flex-grow: 1; flex-shrink: 1; min-width: 0; white-space: normal; -unity-text-align: upper-right; }
+.vb-stat-row__trail { margin-left: 12px; }
+.vb-stat-row__trail > .vb-button { min-height: 44px; padding: 6px 12px; }
+.vb-stat-row__bar { margin-top: 6px; height: 4px; }
+/* A sale reads "+30 ⬡": the credits glyph follows the amount (secondary and danger buttons lead with their glyph elsewhere). */
+.vb-stat-row__trail > .vb-button--secondary, .vb-stat-row__trail > .vb-button--danger { flex-direction: row; }
+.vb-stat-row__trail > .vb-button--secondary .vb-button__icon, .vb-stat-row__trail > .vb-button--danger .vb-button__icon { margin-left: 8px; margin-right: 0; }
+.vb-stat-row--stacked .vb-stat-row__text { flex-direction: column; justify-content: flex-start; }
+.vb-stat-row--stacked .vb-kv__key { margin-right: 0; font-size: 12px; -unity-font-definition: var(--vb-font-body-medium); -unity-font-style: bold; letter-spacing: 10px; color: var(--vb-color-text); }
+.vb-stat-row--stacked .vb-kv__value { flex-grow: 0; margin-top: 1px; -unity-text-align: upper-left; color: var(--vb-color-text-2); font-size: 12px; -unity-font-definition: var(--vb-font-body-regular); }
+.vb-stat-row--plated { min-height: 56px; padding: 8px 10px; margin-bottom: 6px; --vb-cut: 4; --vb-fill: var(--vb-color-panel); }
+.vb-stat-row--dimmed { opacity: 0.55; }
+.vb-perk--rare.vb-stat-row .vb-stat-row__icon { -unity-background-image-tint-color: var(--vb-color-glitch-cyan); }
+.vb-perk--epic.vb-stat-row .vb-stat-row__icon { -unity-background-image-tint-color: var(--vb-color-tier-violet); }
+.vb-contrast .vb-stat-row--plated { --vb-bw: 1; --vb-edge: var(--vb-color-line-strong); }

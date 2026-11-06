@@ -47,18 +47,18 @@ on `:root`; game sheets use them too (`var(--vb-color-ally-text)`, `-unity-font-
 | World | `WorldLayer` over a projector you supply (`Func<Vector3,Vector2?>`), advanced on simulation time: `WorldHealthBar` (ghost trail, barrier, elite and boss sizes), merged and capped `CombatText`, `WorldLabel`, `WorldMarker` and `OffscreenIndicator`; `World.uss` |
 | Layout | `Layout.uss`: `vb-row`, `vb-grid4`, `vb-grid2`, `vb-half`, `vb-grow`; Navigator `vb-screen`/`vb-page` (`--headed` under a `ScreenHeader`, `__label`, `__caption`, `__footer`, `__scroll`); `vb-section`; `vb-dialog`; `vb-backdrop`; larger-text sizes |
 | Motion (0.4.0) | `VbMotion`: `Show`/`In`/`Out` with `MotionKind`, `Stagger`, `Swap`, `Pop`, `Shake`, `Count`; animated `Navigator` pages, `OverlayHost` layers and `Popover`s; `VbShape` colour cross-fades; `Motion.uss` transitions. All of them become fades under Reduced Motion. |
-| Atoms (0.3.0) | `TextComponent` (`TypeStyle`, `TextTone`), `LabelComponent`, `BadgeComponent` (+ `Badge` presets), `TileComponent` (`TileState`; `OperativeTile` and `SquadSlot` extend it), `CardComponent`, `VbFrame.Kind` (`FrameKind.Slim`/`Chipped`) |
+| Atoms (0.3.0) | `TextComponent` (`TypeStyle`, `TextTone`), `LabelComponent`, `BadgeComponent` (+ `Badge` presets), `TileComponent` (`TileState`; `UnitTile` and `UnitSlot` extend it), `CardComponent`, `VbFrame.Kind` (`FrameKind.Slim`/`Chipped`) |
 | Forms and overlays | `IconButtonComposite`, `FieldComposite`, `FormComposite`, `DrawerOverlay` (bottom drawer; `Push(nav, …)` or docked) |
 | Layouts | `StackLayout`, `VbGrid` (GridLayout), `ListLayout`, `BoardLayout`, `ActionRow` (buttons that fill the row, stacked when narrow); `Ui.Stack/Grid/List/Frame/Actions` |
 | Views | `MainMenuView`, `MenuActionsSectionView`, `SquadView`, `SettingsView`, `PauseOverlayView`, `ConfirmDialogView`, `GuideDialogView`, `PerkDraftView`, `ResultsView`, `HighScoresView`, `RouteChoiceView`, `MerchantScreenView`, `BattleHudView` (`Runtime/Views`, `Views.uss`), `ActivePerksView`, `RevivePickView`, `AccessibilityView`; `ScreenView.Deal()` |
-| Composites | `Dialog` (confirmation sheets, pushed as a modal over the current page), `Backdrop` (cover-scaled artwork with a legibility shade), `HoloFrame`, `ScanLines`, `HoloPlatform`, `RevealCard`, `RuleRow`, `HudTop` (translucent band; hover shows the queue), `QueueList` (manual rows cancel on tap), `BossBar`, `OperativeCard`, `OperativeTile`, `SquadSlot`, `OperativeDetails`, `OperativeStats`, `SquadResult`, `PerkCard`, `PerkDetail`, `PerkChip`, `PerkRow`, `ScreenHeader`, `ScoreRow` |
+| Composites | `Dialog` (confirmation sheets, pushed as a modal over the current page), `Backdrop` (cover-scaled artwork with a legibility shade), `HoloFrame`, `ScanLines`, `HoloPlatform`, `RevealCard`, `RuleRow`, `HudTop` (translucent band; hover shows the queue), `QueueList` (manual rows cancel on tap), `BossBar`, `UnitCard` (with `StatusPips`), `UnitTile`, `UnitSlot`, `UnitDetail`, `UnitStats`, `ResultSummary`, `ChoiceCard` (roads, extract choices and perks; `ChoiceSide` mirrors a pair), `PerkDetail`, `ChipRow` (perk and credits chips), `StatRow` (a key, a wrapping value, a 44-unit action), `PerkRow`, `ScreenHeader`, `ScoreRow`, `Markup` (`*emphasis*` in description text); the old `Operative*`, `SquadSlot`, `SquadResult`, `PerkCard`, `PerkChip` and `CreditsChip` names remain as `[Obsolete]` forwards for one release |
 
 Every element is also a `[UxmlElement]`, so it can be placed in UXML and styled from USS.
 
 ```csharp
-var card = new OperativeCard().Bind(view);          // update every frame: Bind reuses its children
+var card = new UnitCard().Bind(view);               // update every frame: Bind reuses its children
 card.Skill(0).AddManipulator(myAimDrag);             // the game owns input; the kit only draws
-var chip = new PerkChip().Bind(perk);                // hover/focus/tap shows PerkDetail
+var chip = new ChipRow().Bind(perk);                 // hover/focus/tap shows PerkDetail
 var hud = new HudTop(); hud.PauseClicked += Pause;   // hud.Bind(hudView) each frame
 var nav = new Navigator(screenLayer);                // nav.Open("settings", back) returns the page; nav.Back() on Escape
 var sheet = Dialog.Push(nav, "LEAVE GAME?", "Your profile is saved.");
@@ -105,7 +105,7 @@ and Share Tech Mono (SIL OFL 1.1) and TeX Gyre Adventor (GUST Font License); see
 
 ### Route and merchant GUI
 
-`RouteChoice`, `MerchantScreen` and `CreditsChip` consume the plain view models in `Core/Models.cs`; they never read
+`RouteChoice`, `MerchantScreen` and `ChipRow` consume the plain view models in `Core/Models.cs`; they never read
 or mutate game state. Map confirmed transactions onto their events and rebind after success. Rarity extends through
 `PerkTier.Epic` (violet shimmer); Rare is cyan. Gallery includes example data for both pages.
 

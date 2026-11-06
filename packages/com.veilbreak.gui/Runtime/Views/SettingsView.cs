@@ -1,9 +1,9 @@
 using System;
 using UnityEngine.UIElements;
 namespace Veilbreak.Gui {
-/// <summary>Audio, feel, camera and quality as fieldsets in one <see cref="FormComposite"/>. Values apply as they change: every change
-/// updates the bound model and raises <see cref="Changed"/>; the header meta reads SAVED. Clearing scores is a danger action in the
-/// footer and confirms through <see cref="ConfirmDialogView"/>.</summary>
+/// <summary>Audio, feel, camera, quality, accessibility (reduced motion, and a row to the display options) and data as fieldsets in one <see cref="FormComposite"/>. Values apply as they change: every
+/// change updates the bound model and raises <see cref="Changed"/>; the header meta reads SAVED. Clearing scores is a danger row in the Data fieldset that raises <see cref="ClearScores"/>
+/// and confirms through <see cref="ConfirmDialogView"/>; nothing pins to the foot of the page, so no section sits under it.</summary>
 [UxmlElement] public partial class SettingsView:ScreenView {
  public const string Block="vb-settings";
  readonly ScreenHeader header;readonly FormComposite form;readonly VbSlider master,music,effects,sensitivity;readonly VbSwitch haptics,motion;readonly VbSegmented camera,quality;readonly Label note;
@@ -14,12 +14,14 @@ namespace Veilbreak.Gui {
  public SettingsView():base(Block,true){
   header=new ScreenHeader("SETTINGS","").Into(this);header.Back+=()=>Back?.Invoke();form=new FormComposite(header).Into(this);
   var audio=form.Fieldset("AUDIO");master=new VbSlider("Master",0).Into(audio).Changed(v=>view.master=v);music=new VbSlider("Music",0).Into(audio).Changed(v=>view.music=v);effects=new VbSlider("Effects",0).Into(audio).Changed(v=>view.effects=v);
-  var feel=form.Fieldset("FEEL");haptics=new VbSwitch("HAPTICS","Light pulse when an order is accepted",false).Into(feel).Changed(v=>view.haptics=v);motion=new VbSwitch("REDUCED MOTION","No camera shake · fades replace flicker · flat panels",false).Into(feel).Changed(v=>view.reducedMotion=v);
+  var feel=form.Fieldset("FEEL");haptics=new VbSwitch("HAPTICS","Light pulse when an order is accepted",false).Into(feel).Changed(v=>view.haptics=v);
   var cam=form.Fieldset("CAMERA");camera=new VbSegmented(new[]{("FULL","Parallax"),("REDUCED","No drift"),("OFF","Fixed")},0){name="camera-motion"}.Into(cam).Changed(v=>view.camera=v);sensitivity=new VbSlider("Sensitivity",0).Into(cam).Changed(v=>view.sensitivity=v);
   Ui.Text(cam,"Pinch to zoom, twist to turn, drag empty ground to pan, double-tap to reset.","vb-t-caption");
   var q=form.Fieldset("QUALITY");quality=new VbSegmented(new[]{("LOW","Stable 30 FPS"),("STANDARD","60 FPS target")},1).Into(q).Changed(v=>view.quality=v);Ui.Text(q,"Applies on the next wave. Telegraphs stay fully visible on both tiers.","vb-t-caption");
+  var access=form.Fieldset("ACCESSIBILITY");motion=new VbSwitch("REDUCED MOTION","No camera shake · fades replace flicker · flat panels",false).Into(access).Changed(v=>view.reducedMotion=v);
+  Ui.Actions(access,new VbButton("DISPLAY OPTIONS",ButtonVariant.Secondary,"Flashes, text size, contrast","chevron",()=>Accessibility?.Invoke()){name="accessibility"});
+  var data=form.Fieldset("DATA");Ui.Actions(data,new VbButton("CLEAR LOCAL SCORES",ButtonVariant.Danger,null,"remove",()=>ClearScores?.Invoke()){name="clear-scores"});
   note=form.Note("automation","").Q<Label>();
-  form.Footer(new VbButton("CLEAR LOCAL SCORES",ButtonVariant.Danger,null,null,()=>ClearScores?.Invoke()){name="clear-scores"},new VbButton("ACCESSIBILITY",ButtonVariant.Ghost,null,null,()=>Accessibility?.Invoke()){name="accessibility"});
   // The field callbacks above write the model first; the form's change event (bubbling) then reports it.
   form.Changed+=()=>Changed?.Invoke(view);
   Bind(view);
@@ -39,7 +41,7 @@ namespace Veilbreak.Gui {
  public event Action<AccessibilityViewModel> Changed;
  public event Action Back;
  public AccessibilityView():base(Block,true){
-  var header=new ScreenHeader("DISPLAY","ACCESSIBILITY").Into(this);header.Back+=()=>Back?.Invoke();var form=new FormComposite(header).Into(this);var display=form.Fieldset("DISPLAY");
+  var header=new ScreenHeader("ACCESSIBILITY","").Into(this);header.Back+=()=>Back?.Invoke();var form=new FormComposite(header).Into(this);var display=form.Fieldset("DISPLAY");
   flashes=new VbSwitch("REDUCED FLASHES","Removes global brightness pulses",false){name="reduced-flashes"}.Into(display).Changed(v=>{view.reducedFlashes=v;Changed?.Invoke(view);});
   text=new VbSwitch("LARGER TEXT","Increase body text and scroll long content",false){name="larger-text"}.Into(display).Changed(v=>{view.largerText=v;Changed?.Invoke(view);});
   contrast=new VbSwitch("HIGH CONTRAST","Brighter text, lines and team colours",false){name="high-contrast"}.Into(display).Changed(v=>{view.highContrast=v;Changed?.Invoke(view);});

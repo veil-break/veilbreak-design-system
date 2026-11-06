@@ -12,6 +12,8 @@ public enum EffectActivation { Active, Conditional, Ready, Spent, Expired }
 [Serializable] public sealed class EffectInstance {
  public string id="",source="",magnitude="";public EffectDefinition definition=new EffectDefinition();public int stacks=1;
  public float? remainingSeconds,totalSeconds;public EffectActivation activation;public bool Active=>activation!=EffectActivation.Expired;
+ /// <summary>A status that runs out (it has a time left). Passives and perks have none: they are not statuses and are not listed as one.</summary>
+ public bool Timed=>remainingSeconds.HasValue;
  public EffectInstance Expired()=>new EffectInstance{id=id,definition=definition,source=source,magnitude=magnitude,stacks=stacks,remainingSeconds=0,totalSeconds=totalSeconds,activation=EffectActivation.Expired};
 }
 }

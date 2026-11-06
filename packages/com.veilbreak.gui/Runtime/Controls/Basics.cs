@@ -26,10 +26,15 @@ namespace Veilbreak.Gui {
 /// <summary>Cut-corner button. One <see cref="ButtonVariant.Primary"/> per screen (pink→teal glass, gradient outline). Blocked buttons stay legible and say why.</summary>
 [UxmlElement] public partial class VbButton:Button {
  public const string ClassName="vb-button";
- readonly Label title,subtitle;readonly VbIcon glyph;ButtonVariant variant;string sub="",blocked="";
+ readonly Label title,subtitle;readonly VbIcon glyph;ButtonVariant variant;string sub="",blocked="";bool dimmed;
  [UxmlAttribute] public string Title {get=>title.text;set=>title.text=value??"";}
  [UxmlAttribute] public string Sub {get=>sub;set{sub=value??"";Refresh();}}
- [UxmlAttribute] public string Icon {get=>glyph.Icon;set{glyph.Icon=value;glyph.Size(value=="chevron"||value=="play"?12:20);glyph.Show(!string.IsNullOrEmpty(value));}}
+ [UxmlAttribute] public string Icon {get=>glyph.Icon;set{glyph.Icon=value;glyph.Size(value=="chevron"||value=="play"?12:20);glyph.Show(!string.IsNullOrEmpty(value));if(value=="back"||value=="chevron-left")Lead=true;}}
+ /// <summary>The glyph before the label instead of after it. A forward action ends with its chevron (›); an action that goes back or leaves leads with its glyph (‹, ×) or carries none, which is why
+ /// the <c>back</c> and <c>chevron-left</c> glyphs lead by themselves.</summary>
+ [UxmlAttribute] public bool Lead {get=>ClassListContains(ClassName+"--lead");set=>EnableInClassList(ClassName+"--lead",value);}
+ /// <summary>Dims the button and takes it out of play with no reason shown (a price you cannot pay: the dimming says it; <see cref="Blocked"/> says why when that matters).</summary>
+ [UxmlAttribute] public bool Dimmed {get=>dimmed;set{dimmed=value;Refresh();}}
  [UxmlAttribute] public ButtonVariant Variant {get=>variant;set{variant=value;Ui.State(this,ClassName,value);}}
  /// <summary>A short reason (under five words). Non-empty disables the button and shows the reason in place of the sub line.</summary>
  [UxmlAttribute] public string Blocked {get=>blocked;set{blocked=value??"";Refresh();}}
@@ -40,7 +45,7 @@ namespace Veilbreak.Gui {
   glyph=new VbIcon("",20).Classes(ClassName+"__icon").Into(this);
   Variant=variant;Sub=sub;Icon=icon;if(click!=null)clicked+=click;
  }
- void Refresh(){bool isBlocked=blocked.Length>0;EnableInClassList(ClassName+"--blocked",isBlocked);SetEnabled(!isBlocked);subtitle.text=isBlocked?blocked:sub;subtitle.Show(subtitle.text.Length>0);}
+ void Refresh(){bool isBlocked=blocked.Length>0;EnableInClassList(ClassName+"--blocked",isBlocked||dimmed);SetEnabled(!isBlocked&&!dimmed);subtitle.text=isBlocked?blocked:sub;subtitle.Show(subtitle.text.Length>0);}
 }
 
 /// <summary>A labelled number with an optional bar (inspectors, results, pause).</summary>

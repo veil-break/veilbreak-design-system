@@ -456,69 +456,134 @@ One high-score line.
 
 ## Operatives
 
-### OperativeCard
+### UnitCard (was `OperativeCard`)
 
-The portrait battle card.
+The portrait battle card. It carries the name only (no code over it), up to three timed statuses as icons on the portrait, and two skills.
 
-- **API:** `Bind(OperativeView)`, and `Skill(0 | 1)` returns the A and S `SkillButton`s for the game's manipulators.
-- **View model:** `OperativeView`: `id`, `name`, `code`, `role`, `roleIcon`, `kit`, `portrait`, `hp`, `maxHp`,
-  `barrier`, `armor`, `stability`, `maxStability`, `effects`, `mode`, `manualSeconds`, `skills`, `passive…`.
-- **States:** `vb-operative--auto`, `--manual` (MANUAL with seconds), `--aiming` (brackets and glow), `--fallen`
-  (FALLEN, "Revive via perk", the name struck through).
-- **USS:** `__band`, `__portrait`, `__shade`, `__code`, `__chip`, `__kit`, `__body`, `__name`, `__numbers`, `__hp`,
-  `__barrier`, `__statuses`, `vb-effect-strip`, `__skills`, `__fallen`.
-- **Access:** the mode chip is a word. Statuses are glyphs with tooltips, CLEAR when there are none and OUT when
-  fallen.
+- **API:** `Bind(OperativeView)`; `Skill(0 | 1)` returns the A and S `SkillButton`s for the game's manipulators; `Statuses` is the `StatusPips`.
+- **View model:** `OperativeView`: `id`, `name`, `code`, `role`, `roleIcon`, `kit`, `portrait`, `hp`, `maxHp`, `barrier`, `armor`, `stability`,
+  `maxStability`, `effects`, `mode`, `manualSeconds`, `canRevive`, `skills`, `passive…`.
+- **States:** `vb-operative--auto`, `--manual`, `--aiming` (brackets and glow), `--fallen` (one FALLEN, a greyed portrait, the name struck through; "Revive via perk"
+  only while `canRevive`). The mode chip shows only for a non-default mode (MANUAL with seconds, AIMING), truncates inside the card and is hidden for auto and fallen:
+  the HUD toggle states autoplay once.
+- **Statuses:** `StatusPips` shows at most three effects that have a time left (`EffectInstance.Timed`); a passive or a perk is not a status and never shows. The strip is
+  one 44-unit target and opens `EffectList`. A unit with no timed status shows nothing.
+- **USS:** `__band`, `__portrait`, `__shade`, `__chip`, `__kit`, `__body`, `__name`, `__numbers`, `__hp`, `__barrier`, `__skills`, `__fallen`, `__fallen-title`, `__fallen-hint`;
+  `vb-pips`, `__icon--harm`, `__icon--benefit`. (The class names keep the `vb-operative` prefix.)
+- **Access:** the mode chip is a word; statuses are glyphs with a tooltip and a list; OUT when fallen.
 
-### OperativeTile
+### UnitTile (was `OperativeTile`)
 
 A roster tile.
 
 - **API:** `Bind(view, slot, focused, RarityTier tier, string locked)`. Subscribe to `Picked`.
-- **States:** `vb-tile--in` (shows its squad slot), `--focused` (brackets and glow), `--locked`, `--blue`, `--violet`,
-  `--gold`.
-- **USS:** `__band`, `__portrait`, `__shade`, `__order`, `__kit`, `__body`, `__name`, `__role`, `__role-text`.
+- **States:** `vb-tile--in` (shows its squad slot), `--focused` (brackets and glow), `--locked`, `--blue`, `--violet`, `--gold`.
+- **USS:** `__band`, `__portrait`, `__shade`, `__order`, `__kit`, `__body`, `__name`, `__role`, `__role-text`. On a narrow board (`vb-compact`, under 380 units) the role is its icon alone;
+  a locked tile keeps its reason as text.
 - **Access:**
   - The tooltip reads name, role and slot, or "locked: Pull in rifts".
   - A locked tile stays visible and says how to get the operative.
   - Tier colour comes with a frame weight.
 
-### SquadSlot
+### UnitSlot (was `SquadSlot`)
 
-One of the four squad slots.
+One of the four squad slots: the name alone (the code is not repeated), or an empty dashed slot.
 
 - **API:** `Bind(view or null, slot)`. Subscribe to `Picked`.
 - **States:** `vb-slot--empty` (dashed, + and SLOT *n*).
-- **USS:** `__filled`, `__band`, `__portrait`, `__order`, `__kit`, `__row`, `__name`, `__code`, `__empty`,
-  `__empty-label`.
+- **USS:** `__band`, `__portrait`, `__order`, `__kit`, `__body`, `__name`, `__empty`, `__empty-label`.
 
-### OperativeDetails
+### UnitDetail (was `OperativeDetails`)
 
-The operative sheet.
+The unit sheet.
 
-- **API:** `Bind(view, slot, squadFull, maxHp, maxArmor, maxStability)`. Subscribe to `Closed` and `Toggled`.
+- **API:** `Bind(view, slot, squadFull, maxHp, maxArmor, maxStability, showStability)`. Subscribe to `Closed` and `Toggled`.
 - **Shows:**
-  - Health, armor and stability bars, scaled to the roster maximums.
-  - The passive.
+  - Health and armor bars, scaled to the roster maximums, and stability when `showStability` (`SquadView` passes `SquadView.StabilityVaries(roster)`: hidden while every operative reads the same).
+  - The passive; emphasis marks (`*Taxed*`) render as emphasis through `Markup`.
   - Both skills, with cost and cooldown.
-  - ADD TO SQUAD or REMOVE FROM SQUAD (danger). When the squad is full, adding is blocked with "Squad full · remove
-    one first".
-- **USS:** `vb-details`, `__head`, `__kit`, `__name`, `__role`, `__slot`, `__slot--in`, `__close`, `__stats`,
+  - ADD TO SQUAD or REMOVE FROM SQUAD (danger). When the squad is full, adding is blocked with "Squad full · remove one first".
+- **USS:** `vb-details`, `__head`, `__kit`, `__name`, `__role`, `__slot`, `__slot--in`, `__close` (a plain icon button, 44 units), `__stats`,
   `__passive`, `__skills`, `__skill`, `__skill-icon`, `__skill-name`, `__skill-desc`, `__skill-cost`, `__toggle`.
 
-### OperativeStats and SquadResult
+### UnitStats and ResultSummary (were `OperativeStats` and `SquadResult`)
 
 The post-run contribution.
 
-- `SquadResult.Bind(ContributionView)` is the results cell. Hover, focus or tap opens `OperativeStats` above it
-  (`Details`).
-- **View model:** `ContributionView`: `operative`, `fellWave`, `damage`, `kills`, `casts`, `power`, `share`,
-  `extraLabel`, `extraValue`.
+- `ResultSummary.Bind(ContributionView)` is the results cell: the name and, when the unit fell, FELL Wn (a unit still standing says nothing). Hover, focus or tap opens `UnitStats` above it (`Details`).
+- **View model:** `ContributionView`: `operative`, `fellWave`, `damage`, `kills`, `casts`, `power`, `share`, `extraLabel`, `extraValue`.
 - **States:** `vb-result--fallen`. On the stats: `__fell--alive`.
 - **USS:**
-  - `vb-contribution__head`, `__portrait`, `__name`, `__fell`, `__share`, `__share-fill`, `__grid`, `__cell`, `__key`,
-    `__value`.
+  - `vb-contribution__head`, `__portrait`, `__name`, `__fell`, `__share`, `__share-fill`, `__grid`, `__cell`, `__key`, `__value`.
   - `vb-result__name`, `__fell`, `__kit`.
+
+### The renamed names
+
+0.8.0 renames the unit and choice composites to generic names, in place (the files moved with `git mv`, so every `.meta` GUID is unchanged). Each old name stays for one release as an `[Obsolete]`
+type that derives from the new one, so a game that still says `OperativeCard` compiles (with a warning) and behaves the same. Remove the forwards in the release after the games adopt the new names.
+
+| Old | New |
+| --- | --- |
+| `OperativeCard` | `UnitCard` |
+| `OperativeTile` | `UnitTile` |
+| `SquadSlot` | `UnitSlot` |
+| `OperativeDetails` | `UnitDetail` |
+| `OperativeStats` | `UnitStats` |
+| `SquadResult` | `ResultSummary` |
+| `PerkCard`, the road signs and the `RouteChoice` items | `ChoiceCard` |
+| `PerkChip` | `ChipRow` |
+| `CreditsChip` | `ChipRow.Credits()` (`ChipRow` with `SetNumber`) |
+| the merchant's `OfferRow`, `SaleRow`, `HealthRow` and the perk detail rows | `StatRow` |
+
+`PerkTier` moved out of `Core/Models.cs` into `Composites/Perks.cs`, next to the perk composites that read it (same namespace and assembly: nothing that used it changes).
+
+### SkillButton
+
+One layout in every state (44 × 56, or 44 high in a stacked compact card): the slot letter, the glyph and one cost line. The states are overlays, so nothing runs below the slot's foot at any width.
+
+- **Overlays:** a cooldown fills from the bottom and counts its seconds over the glyph (`Seconds`; a windup and a silence count the same way); short-on-Power dims the slot and puts the shortfall in
+  the corner (`Badge`, "−3"); a queued manual cast puts its place there ("#1") and a buffered one an arrow; a fallen operative's skills lock; an invalid aim strikes the glyph and the cost line
+  becomes the reason; a refused command flashes crimson once; an exposed target inverts the cost.
+- **API:** `Bind(SkillView)`, `Badge`, `Value`, `Seconds`. **USS:** `vb-skill--{state}`, `__slot`, `__icon`, `__seconds`, `__badge`, `__value`, `__charge`, `__sweep`, `__slash`.
+- **Unaffordable** is a dimmed fill, never a dashed frame.
+
+### ChoiceCard
+
+One option the player takes by tapping it: a road, an extract choice, a perk. The whole card is the button and keeps its own edge. It stacks a short tag, a centred glyph, a title, a few short facts, rank cells (one
+`ProgressBar` of segments: a road's threat, a perk's levels), the value after the pick and the action word at the foot. A slight tint of its tone fills it (`Tone`: Ally, Enemy, Power).
+
+- **Sides:** `ChoiceSide.Left` cuts its top-left and bottom-left corners and aligns its text right; `Right` cuts its top-right and bottom-right corners and aligns its text left; `Single` keeps the regular
+  cuts. A pair uses Left and Right (the regular top-left and bottom-right cut is not used for a pair). The cut sides come from `--vb-cut-side` (`VbShape.Left`, `Right`).
+- **API:** `Bind(RoadView road, string action)`, `Bind(PerkView, selected)`, `Side`, `Tone`, `Tag`, `Icon`, `Title`, `Text` (emphasis marks render), `Next`, `ActionText`, `Ranks(filled, cells, next, tone)`, `Picked`.
+  `RoadView.rank` and `ranks` (default 5) are the threat; 0 hides the cells. `RouteChoice` builds a left and a right card, named `route-left` and `route-right`.
+- **USS:** `vb-choice`, `--left`, `--right`, `--ally`, `--enemy`, `--power`, `--selected`, `__tag`, `__glyph`, `__title`, `__text`, `__rank`, `__next`, `__action`. The text is compact: USS has no line height, so the size does the work.
+  A word is never broken inside: the title steps down on a compact board.
+
+### StatRow
+
+One fact on one row: a key that keeps its width, a value that wraps beside it, an optional glyph before them and a trailing action whose button is 44 units tall. It is a `KeyValueRow`, so everything that reads
+one reads this (the perk detail rows, the merchant's offers, sales and health trades).
+
+- **API:** `Key`, `Value`, `Good`, `Icon`, `Stacked` (the value under the key), `Dimmed` (a row that cannot be acted on, with no second price), `Plated` (one tone above its parent), `Trail`, `WithAction`, `Bar`, `Content`.
+- **USS:** `vb-stat-row`, `--stacked`, `--dimmed`, `--plated`, `__icon`, `__text`, `__trail`, `__bar`.
+
+### ChipRow
+
+A glyph, a word and a value on one plate with no edge. A perk chip is tinted by its rarity (`vb-perk--{tier}`); where the chip is a target (the results page's perks, whose hover, focus or tap shows `PerkDetail`) its
+hit area is 44 units tall with the 30-unit plate inside it. A chip that only reads (`ChipRow.Credits()`, the HUD's credits) is `Static` and as tall as its plate.
+
+- **API:** `new ChipRow(alignEnd)`, `Bind(PerkView)`, `Details`, `Text`, `Icon`, `Value`, `Static`, `Plate`, `SetNumber(n)`. **USS:** `vb-chip-row`, `--static`, `__plate`, `__name`, `__count`, `__popover`.
+
+### StatusPips and the effect detail
+
+`StatusPips` is the card's strip of timed statuses (see `UnitCard`). `EffectDetails` prints only what is known: the title (caps, in the body face), the description, the source, the magnitude and the time
+left; nothing stands in for a missing value, and a plain active effect has no state line. `EffectList` rows read "−20% · 2.5s". The popover title uses its own caps text style, which `FontPrimer` primes at its
+size with the other title styles (`FontPrimer.Styles`), so its tracking does not depend on what was drawn first.
+
+### Markup
+
+`Markup.Rich(text)` turns `*word*` (or `**word**`) into a colour run and `Markup.Plain(text)` drops the marks (for tooltips). Every description label uses it (the passive, a skill, an effect, a perk, a choice card). A stray
+or spaced asterisk ("5 * 3") stays, and text with no asterisk is returned as it came.
 
 ---
 
@@ -530,9 +595,9 @@ show a ringed glyph.
 
 | Component | Use | API | USS hooks |
 | --- | --- | --- | --- |
-| `PerkCard` | One of three draft cards: art, tier tag, name, effect, stack pips and the value after the pick | `Bind(view, selected)`, `Picked` | `--selected` (check, brackets, glow); `__art`, `__badge`, `__glyph`, `__tag`, `__check`, `__body`, `__category`, `__name`, `__effect`, `__pips`, `__pip--owned`, `__pip--next`, `__next`, `__stacks` |
-| `PerkDetail` | Full explanation: draft (Now → After pick, stacks) or owned (Active, stacks, waves picked) | `Bind(view, draft)` | `__head`, `__thumb`, `__name`, `__tag`, `__effect`, `__rows`, `__row`, `__row--last`, `__key`, `__value`, `__value--good` |
-| `PerkChip` | Compact owned perk; hover, focus or tap shows `PerkDetail` | `new PerkChip(alignEnd)`, `Bind(view)`, `Details` | `__name`, `__count`, `__popover` |
+| `ChoiceCard` (was `PerkCard`) | One of three draft cards: tier tag, glyph, name, effect, level cells and the value after the pick (shown once: not when it repeats the effect) | `Bind(view, selected)`, `Picked` | `vb-choice`, `--selected` (brackets, glow); `__tag`, `__glyph`, `__title`, `__text`, `__rank`, `__next` |
+| `PerkDetail` | Full explanation: draft (Now, when there is a value, then After pick) or owned (Active, stacks, waves picked); each fact is a `StatRow` | `Bind(view, draft)` | `__head`, `__thumb`, `__name`, `__tag`, `__effect`, `__rows`, `__row`, `__key`, `__value`, `__value--good` |
+| `ChipRow` (was `PerkChip`) | Compact owned perk; hover, focus or tap shows `PerkDetail`; 44-unit hit area, tinted plate, no edge | `new ChipRow(alignEnd)`, `Bind(view)`, `Details` | `vb-chip-row`, `__plate`, `__name`, `__count`, `__popover` |
 | `PerkRow` | An active-perk list row | `Bind(view, selected)`, `Picked` | `--selected`; `__thumb`, `__text`, `__line`, `__name`, `__tag`, `__effect`, `__right`, `__value`, `__stacks` |
 
 Stack wording: `STACK 2 / 3` in a draft, `×2 OF 3` when owned, `RARE DRAW` and `REPEATABLE` otherwise.
@@ -668,15 +733,15 @@ A `Label` that the layer pools.
 | --- | --- | --- |
 | `GlitchText` | Ordinary label `text` and USS typography | Eight clipped bands, red/cyan channels. `Glitch.In/Out/Pulse/Slam`; schedules cancel on replacement/detach. |
 | `Announcer` | `Say(text, alert, milliseconds, interrupt)` | Bounded six-notice queue; critical pre-emption; out before replacement, in then hold then out. Dispose with its host. |
-| `RouteChoice` | `RouteView` with wave and two `RoadView` signs | `Chosen(side)` once, left 0 / right 1. Full signs exceed 44 units; keyboard Enter/Space. `Choose` supports alternate input. |
-| `MerchantScreen` | `MerchantView` with credits, offers, sellable stacks and HP consequences | `Bought(index)`, `PerkSold(id)`, `HealthSold(actor)`, `Left`. Host validates and rebinds after each transaction. `ScrollOffset` preserves position. |
-| `CreditsChip` | `Set(credits)` | Currency icon and integer; formats on change. |
+| `RouteChoice` | `RouteView` with wave and two `RoadView`s, shown as a mirrored pair of `ChoiceCard`s (left cut and aligned left, right cut and aligned right; threat as rank cells) | `Chosen(side)` once, left 0 / right 1. Whole-card targets; keyboard Enter/Space. `Choose` supports alternate input. |
+| `MerchantScreen` | `MerchantView` with credits, offers, sellable stacks and HP consequences, each row a `StatRow` with a 44-unit action; an offer that cannot be bought is dimmed with no second price, an empty section hides, a sale pays `+30 ⬡` | `Bought(index)`, `PerkSold(id)`, `HealthSold(actor)`, `Left`. Host validates and rebinds after each transaction. `ScrollOffset` preserves position. |
+| `ChipRow.Credits()` (was `CreditsChip`) | `SetNumber(credits)` | Currency icon and integer; formats on change; read only. |
 
 `PerkTier.Rare` is cyan; `Epic` is violet with a short shimmer. Both have explicit text labels.
 Merchant offer states say why a purchase is blocked (credits, sold, stack cap). Health rows state the before/after HP;
 fighters that cannot retain 1 HP cannot trade. Instant rewards are excluded from sellable stacks by the host.
-`HudTop` places pause and icon-only autoplay at the top left. Autoplay retains its state tint and tooltip, speed stays
-on the right, credits sit beside Power. `WaveSlammed` lets the host request its own bounded camera jolt; the GUI has
+`HudTop` places pause and the autoplay toggle at the top left. The toggle reads AUTO or MANUAL (it is the one place autoplay is stated), keeps its state tint and tooltip; speed stays
+on the right, credits sit beside Power. While an aim is live its hint ("Needle Storm · −18 · replaces auto") is the first line of the cancel band, above RELEASE TO CANCEL. `WaveSlammed` lets the host request its own bounded camera jolt; the GUI has
 no dependency on a camera or arcade simulation. The host must use actual safe-area insets, with a small battle fallback.
 
 ## Text, labels, badges, tiles and cards
@@ -694,11 +759,11 @@ and `Ui.Eyebrow(parent, text)` build them.
 A slim chip: optional glyph (`vb-badge__icon`), word (`__text`, uppercased) and value (`__value`), tone
 `BadgeTone.Neutral | Ally | Enemy | Power | Warn | Inverted` as `vb-badge--{tone}`. `Set(value)` only touches the label
 when the value changed. `Badge.Of(parent, …)`, and the presets `Badge.Status(kind, …)` (a `StatusChip`) and
-`Badge.Credits(n)` (a `CreditsChip`).
+`Badge.Credits(n)` (a `ChipRow`).
 
 ### TileComponent
 
-The pickable cell `OperativeTile` and `SquadSlot` extend: band (`__portrait`, `__shade`, `__glyph`, `__order`), `__kit`,
+The pickable cell `UnitTile` and `UnitSlot` extend: band (`__portrait`, `__shade`, `__glyph`, `__order`), `__kit`,
 `__body` (`__name`, `__role` with its glyph and `__role-text`) and a lazily built `__empty`. `State` is `TileState` flags
 (`In | Focused`, or `Locked`, or `Empty`) as `--in`, `--focused`, `--locked`, `--empty`; `Tier` adds the rarity frame.
 `Set(title, caption, picture, glyph, state, order, captionIcon)` fills it; `Picked` fires on tap, click, Enter or Space.
@@ -748,18 +813,18 @@ events; styles are in `Views.uss`.
 
 | View | Bind | Events |
 | --- | --- | --- |
-| `MainMenuView` | `MainMenuViewModel` (status, best, bestWave, checkpoint, squad, notice, canExit) | `Play`, `Resume`, `Scores`, `Settings`, `Exit` |
+| `MainMenuView` | `MainMenuViewModel` (status, best, bestWave, checkpoint, squad, notice, canExit). HIGH SCORES and SETTINGS carry distinct glyphs; EXIT is an icon button beside BEST | `Play`, `Resume`, `Scores`, `Settings`, `Exit` |
 | `MenuActionsSectionView` | `Bind(CheckpointView, squadLine, notice)` | `Play`, `Resume`, `Scores`, `Settings` |
-| `SquadView` | `SquadViewModel` (roster, selected, focus, locked, tiers, seed) | `Picked(i)`, `SlotPicked(i)`, `Toggled(i)`, `Closed`, `Start`, `Back` |
-| `SettingsView` | `SettingsViewModel` (written back as it changes) | `Changed(model)`, `ClearScores`, `Accessibility`, `Back` |
-| `PauseOverlayView` | `PauseViewModel` (wave, score, standing, perks, seed, detail) | `Resume`, `Settings`, `Perks`, `Abandon`, `Exit` |
+| `SquadView` | `SquadViewModel` (roster, selected, focus, locked, tiers, seed). No captions (the roster says so only while part of it is locked), tiles take the free height, details hide stability until it varies | `Picked(i)`, `SlotPicked(i)`, `Toggled(i)`, `Closed`, `Start`, `Back` |
+| `SettingsView` | `SettingsViewModel` (written back as it changes). Audio, feel, camera, quality, Accessibility (reduced motion and a DISPLAY OPTIONS row) and Data (CLEAR LOCAL SCORES, a danger row that confirms) in one scroll; no footer | `Changed(model)`, `ClearScores`, `Accessibility`, `Back` |
+| `PauseOverlayView` | `PauseViewModel` (wave, score, standing, perks, seed, detail). No header arrow (RESUME is the one way back), no captions; the seed and rules line is an info popover; SETTINGS and ABANDON share an `ActionRow` | `Resume`, `Settings`, `Perks`, `Abandon`, `Exit` |
 | `ConfirmDialogView` | `Push(nav, title, body, confirm, cancel)` | the confirm and cancel actions, after the layer closes |
 | `GuideDialogView` | `Push(nav, title, steps, ready)`; `DefaultSteps` | READY, after the layer closes |
 | `PerkDraftView` | `PerkDraftViewModel` (wave, bonus, score, choices, pick, squad) | `Picked(i)`, `Take`, `Perks` (the carry frame) |
-| `ResultsView` | `ResultsViewModel` (cause, score, rank, ledger, stats, squad, perks) | `Again`, `Menu`, `Squad` |
-| `ActivePerksView` | `ActivePerksViewModel` (wave, perks, pick, totals) | `Picked(i)`, `Back` |
+| `ResultsView` | `ResultsViewModel` (cause, score, rank, ledger, stats, squad, perks). The rank badge hides on a score of 0; units show FELL Wn only; perks are `ChipRow`s | `Again`, `Menu`, `Squad` |
+| `ActivePerksView` | `ActivePerksViewModel` (wave, perks, pick, totals; zero totals are not listed) | `Picked(i)`, `Back` |
 | `RevivePickView` | the fallen operatives to bring back | `Picked(i)`, `Back` |
-| `AccessibilityView` | `AccessibilityViewModel` (reducedFlashes, largerText, highContrast; written back) | `Changed(model)`, `Back` |
+| `AccessibilityView` | `AccessibilityViewModel` (reducedFlashes, largerText, highContrast; written back); the header and its one section no longer say the same word three ways | `Changed(model)`, `Back` |
 | `HighScoresView` | `Bind(ranked, historical, caption)` | `Back` |
 | `RouteChoiceView` | `RouteView` | `Chosen(side)` |
 | `MerchantScreenView` | `MerchantView` (keeps the scroll position) | `Bought`, `PerkSold`, `HealthSold`, `Left` |

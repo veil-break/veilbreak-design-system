@@ -21,12 +21,12 @@ public enum BadgeTone { Neutral, Ally, Enemy, Power, Warn, Inverted }
  public BadgeComponent Set(string value){if(value!=number.text)Value=value;return this;}
 }
 
-/// <summary>Badge presets. <see cref="StatusChip"/> and <see cref="CreditsChip"/> are the status and currency badges.</summary>
+/// <summary>Badge presets. <see cref="StatusChip"/> and <see cref="ChipRow"/> (<see cref="ChipRow.Credits"/>) are the status and currency chips.</summary>
 public static class Badge {
  public static BadgeComponent Of(VisualElement parent,string text,string icon=null,string value=null,BadgeTone tone=BadgeTone.Neutral)=>new BadgeComponent(text,icon,value,tone).Into(parent);
  /// <summary>A status: glyph and word (never colour alone), optional detail and time.</summary>
  public static StatusChip Status(StatusKind kind,string text=null,string detail=null,string time=null)=>new StatusChip(kind,text,detail,time);
  /// <summary>Run currency.</summary>
- public static CreditsChip Credits(int credits)=>new CreditsChip().Set(credits);
+ public static ChipRow Credits(int credits)=>ChipRow.Credits().SetNumber(credits);
 }
 }
