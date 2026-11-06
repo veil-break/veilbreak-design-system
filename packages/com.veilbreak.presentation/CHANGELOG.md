@@ -2,7 +2,7 @@
 
 ## 1.6.0 — 2026-11-06
 
-- Requires gui 0.9.0: the GUI polish batch (design-system#55): the three text variants and the fluid scale, single-row action rows with an icon-only button, the activation and damage edge effect, content that follows the cut corner, the status badge row, the unit sheet's basic skill, passive and lore, the `Carousel`, one short overlay transition and the glitch title reveal; release 0.20.0.
+- Requires gui 0.9.0: the GUI polish batch (design-system#55): the three text variants and the fluid scale, single-row action rows with an icon-only button, the activation and damage edge effect, content that follows the cut corner, the status badge row, the unit sheet's basic skill, passive and lore, the `Carousel`, one short overlay transition and the glitch title reveal; release 0.19.0.
 
 ## 1.5.0 — 2026-11-06
 
