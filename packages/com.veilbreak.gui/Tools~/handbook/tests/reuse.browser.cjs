@@ -26,20 +26,22 @@ const base=process.argv[2]||'http://127.0.0.1:8767/';
    await page.evaluate(()=>{const h=React.createElement;function Test(){const [open,setOpen]=React.useState(true);return h(React.Fragment,null,h('button',{id:'behind',type:'button'},'Behind'),h(Veilbreak.DrawerOverlay,{title:'Effects',open,onDismiss:()=>setOpen(false)},h('button',null,'Inside')));}mount.render(h(Test));});
    await page.getByRole('dialog',{name:'Effects'}).waitFor();assert(await page.locator('#behind').evaluate(e=>e.inert));
    await page.keyboard.press('Escape');await page.waitForTimeout(60);assert(await page.locator('#behind').evaluate(e=>e.inert),'Coverage released before close finished');await page.waitForTimeout(450);assert.equal(await page.getByRole('dialog').count(),0);assert.equal(await page.locator('#behind').evaluate(e=>e.inert),false);
-   // Perks deal in order; rebinds retain DOM identity and don't replay existing choices.
-   await page.evaluate(()=>{window.picks=[];window.cards=[0,1,2].map(i=>({id:'p'+i,name:'Perk '+i,tag:'Common',icon:'barrier',effect:'An authored effect',next:'+8%',stack:0,max:5}));window.draw=()=>mount.render(React.createElement(Veilbreak.PerkDraftView,{view:{wave:1,choices:cards,pick:0,squad:[]},onPick:i=>picks.push(i)}));draw();});
-   const choices=page.locator('.vb-perk-card');await choices.first().waitFor();await page.waitForTimeout(40);
-   const pending=await choices.last().evaluate(e=>e.inert);assert(pending,'Later choices should wait for their deal slot');
-   await choices.first().click();assert.deepEqual(await page.evaluate(()=>picks),[0]);
-   await page.waitForTimeout(650);await page.evaluate(()=>{window.first=document.querySelector('.vb-perk-card');cards[0].name='Updated';draw();});await page.waitForTimeout(30);
-   assert(await page.evaluate(()=>first===document.querySelector('.vb-perk-card')));assert.equal(await choices.first().evaluate(e=>e.getAnimations().length),0);
+   // The draft is a carousel of choice cards: it deals as one item, a tap on a card beneath reports the change, and rebinds retain DOM identity.
+   await page.evaluate(()=>{window.picks=[];window.cards=[0,1,2].map(i=>({id:'p'+i,name:'Perk '+i,tag:'Common',icon:'barrier',effect:'An authored effect',next:'+8%',stack:0,max:5}));window.draw=()=>mount.render(React.createElement(Veilbreak.PerkDraftView,{view:{wave:1,choices:cards,pick:window.pick||0,squad:[]},onPick:i=>{picks.push(i);window.pick=i;draw();}}));window.pick=0;draw();});
+   const choices=page.locator('.vb-choice');await choices.first().waitFor();await page.waitForTimeout(700);
+   assert.equal(await page.locator('.vb-carousel').count(),1);assert.equal(await choices.count(),3);
+   assert(await page.locator('.vb-carousel__card--active').evaluate(e=>e.textContent.includes('PERK 0')),'The first card starts active');
+   await choices.nth(1).click({force:true});await page.waitForTimeout(450);assert.deepEqual(await page.evaluate(()=>picks),[1]);
+   assert(await page.locator('.vb-carousel__card--active').evaluate(e=>e.textContent.includes('PERK 1')),'A tap on a card beneath makes it active');
+   await page.evaluate(()=>{window.first=document.querySelector('.vb-choice');cards[0].name='Updated';draw();});await page.waitForTimeout(30);
+   assert(await page.evaluate(()=>first===document.querySelector('.vb-choice')));assert.equal(await choices.first().evaluate(e=>e.getAnimations().length),0);
    // Reduced motion cancels spatial movement, including an already active deal.
    await page.evaluate(()=>{document.getElementById('app').classList.add('vb-reduced-motion');cards=cards.map((p,i)=>Object.assign({},p,{id:'reduced'+i}));draw();});await page.waitForTimeout(200);
    assert.equal(await choices.last().evaluate(e=>e.inert),false);assert.equal(await choices.last().evaluate(e=>e.getAnimations().length),0);
    for(const width of [320,390]){
     await page.evaluate(width=>{var app=document.getElementById('app');app.style.width=width+'px';app.classList.toggle('vb-compact',width<380);mount.render(React.createElement(Veilbreak.BattleHudView,{hud:{wave:1},operatives:[0,1,2,3].map(i=>({id:'op'+i,name:'Operative',hp:1000,maxHp:1000,stability:100,maxStability:100,effects,skills:[{label:'A',cost:10},{label:'S',cost:20,slot:'S'}]}))}));},width);
     await page.locator('.vb-battle__card').first().waitFor();await page.waitForTimeout(100);
-    const fit=await page.locator('.vb-battle__card').evaluateAll(cards=>cards.map(card=>{var b=card.getBoundingClientRect(),effect=card.querySelector('.vb-effect-strip__more').getBoundingClientRect(),skills=Array.from(card.querySelectorAll('.vb-skill')).map(e=>e.getBoundingClientRect());return{target:effect.height>=44,effectInside:effect.bottom<=b.bottom+1,skillsInside:skills.every(s=>s.bottom<=b.bottom+1&&s.right<=b.right+1)};}));
+    const fit=await page.locator('.vb-battle__card').evaluateAll(cards=>cards.map(card=>{var b=card.getBoundingClientRect(),effect=card.querySelector(".vb-status-row").getBoundingClientRect(),skills=Array.from(card.querySelectorAll('.vb-skill')).map(e=>e.getBoundingClientRect());return{target:effect.height>=44,effectInside:effect.bottom<=b.bottom+1,skillsInside:skills.every(s=>s.bottom<=b.bottom+1&&s.right<=b.right+1)};}));
     assert(fit.every(c=>c.target&&c.effectInside&&c.skillsInside),'Battle card fit at '+width+': '+JSON.stringify(fit));
    }
    await page.evaluate(()=>mount.render(React.createElement(Veilbreak.BattleHudView,{reveal:.5})));await page.waitForTimeout(40);assert.equal(await page.locator('.vb-board__top').evaluate(e=>Number(e.style.opacity)),.5);

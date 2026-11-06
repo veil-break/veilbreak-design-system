@@ -54,7 +54,110 @@ card(
     'Heads-up projection · reduced modes fade',
     "render(h(V.GlitchText, { text: 'WAVE 08 · SIGNAL ACQUIRED', className: 'vb-t-title' }));",
 )
-card('CreditsChip', B, 100, 'Persistent merchant credits', 'render(h(V.CreditsChip, { credits: 120 }));')
+card(
+    'Glitch',
+    B,
+    200,
+    'Title reveal: decodes out of noise glyphs in 2 s (reduced motion and flashes fade in 300 ms)',
+    r"""
+function Demo() {
+  var s = React.useState(0), n = s[0], set = s[1], box = React.useRef(null);
+  React.useEffect(function () { V.Glitch.reveal(box.current); }, [n]);
+  return h('div', { style: { gap: 10 } },
+    h('div', { ref: box, className: 'vb-l vb-t-display vb-reveal-title' }, 'RUN OVER'),
+    h('div', { className: 'vb-l vb-t-caption' }, 'Glitch.reveal(element, ms) · Glitch.revealTitles(root) reveals every .vb-reveal-title · Glitch.scramble(text, 0.4, step) = ' + V.Glitch.scramble('DECODING SIGNAL', 0.4, 3)),
+    h(V.VbButton, { title: 'REPLAY', icon: 'chevron', onClick: function () { set(n + 1); }, style: { width: 160 } }));
+}
+render(h(Demo));
+""",
+)
+card(
+    'ActionRow',
+    F,
+    330,
+    'Buttons that fill the row: equal shares, stacked when narrow; fixed for trailing actions; single for one line at any width',
+    r"""
+var B = V.VbButton;
+render(col([
+  cell(h(V.ActionRow, { style: { width: 358 } }, [h(B, { key: 0, title: 'BACK TO RUN', variant: 'primary' }), h(B, { key: 1, title: 'CANCEL' })]), 'equal shares', 0),
+  cell(h(V.ActionRow, { style: { width: 210 } }, [h(B, { key: 0, title: 'CONFIRM', variant: 'danger' }), h(B, { key: 1, title: 'CANCEL' })]), 'stacked below 112 per child', 1),
+  cell(h(V.ActionRow, { single: true, style: { width: 358 } }, [h(B, { key: 0, title: 'EXIT TO MENU', icon: 'back' }), h(B, { key: 1, title: 'ABANDON', variant: 'danger', icon: 'remove' }), h(B, { key: 2, title: 'Settings', icon: 'cog', iconOnly: true })]), 'single: one line, the cog keeps its square', 2),
+  cell(h(V.ActionRow, { fixed: true, style: { width: 358 } }, [h(B, { key: 0, title: 'BUY' }), h(B, { key: 1, title: 'SELL' })]), 'fixed: trailing actions line up', 3)
+], 12));
+""",
+)
+card(
+    'StatusRow',
+    S,
+    300,
+    'Timed statuses as tiny squares; hover, focus or tap lists them all in a popover',
+    r"""
+var now = [
+  { id: 'a', definition: { id: 'tether', title: 'Tethered', description: 'Cannot move; *slowed* by 40%.', icon: 'root', polarity: 'harm' }, magnitude: '-40% speed', remainingSeconds: 3.2, totalSeconds: 5 },
+  { id: 'b', definition: { id: 'barrier', title: 'Barrier', description: 'Absorbs damage before health.', icon: 'barrier', polarity: 'benefit' }, stacks: 2, remainingSeconds: 6 },
+  { id: 'c', definition: { id: 'mark', title: 'Marked', description: 'Takes more damage.', icon: 'marker' }, remainingSeconds: 2.4 }
+];
+var many = now.concat([1, 2, 3, 4, 5].map(function (i) { return { id: 'm' + i, definition: { id: 'm' + i, title: 'Status ' + i, icon: 'warning', polarity: 'harm' }, remainingSeconds: i }; }));
+render(col([
+  cell(h(V.StatusRow, { effects: now }), 'three timed statuses (tap or hover)', 0),
+  cell(h(V.StatusRow, { effects: many }), 'past six: five squares and +3', 1),
+  cell(h(V.StatusRow, { effects: [{ id: 'p', definition: { id: 'p', title: 'Passive', icon: 'info' } }] }), 'no time = not a status: nothing shows', 2)
+], 40, { paddingTop: 12 }));
+""",
+)
+card(
+    'PopoverCard',
+    F,
+    260,
+    'Popover content: caps title, hint, flat rows one tone above the surface; the popover is one solid surface with an arrow',
+    r"""
+render(h(V.VbFrame, { className: 'vb-panel vb-popover', style: { position: 'relative', left: 0, top: 0, width: 300, padding: '12px 14px', '--vb-fill': 'var(--panel-solid)', '--vb-edge': 'var(--line-strong)', '--vb-bw': 1 } },
+  h(V.PopoverCard, { title: 'Run', hint: 'Seed 80A2EB4E · Percent bonuses add before they multiply', rows: [{ key: 'Wave', value: '07' }, { key: 'Score', value: '9,420' }, { key: 'Standing', value: '3 / 4', good: true }] })));
+""",
+)
+card(
+    'VbClipFill',
+    F,
+    200,
+    'A block that follows the cut of the shape it sits in (skill charge and windup sweep)',
+    r"""
+function box(side, label) {
+  return cell(h(V.VbFrame, { className: 'vb-panel', style: { width: 120, height: 90, '--vb-cut': 22, '--vb-cut-side': side, '--vb-fill': 'var(--raised)', '--vb-edge': 'var(--line-strong)', '--vb-bw': 1, overflow: 'visible' } },
+    h(V.VbClipFill, { style: { position: 'absolute', left: 0, right: 0, bottom: 0, height: '70%', '--vb-fill': 'rgba(29,217,160,.35)' } })), label, side);
+}
+render(row([box(0, 'default cut'), box(1, 'cut left'), box(2, 'cut right')], 16));
+""",
+)
+card(
+    'VbClipImage',
+    F,
+    220,
+    'A picture scaled to fit and clipped to the host cut, so a portrait never overflows the corner',
+    r"""
+var art = "data:image/svg+xml;utf8," + encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' width='120' height='90' viewBox='0 0 120 90'><rect width='120' height='90' fill='#3a2a4d'/><circle cx='60' cy='38' r='22' fill='#f0899f'/><rect x='24' y='62' width='72' height='40' fill='#1dd9a0'/></svg>");
+render(h(V.VbFrame, { className: 'vb-panel', style: { width: 140, height: 110, '--vb-cut': 26, '--vb-fill': 'var(--panel-solid)', '--vb-edge': 'var(--line-strong)', '--vb-bw': 1 } },
+  h(V.VbClipImage, { url: art, style: { position: 'absolute', left: 0, top: 0, right: 0, bottom: 0 } })));
+""",
+)
+card(
+    'VbEdgeFx',
+    F,
+    260,
+    'Activation edge (two heads run clockwise round the cut outline) and the damage flash',
+    r"""
+var B = V.VbButton;
+function Demo() {
+  var card = React.useRef(null);
+  return col([
+    h(B, { title: 'PRESS ME', variant: 'primary', icon: 'chevron', sub: 'the edge sweeps on every click', style: { width: 300 } }),
+    h(B, { title: 'ABANDON', variant: 'danger', icon: 'remove', style: { width: 300 } }),
+    h(V.VbShape, { ref: card, className: 'vb-panel', style: { width: 300, height: 70, padding: 12, '--vb-cut': 10, '--vb-fill': 'var(--panel-solid)', '--vb-edge': 'var(--line)', '--vb-bw': 1 } }, h('div', { className: 'vb-l vb-t-label' }, 'UNIT CARD · TAKES A HIT')),
+    h(B, { title: 'DAMAGE', style: { width: 300 }, onClick: function () { V.VbEdgeFx.damage(card.current, 1); } })
+  ], 12);
+}
+render(h(Demo));
+""",
+)
 card(
     'RouteChoice',
     Sc,
@@ -114,14 +217,15 @@ card(
     'VbButton',
     C,
     440,
-    'Primary (one per screen), blocked with its reason, secondary, light, danger, ghost',
+    'Primary (one per screen), blocked with its reason, secondary, light, danger, ghost, icon only, leading glyph and dimmed; a click runs the edge sweep',
     r"""
 var B = V.VbButton;
 render(col([
   cell(h(B, { title: 'START RUN', variant: 'primary', sub: 'Aria · Rook · Aegis · Nyra · new seed', icon: 'chevron', style: { width: 358 } }), 'primary'),
   cell(h(B, { title: 'START RUN', variant: 'primary', icon: 'chevron', blocked: 'Pick 1 more to start', style: { width: 358 } }), 'primary · blocked'),
   row([cell(h(B, { title: 'SETTINGS', icon: 'settings', style: { width: 175 } }), 'secondary', 0), cell(h(B, { title: 'ADD TO SQUAD', variant: 'light', icon: 'add', style: { width: 175 } }), 'light', 1)]),
-  row([cell(h(B, { title: 'REMOVE FROM SQUAD', variant: 'danger', icon: 'remove', style: { width: 240 } }), 'danger', 0), cell(h(B, { title: 'SKIP', variant: 'ghost', style: { width: 110 } }), 'ghost', 1)])
+  row([cell(h(B, { title: 'REMOVE FROM SQUAD', variant: 'danger', icon: 'remove', style: { width: 240 } }), 'danger', 0), cell(h(B, { title: 'SKIP', variant: 'ghost', style: { width: 110 } }), 'ghost', 1)]),
+  row([cell(h(B, { title: 'Settings', icon: 'cog', iconOnly: true }), 'icon only (the title is the label)', 0), cell(h(B, { title: 'EXIT TO MENU', icon: 'back', style: { width: 175 } }), 'back leads', 1), cell(h(B, { title: 'BUY', dimmed: true, style: { width: 110 } }), 'dimmed', 2)])
 ], 10, { alignItems: 'flex-start' }));
 """,
 )
@@ -303,84 +407,91 @@ render(col([
 )
 
 card(
-    'OperativeCard',
+    'UnitCard',
     B,
-    210,
-    'Portrait battle card in each control mode: auto, manual, aiming, fallen',
+    260,
+    'Portrait battle card in each control mode (auto, manual, aiming, fallen), its timed statuses above it, and the damage edge on a hit',
     r"""
-render(row([
-  cell(h(V.OperativeCard, { view: op({ name: 'Echo', code: 'EC', kit: 'var(--kit-echo)', hp: 880, maxHp: 1020, barrier: 0, effects: [], skills: [{ icon: 'SkillEchoClocksplice', cost: 14 }, { slot: 'S', icon: 'SkillEchoOverclock', cost: 35, state: 'cooldown', charged: 0.55, seconds: 3.1 }] }) }), 'AUTO', 0),
-  cell(h(V.OperativeCard, { view: op({ name: 'Sol', code: 'SO', kit: 'var(--kit-sol)', hp: 1010, maxHp: 1220, barrier: 0, effects: [], mode: 'manual', manualSeconds: 2.9, skills: [{ icon: 'SkillSolZeroLine', cost: 20 }, { slot: 'S', icon: 'SkillSolDeadHorizon', cost: 45, state: 'short', need: 11 }] }) }), 'MANUAL', 1),
-  cell(h(V.OperativeCard, { view: op({ name: 'Mira', code: 'MI', kit: 'var(--kit-mira)', hp: 1300, maxHp: 1420, barrier: 0, effects: [{id:'sample:exposed',definition:{id:'exposed',title:'Exposed',description:'Stability is broken.',icon:'exposed',polarity:'harm'},remainingSeconds:2},{id:'sample:barrier',definition:{id:'barrier',title:'Barrier',description:'Absorbs damage.',icon:'barrier'},magnitude:'60'}], mode: 'aiming', skills: [{ icon: 'SkillMiraCounterdrive', cost: 16 }, { slot: 'S', icon: 'SkillMiraGravityCage', cost: 30, state: 'aiming' }] }) }), 'AIMING', 2),
-  cell(h(V.OperativeCard, { view: op({ name: 'Hex', code: 'HE', kit: 'var(--kit-hex)', hp: 0, maxHp: 1150, barrier: 0, mode: 'fallen' }) }), 'FALLEN', 3)
-], 8));
+function Hittable() {
+  var s = React.useState(1020);
+  return h('div', { style: { alignItems: 'center' } }, h(V.UnitCard, { view: op({ name: 'Echo', kit: 'var(--kit-echo)', hp: s[0], maxHp: 1020, barrier: 0, effects: [], skills: [{ icon: 'SkillEchoClocksplice', cost: 14 }, { slot: 'S', icon: 'SkillEchoOverclock', cost: 35, state: 'cooldown', charged: 0.55, seconds: 3.1 }] }) }),
+    h(V.VbButton, { title: 'HIT', onClick: function () { s[1](s[0] > 300 ? s[0] - 240 : 1020); }, style: { width: 88, marginTop: 8, minHeight: 36 } }), cap('AUTO · tap HIT'));
+}
+render(h('div', { style: { paddingTop: 24 } }, row([
+  h(Hittable, { key: 0 }),
+  cell(h(V.UnitCard, { view: op({ name: 'Sol', kit: 'var(--kit-sol)', hp: 1010, maxHp: 1220, barrier: 0, effects: [], mode: 'manual', manualSeconds: 2.9, skills: [{ icon: 'SkillSolZeroLine', cost: 20 }, { slot: 'S', icon: 'SkillSolDeadHorizon', cost: 45, state: 'short', need: 11 }] }) }), 'MANUAL', 1),
+  cell(h(V.UnitCard, { view: op({ name: 'Mira', kit: 'var(--kit-mira)', hp: 1300, maxHp: 1420, barrier: 0, effects: [{id:'sample:exposed',definition:{id:'exposed',title:'Exposed',description:'Stability is broken.',icon:'exposed',polarity:'harm'},remainingSeconds:2},{id:'sample:slow',definition:{id:'slowed',title:'Slowed',description:'Moves slower.',icon:'slow',polarity:'harm'},remainingSeconds:4,stacks:2},{id:'sample:barrier',definition:{id:'barrier',title:'Barrier',description:'Absorbs damage.',icon:'barrier'},magnitude:'60'}], mode: 'aiming', skills: [{ icon: 'SkillMiraCounterdrive', cost: 16 }, { slot: 'S', icon: 'SkillMiraGravityCage', cost: 30, state: 'aiming' }] }) }), 'AIMING', 2),
+  cell(h(V.UnitCard, { view: op({ name: 'Hex', kit: 'var(--kit-hex)', hp: 0, maxHp: 1150, barrier: 0, mode: 'fallen', canRevive: true }) }), 'FALLEN', 3)
+], 8)));
 """,
 )
 
 card(
-    'OperativeTile',
+    'UnitTile',
     S,
     330,
     'Roster tile: in squad (numbered), focused, not picked, rarity tiers and locked',
     r"""
 render(row([
-  cell(h(V.OperativeTile, { view: op({}), slot: 1, focused: true }), 'slot 1 · focused', 0),
-  cell(h(V.OperativeTile, { view: op({ name: 'Rook', code: 'RO', role: 'Breaker', roleIcon: 'breaker', kit: 'var(--kit-rook)' }), slot: 2 }), 'slot 2', 1),
-  cell(h(V.OperativeTile, { view: op({ name: 'Sol', code: 'SO', role: 'Striker', kit: 'var(--kit-sol)' }), slot: 0 }), 'not in squad', 2),
-  cell(h(V.OperativeTile, { view: op({ name: 'Echo', code: 'EC', role: 'Operator', roleIcon: 'operator', kit: 'var(--kit-echo)' }), slot: 0, tier: 'violet' }), 'violet tier', 3),
-  cell(h(V.OperativeTile, { view: op({ name: 'Nyra', code: 'NY', role: 'Operator', roleIcon: 'operator', kit: 'var(--kit-nyra)' }), slot: 0, tier: 'gold', locked: 'Pull in rifts' }), 'gold · locked', 4)
+  cell(h(V.UnitTile, { view: op({}), slot: 1, focused: true }), 'slot 1 · focused', 0),
+  cell(h(V.UnitTile, { view: op({ name: 'Rook', code: 'RO', role: 'Breaker', roleIcon: 'breaker', kit: 'var(--kit-rook)' }), slot: 2 }), 'slot 2', 1),
+  cell(h(V.UnitTile, { view: op({ name: 'Sol', code: 'SO', role: 'Striker', kit: 'var(--kit-sol)' }), slot: 0 }), 'not in squad', 2),
+  cell(h(V.UnitTile, { view: op({ name: 'Echo', code: 'EC', role: 'Operator', roleIcon: 'operator', kit: 'var(--kit-echo)' }), slot: 0, tier: 'violet' }), 'violet tier', 3),
+  cell(h(V.UnitTile, { view: op({ name: 'Nyra', code: 'NY', role: 'Operator', roleIcon: 'operator', kit: 'var(--kit-nyra)' }), slot: 0, tier: 'gold', locked: 'Pull in rifts' }), 'gold · locked', 4)
 ], 8, { width: 460 }));
 """,
 )
 
 card(
-    'SquadSlot',
+    'UnitSlot',
     S,
     110,
     'Squad slots: filled, and the dashed empty slot',
     r"""
 render(row([
-  h(V.SquadSlot, { view: op({}), slot: 1, key: 0 }),
-  h(V.SquadSlot, { view: op({ name: 'Rook', code: 'RO', kit: 'var(--kit-rook)' }), slot: 2, key: 1 }),
-  h(V.SquadSlot, { view: op({ name: 'Aegis', code: 'AE', kit: 'var(--kit-aegis)' }), slot: 3, key: 2 }),
-  h(V.SquadSlot, { view: null, slot: 4, key: 3 })
+  h(V.UnitSlot, { view: op({}), slot: 1, key: 0 }),
+  h(V.UnitSlot, { view: op({ name: 'Rook', code: 'RO', kit: 'var(--kit-rook)' }), slot: 2, key: 1 }),
+  h(V.UnitSlot, { view: op({ name: 'Aegis', code: 'AE', kit: 'var(--kit-aegis)' }), slot: 3, key: 2 }),
+  h(V.UnitSlot, { view: null, slot: 4, key: 3 })
 ], 8));
 """,
 )
 
 card(
-    'OperativeDetails',
+    'UnitDetail',
     S,
-    370,
-    'Operative sheet; adding is blocked with its reason when the squad is full',
+    520,
+    'Unit sheet: stats, passive, basic attack and both skills, the lore prompt; adding is blocked with its reason when the squad is full',
     r"""
-render(h(V.OperativeDetails, { view: op({ name: 'Sol', code: 'SO', kit: 'var(--kit-sol)', maxHp: 1220, armor: 14, maxStability: 120, passive: 'Zero point', passiveText: 'Every third basic hit marks the target for Zero Line.',
+render(h(V.UnitDetail, { view: op({ name: 'Sol', kit: 'var(--kit-sol)', maxHp: 1220, armor: 14, maxStability: 120, passive: 'Zero point', passiveIcon: 'target', passiveText: 'Every third basic hit marks the target for *Zero Line*.', passiveFullText: 'Every third basic hit marks the target for Zero Line.',
+  basic: { label: 'Rail Shot', icon: 'projectile', slot: 'B', kind: 'Basic', description: 'A single round at the nearest enemy', cost: 0, cooldownSeconds: 0 },
+  lore: 'Sol walks the boulevard before the lights come on and counts the ones that do not.',
   skills: [{ label: 'Zero Line', icon: 'SkillSolZeroLine', cost: 20, slot: 'A', kind: 'Active', description: 'Long line shot that marks', cooldownSeconds: 5 }, { label: 'Dead Horizon', icon: 'SkillSolDeadHorizon', cost: 45, slot: 'S', kind: 'Signature', description: 'Sweeping beam across the lane', cooldownSeconds: 14 }] }), slot: 0, squadFull: true }));
 """,
 )
 
 card(
-    'OperativeStats',
+    'UnitStats',
     Rs,
     380,
     "One operative's post-run contribution (popover content)",
     r"""
-render(h(V.OperativeStats, { view: { operative: op({ mode: 'fallen' }), fellWave: 12, damage: 48200, kills: 162, casts: 74, power: 1960, share: 0.47, extraLabel: 'Armor shred', extraValue: '312 hits' } }));
+render(h(V.UnitStats, { view: { operative: op({ mode: 'fallen' }), fellWave: 12, damage: 48200, kills: 162, casts: 74, power: 1960, share: 0.47, extraLabel: 'Armor shred', extraValue: '312 hits' } }));
 """,
 )
 
 card(
-    'SquadResult',
+    'ResultSummary',
     Rs,
     420,
-    'Results cell; hover, focus or tap shows OperativeStats (pinned open on the first)',
+    'Results cell; hover, focus or tap shows UnitStats (pinned open on the first)',
     r"""
 var C = function (o, w, s) { return { operative: op(o), fellWave: w, damage: 48200 * s, kills: Math.round(162 * s), casts: Math.round(74 * s), power: Math.round(1960 * s), share: s, extraLabel: 'Armor shred', extraValue: '312 hits' }; };
 render(h('div', { style: { height: 388, justifyContent: 'flex-end' } }, row([
-  h(V.SquadResult, { view: C({}, 12, 0.47), pinned: true, key: 0, style: { width: 84 } }),
-  h(V.SquadResult, { view: C({ name: 'Rook', code: 'RO', kit: 'var(--kit-rook)' }, 0, 0.21), key: 1 }),
-  h(V.SquadResult, { view: C({ name: 'Aegis', code: 'AE', kit: 'var(--kit-aegis)' }, 0, 0.12), key: 2 }),
-  h(V.SquadResult, { view: C({ name: 'Nyra', code: 'NY', kit: 'var(--kit-nyra)' }, 9, 0.2), key: 3 })
+  h(V.ResultSummary, { view: C({}, 12, 0.47), pinned: true, key: 0, style: { width: 84 } }),
+  h(V.ResultSummary, { view: C({ name: 'Rook', code: 'RO', kit: 'var(--kit-rook)' }, 0, 0.21), key: 1 }),
+  h(V.ResultSummary, { view: C({ name: 'Aegis', code: 'AE', kit: 'var(--kit-aegis)' }, 0, 0.12), key: 2 }),
+  h(V.ResultSummary, { view: C({ name: 'Nyra', code: 'NY', kit: 'var(--kit-nyra)' }, 9, 0.2), key: 3 })
 ].map(function (n, i) { return h('div', { key: i, style: { width: 84 } }, n); }), 6)));
 """,
 )
@@ -411,16 +522,18 @@ render(col([h(V.ScreenHeader, { title: 'Squad', meta: '4 / 4', accent: true, key
 )
 
 card(
-    'PerkCard',
+    'ChoiceCard',
     Pk,
-    260,
-    'Draft cards: general (selected), operative, rare',
+    620,
+    'One option the player taps: perks (general selected, operative, rare) and a mirrored pair of roads',
     r"""
-render(row([
-  h(V.PerkCard, { view: PERKS.general, selected: true, key: 0 }),
-  h(V.PerkCard, { view: PERKS.operative, key: 1 }),
-  h(V.PerkCard, { view: PERKS.rare, key: 2 })
-], 10));
+function pair(kids, w) { return h('div', { style: { flexDirection: 'row', width: w } }, kids); }
+render(col([
+  title('PERKS'),
+  pair([h(V.ChoiceCard, { perk: PERKS.general, selected: true, key: 0 }), h(V.ChoiceCard, { perk: PERKS.operative, key: 1 }), h(V.ChoiceCard, { perk: PERKS.rare, key: 2 })], 358),
+  title('ROADS · left and right'),
+  pair([h(V.ChoiceCard, { side: 'left', road: { kind: 'combat', title: 'Combat', icon: 'battle', hint: 'Common cache · chance of *rare*', rank: 1, ranks: 3 }, key: 0 }), h(V.ChoiceCard, { side: 'right', road: { kind: 'elite', title: 'Elite', icon: 'marker', hint: 'Voltaic elite · guaranteed rare', rank: 3, ranks: 3 }, key: 1 })], 358)
+], 10, { width: 358 }));
 """,
 )
 
@@ -438,16 +551,16 @@ render(row([
 )
 
 card(
-    'PerkChip',
+    'ChipRow',
     Pk,
     300,
-    'Owned-perk chips; hover, focus or tap shows PerkDetail (pinned on the first)',
+    'Perk chips (hover, focus or tap shows PerkDetail; pinned on the first) and the read-only credits chip',
     r"""
-render(row([
-  h(V.PerkChip, { view: Object.assign({}, PERKS.general, { stack: 3, now: '+24% damage', waves: [2, 5, 9] }), pinned: true, key: 0 }),
-  h(V.PerkChip, { view: Object.assign({}, PERKS.operative, { stack: 1 }), key: 1 }),
-  h(V.PerkChip, { view: Object.assign({}, PERKS.rare, { stack: 1 }), key: 2 })
-], 0));
+render(col([h('div', { key: 'c', style: { flexDirection: 'row', marginBottom: 8 } }, h(V.ChipRow, { static: true, icon: 'currency', value: '120', className: 'vb-credits' })), row([
+  h(V.ChipRow, { view: Object.assign({}, PERKS.general, { stack: 3, now: '+24% damage', waves: [2, 5, 9] }), pinned: true, key: 0 }),
+  h(V.ChipRow, { view: Object.assign({}, PERKS.operative, { stack: 1 }), key: 1 }),
+  h(V.ChipRow, { view: Object.assign({}, PERKS.rare, { stack: 1 }), key: 2 })
+], 0)], 0));
 """,
 )
 
@@ -462,6 +575,37 @@ render(col([
   h(V.PerkRow, { view: Object.assign({}, PERKS.operative, { stack: 1, now: '+25% width' }), selected: true, key: 1 }),
   h(V.PerkRow, { view: { name: 'Field Repairs', category: 'Defense', tag: 'General', tier: 'general', icon: 'cleanse', effect: 'Heal survivors for 10%; restore stability', now: 'Heal 10%', stack: 1, max: 0 }, key: 2 })
 ], 0, { width: 358 }));
+""",
+)
+
+card(
+    'StatRow',
+    Pk,
+    330,
+    'One fact per row: plain, with a value that wraps, and plated stacked rows with an action (dimmed when it cannot be afforded)',
+    r"""
+render(col([
+  h(V.StatRow, { label: 'Now', value: '+16% damage', key: 0 }),
+  h(V.StatRow, { label: 'After pick', value: '+24% damage', good: true, key: 1 }),
+  h(V.StatRow, { plated: true, stacked: true, icon: 'add', tier: 'vb-perk--rare', label: 'EMERGENCY REASSEMBLY', value: 'Revive one fallen fighter at 35% health', action: h(V.VbButton, { title: 'BUY 80' }), key: 2 }),
+  h(V.StatRow, { plated: true, stacked: true, dimmed: true, icon: 'burst', label: 'SHARPENED OUTPUT', value: '+8% damage', action: h(V.VbButton, { title: 'BUY 150', dimmed: true }), key: 3 }),
+  h(V.StatRow, { plated: true, stacked: true, icon: 'health', label: 'ARIA', value: '800 / 1000 HP → 550 HP', bar: { value: 0.8 }, action: h(V.VbButton, { title: '+30', icon: 'currency', variant: 'danger' }), key: 4 })
+], 0, { width: 358 }));
+""",
+)
+
+card(
+    'Carousel',
+    Pk,
+    400,
+    'Endless cards: the active one takes 64% of the width, its neighbours sit beneath it, tilted; swipe, tap one, arrow keys',
+    r"""
+var CARDS = [PERKS.general, PERKS.operative, PERKS.rare, Object.assign({}, PERKS.general, { id: 'epic-1', name: 'Surge Engine', tier: 'epic', tag: 'Epic', effect: '+30% *Power* regeneration', icon: 'burst', stack: 0, max: 2 }), Object.assign({}, PERKS.general, { id: 'arm', name: 'Field Repairs', icon: 'cleanse', effect: 'Heal survivors for 10%', stack: 1, max: 0 })];
+function Demo() {
+  var s = React.useState(0);
+  return h('div', { style: { width: 358 } }, h(V.Carousel, { selected: s[0], onChange: s[1] }, CARDS.map(function (p, i) { return h(V.ChoiceCard, { key: p.id, perk: p, selected: i === s[0], style: { minHeight: 236 } }); })), cap('Active · ' + CARDS[s[0]].name));
+}
+render(h(Demo));
 """,
 )
 
@@ -601,14 +745,16 @@ card(
     'WorldLabel',
     W,
     130,
-    'Billboards: aim chip, name tag, telegraph timer, move estimate, blocked',
+    'Billboards: aim chip, name tag, telegraph timer, move estimate, blocked, elite trait and labels merged by group key',
     r"""
 render(row([
   cell(h(V.WorldLabel, { kind: 'aim', title: 'A · NEEDLE STORM', detail: '18 POWER · queues as #3', style: { position: 'relative', translate: 'none' } }), 'aim', 0),
   cell(h(V.WorldLabel, { kind: 'telegraph', title: 'SLAM 0.6s', team: 'enemy', style: { position: 'relative', translate: 'none' } }), 'telegraph', 1),
   cell(h(V.WorldLabel, { kind: 'estimate', title: 'MOVE ≈ 8', style: { position: 'relative', translate: 'none' } }), 'estimate', 2),
-  cell(h(V.WorldLabel, { kind: 'blocked', title: 'OUT OF RANGE', team: 'enemy', style: { position: 'relative', translate: 'none' } }), 'blocked', 3)
-], 14, { width: 460 }));
+  cell(h(V.WorldLabel, { kind: 'blocked', title: 'OUT OF RANGE', team: 'enemy', style: { position: 'relative', translate: 'none' } }), 'blocked', 3),
+  cell(h(V.WorldLabel, { kind: 'elite', title: 'ELITE', detail: 'Voltaic', team: 'enemy', style: { position: 'relative', translate: 'none' } }), 'elite', 4),
+  cell(h(V.WorldLabel, { kind: 'telegraph', title: 'TETHERED', count: 3, team: 'enemy', style: { position: 'relative', translate: 'none' } }), 'merged ×3', 5)
+], 14, { width: 560 }));
 """,
 )
 
@@ -677,7 +823,7 @@ render(h(V.Backdrop, { style: { position: 'relative', width: 390, height: 844, b
     field,
     h('div', { style: { padding: '0 10px' } }, h(V.PowerStrip, { value: 22, max: 100, regen: '+12/s', reserve: 25, queue: queue, legend: '┊ autoplay reserve · × cancels' })),
     h('div', { className: 'vb-row vb-row--between', style: { padding: '6px 10px 0' } }, names.map(function (n, i) {
-      return h(V.OperativeCard, { key: n, style: { width: 88, height: 202 }, view: op({ name: n, code: n.slice(0, 2).toUpperCase(), kit: 'var(--kit-' + kits[i] + ')', hp: 600 + i * 90, maxHp: 1000, barrier: 0, effects: [], mode: i === 2 ? 'manual' : 'auto',
+      return h(V.UnitCard, { key: n, style: { width: 88, height: 202 }, view: op({ name: n, code: n.slice(0, 2).toUpperCase(), kit: 'var(--kit-' + kits[i] + ')', hp: 600 + i * 90, maxHp: 1000, barrier: 0, effects: [], mode: i === 2 ? 'manual' : 'auto',
         skills: [{ icon: 'projectile', cost: 18, state: i === 2 ? 'queued' : 'ready', queue: 1 }, { slot: 'S', icon: 'burst', cost: 40, state: i === 3 ? 'windup' : 'cooldown', charged: 0.5, seconds: 2.2, progress: 0.6 }] }) });
     })))));
 """,
@@ -687,75 +833,171 @@ render(h(V.Backdrop, { style: { position: 'relative', width: 390, height: 844, b
 
 # ── 0.3.0: the handbook's atoms, composites, layouts and views ─────────────────
 LY, VW = 'Layouts', 'Views'
-SQUAD = r"""function kitOp(k, i) { return op({ id: k, name: k.charAt(0).toUpperCase() + k.slice(1), code: k.slice(0, 2).toUpperCase(), kit: 'var(--kit-' + k + ')', hp: 600 + i * 90 }); }
+SQUAD = r"""function kitOp(k, i) { return op({ id: k, name: k.charAt(0).toUpperCase() + k.slice(1), kit: 'var(--kit-' + k + ')', hp: 600 + i * 90 }); }
 var ROSTER = ['aria', 'sol', 'aegis', 'nyra', 'rook', 'mira', 'hex', 'echo'].map(kitOp);
 """
-card('ProgressBar', C, 140, 'Continuous, or segmented by levels with the next one outlined', r"""
+card(
+    'ProgressBar',
+    C,
+    140,
+    'Continuous, or segmented by levels with the next one outlined',
+    r"""
 render(col([h(V.ProgressBar, { value: 0.62, style: { width: 300 }, key: 0 }), h(V.ProgressBar, { segments: 5, value: 2, next: true, style: { width: 300 }, key: 1 }), h(V.ProgressBar, { segments: 3, value: 3, tone: 'power', style: { width: 300 }, key: 2 })], 14));
-""")
-card('KeyValueRow', C, 120, 'Key on the left, value on the right; good values in ally colour', r"""
+""",
+)
+card(
+    'KeyValueRow',
+    C,
+    120,
+    'Key on the left, value on the right; good values in ally colour',
+    r"""
 render(col([h(V.KeyValueRow, { label: 'Now', value: '+16% damage', key: 0 }), h(V.KeyValueRow, { label: 'After pick', value: '+24% damage', good: true, key: 1 }), h(V.KeyValueRow, { label: 'Creep kills', value: '9,640', key: 2 })], 2, { width: 320 }));
-""")
-card('ListRow', C, 220, 'Glyph, title, caption, levels, and a trailing action', r"""
+""",
+)
+card(
+    'ListRow',
+    C,
+    220,
+    'Glyph, title, caption, levels, and a trailing action',
+    r"""
 render(col([h(V.ListRow, { title: 'Sharpened Output', caption: '+8% damage', icon: 'burst', bar: { segments: 5, value: 2 }, action: h(V.VbButton, { title: 'BUY 80' }), style: { width: 358 }, key: 0 }),
   h(V.ListRow, { title: 'Aria', caption: '800 → 550 HP', icon: 'health', bar: { value: 0.8 }, action: h(V.VbButton, { title: '+30', variant: 'danger' }), style: { width: 358 }, key: 1 })], 6));
-""")
-card('TextComponent', F, 220, 'One type style per run; tones only recolour', r"""
+""",
+)
+card(
+    'TextComponent',
+    F,
+    220,
+    'One type style per run; tones only recolour',
+    r"""
 var T = V.TextComponent;
 render(col([h(T, { typeStyle: 'display', text: 'PAUSED', key: 0 }), h(T, { typeStyle: 'title', text: 'SQUAD', key: 1 }), h(T, { typeStyle: 'caption', text: 'Combat, focus and world travel are frozen', key: 2 }),
   row([h(T, { typeStyle: 'num', text: '18,240', key: 0 }), h(T, { typeStyle: 'num', tone: 'ally', text: '+700', key: 1 }), h(T, { typeStyle: 'num', tone: 'enemy', text: '−40', key: 2 }), h(T, { typeStyle: 'num', tone: 'power', text: '62', key: 3 }), h(T, { typeStyle: 'caption', tone: 'muted', text: 'muted', key: 4 })], 14)], 6, { alignItems: 'flex-start' }));
-""")
-card('LabelComponent', F, 120, 'The caps eyebrow, label and badge sizes, with its 4-unit rhythm', r"""
+""",
+)
+card(
+    'LabelComponent',
+    F,
+    120,
+    'The caps eyebrow, label and badge sizes, with its 4-unit rhythm',
+    r"""
 render(col([h(V.LabelComponent, { text: 'Roster · all 8 unlocked', key: 0 }), h(V.LabelComponent, { text: 'Carries forward', size: 'badge', key: 1 }), h(V.LabelComponent, { text: 'Wave 07 cleared', tone: 'ally', key: 2 }), h(V.LabelComponent, { text: 'Squad down · wave 12', tone: 'enemy', key: 3 })], 4, { alignItems: 'flex-start' }));
-""")
-card('BadgeComponent', C, 120, 'Slim chips: neutral, ally, enemy, power, warn, inverted; with a glyph and a value', r"""
+""",
+)
+card(
+    'BadgeComponent',
+    C,
+    120,
+    'Slim chips: neutral, ally, enemy, power, warn, inverted; with a glyph and a value',
+    r"""
 var B = V.BadgeComponent;
 render(row([h(B, { text: 'Best', value: '18,240', key: 0 }), h(B, { text: 'Standing', tone: 'ally', icon: 'check', key: 1 }), h(B, { text: 'Exposed', tone: 'enemy', icon: 'exposed', key: 2 }), h(B, { text: 'Power', tone: 'power', value: '62', key: 3 }),
   h(B, { text: 'Low HP', tone: 'warn', icon: 'warning', key: 4 }), h(B, { text: 'New', tone: 'inverted', key: 5 }), h(B, { text: 'Sharpened Output ×2', icon: 'burst', key: 6 })], 6, { width: 360 }));
-""")
-card('IconButtonComposite', C, 110, '44 × 44 glyph squares: back, pause (quiet), autoplay (active), speed, close', r"""
+""",
+)
+card(
+    'IconButtonComposite',
+    C,
+    110,
+    '44 × 44 glyph squares: back, pause (quiet), autoplay (active), speed, close',
+    r"""
 var I = V.IconButtonComposite;
 render(row([cell(h(I, { icon: 'back', tooltip: 'Back' }), 'back', 0), cell(h(I, { icon: 'pause', tooltip: 'Pause', quiet: true }), 'quiet', 1), cell(h(I, { icon: 'automation', tooltip: 'Autoplay on', quiet: true, active: true }), 'active', 2),
   cell(h(I, { text: '2×', tooltip: 'Speed' }), 'state', 3), cell(h(I, { icon: 'close', tooltip: 'Close', size: 12 }), 'close', 4)], 16));
-""")
-card('TileComponent', C, 150, 'Pickable cells: picked and numbered, focused, a glyph tile, locked, and an empty slot', r"""
+""",
+)
+card(
+    'TileComponent',
+    C,
+    150,
+    'Pickable cells: picked and numbered, focused, a glyph tile, locked, and an empty slot',
+    r"""
 var T = V.TileComponent;
 render(row([h(T, { title: 'Aria', caption: 'Striker', captionIcon: 'striker', kit: 'var(--kit-aria)', order: 1, state: ['in', 'focused'], key: 0 }), h(T, { title: 'Visor', caption: 'Optic', captionIcon: 'optic', glyph: 'optic', tier: 'violet', key: 1 }),
   h(T, { title: 'Hex', caption: 'Pull in rifts', captionIcon: 'lock', state: 'locked', tier: 'gold', key: 2 }), h(T, { block: 'vb-slot', state: 'empty', emptyLabel: 'Slot 4', key: 3 })], 8));
-""")
-card('CardComponent', C, 300, 'The base card: head, body, foot; selected is chipped', r"""
+""",
+)
+card(
+    'CardComponent',
+    C,
+    300,
+    'The base card: head, body, foot; selected is chipped',
+    r"""
 render(col([h(V.CardComponent, { title: 'Checkpoint', meta: 'WAVE 07', style: { width: 320 }, actions: h(V.VbButton, { title: 'RESUME', icon: 'play' }), key: 0 }, h('div', { className: 'vb-l', style: { fontSize: 14 } }, 'Wave 07 next · 9,420'), h('div', { className: 'vb-l vb-t-caption' }, '3 of 4 standing · 5 perks · seed 80A2EB4E')),
   h(V.CardComponent, { title: 'Last run', meta: '#3 OF 20', selected: true, style: { width: 320 }, key: 1 }, row([h(V.StatReadout, { label: 'SCORE', value: '18,240', key: 0 }), h(V.StatReadout, { label: 'WAVES', value: '12', key: 1 }), h(V.StatReadout, { label: 'BOSSES', value: '2', key: 2 })], 22))], 12, { alignItems: 'flex-start' }));
-""")
-card('FieldComposite', C, 200, 'A labelled input with its help line, in a fieldset', r"""
+""",
+)
+card(
+    'FieldComposite',
+    C,
+    200,
+    'A labelled input with its help line, in a fieldset',
+    r"""
 render(h(V.Fieldset, { title: 'CAMERA', style: { width: 358 } }, h(V.FieldComposite, { label: 'Camera motion', help: 'Pinch to zoom, twist to turn, double-tap to reset.' }, h(V.VbSegmented, { items: [{ label: 'FULL', sub: 'Parallax' }, { label: 'REDUCED', sub: 'No drift' }, { label: 'OFF', sub: 'Fixed' }], selected: 0 }))));
-""")
-card('Fieldset', C, 240, 'A titled group of fields in one slim container', r"""
+""",
+)
+card(
+    'Fieldset',
+    C,
+    240,
+    'A titled group of fields in one slim container',
+    r"""
 render(h(V.Fieldset, { title: 'AUDIO', style: { width: 358 } }, h(V.VbSlider, { label: 'Master', value: 0.8 }), h(V.VbSlider, { label: 'Music', value: 0.55 }), h(V.VbSlider, { label: 'Effects', value: 0.8 })));
-""")
-card('FormComposite', C, 470, 'Fieldsets in a scroll, a note, a footer of secondary actions; applies as it changes', r"""
+""",
+)
+card(
+    'FormComposite',
+    C,
+    470,
+    'Fieldsets in a scroll, a note, a footer of secondary actions; applies as it changes',
+    r"""
 render(h(V.FormComposite, { saved: 'SAVED', style: { width: 358, height: 440 }, note: { icon: 'automation', text: 'Autoplay lives in the battle HUD and starts on for every new run.' },
   footer: [h(V.VbButton, { title: 'CLEAR LOCAL SCORES', variant: 'danger', key: 0 }), h(V.VbButton, { title: 'ACCESSIBILITY', variant: 'ghost', key: 1 })] },
   h(V.Fieldset, { title: 'FEEL' }, h(V.VbSwitch, { text: 'HAPTICS', detail: 'Light pulse when an order is accepted', value: true }), h(V.VbSwitch, { text: 'REDUCED MOTION', detail: 'No camera shake · fades replace flicker', value: false })),
   h(V.Fieldset, { title: 'QUALITY' }, h(V.VbSegmented, { items: [{ label: 'LOW', sub: 'Stable 30 FPS' }, { label: 'STANDARD', sub: '60 FPS target' }], selected: 1 }))));
-""")
-card('StackLayout', LY, 230, 'One rhythm for a column: 4, 8, 12 or 16 under every child but the last', r"""
+""",
+)
+card(
+    'StackLayout',
+    LY,
+    230,
+    'One rhythm for a column: 4, 8, 12 or 16 under every child but the last',
+    r"""
 function bar(t) { return h(V.VbFrame, { kind: 'slim', style: { width: 150, height: 30, padding: '6px 10px' } }, h('div', { className: 'vb-l vb-t-badge' }, t)); }
 render(row([4, 8, 16].map(function (g) { return cell(h(V.StackLayout, { gap: g }, bar('ONE'), bar('TWO'), bar('THREE')), 'gap ' + g, g); }), 14));
-""")
-card('VbGrid', LY, 300, 'Two, three and four across', r"""
+""",
+)
+card(
+    'VbGrid',
+    LY,
+    300,
+    'Two, three and four across',
+    r"""
 function cellBox(t, k) { return h(V.VbFrame, { kind: 'slim', key: k, style: { height: 40, alignItems: 'center', justifyContent: 'center' } }, h('div', { className: 'vb-l vb-t-badge' }, t)); }
 render(col([2, 3, 4].map(function (n) { return h(V.VbGrid, { key: n, columns: n, wrap: true, style: { width: 358 } }, Array.apply(null, Array(n)).map(function (_, i) { return cellBox(n + ' · ' + (i + 1), i); })); }), 4, { alignItems: 'flex-start' }));
-""")
-card('ListLayout', LY, 280, 'Rows of one kind, 6 between them, and the empty line', r"""
+""",
+)
+card(
+    'ListLayout',
+    LY,
+    280,
+    'Rows of one kind, 6 between them, and the empty line',
+    r"""
 render(row([h(V.ListLayout, { style: { width: 330, height: 220 }, key: 0 }, [1, 2, 3].map(function (r) { return h(V.ScoreRow, { key: r, view: { rank: r, score: [18240, 14120, 9420][r - 1], wave: [12, 10, 7][r - 1], bosses: [2, 2, 1][r - 1], squad: ['AR', 'SO', 'AE', 'NY'], current: r === 2 } }); })),
   h(V.ListLayout, { empty: 'No runs yet. Your first run lands here.', style: { width: 200, height: 60 }, key: 1 })], 16));
-""")
-card('BoardLayout', LY, 420, 'Top band, the world (the rest), bottom band', r"""
+""",
+)
+card(
+    'BoardLayout',
+    LY,
+    420,
+    'Top band, the world (the rest), bottom band',
+    r"""
 function zone(t, s) { return h('div', { style: Object.assign({ border: '1px dashed rgba(143,240,207,.45)', background: 'rgba(143,240,207,.05)', display: 'flex', alignItems: 'center', justifyContent: 'center' }, s) }, h('div', { className: 'vb-l vb-t-badge vb-t-ally' }, t)); }
 render(h(V.BoardLayout, { style: { width: 300, height: 400 }, top: zone('TOP · HUD · BOSS · ANNOUNCER', { height: 90, margin: 6 }), world: zone('WORLD', { position: 'absolute', inset: 6 }), bottom: zone('BOTTOM · CARDS', { height: 110, margin: 6 }) }));
-""")
-MENU_BG = "radial-gradient(60% 40% at 50% 30%, rgba(240,137,159,.28) 0%, transparent 70%), radial-gradient(80% 50% at 50% 100%, rgba(29,217,160,.10) 0%, transparent 70%), linear-gradient(180deg, #3a2a4d 0%, #1d1428 55%, #0b0710 100%)"
+""",
+)
+MENU_BG = 'radial-gradient(60% 40% at 50% 30%, rgba(240,137,159,.28) 0%, transparent 70%), radial-gradient(80% 50% at 50% 100%, rgba(29,217,160,.10) 0%, transparent 70%), linear-gradient(180deg, #3a2a4d 0%, #1d1428 55%, #0b0710 100%)'
 BOARD = r"""function board(node, bg, screen) {
   return h('div', { style: { position: 'relative', width: 390, height: 844, margin: -16, background: bg || 'linear-gradient(180deg, #2c263f 0%, #1b1526 100%)' } },
     h('div', { className: 'vb-root', style: { position: 'absolute', left: 0, right: 0, top: 48, bottom: 34 } },
@@ -763,7 +1005,14 @@ BOARD = r"""function board(node, bg, screen) {
 }
 """
 CHECKPOINT = "{ wave: 7, score: 9420, standing: 3, squadSize: 4, perks: 5, seed: '80A2EB4E' }"
-card('DrawerOverlay', C, 844, 'Bottom drawer over a dimmed page: grip, title, body, actions; drag down, tap × or the backdrop to dismiss', BOARD + SQUAD + r"""
+card(
+    'DrawerOverlay',
+    C,
+    844,
+    'Bottom drawer over a dimmed page: grip, title, body, actions; drag down, tap × or the backdrop to dismiss',
+    BOARD
+    + SQUAD
+    + r"""
 function Demo() {
   var s = React.useState(true), open = s[0], set = s[1];
   return board([h('div', { key: 0, style: { padding: 12 } }, h(V.VbButton, { title: open ? 'DRAWER OPEN' : 'OPEN DRAWER', onClick: function () { set(true); } })),
@@ -771,20 +1020,142 @@ function Demo() {
       h(V.StackLayout, { gap: 8 }, h(V.PerkRow, { view: PERKS.general, selected: true }), h(V.PerkRow, { view: PERKS.operative }), h(V.PerkRow, { view: PERKS.rare })))], null, 'pause');
 }
 render(h(Demo));
-""", width=390, page=True)
-card('MainMenuView', VW, 844, 'The title screen: badge and best, the mark, the menu actions, EXIT', BOARD + "render(board(h(V.MainMenuView, { view: { best: 18240, bestWave: 12, checkpoint: " + CHECKPOINT + ", squad: ['Aria', 'Sol', 'Aegis', 'Nyra'] } }), '" + MENU_BG + "', 'menu'));", width=390, page=True)
-card('MenuActionsSectionView', VW, 300, 'Checkpoint card, PLAY, HIGH SCORES and SETTINGS', "render(h('div', { style: { width: 358 } }, h(V.MenuActionsSectionView, { checkpoint: " + CHECKPOINT + ", squadLine: 'Squad · Aria · Sol · Aegis · Nyra' })));")
-card('SquadView', VW, 844, 'Four slots, the roster, the open details and START RUN', BOARD + SQUAD + "render(board(h(V.SquadView, { view: { roster: ROSTER, selected: [0, 1, 2, -1], focus: 3, locked: ['', '', '', '', '', '', 'Pull in rifts', ''] } }), null, 'squad'));", width=390, page=True)
-card('SettingsView', VW, 844, 'Audio, feel, camera and quality in one form; SAVED in the header', BOARD + "render(board(h(V.SettingsView, {}), null, 'settings'));", width=390, page=True)
-card('PauseOverlayView', VW, 844, 'PAUSED, the sheet with stats, perks and RESUME, and EXIT', BOARD + "render(board(h(V.PauseOverlayView, { view: { wave: 7, score: 9420, standing: 3, perks: [PERKS.general, PERKS.operative, Object.assign({}, PERKS.rare, { icon: 'barrier', name: 'Barrier Mesh' })], seed: '80A2EB4E', detail: 'rules 3 · checkpoint after wave 06' } }), null, 'pause'));", width=390, page=True)
-card('ConfirmDialogView', VW, 844, 'Question, consequence, the destructive action and the way back', BOARD + "render(board([h('div', { key: 0, className: 'vb-grow' }), h(V.ConfirmDialogView, { key: 1, title: 'END THIS RUN?', body: 'Your current run will be recorded and its checkpoint removed.', confirm: { label: 'ABANDON', icon: 'remove', sub: 'Record the score and end the run' }, cancel: { label: 'KEEP PLAYING', icon: 'chevron' } })], null, 'confirm'));", width=390, page=True)
-card('GuideDialogView', VW, 844, 'The first-run guide: numbered steps and READY', BOARD + "render(board([h('div', { key: 0, className: 'vb-grow' }), h(V.GuideDialogView, { key: 1 })], null, 'pause'));", width=390, page=True)
-card('PerkDraftView', VW, 844, 'Three cards, the pick explained, the squad carrying forward, TAKE PERK', BOARD + "render(board(h(V.PerkDraftView, { view: { wave: 7, bonus: 700, score: 9420, pick: 0, choices: [PERKS.general, PERKS.operative, PERKS.rare], squad: [{ code: 'AR', hp: 820, maxHp: 1000, stability: 0.7 }, { code: 'SO', hp: 640, maxHp: 1000, stability: 0.5 }, { code: 'AE', hp: 910, maxHp: 1000, stability: 0.9 }, { code: 'NY', hp: 0, maxHp: 1000, stability: 0 }] } }), null, 'perks'));", width=390, page=True)
-card('ResultsView', VW, 844, 'The score and its ledger, the squad, the perks, MENU and RUN AGAIN', BOARD + SQUAD + "render(board(h(V.ResultsView, { view: { score: 18240, wave: 12, bosses: 2, rank: 1, of: 20, distance: '1.4 km', simTime: '9:12', ledger: [{ label: 'Creep kills', value: '9,640' }, { label: 'Wave clears · 100 × wave', value: '7,800' }, { label: 'Bosses · 500 × wave', value: '800' }], squad: ROSTER.slice(0, 4).map(function (o, i) { return { operative: o, fellWave: i === 3 ? 11 : 0, damage: 40000 - i * 7000, kills: 120 - i * 20, casts: 40, power: 900, share: [0.34, 0.27, 0.21, 0.18][i] }; }), perks: [PERKS.general, PERKS.rare] } }), null, 'results'));", width=390, page=True)
-card('HighScoresView', VW, 844, 'Top 20 with the current run framed, then older rules', BOARD + "render(board(h(V.HighScoresView, { ranked: [18240, 14120, 9420, 8800, 6120, 4410].map(function (s, i) { return { rank: i + 1, score: s, wave: 12 - i, bosses: i < 3 ? 2 : 1, squad: ['AR', 'SO', 'AE', 'NY'], current: i === 2 }; }), historical: [{ rank: 1, score: 21020, wave: 13, bosses: 2, squad: ['AR', 'RO', 'HX', 'NY'] }] }), null, 'scores'));", width=390, page=True)
-card('RouteChoiceView', VW, 844, 'The crossroads screen', BOARD + "render(board(h(V.RouteChoiceView, { view: { wave: 3, left: { kind: 'combat', title: 'Combat', icon: 'battle', hint: 'Common cache · chance of rare' }, right: { kind: 'merchant', title: 'Merchant', icon: 'currency', hint: 'Trade stacks or HP · rare and epic upgrades' } } }), null, 'route'));", width=390, page=True)
-card('MerchantScreenView', VW, 844, 'The night market screen (MerchantView)', BOARD + "render(board(h(V.MerchantScreenView, { view: { credits: 120, offers: [{ perk: PERKS.rare, price: 80 }, { perk: PERKS.rare, price: 80, taken: true }, { perk: Object.assign({}, PERKS.rare, { name: 'Surge Engine', tier: 'epic', tag: 'Epic' }), price: 150 }], stacks: [], health: [{ actor: 0, name: 'Aria', hp: 800, maxHp: 1000, cost: 250, payout: 30 }] } }), null, 'merchant'));", width=390, page=True)
-card('BattleHudView', VW, 844, 'The whole battle board on BoardLayout', BOARD + SQUAD + r"""
+""",
+    width=390,
+    page=True,
+)
+card(
+    'MainMenuView',
+    VW,
+    844,
+    'The title screen: badge, best and the EXIT icon button, the mark, the menu actions (HIGH SCORES and the settings cog in one row)',
+    BOARD
+    + 'render(board(h(V.MainMenuView, { view: { best: 18240, bestWave: 12, checkpoint: '
+    + CHECKPOINT
+    + ", squad: ['Aria', 'Sol', 'Aegis', 'Nyra'] } }), '"
+    + MENU_BG
+    + "', 'menu'));",
+    width=390,
+    page=True,
+)
+card(
+    'MenuActionsSectionView',
+    VW,
+    300,
+    'Checkpoint card, PLAY, HIGH SCORES and SETTINGS',
+    "render(h('div', { style: { width: 358 } }, h(V.MenuActionsSectionView, { checkpoint: "
+    + CHECKPOINT
+    + ", squadLine: 'Squad · Aria · Sol · Aegis · Nyra' })));",
+)
+card(
+    'SquadView',
+    VW,
+    844,
+    'Four slots (drag to reorder), the roster, the open details and START RUN',
+    BOARD
+    + SQUAD
+    + "render(board(h(V.SquadView, { view: { roster: ROSTER, selected: [0, 1, 2, -1], focus: 3, locked: ['', '', '', '', '', '', 'Pull in rifts', ''] } }), null, 'squad'));",
+    width=390,
+    page=True,
+)
+card(
+    'SettingsView',
+    VW,
+    844,
+    'Audio, feel, camera, quality, accessibility and data as fieldsets in one form; SAVED in the header',
+    BOARD + "render(board(h(V.SettingsView, {}), null, 'settings'));",
+    width=390,
+    page=True,
+)
+card(
+    'PauseOverlayView',
+    VW,
+    844,
+    'PAUSED (no back arrow; the title reveals), the sheet with stats, the info popover, perks, RESUME and one row of EXIT, ABANDON and the cog',
+    BOARD
+    + "render(board(h(V.PauseOverlayView, { view: { wave: 7, score: 9420, standing: 3, perks: [PERKS.general, PERKS.operative, Object.assign({}, PERKS.rare, { icon: 'barrier', name: 'Barrier Mesh' })], seed: '80A2EB4E', detail: 'rules 3 · checkpoint after wave 06' } }), null, 'pause'));",
+    width=390,
+    page=True,
+)
+card(
+    'ConfirmDialogView',
+    VW,
+    844,
+    'Question, consequence, the destructive action and the way back',
+    BOARD
+    + "render(board([h('div', { key: 0, className: 'vb-grow' }), h(V.ConfirmDialogView, { key: 1, title: 'END THIS RUN?', body: 'Your current run will be recorded and its checkpoint removed.', confirm: { label: 'ABANDON', icon: 'remove', sub: 'Record the score and end the run' }, cancel: { label: 'KEEP PLAYING', icon: 'chevron' } })], null, 'confirm'));",
+    width=390,
+    page=True,
+)
+card(
+    'GuideDialogView',
+    VW,
+    844,
+    'The first-run guide: numbered steps and READY',
+    BOARD
+    + "render(board([h('div', { key: 0, className: 'vb-grow' }), h(V.GuideDialogView, { key: 1 })], null, 'pause'));",
+    width=390,
+    page=True,
+)
+card(
+    'PerkDraftView',
+    VW,
+    844,
+    'A carousel of choice cards, the squad carrying forward, TAKE PERK',
+    BOARD
+    + "render(board(h(V.PerkDraftView, { view: { wave: 7, bonus: 700, score: 9420, pick: 0, choices: [PERKS.general, PERKS.operative, PERKS.rare], squad: [{ code: 'AR', hp: 820, maxHp: 1000, stability: 0.7 }, { code: 'SO', hp: 640, maxHp: 1000, stability: 0.5 }, { code: 'AE', hp: 910, maxHp: 1000, stability: 0.9 }, { code: 'NY', hp: 0, maxHp: 1000, stability: 0 }] } }), null, 'perks'));",
+    width=390,
+    page=True,
+)
+card(
+    'ResultsView',
+    VW,
+    844,
+    'The score and its ledger, the squad, the perks, MENU, SQUAD and RUN AGAIN',
+    BOARD
+    + SQUAD
+    + "render(board(h(V.ResultsView, { view: { score: 18240, wave: 12, bosses: 2, rank: 1, of: 20, distance: '1.4 km', simTime: '9:12', ledger: [{ label: 'Creep kills', value: '9,640' }, { label: 'Wave clears · 100 × wave', value: '7,800' }, { label: 'Bosses · 500 × wave', value: '800' }], squad: ROSTER.slice(0, 4).map(function (o, i) { return { operative: o, fellWave: i === 3 ? 11 : 0, damage: 40000 - i * 7000, kills: 120 - i * 20, casts: 40, power: 900, share: [0.34, 0.27, 0.21, 0.18][i] }; }), perks: [PERKS.general, PERKS.rare] } }), null, 'results'));",
+    width=390,
+    page=True,
+)
+card(
+    'HighScoresView',
+    VW,
+    844,
+    'Top 20 with the current run framed, then older rules',
+    BOARD
+    + "render(board(h(V.HighScoresView, { ranked: [18240, 14120, 9420, 8800, 6120, 4410].map(function (s, i) { return { rank: i + 1, score: s, wave: 12 - i, bosses: i < 3 ? 2 : 1, squad: ['AR', 'SO', 'AE', 'NY'], current: i === 2 }; }), historical: [{ rank: 1, score: 21020, wave: 13, bosses: 2, squad: ['AR', 'RO', 'HX', 'NY'] }] }), null, 'scores'));",
+    width=390,
+    page=True,
+)
+card(
+    'RouteChoiceView',
+    VW,
+    844,
+    'The crossroads screen',
+    BOARD
+    + "render(board(h(V.RouteChoiceView, { view: { wave: 3, left: { kind: 'combat', title: 'Combat', icon: 'battle', hint: 'Common cache · chance of rare' }, right: { kind: 'merchant', title: 'Merchant', icon: 'currency', hint: 'Trade stacks or HP · rare and epic upgrades' } } }), null, 'route'));",
+    width=390,
+    page=True,
+)
+card(
+    'MerchantScreenView',
+    VW,
+    844,
+    'The night market screen (MerchantView)',
+    BOARD
+    + "render(board(h(V.MerchantScreenView, { view: { credits: 120, offers: [{ perk: PERKS.rare, price: 80 }, { perk: PERKS.rare, price: 80, taken: true }, { perk: Object.assign({}, PERKS.rare, { name: 'Surge Engine', tier: 'epic', tag: 'Epic' }), price: 150 }], stacks: [], health: [{ actor: 0, name: 'Aria', hp: 800, maxHp: 1000, cost: 250, payout: 30 }] } }), null, 'merchant'));",
+    width=390,
+    page=True,
+)
+card(
+    'BattleHudView',
+    VW,
+    844,
+    'The whole battle board on BoardLayout',
+    BOARD
+    + SQUAD
+    + r"""
 var queue = [{ who: 'AE', skill: 'Absolute Wall', cost: 40, eta: '1.2s', manual: true }, { who: 'NY', skill: 'White Noise', cost: 40, eta: '4.1s', manual: true }];
 var ops = ROSTER.slice(0, 4).map(function (o, i) { return Object.assign({}, o, { barrier: 0, effects: [], mode: i === 2 ? 'manual' : 'auto', skills: [{ icon: 'projectile', cost: 18, state: i === 2 ? 'queued' : 'ready', queue: 1 }, { slot: 'S', icon: 'burst', cost: 40, state: i === 3 ? 'windup' : 'cooldown', charged: 0.5, seconds: 2.2, progress: 0.6 }] }); });
 var world = [h('div', { key: 0, style: { position: 'absolute', left: 195, top: 120 } }, h(V.WorldMarker, { kind: 'enemy', size: 44 })), h('div', { key: 1, style: { position: 'absolute', left: 195, top: 88 } }, h(V.WorldHealthBar, { team: 'enemy', rank: 'boss', health: 0.64, ghost: 0.72 })),
@@ -793,16 +1164,68 @@ render(h('div', { style: { position: 'relative', width: 390, height: 844, margin
   h('div', { className: 'vb-root', style: { position: 'absolute', left: 0, right: 0, top: 48, bottom: 34, display: 'flex' } },
     h(V.BattleHudView, { hud: { wave: 10, boss: true, score: 18240, power: 22, focus: 60, credits: 90, queue: queue, queueTitle: 'MANUAL QUEUE', queueHint: 'Fires before autoplay · tap to cancel' }, operatives: ops, announcement: 'BOSS · SIGNAL WARDEN',
       boss: { name: 'Signal Warden', health: 0.64, stability: 0.35, detail: '64% · enrage at 35%', shielded: true, shieldDetail: '2 pylons', interruptible: true }, world: world }))));
-""", width=390, page=True)
+""",
+    width=390,
+    page=True,
+)
 
 
-card('EffectDetails', 'Views', 320, 'Shared effect meaning, value, source, duration and activation.', "var effects=[{id:'actor:0:barrier',definition:{id:'barrier',title:'Barrier',description:'Absorbs damage before health.',icon:'barrier',polarity:'benefit',scope:'actor'},magnitude:'120',remainingSeconds:4,activation:'active'},{id:'actor:0:haste',definition:{id:'haste',title:'Haste',description:'Movement and windup speed are increased.',icon:'haste',polarity:'benefit',scope:'actor'},magnitude:'+20% speed',remainingSeconds:3,activation:'active'},{id:'run:damage',definition:{id:'perk:damage',title:'Sharpened Output',description:'Increases damage for the whole run.',icon:'burst',scope:'run'},stacks:2,magnitude:'+16% damage',activation:'active'}];render(h(V.EffectDetails,{view:effects[0]}));", width=390)
-card('EffectBadge', 'Views', 200, 'Inspectable touch target for a state modifier.', "var effects=[{id:'actor:0:barrier',definition:{id:'barrier',title:'Barrier',description:'Absorbs damage before health.',icon:'barrier',polarity:'benefit',scope:'actor'},magnitude:'120',remainingSeconds:4,activation:'active'},{id:'actor:0:haste',definition:{id:'haste',title:'Haste',description:'Movement and windup speed are increased.',icon:'haste',polarity:'benefit',scope:'actor'},magnitude:'+20% speed',remainingSeconds:3,activation:'active'},{id:'run:damage',definition:{id:'perk:damage',title:'Sharpened Output',description:'Increases damage for the whole run.',icon:'burst',scope:'run'},stacks:2,magnitude:'+16% damage',activation:'active'}];render(h(V.EffectBadge,{view:effects[0]}));", width=390)
-card('EffectList', 'Views', 320, 'Every modifier, individually inspectable without truncation.', "var effects=[{id:'actor:0:barrier',definition:{id:'barrier',title:'Barrier',description:'Absorbs damage before health.',icon:'barrier',polarity:'benefit',scope:'actor'},magnitude:'120',remainingSeconds:4,activation:'active'},{id:'actor:0:haste',definition:{id:'haste',title:'Haste',description:'Movement and windup speed are increased.',icon:'haste',polarity:'benefit',scope:'actor'},magnitude:'+20% speed',remainingSeconds:3,activation:'active'},{id:'run:damage',definition:{id:'perk:damage',title:'Sharpened Output',description:'Increases damage for the whole run.',icon:'burst',scope:'run'},stacks:2,magnitude:'+16% damage',activation:'active'}];render(h(V.EffectList,{effects:effects}));", width=390)
-card('EffectStrip', 'Views', 200, 'Compact battle status strip with complete overflow.', "var effects=[{id:'actor:0:barrier',definition:{id:'barrier',title:'Barrier',description:'Absorbs damage before health.',icon:'barrier',polarity:'benefit',scope:'actor'},magnitude:'120',remainingSeconds:4,activation:'active'},{id:'actor:0:haste',definition:{id:'haste',title:'Haste',description:'Movement and windup speed are increased.',icon:'haste',polarity:'benefit',scope:'actor'},magnitude:'+20% speed',remainingSeconds:3,activation:'active'},{id:'run:damage',definition:{id:'perk:damage',title:'Sharpened Output',description:'Increases damage for the whole run.',icon:'burst',scope:'run'},stacks:2,magnitude:'+16% damage',activation:'active'}];render(h(V.EffectStrip,{effects:effects}));", width=390)
-card('ActivePerksView', 'Views', 844, 'Owned perk stacks, category totals and selected explanation.', "render(h(V.ActivePerksView,{view:{wave:7,perks:[PERKS.general,PERKS.rare],pick:0,totals:[{label:'Damage',value:'+16%'}]}}));", width=390)
-card('RevivePickView', 'Views', 844, 'Choose one fallen operative to restore.', "render(h(V.RevivePickView,{perk:'Restore',fallen:[op({id:'aria',name:'Aria',hp:0,mode:'fallen'}),op({id:'sol',name:'Sol',hp:0,mode:'fallen'})]}));", width=390)
-card('AccessibilityView', 'Views', 844, 'Shared accessibility controls and saved state.', 'render(h(V.AccessibilityView,{view:{highContrast:true}}));', width=390)
+card(
+    'EffectDetails',
+    'Views',
+    320,
+    'Shared effect meaning, value, source, duration and activation.',
+    "var effects=[{id:'actor:0:barrier',definition:{id:'barrier',title:'Barrier',description:'Absorbs damage before health.',icon:'barrier',polarity:'benefit',scope:'actor'},magnitude:'120',remainingSeconds:4,activation:'active'},{id:'actor:0:haste',definition:{id:'haste',title:'Haste',description:'Movement and windup speed are increased.',icon:'haste',polarity:'benefit',scope:'actor'},magnitude:'+20% speed',remainingSeconds:3,activation:'active'},{id:'run:damage',definition:{id:'perk:damage',title:'Sharpened Output',description:'Increases damage for the whole run.',icon:'burst',scope:'run'},stacks:2,magnitude:'+16% damage',activation:'active'}];render(h(V.EffectDetails,{view:effects[0]}));",
+    width=390,
+)
+card(
+    'EffectBadge',
+    'Views',
+    200,
+    'Inspectable touch target for a state modifier.',
+    "var effects=[{id:'actor:0:barrier',definition:{id:'barrier',title:'Barrier',description:'Absorbs damage before health.',icon:'barrier',polarity:'benefit',scope:'actor'},magnitude:'120',remainingSeconds:4,activation:'active'},{id:'actor:0:haste',definition:{id:'haste',title:'Haste',description:'Movement and windup speed are increased.',icon:'haste',polarity:'benefit',scope:'actor'},magnitude:'+20% speed',remainingSeconds:3,activation:'active'},{id:'run:damage',definition:{id:'perk:damage',title:'Sharpened Output',description:'Increases damage for the whole run.',icon:'burst',scope:'run'},stacks:2,magnitude:'+16% damage',activation:'active'}];render(h(V.EffectBadge,{view:effects[0]}));",
+    width=390,
+)
+card(
+    'EffectList',
+    'Views',
+    320,
+    'Every modifier, individually inspectable without truncation.',
+    "var effects=[{id:'actor:0:barrier',definition:{id:'barrier',title:'Barrier',description:'Absorbs damage before health.',icon:'barrier',polarity:'benefit',scope:'actor'},magnitude:'120',remainingSeconds:4,activation:'active'},{id:'actor:0:haste',definition:{id:'haste',title:'Haste',description:'Movement and windup speed are increased.',icon:'haste',polarity:'benefit',scope:'actor'},magnitude:'+20% speed',remainingSeconds:3,activation:'active'},{id:'run:damage',definition:{id:'perk:damage',title:'Sharpened Output',description:'Increases damage for the whole run.',icon:'burst',scope:'run'},stacks:2,magnitude:'+16% damage',activation:'active'}];render(h(V.EffectList,{effects:effects}));",
+    width=390,
+)
+card(
+    'EffectStrip',
+    'Views',
+    200,
+    'Compact battle status strip with complete overflow.',
+    "var effects=[{id:'actor:0:barrier',definition:{id:'barrier',title:'Barrier',description:'Absorbs damage before health.',icon:'barrier',polarity:'benefit',scope:'actor'},magnitude:'120',remainingSeconds:4,activation:'active'},{id:'actor:0:haste',definition:{id:'haste',title:'Haste',description:'Movement and windup speed are increased.',icon:'haste',polarity:'benefit',scope:'actor'},magnitude:'+20% speed',remainingSeconds:3,activation:'active'},{id:'run:damage',definition:{id:'perk:damage',title:'Sharpened Output',description:'Increases damage for the whole run.',icon:'burst',scope:'run'},stacks:2,magnitude:'+16% damage',activation:'active'}];render(h(V.EffectStrip,{effects:effects}));",
+    width=390,
+)
+card(
+    'ActivePerksView',
+    'Views',
+    844,
+    'Owned perk stacks, category totals and selected explanation.',
+    "render(h(V.ActivePerksView,{view:{wave:7,perks:[PERKS.general,PERKS.rare],pick:0,totals:[{label:'Damage',value:'+16%'}]}}));",
+    width=390,
+)
+card(
+    'RevivePickView',
+    'Views',
+    844,
+    'Choose one fallen operative to restore.',
+    "render(h(V.RevivePickView,{perk:'Restore',fallen:[op({id:'aria',name:'Aria',hp:0,mode:'fallen'}),op({id:'sol',name:'Sol',hp:0,mode:'fallen'})]}));",
+    width=390,
+)
+card(
+    'AccessibilityView',
+    'Views',
+    844,
+    'Shared accessibility controls and saved state.',
+    'render(h(V.AccessibilityView,{view:{highContrast:true}}));',
+    width=390,
+)
 
 for name, (group, height, subtitle, body, width, page) in P.items():
     d = os.path.join(OUT, name)

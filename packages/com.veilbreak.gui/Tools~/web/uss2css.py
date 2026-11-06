@@ -1,4 +1,4 @@
-"""Port com.veilbreak.gui's USS (Gui.uss, Layout.uss, Views.uss, World.uss, Motion.uss, Fluid.uss) to web CSS for the design system artifact.
+"""Port com.veilbreak.gui's USS (Gui, Layout, Views, World, Motion and Fluid) to web CSS for the design system artifact.
 
 Mechanical, so values stay exact: class and --vb-* shape property names are kept (the legacy web kit is renamed to
 vbl- instead), token variables -> the design system's names (--vb-color-text -> --text), :root -> .vb-root,

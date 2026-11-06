@@ -41,14 +41,14 @@ class InspectionSchemaTests(unittest.TestCase):
         )
 
     def test_nested_arrays_preserve_model_fields_and_enums(self):
-        model = self.schema['OperativeCard']['properties']['view']['properties']
+        model = self.schema['UnitCard']['properties']['view']['properties']
         skill = model['skills']['items']['properties']
         self.assertEqual(model['mode']['values'], ['auto', 'manual', 'aiming', 'fallen'])
         self.assertEqual(skill['cost']['kind'], 'number')
         self.assertEqual(skill['state']['kind'], 'enum')
 
     def test_optional_nullable_models_and_polymorphic_states(self):
-        view = self.schema['SquadSlot']['properties']['view']
+        view = self.schema['UnitSlot']['properties']['view']
         self.assertTrue(view['nullable'])
         self.assertEqual(view['kind'], 'object')
         state = self.schema['TileComponent']['properties']['state']

@@ -47,9 +47,9 @@ settings and the guide); it is published with the handbook.
 
 | Tier | Components |
 | --- | --- |
-| Atoms | `TextComponent`, `LabelComponent`, `VbIcon`, `VbMark`, `VbFrame` (`kind="slim"`/`"chipped"`), `VbButton`, `BadgeComponent`, `StatusChip`, `CreditsChip`, `VbMeter`, `VbSwitch`, `VbSlider`, `VbSegmented`, `TileComponent`, `CardComponent`, `GlitchText`, `Backdrop`, `ScanLines`, world atoms |
-| Composites | `IconButtonComposite`, `DrawerOverlay`, `FieldComposite`, `Fieldset`, `FormComposite`, `StatReadout`, `HealthBar`, `PowerStrip`, `FocusMeter`, `SkillButton`, `QueueChip`, `QueueList`, `HudTop`, `BossBar`, `ScreenHeader`, `ScoreRow`, operative and perk composites, `Dialog`, holo surfaces, `RuleRow` |
-| Layouts | `StackLayout`, `VbGrid`, `ListLayout`, `BoardLayout`, plus the `vb-row`, `vb-grid4`, `vb-grid2`, `vb-screen`/`vb-page` classes |
+| Atoms | `TextComponent`, `LabelComponent`, `VbIcon`, `VbMark`, `VbFrame` (`kind="slim"`/`"chipped"`), `VbButton`, `BadgeComponent`, `StatusChip`, `ChipRow` (perk chips and the credits chip), `VbMeter`, `VbSwitch`, `VbSlider`, `VbSegmented`, `TileComponent`, `CardComponent`, `GlitchText`, `Glitch` (the title reveal), `VbEdgeFx`, `VbClipFill`, `VbClipImage`, `Backdrop`, `ScanLines`, world atoms |
+| Composites | `IconButtonComposite`, `DrawerOverlay`, `FieldComposite`, `Fieldset`, `FormComposite`, `StatReadout`, `HealthBar`, `PowerStrip`, `FocusMeter`, `SkillButton`, `QueueChip`, `QueueList`, `StatusRow`, `PopoverCard`, `HudTop`, `BossBar`, `ScreenHeader`, `ScoreRow`, `UnitCard`, `UnitTile`, `UnitSlot`, `UnitDetail`, `UnitStats`, `ResultSummary`, `ChoiceCard` (perks and roads), `StatRow`, `Carousel`, `PerkDetail`, `PerkRow`, `Dialog`, holo surfaces, `RuleRow` |
+| Layouts | `StackLayout`, `VbGrid`, `ListLayout`, `ActionRow`, `BoardLayout`, plus the `vb-row`, `vb-grid4`, `vb-grid2`, `vb-screen`/`vb-page` classes |
 | Views | `MainMenuView`, `MenuActionsSectionView`, `SquadView`, `SettingsView`, `PauseOverlayView`, `ConfirmDialogView`, `GuideDialogView`, `PerkDraftView`, `ResultsView`, `HighScoresView`, `RouteChoiceView`, `MerchantScreenView`, `BattleHudView` |
 
 Types are in `dist/index.d.ts`. Views take the same plain view models as their Unity counterparts (`view` prop) and

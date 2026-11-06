@@ -27,38 +27,31 @@ doc(
     'GlitchText',
     'Runtime/Controls/GlitchText.cs',
     'A short red/cyan projection transition for heads-up text.',
-    '`text`, `effect` (in, out or slam), `className`.',
+    '`text`, `effect` (in, out or slam), `reveal` (true or milliseconds: the 2 s title reveal on mount, `Glitch.reveal`), `className`.',
     [
         'The ordinary text remains readable; decorative copies are hidden from accessibility.',
         'Reduced Motion and Reduced Flashes use a fade. Unity also provides Glitch.In/Out/Pulse and a bounded Announcer queue.',
     ],
 )
 doc(
-    'CreditsChip',
-    'Runtime/Composites/RouteMerchant.cs',
-    'Run currency with a glyph and integer.',
-    '`credits` and optional `className`.',
-    ['Use beside Power or in a merchant header.'],
-)
-doc(
     'RouteChoice',
     'Runtime/Composites/RouteMerchant.cs',
-    'Two large road signs with type, glyph and reward hints.',
+    "Two roads as a mirrored pair of ChoiceCards: glyph, title, hint, the road's threat as rank cells and TAKE THIS ROAD.",
     '`view` (wave, left, right RoadView), `onChoose(side)`.',
     [
         'Left is 0 and right is 1; only one choice is accepted.',
-        'The entire sign is a keyboard and touch target above 44 units.',
+        "The whole card is the keyboard and touch target; the tone follows the road's kind (elite and boss read as danger, a merchant as power, a fight as ally).",
     ],
 )
 doc(
     'MerchantScreen',
     'Runtime/Composites/RouteMerchant.cs',
-    'A market with three priced upgrades, stack sales and explicit HP trades.',
+    'A market: priced upgrades, stack sales and explicit HP trades, each a plated stacked StatRow with a 44-unit action.',
     '`view` (credits, offers, stacks, health), `onBuy(index)`, `onSellPerk(id)`, `onSellHealth(actor)`, `onLeave`.',
     [
         'The host validates every transaction and updates the view.',
-        'Blocked offers say Sold, Need credits or Stack cap; HP trades show before and after.',
-        'Rare is cyan, Epic is violet with a short shimmer. Reduced settings retain rarity labels and frames.',
+        'An offer that cannot be bought is dimmed with no second price; a section with nothing in it does not show; a sale pays in credits (+30).',
+        "Rare is cyan and Epic is violet, as a tint on the row's glyph.",
     ],
 )
 
@@ -100,12 +93,13 @@ doc(
     'VbButton',
     'Runtime/Controls/Basics.cs (VbButton)',
     'Cut-corner button in five variants; the pink→teal primary is the one CTA per screen, and a blocked button stays legible and says why.',
-    '`title` (in caps: the button does not upper-case it), `variant` (`primary`, `secondary` default, `light`, `danger`, `ghost`), `sub` (second line), `icon` (`chevron`/`play` draw at 12 px, others at 20), `blocked` (reason under five words; disables and replaces `sub`), `onClick`.',
+    '`title` (in caps: the button does not upper-case it), `variant` (`primary`, `secondary` default, `light`, `danger`, `ghost`), `sub` (second line), `icon` (`chevron`/`play` draw at 12 px, others at 20), `blocked` (reason under five words; disables and replaces `sub`), `iconOnly` (a 48 px square with the glyph alone; `title` stays the accessible name and tooltip), `lead` (the glyph before the label; `back` and `chevron-left` lead by themselves), `dimmed` (dims and disables with no reason shown), `compact` (drops the glyph; `ActionRow` single sets it), `onClick`.',
     [
         'One `primary` per screen (START RUN, TAKE PERK). Its sub line states what will happen: "Aria · Rook · Aegis · Nyra · new seed".',
         '`light` confirms inside a sheet (ADD TO SQUAD); `danger` for removal (REMOVE FROM SQUAD); `secondary` and `danger` put the icon first, others after the label.',
         'Blocked = square dashed frame with the reason in `enemy-text` ("Pick 1 more to start", "Squad full · remove one first"). Never just dim.',
-        'Min height 48 (primary 60); press scales to .97; focus shows white brackets.',
+        "Min height 48 (primary 60); press scales to .97; focus shows white brackets. A click runs the activation edge (`VbEdgeFx`): two heads run clockwise round the cut outline in the button's own edge colours.",
+        'A forward action ends with its chevron; an action that goes back or leaves leads with its glyph. The settings button is the `cog` glyph with `iconOnly`.',
     ],
 )
 doc(
@@ -144,10 +138,77 @@ doc(
     'Compact 44 × 56 skill control for portrait cards in which every blocked state reads differently.',
     '`view`: a SkillView `{label, icon, slot ("A"|"S"), kind, cost, state, charged (0–1), seconds, need, queue, progress (0–1), reason}`. Optional `dragging` (aim drag in progress), `flash` (hold the refused flash for a still), `onPointerDown`.',
     [
-        '`state`: `ready` (cost in `power-text`), `aiming` (2 px teal frame, AIM), `cooldown` (fills from the bottom, seconds), `short` (dashed lavender, NEED n), `silenced` (amber strike, SIL + seconds), `fallen` (lock, OUT), `casting` (CAST), `disabled` (LOCK).',
-        'Manual priority: `queued` (dashed lavender, QUEUE #n, matching its QueueChip), `buffered` (NEXT and the cost: fires the moment the operative is ready), `windup` (a sweep from `progress`, tick-exact, with seconds).',
-        'Feedback: `invalid` (struck no-target glyph and the `reason`, "Out of range"), `rejected` (one 400 ms crimson flash on entering it), `exposed` (EXPOSED inverted over the cost).',
+        "One layout in every state: the slot letter, the glyph and one cost line. The states are overlays on it, so nothing runs below the slot's foot.",
+        "`cooldown` fills from the bottom and counts its seconds over the glyph (`windup` and `silenced` count the same way); the charge and the windup sweep are `VbClipFill`s that follow the button's bottom-right cut.",
+        '`short` dims the slot and puts the shortfall in the corner ("−3"); `queued` puts its place in line there ("#1"); `buffered` an arrow; `fallen` and `disabled` lock the glyph; `aiming` is a 2 px teal frame; `casting` has no caption of its own.',
+        '`invalid` strikes the glyph and replaces the cost with the `reason`; `rejected` flashes crimson once for 400 ms; `exposed` inverts the cost.',
         'The game owns input; the button only draws. Its tooltip reads "Needle Storm · 18 Power · 40% ready".',
+    ],
+)
+doc(
+    'ActionRow',
+    'Runtime/Layouts/Layouts.cs',
+    'Buttons side by side that fill the row: every visible child takes an equal share with 8 between, and the row stacks into a column when its children no longer fit.',
+    '`children` (buttons), `minItemWidth` (112), `fixed` (one fixed width, never stacks: the trailing BUY and SELL of a list row), `single` (one line at any width: buttons lose their glyph and may wrap their label, an `iconOnly` button keeps its 48 px square), `className`, `style`.',
+    [
+        "Use it for every row of actions: the results row, the menu row, confirm and guide dialogs, the drawer's foot, a list row's trail.",
+        '`single` is for the secondary buttons of a menu or a sheet (EXIT TO MENU, ABANDON and the cog) where several share one line.',
+    ],
+)
+doc(
+    'StatusRow',
+    'Runtime/Composites/Effects.cs',
+    'The timed statuses of a unit as a row of tiny squares (about 20 × 20, glyph alone, stack count in the corner), at most six and a "+n" square.',
+    '`effects` (EffectInstance[]; only the ones with `remainingSeconds` show), `pinned`, `className`.',
+    [
+        'The whole row is one target, 44 units tall through padding the layout does not take back; hover, focus or a tap opens one vertical `EffectList` in a popover.',
+        'Passives, perks and effects without a time are not statuses and never show: a unit with none shows nothing.',
+    ],
+)
+doc(
+    'PopoverCard',
+    'Runtime/Core/Popover.cs (PopoverCard)',
+    "Popover content in the kit's layout: a caps title, an optional hint under it, then flat rows one tone above the popover's surface.",
+    '`title`, `hint`, `rows` (`[{key, value, good?}]`), `children` (your own rows), `className`.',
+    [
+        'The popover itself is one solid surface with a painted arrow toward its anchor, placed again on every resize and kept inside the board; its height is clamped and the content scrolls past that.',
+        "Rows carry no edge. A queue row's cancel goes at the row's end.",
+    ],
+)
+doc(
+    'VbClipFill',
+    'Runtime/Core/VbClip.cs (VbClipFill)',
+    "A solid block that follows the cut of the shape it sits in: it never paints outside the host's chamfers.",
+    "`className`, `style`; the colour is `--vb-fill` (set it on the element's own class).",
+    [
+        'Its box is clipped to the outline of the nearest `VbShape` ancestor with `clip-path` (`--vb-cut`, `--vb-cut-side`); with no shaped ancestor it is a plain block.'
+    ],
+)
+doc(
+    'VbClipImage',
+    'Runtime/Core/VbClip.cs (VbClipImage)',
+    'A picture scaled to fit its box and clipped to the cut of the shape it sits in, so a portrait never overflows the top-left cutout of a card or tile.',
+    '`url`, `className`, `style` (size and offset come from the stylesheet as for any art box).',
+    ['Same clipping as `VbClipFill`.'],
+)
+doc(
+    'VbEdgeFx',
+    'Runtime/Core/VbEdgeFx.cs',
+    'The animated border of the MONO wireframe kit on the cut outline of any shaped element: `play` is the activation, `damage` a unit card taking a hit.',
+    '`VbEdgeFx.play(element, tone?)`, `.damage(element, strength?)`, `.cancel(element)`, `.active(element)`. Every `VbButton` plays it on click.',
+    [
+        "Activate: two bright heads run clockwise from opposite points and meet where the other began (520 ms), in the element's own edge colours, then an afterglow fades. Damage: a translucent red flash and a red border glow (560 ms).",
+        'Reduced motion lights the whole edge and fades it in 100 ms; reduced flashes drop the flash fill. It paints one overlay (`vb-edgefx`) that is added when it plays and removed when it ends.',
+    ],
+)
+doc(
+    'Glitch',
+    'Runtime/Controls/GlitchText.cs (Glitch)',
+    'The title reveal: the text decodes out of noise glyphs left to right while it jitters sideways in 4 px steps that shrink to nothing and its opacity climbs in coarse steps (2000 ms).',
+    '`Glitch.reveal(element, ms?)` (resolves when done), `Glitch.revealTitles(root)` (every `.vb-reveal-title`), `Glitch.scramble(text, reveal, step)`.',
+    [
+        'Titles and eyebrows of a pause sheet, a results screen and a draft carry `vb-reveal-title` and reveal when their view mounts. A heads-up notice can use the same recipe.',
+        'Reduced motion or flashes: the whole text with a 300 ms fade.',
     ],
 )
 doc(
@@ -247,82 +308,96 @@ doc(
     ['Top three ranks read in full white.', 'The current run gets the teal frame, brackets and THIS RUN badge.'],
 )
 doc(
-    'OperativeCard',
-    'Runtime/Composites/Operatives.cs (OperativeCard)',
-    'The 88 × 202 portrait battle card: face, control mode, health/barrier/stability, statuses and two skills, or FALLEN once out.',
-    '`view`: an OperativeView `{name, code, kit (CSS colour, e.g. var(--kit-aria)), portrait (image URL), hp, maxHp, barrier, stability, maxStability, effects: EffectInstance[], mode ("auto"|"manual"|"aiming"|"fallen"), manualSeconds, skills: [SkillView, SkillView]}`. Optional `dragging` (skill index), `onSkillPointerDown(index, event)`.',
+    'UnitCard',
+    'Runtime/Composites/Units.cs (UnitCard)',
+    'The 88 × 202 portrait battle card: face, control mode, health/barrier/stability, two skills (or FALLEN once out) and the timed statuses as a StatusRow above it.',
+    '`view`: an OperativeView `{name, kit (CSS colour, e.g. var(--kit-aria)), portrait (image URL), hp, maxHp, barrier, stability, maxStability, effects: EffectInstance[], mode ("auto"|"manual"|"aiming"|"fallen"), manualSeconds, canRevive, skills: [SkillView, SkillView]}`. Optional `autoDamage` (default true), `dragging` (skill index), `onSkillPointerDown(index, event)`.',
     [
-        '`portrait` is a 2:3 bust render; the band crops it to the face. Without one the band shows `scene-fog`.',
-        'Mode chip: AUTO (teal on dark), MANUAL 2.9s (white), AIMING (teal fill; the card gets a 2 px teal frame and brackets), FALLEN.',
+        'The name is the only identifier. A mode chip shows only for MANUAL (with its seconds) and AIMING; a fallen card says FALLEN once and "Revive via perk" only while `canRevive`.',
+        "The portrait and the band backdrop follow the card's top-left cut (VbClipImage and VbClipFill); the last skill takes the card's own bottom-right cut.",
+        'A drop in `hp` plays the damage edge by itself (VbEdgeFx.Damage: a translucent red flash and a red border glow); a host that raises its own hits sets `autoDamage` false.',
         'Four cards fill a 390 px portrait row at the bottom of the battle screen.',
     ],
 )
 doc(
-    'OperativeTile',
-    'Runtime/Composites/Operatives.cs (OperativeTile)',
+    'UnitTile',
+    'Runtime/Composites/Units.cs (UnitTile)',
     'Roster tile: portrait, name, role and, when picked, its squad slot number.',
     '`view` (OperativeView: `name`, `role`, `roleIcon`, `kit`, `portrait`), `slot` (1–4, 0 = not in squad), `focused`, `tier` (`none`, `blue`, `violet`, `gold`), `locked` (how to get it: "Pull in rifts"), `onPick`.',
     [
         'In-squad tiles take the dark teal fill; the focused one a 2 px teal frame and brackets.',
         'Tier colours frame the tile (gold adds a glow); a locked tile stays visible with a lock and its reason, and cannot join the squad.',
+        'A narrow board (`vb-compact`) shows the role as its icon alone.',
     ],
 )
 doc(
-    'SquadSlot',
-    'Runtime/Composites/Operatives.cs (SquadSlot)',
-    'One of the four squad slots on the selection screen: the operative, or a dashed empty slot.',
+    'UnitSlot',
+    'Runtime/Composites/Units.cs (UnitSlot)',
+    'One of the four squad slots on the selection screen: the unit (its name alone), or a dashed empty slot.',
     '`view` (OperativeView or `null` for empty), `slot` (1–4), `onPick`.',
-    ['Empty slots are square and dashed with SLOT n; filled ones show the slot number on the portrait.'],
-)
-doc(
-    'OperativeDetails',
-    'Runtime/Composites/Operatives.cs (OperativeDetails)',
-    'The 366 px operative sheet: stats, passive, both skills with cost and cooldown, close and add/remove.',
-    '`view` (OperativeView incl. `armor`, `passive`, `passiveText`, skill `description`/`cooldownSeconds`), `slot` (0 = not in squad), `squadFull`, `maxHp`/`maxArmor`/`maxStability` (bar scales: 1580, 26, 140), `onClose`, `onToggle`.',
     [
-        'The toggle is ADD TO SQUAD (light) or REMOVE FROM SQUAD (danger); adding to a full squad is blocked with "Squad full · remove one first".'
+        'Empty slots are square and dashed with SLOT n; filled ones show the slot number on the portrait.',
+        'SquadView lets the player drag, long-press or Alt+arrow a filled slot to reorder the squad.',
     ],
 )
 doc(
-    'OperativeStats',
-    'Runtime/Composites/Operatives.cs (OperativeStats)',
-    "One operative's post-run contribution: share of squad damage and six figures.",
+    'UnitDetail',
+    'Runtime/Composites/Units.cs (UnitDetail)',
+    'The unit sheet: stats, then the passive, the basic attack and both skills (cost and cooldown only where there is one), the lore prompt, close and add/remove.',
+    '`view` (OperativeView incl. `armor`, `passive`, `passiveIcon`, `passiveText`, `basic` (a SkillView), `lore`, skill `description`/`cooldownSeconds`), `slot` (0 = not in squad), `squadFull`, `showStability` (false hides it), `maxHp`/`maxArmor`/`maxStability` (bar scales: 1580, 26, 140), `onClose`, `onToggle`.',
+    [
+        'The toggle is ADD TO SQUAD (light) or REMOVE FROM SQUAD (danger); adding to a full squad is blocked with "Squad full · remove one first".',
+        'Emphasis marks (`*word*`) in the descriptions render as emphasis. SquadView hides stability until operatives differ in it.',
+    ],
+)
+doc(
+    'UnitStats',
+    'Runtime/Composites/Units.cs (UnitStats)',
+    "One unit's post-run contribution: share of squad damage and six figures.",
     '`view`: a ContributionView `{operative, fellWave (0 = standing), damage, kills, casts, power, share (0–1), extraLabel, extraValue}`.',
     [
-        "The share bar takes the operative's kit colour; FELL WAVE n in `enemy-text`, STANDING in `ally-text`.",
-        "Usually SquadResult's popover content.",
+        "The share bar takes the operative's kit colour; FELL WAVE n shows in `enemy-text` only for a unit that fell.",
+        "Usually ResultSummary's popover content.",
     ],
 )
 doc(
-    'SquadResult',
-    'Runtime/Composites/Operatives.cs (SquadResult)',
-    'Results cell for one operative; hover, focus or tap shows its OperativeStats above it.',
+    'ResultSummary',
+    'Runtime/Composites/Units.cs (ResultSummary)',
+    'Results cell for one unit: its name and, when it fell, FELL Wn; hover, focus or tap shows its UnitStats above it.',
     '`view` (ContributionView), `pinned` (keep the popover open).',
-    ['Fallen operatives are struck through with FELL Wn; the kit colour runs along the bottom edge.'],
+    [
+        'A unit still standing says nothing; fallen units are struck through; the kit colour runs along the bottom edge.',
+    ],
 )
 doc(
-    'PerkCard',
-    'Runtime/Composites/Perks.cs (PerkCard)',
-    'Draft card (one of three): art, tier tag, name, effect, stack pips and the value after the pick.',
-    '`view`: a PerkView `{name, category, tag, tier ("general"|"operative"|"rare"), icon, art (image URL, operative perks), effect, now, next, stack, max}`; `selected`; `onPick`.',
+    'ChoiceCard',
+    'Runtime/Composites/ChoiceCard.cs (ChoiceCard)',
+    'One option the player takes by tapping it (a road, an extract choice, a perk); the whole card is the button.',
+    '`road` (RoadView, with `action`, default TAKE THIS ROAD) or `perk` (PerkView) with `selected`; or the fields directly: `tag`, `icon`, `title`, `text`, `next`, `action`, `rank`/`ranks`/`rankNext`/`rankTone`. `side` (`single`, `left`, `right`: a pair cuts its outer corners), `tone` (`ally`, `enemy`, `power`), `onPick`.',
     [
-        "Tiers: general (grey rule), operative (teal tag and rule, the operative's portrait as art), rare (violet frame and tag).",
-        'Selected = dark teal fill, 2 px teal frame, brackets and a check. Owned pips are grey, the next one teal.',
+        'A perk is a ChoiceCard wherever it is offered: tier tints the card (general neutral, operative teal, rare cyan, epic violet) and its tag and glyph; a selected card is framed with brackets.',
+        'Emphasis marks (`*word*`) in `text` render as emphasis. Only the choice card keeps its edge under the border rule.',
     ],
 )
 doc(
     'PerkDetail',
     'Runtime/Composites/Perks.cs (PerkDetail)',
-    'Full perk explanation: draft (now → after pick) or owned (active value, stacks, waves picked).',
+    'Full perk explanation: draft (the value now, if there is one, then after the pick) or owned (active value, stacks, waves picked); each fact is one StatRow.',
     '`view` (PerkView incl. `waves`), `draft`, optional `style` width (popovers use 260).',
-    ['The value that improves reads in `ally-text`.', "Shown inline under the draft cards and as PerkChip's popover."],
+    [
+        'The value that improves reads in `ally-text`.',
+        "Shown inline and as ChipRow's popover.",
+    ],
 )
 doc(
-    'PerkChip',
-    'Runtime/Composites/Perks.cs (PerkChip)',
-    'Compact owned-perk chip; hover, focus or tap shows its PerkDetail.',
-    "`view` (PerkView), `alignEnd` (popover aligns to the chip's right edge), `pinned`.",
-    ['Stacks above one show ×n in `ally-text`; operative perks tint the glyph teal, rare perks frame violet.'],
+    'ChipRow',
+    'Runtime/Controls/ChipRow.cs (ChipRow)',
+    'A chip on one plate with no edge: a glyph, a word and a value. A perk chip is tinted by its rarity; hover, focus or tap shows its PerkDetail.',
+    "`view` (PerkView), `alignEnd` (popover aligns to the chip's right edge), `pinned`; or `text`, `icon`, `value` and `static` (read only, as tall as its plate: the HUD's credits).",
+    [
+        'A chip that is a target has a 44-unit hit area (the plate is 30). Stacks above one show ×n in `ally-text`.',
+        'Chips wrap in a row (`vb-row vb-row--wrap`) with no gap of their own.',
+    ],
 )
 doc(
     'PerkRow',
@@ -330,6 +405,28 @@ doc(
     'Active-perk list row: art, name, tag, effect, current value and stacks.',
     '`view` (PerkView), `selected`, `onPick`.',
     ['The effect ellipsizes; the current value sits right in `ally-text` over its stacks.'],
+)
+
+doc(
+    'StatRow',
+    'Runtime/Controls/StatRow.cs (StatRow)',
+    'One fact on one row: a key that keeps its width, a value that wraps beside it and, optionally, a glyph and a trailing action 44 units tall.',
+    '`label`, `value` (text or nodes), `good`, `icon`, `action` (a button), `bar` (ProgressBar props), `stacked` (the value under the key), `dimmed`, `plated` (one tone above the parent), `tier`.',
+    [
+        "A KeyValueRow with a trailing slot: the merchant's BUY and SELL and a perk's detail rows are StatRows.",
+        'A row that cannot be acted on is dimmed, with no second price or reason.',
+    ],
+)
+
+doc(
+    'Carousel',
+    'Runtime/Composites/Carousel.cs (Carousel)',
+    'Cards where the active one takes 64% of the width and its neighbours sit partly beneath it, tilted; endless both ways.',
+    'children (the cards: any element that takes `className`, `style` and `onFocus`, a ChoiceCard for perks), `selected` (the active index), `onChange(index)`.',
+    [
+        'Swipe (the row follows the finger, settles on the nearest card, a flick goes one further), tap a card beneath, the arrow keys or focus change the card and raise `onChange`; it glides in 320 ms and is instant under reduced motion.',
+        'The carousel is layout only: the active card shows its own information, so nothing repeats it elsewhere.',
+    ],
 )
 
 doc(
@@ -463,76 +560,290 @@ doc(
 
 # ── The handbook's atoms, composites, layouts and views (0.3.0) ──────────────
 for name, cs, summary, provide, rules in [
-    ('ProgressBar', 'Runtime/Controls/Progress.cs', 'The one progress bar: continuous, or `segments` equal levels.', '`segments` (0 = continuous), `value` (levels, or 0–1), `next` (outline the level a pick adds), `tone` (ally, power, enemy, neutral).', ['Perk levels, stacks and steps are segments; health and progress are continuous.']),
-    ('KeyValueRow', 'Runtime/Controls/Progress.cs', 'One key/value line: a caption key, a value on the right.', '`label`, `value`, `good` (ally colour).', ['Perk details, the results ledger and fact lists use it.']),
-    ('ListRow', 'Runtime/Controls/Progress.cs', 'The one list row: glyph, caps title, caption, optional progress bar, trailing value and action.', '`icon`, `title`, `caption`, `bar` (ProgressBar props), `value`, `action`, `selected`, `onPick`.', ['Merchant offers, stack sales and health trades are ListRows; put rows in a ListLayout.']),
-    ('TextComponent', 'Runtime/Controls/Text.cs', 'Every run of text: one type style and an optional tone.',
-     '`typeStyle` (display, title, label, badge, body, caption, num), `tone` (ally, enemy, power, muted), `text`.',
-     ['One type style per run; tones only recolour.', 'Pass caps yourself, or use LabelComponent.']),
-    ('LabelComponent', 'Runtime/Controls/Text.cs', 'The caps eyebrow over a section, field or value, with 4 units under it.',
-     '`text` (uppercased for you), `size` (label or badge), `tone`.', ['A label names a thing; it is never a sentence.']),
-    ('BadgeComponent', 'Runtime/Controls/Badge.cs', 'A small slim chip: a word, an optional glyph before it and a value after it.',
-     '`text`, `icon`, `value`, `tone` (neutral, ally, enemy, power, warn, inverted), children.',
-     ['StatusChip and CreditsChip are the status and currency presets (`Badge.Status`, `Badge.Credits` in Unity).', 'Colour never travels alone: a tone always comes with a word.']),
-    ('IconButtonComposite', 'Runtime/Controls/IconButton.cs', 'A 44 × 44 chipped square with one glyph or a short state, and a tooltip.',
-     '`icon` or `text`, `tooltip` (required: it is the accessible name), `active`, `quiet`, `size`, `onClick`.',
-     ['Back, pause, close, speed and autoplay are all this control.', '`quiet` is the translucent HUD look over the world; `active` is toggled on.']),
-    ('TileComponent', 'Runtime/Controls/Tile.cs', 'A pickable cell: picture or glyph, name, caption with its glyph, order and state.',
-     '`title`, `caption`, `captionIcon`, `picture`, `glyph`, `kit`, `order`, `state` (in, focused, locked, empty; in and focused combine), `tier`, `emptyLabel`, `onPick`, `block`.',
-     ['OperativeTile and SquadSlot are tiles (`block` vb-tile, vb-slot).', 'Locked tiles stay visible and say how to unlock; lay tiles out in a grid.']),
-    ('CardComponent', 'Runtime/Controls/Card.cs', 'A slim container with an optional media band, a head, a body and a foot of actions.',
-     '`title`, `meta`, `media`, `actions`, `selected`, children (the body).', ['Cards are slim; only a selected card is chipped (edge and brackets).', 'Foot actions are right-aligned.']),
-    ('DrawerOverlay', 'Runtime/Composites/Drawer.cs', 'A bottom drawer: a slim sheet that slides up over a backdrop to half the screen; drag its top up for full screen or down to close.',
-     '`open` (default true), `snap` (half or full, where it opens), `onSnap`, `title`, `meta`, `backdrop` (false docks it inside a view), `dismissible`, `closeButton`, `actions`, `onDismiss`, children (the body).',
-     ['Drag the grip or head: up snaps to full screen, down back to half, below a quarter of the screen closes it. A tap on the grip toggles half and full.',
-      'The backdrop and × dismiss it too; `onDismiss` fires, then it slides away. SquadView opens operative details in one.',
-      'Unity: `DrawerOverlay.Push(nav, title, closed)` puts one on a modal layer that Back pops.']),
-    ('FieldComposite', 'Runtime/Composites/Forms.cs', 'One setting: a caps label, its input and one line of what it does.',
-     '`label`, `help`, children (the input).', ['Use it for inputs without their own label; VbSlider and VbSwitch carry theirs.']),
-    ('Fieldset', 'Runtime/Core/Ui.cs (Ui.Section)', 'A titled group of related fields in one slim container.',
-     '`title`, children (fields).', ['One topic per fieldset, 1–4 fields.']),
-    ('FormComposite', 'Runtime/Composites/Forms.cs', 'Fieldsets in a scroll, an optional note, a footer of secondary actions and a saved line.',
-     '`saved`, `headed` (the saved state shows in a ScreenHeader instead), `note` ({ icon, text }), `footer`, children (fieldsets).',
-     ['Settings apply as they change; there is no Submit.', 'Destructive actions live in the footer as danger buttons and confirm.']),
-    ('StackLayout', 'Runtime/Layouts/Layouts.cs', 'A column with one rhythm: the gap under every child but the last.', '`gap` (4, 8, 12 or 16), children.', ['Use it instead of per-element margins.']),
-    ('VbGrid', 'Runtime/Layouts/Layouts.cs', 'Cells 2, 3 or 4 across; `wrap` adds the row rhythm.', '`columns` (2, 3 or 4), `wrap`, children.', ['Pick the count the items fill; never a half-empty row.']),
-    ('ListLayout', 'Runtime/Layouts/Layouts.cs', 'Rows of one kind in a scroll, 6 between rows, with an empty-state line.', '`empty`, children (rows).', ['ScoreRow, PerkRow and RuleRow carry no margin of their own; put them in a list.']),
-    ('BoardLayout', 'Runtime/Layouts/Layouts.cs', 'The battle board: top band, the world (the rest, at least half) and the bottom band.', '`top`, `world`, `bottom`.', ['Top and bottom never shrink.']),
-    ('MainMenuView', 'Runtime/Views/MenuViews.cs', 'The title screen: offline badge and best, the mark, the menu actions and EXIT.',
-     '`view` (status, subtitle, best, bestWave, checkpoint, squad, notice, canExit), `onPlay`, `onResume`, `onScores`, `onSettings`, `onExit`.', ['PLAY is the one primary.']),
-    ('MenuActionsSectionView', 'Runtime/Views/MenuViews.cs', 'The thumb-zone block: checkpoint card, PLAY, high scores and settings.',
-     '`checkpoint` (wave, score, standing, squadSize, perks, seed) or null, `squadLine`, `notice`, `onPlay`, `onResume`, `onScores`, `onSettings`.',
-     ['RESUME is secondary and lives in the checkpoint card.', 'The card only exists when there is a checkpoint.']),
-    ('SquadView', 'Runtime/Views/SquadView.cs', 'Pick four: squad slots, the roster grid, the open details and START RUN.',
-     '`view` (roster, selected, focus, locked, tiers, seed), `onPick(i)`, `onSlotPick(i)`, `onToggle(i)`, `onClose`, `onStart`, `onBack`.', ['START RUN is blocked with its reason until the squad has four.']),
-    ('SettingsView', 'Runtime/Views/SettingsView.cs', 'Audio, feel, camera and quality as fieldsets in one form; applies as it changes.',
-     '`view` (master, music, effects, sensitivity, haptics, reducedMotion, camera, quality, saved, note), `onChange(model)`, `onClearScores`, `onAccessibility`, `onBack`.', ['Every change reports the whole model.']),
-    ('PauseOverlayView', 'Runtime/Views/OverlayViews.cs', 'The run, frozen: the screen header (its back square resumes), then one overlay panel centred on the screen.',
-     '`view` (wave, score, standing, squadSize, perks, seed, detail), `onResume`, `onSettings`, `onPerks`, `onAbandon`, `onExit`.', ['RESUME is the one primary; the header back square and Back resume too.', 'ABANDON is danger and confirms; EXIT TO MENU is a ghost at the bottom of the panel.']),
-    ('ConfirmDialogView', 'Runtime/Views/OverlayViews.cs', 'One shape for every confirmation: question, consequence, destructive action, way back.',
-     '`title`, `body`, `confirm` ({ label, icon, sub, variant }), `cancel` ({ label, icon }), `onConfirm`, `onCancel`.', ['Unity: `ConfirmDialogView.Push(nav, …)` puts it on a modal layer.']),
-    ('GuideDialogView', 'Runtime/Views/OverlayViews.cs', 'The first-run guide: numbered steps and READY.', '`title`, `steps`, `onReady`.', ['Unity: `GuideDialogView.Push(nav, title, steps, ready)`.']),
-    ('PerkDraftView', 'Runtime/Views/RunViews.cs', 'Wave cleared: three perk cards, the pick explained, the squad that carries forward and TAKE PERK.',
-     '`view` (wave, bonus, score, choices, pick, squad: code, hp, maxHp, stability), `onPick(i)`, `onTake`.', ['TAKE PERK says what the pick does next.']),
-    ('ResultsView', 'Runtime/Views/RunViews.cs', 'Run over: the score and its ledger, stats, the squad\'s contribution, the perks, MENU and RUN AGAIN.',
-     '`view` (cause, score, wave, bosses, rank, of, ledger, distance, simTime, squad, perks), `onMenu`, `onAgain`.', ['RUN AGAIN is the one primary.']),
-    ('HighScoresView', 'Runtime/Views/RunViews.cs', 'Top 20 on this device with the current run framed, then older-rules runs.',
-     '`ranked`, `historical`, `caption`, `onBack`.', ['Local scores only; say so in the footer.']),
-    ('RouteChoiceView', 'Runtime/Views/BattleViews.cs', 'The crossroads screen around RouteChoice.', '`view` (RouteView), `onChoose(side)`.', ['Only one choice is accepted.']),
-    ('MerchantScreenView', 'Runtime/Views/BattleViews.cs', 'The night market screen (design name MerchantView) around MerchantScreen.',
-     '`view` (MerchantView), `onBuy`, `onSellPerk`, `onSellHealth`, `onLeave`.', ['The host confirms every trade and binds again.']),
-    ('BattleHudView', 'Runtime/Views/BattleViews.cs', 'The whole battle board: HUD band, boss bar, announcer, the world and four operative cards.',
-     '`hud` (HudView), `operatives`, `boss` (or null), `announcement`, `world`, `onPause`, `onAuto`, `onSpeed`, `onQueueCancel`.', ['Unity: bind it every frame; the game attaches its aim drag to `Card(i).Skill(n)`.']),
+    (
+        'ProgressBar',
+        'Runtime/Controls/Progress.cs',
+        'The one progress bar: continuous, or `segments` equal levels.',
+        '`segments` (0 = continuous), `value` (levels, or 0–1), `next` (outline the level a pick adds), `tone` (ally, power, enemy, neutral).',
+        ['Perk levels, stacks and steps are segments; health and progress are continuous.'],
+    ),
+    (
+        'KeyValueRow',
+        'Runtime/Controls/Progress.cs',
+        'One key/value line: a caption key, a value on the right.',
+        '`label`, `value`, `good` (ally colour).',
+        ['Perk details, the results ledger and fact lists use it.'],
+    ),
+    (
+        'ListRow',
+        'Runtime/Controls/Progress.cs',
+        'The one list row: glyph, caps title, caption, optional progress bar, trailing value and action.',
+        '`icon`, `title`, `caption`, `bar` (ProgressBar props), `value`, `action`, `selected`, `onPick`.',
+        ['Merchant offers, stack sales and health trades are ListRows; put rows in a ListLayout.'],
+    ),
+    (
+        'TextComponent',
+        'Runtime/Controls/Text.cs',
+        'Every run of text: one type style and an optional tone.',
+        '`typeStyle` (display, title, label, badge, body, caption, num and the three variants: body / body-sm, label-sm (= badge) / label / label-lg, heading-sm / heading / heading-lg), `tone` (ally, enemy, power, muted), `text`.',
+        [
+            "One type style per run; tones only recolour. The three variants (body, label, heading) are what the 0.9.0 type scale is built from; every size follows the board's width through the fluid scale (`vb-fluid-<step>`, set on each `.vb-root` by the kit).",
+            'Pass caps yourself, or use LabelComponent.',
+        ],
+    ),
+    (
+        'LabelComponent',
+        'Runtime/Controls/Text.cs',
+        'The caps eyebrow over a section, field or value, with 4 units under it.',
+        '`text` (uppercased for you), `size` (label or badge), `tone`.',
+        ['A label names a thing; it is never a sentence.'],
+    ),
+    (
+        'BadgeComponent',
+        'Runtime/Controls/Badge.cs',
+        'A small slim chip: a word, an optional glyph before it and a value after it.',
+        '`text`, `icon`, `value`, `tone` (neutral, ally, enemy, power, warn, inverted), children.',
+        [
+            'StatusChip and ChipRow (`ChipRow.Credits()`) are the status and currency presets (`Badge.Status`, `Badge.Credits` in Unity).',
+            'Colour never travels alone: a tone always comes with a word.',
+        ],
+    ),
+    (
+        'IconButtonComposite',
+        'Runtime/Controls/IconButton.cs',
+        'A 44 × 44 chipped square with one glyph or a short state, and a tooltip.',
+        '`icon` or `text`, `tooltip` (required: it is the accessible name), `active`, `quiet`, `size`, `onClick`.',
+        [
+            'Back, pause, close, speed and autoplay are all this control.',
+            '`quiet` is the translucent HUD look over the world; `active` is toggled on.',
+        ],
+    ),
+    (
+        'TileComponent',
+        'Runtime/Controls/Tile.cs',
+        'A pickable cell: picture or glyph, name, caption with its glyph, order and state.',
+        '`title`, `caption`, `captionIcon`, `picture`, `glyph`, `kit`, `order`, `state` (in, focused, locked, empty; in and focused combine), `tier`, `emptyLabel`, `onPick`, `block`.',
+        [
+            'UnitTile and UnitSlot are tiles (`block` vb-tile, vb-slot).',
+            'Locked tiles stay visible and say how to unlock; lay tiles out in a grid.',
+        ],
+    ),
+    (
+        'CardComponent',
+        'Runtime/Controls/Card.cs',
+        'A slim container with an optional media band, a head, a body and a foot of actions.',
+        '`title`, `meta`, `media`, `actions`, `selected`, children (the body).',
+        ['Cards are slim; only a selected card is chipped (edge and brackets).', 'Foot actions are right-aligned.'],
+    ),
+    (
+        'DrawerOverlay',
+        'Runtime/Composites/Drawer.cs',
+        'A bottom drawer: a slim sheet that slides up over a backdrop to the height of its content (at most 90% of the screen); drag its top up for full screen or down to close; half the screen is opt-in.',
+        '`open` (default true), `snap` (half or full, where it opens), `onSnap`, `title`, `meta`, `backdrop` (false docks it inside a view), `dismissible`, `closeButton`, `actions`, `onDismiss`, children (the body).',
+        [
+            'Drag the grip or head: up snaps to full screen, down back to half, below a quarter of the screen closes it. A tap on the grip toggles half and full.',
+            'The backdrop and × dismiss it too; `onDismiss` fires, then it slides away. SquadView opens operative details in one.',
+            'Unity: `DrawerOverlay.Push(nav, title, closed)` puts one on a modal layer that Back pops.',
+        ],
+    ),
+    (
+        'FieldComposite',
+        'Runtime/Composites/Forms.cs',
+        'One setting: a caps label, its input and one line of what it does.',
+        '`label`, `help`, children (the input).',
+        ['Use it for inputs without their own label; VbSlider and VbSwitch carry theirs.'],
+    ),
+    (
+        'Fieldset',
+        'Runtime/Core/Ui.cs (Ui.Section)',
+        'A titled group of related fields in one slim container.',
+        '`title`, children (fields).',
+        ['One topic per fieldset, 1–4 fields.'],
+    ),
+    (
+        'FormComposite',
+        'Runtime/Composites/Forms.cs',
+        'Fieldsets in a scroll, an optional note, a footer of secondary actions and a saved line.',
+        '`saved`, `headed` (the saved state shows in a ScreenHeader instead), `note` ({ icon, text }), `footer`, children (fieldsets).',
+        [
+            'Settings apply as they change; there is no Submit.',
+            'Destructive actions live in the footer as danger buttons and confirm.',
+        ],
+    ),
+    (
+        'StackLayout',
+        'Runtime/Layouts/Layouts.cs',
+        'A column with one rhythm: the gap under every child but the last.',
+        '`gap` (4, 8, 12 or 16), children.',
+        ['Use it instead of per-element margins.'],
+    ),
+    (
+        'VbGrid',
+        'Runtime/Layouts/Layouts.cs',
+        'Cells 2, 3 or 4 across; `wrap` adds the row rhythm.',
+        '`columns` (2, 3 or 4), `wrap`, children.',
+        ['Pick the count the items fill; never a half-empty row.'],
+    ),
+    (
+        'ListLayout',
+        'Runtime/Layouts/Layouts.cs',
+        'Rows of one kind in a scroll, 6 between rows, with an empty-state line.',
+        '`empty`, children (rows).',
+        ['ScoreRow, PerkRow and RuleRow carry no margin of their own; put them in a list.'],
+    ),
+    (
+        'BoardLayout',
+        'Runtime/Layouts/Layouts.cs',
+        'The battle board: top band, the world (the rest, at least half) and the bottom band.',
+        '`top`, `world`, `bottom`.',
+        ['Top and bottom never shrink.'],
+    ),
+    (
+        'MainMenuView',
+        'Runtime/Views/MenuViews.cs',
+        'The title screen: offline badge, best and the EXIT icon button, the mark and the menu actions.',
+        '`view` (status, subtitle, best, bestWave, checkpoint, squad, notice, canExit), `onPlay`, `onResume`, `onScores`, `onSettings`, `onExit`.',
+        ['PLAY is the one primary.'],
+    ),
+    (
+        'MenuActionsSectionView',
+        'Runtime/Views/MenuViews.cs',
+        'The thumb-zone block: checkpoint card, PLAY, then one row of HIGH SCORES (filling it) and the settings cog (an icon-only button).',
+        '`checkpoint` (wave, score, standing, squadSize, perks, seed) or null, `squadLine`, `notice`, `onPlay`, `onResume`, `onScores`, `onSettings`.',
+        ['RESUME is secondary and lives in the checkpoint card.', 'The card only exists when there is a checkpoint.'],
+    ),
+    (
+        'SquadView',
+        'Runtime/Views/SquadView.cs',
+        'Pick four: squad slots, the roster grid, the open details and START RUN.',
+        '`view` (roster, selected, focus, locked, tiers, seed), `onPick(i)`, `onSlotPick(i)`, `onToggle(i)`, `onClose`, `onStart`, `onBack`.',
+        ['START RUN is blocked with its reason until the squad has four.'],
+    ),
+    (
+        'SettingsView',
+        'Runtime/Views/SettingsView.cs',
+        'Audio, feel, camera, quality, accessibility (reduced motion and a row to the display options) and data as fieldsets in one form; applies as it changes.',
+        '`view` (master, music, effects, sensitivity, haptics, reducedMotion, camera, quality, saved, note), `onChange(model)`, `onClearScores`, `onAccessibility`, `onBack`.',
+        ['Every change reports the whole model.'],
+    ),
+    (
+        'PauseOverlayView',
+        'Runtime/Views/OverlayViews.cs',
+        'The run, frozen: the screen header without a back arrow (its title reveals), then one overlay panel centred on the screen: stats with an info popover, the active perks, RESUME and one row of EXIT TO MENU, ABANDON and the settings cog.',
+        '`view` (wave, score, standing, squadSize, perks, seed, detail), `onResume`, `onSettings`, `onPerks`, `onAbandon`, `onExit`.',
+        [
+            'RESUME is the one primary; the header back square and Back resume too.',
+            'ABANDON is danger and confirms; EXIT TO MENU is a ghost at the bottom of the panel.',
+        ],
+    ),
+    (
+        'ConfirmDialogView',
+        'Runtime/Views/OverlayViews.cs',
+        'One shape for every confirmation: question, consequence, destructive action, way back.',
+        '`title`, `body`, `confirm` ({ label, icon, sub, variant }), `cancel` ({ label, icon }), `onConfirm`, `onCancel`.',
+        ['Unity: `ConfirmDialogView.Push(nav, …)` puts it on a modal layer.'],
+    ),
+    (
+        'GuideDialogView',
+        'Runtime/Views/OverlayViews.cs',
+        'The first-run guide: numbered steps and READY.',
+        '`title`, `steps`, `onReady`.',
+        ['Unity: `GuideDialogView.Push(nav, title, steps, ready)`.'],
+    ),
+    (
+        'PerkDraftView',
+        'Runtime/Views/RunViews.cs',
+        'Wave cleared: three perk cards, the pick explained, the squad that carries forward and TAKE PERK.',
+        '`view` (wave, bonus, score, choices, pick, squad: code, hp, maxHp, stability), `onPick(i)`, `onTake`.',
+        ['TAKE PERK says what the pick does next.'],
+    ),
+    (
+        'ResultsView',
+        'Runtime/Views/RunViews.cs',
+        "Run over: the score and its ledger, stats, the squad's contribution, the perks, MENU and RUN AGAIN.",
+        '`view` (cause, score, wave, bosses, rank, of, ledger, distance, simTime, squad, perks), `onMenu`, `onAgain`.',
+        ['RUN AGAIN is the one primary.'],
+    ),
+    (
+        'HighScoresView',
+        'Runtime/Views/RunViews.cs',
+        'Top 20 on this device with the current run framed, then older-rules runs.',
+        '`ranked`, `historical`, `caption`, `onBack`.',
+        ['Local scores only; say so in the footer.'],
+    ),
+    (
+        'RouteChoiceView',
+        'Runtime/Views/BattleViews.cs',
+        'The crossroads screen around RouteChoice.',
+        '`view` (RouteView), `onChoose(side)`.',
+        ['Only one choice is accepted.'],
+    ),
+    (
+        'MerchantScreenView',
+        'Runtime/Views/BattleViews.cs',
+        'The night market screen (design name MerchantView) around MerchantScreen.',
+        '`view` (MerchantView), `onBuy`, `onSellPerk`, `onSellHealth`, `onLeave`.',
+        ['The host confirms every trade and binds again.'],
+    ),
+    (
+        'BattleHudView',
+        'Runtime/Views/BattleViews.cs',
+        'The whole battle board: HUD band, boss bar, announcer, the world and four operative cards.',
+        '`hud` (HudView), `operatives`, `boss` (or null), `announcement`, `world`, `onPause`, `onAuto`, `onSpeed`, `onQueueCancel`.',
+        ['Unity: bind it every frame; the game attaches its aim drag to `Card(i).Skill(n)`.'],
+    ),
 ]:
     doc(name, cs, summary, provide, rules)
 
-doc('EffectDetails', 'Runtime/Composites/Effects.cs', 'Shared effect meaning, value, source, duration and activation.', '`view` or `effects`; callbacks report intent.', ['Unity owns the contract; React mirrors it.'])
-doc('EffectBadge', 'Runtime/Composites/Effects.cs', 'Inspectable touch target for a state modifier.', '`view` or `effects`; callbacks report intent.', ['Unity owns the contract; React mirrors it.'])
-doc('EffectList', 'Runtime/Composites/Effects.cs', 'Every modifier, individually inspectable without truncation.', '`view` or `effects`; callbacks report intent.', ['Unity owns the contract; React mirrors it.'])
-doc('EffectStrip', 'Runtime/Composites/Effects.cs', 'Compact battle status strip with complete overflow.', '`view` or `effects`; callbacks report intent.', ['Unity owns the contract; React mirrors it.'])
-doc('ActivePerksView', 'Runtime/Views', 'Owned perk stacks, category totals and selected explanation.', '`view` or `effects`; callbacks report intent.', ['Unity owns the contract; React mirrors it.'])
-doc('RevivePickView', 'Runtime/Views', 'Choose one fallen operative to restore.', '`view` or `effects`; callbacks report intent.', ['Unity owns the contract; React mirrors it.'])
-doc('AccessibilityView', 'Runtime/Views', 'Shared accessibility controls and saved state.', '`view` or `effects`; callbacks report intent.', ['Unity owns the contract; React mirrors it.'])
+doc(
+    'EffectDetails',
+    'Runtime/Composites/Effects.cs',
+    'Shared effect meaning, value, source, duration and activation.',
+    '`view` or `effects`; callbacks report intent.',
+    ['Unity owns the contract; React mirrors it.'],
+)
+doc(
+    'EffectBadge',
+    'Runtime/Composites/Effects.cs',
+    'Inspectable touch target for a state modifier.',
+    '`view` or `effects`; callbacks report intent.',
+    ['Unity owns the contract; React mirrors it.'],
+)
+doc(
+    'EffectList',
+    'Runtime/Composites/Effects.cs',
+    'Every modifier, individually inspectable without truncation.',
+    '`view` or `effects`; callbacks report intent.',
+    ['Unity owns the contract; React mirrors it.'],
+)
+doc(
+    'EffectStrip',
+    'Runtime/Composites/Effects.cs',
+    'Compact battle status strip with complete overflow.',
+    '`view` or `effects`; callbacks report intent.',
+    ['Unity owns the contract; React mirrors it.'],
+)
+doc(
+    'ActivePerksView',
+    'Runtime/Views',
+    'Owned perk stacks, category totals and selected explanation.',
+    '`view` or `effects`; callbacks report intent.',
+    ['Unity owns the contract; React mirrors it.'],
+)
+doc(
+    'RevivePickView',
+    'Runtime/Views',
+    'Choose one fallen operative to restore.',
+    '`view` or `effects`; callbacks report intent.',
+    ['Unity owns the contract; React mirrors it.'],
+)
+doc(
+    'AccessibilityView',
+    'Runtime/Views',
+    'Shared accessibility controls and saved state.',
+    '`view` or `effects`; callbacks report intent.',
+    ['Unity owns the contract; React mirrors it.'],
+)
 
 DTS = r"""
 import type * as React from 'react';
@@ -546,7 +857,7 @@ export type ControlMode = 'auto' | 'manual' | 'aiming' | 'fallen';
 export type PerkTier = 'general' | 'operative' | 'rare' | 'epic';
 export type StatusKind = 'exposed' | 'silenced' | 'rooted' | 'slowed' | 'interrupted' | 'barrier';
 export interface SkillView { label?: string; icon?: KitIconName; slot?: 'A' | 'S' | string; kind?: string; description?: string; fullDescription?: string; cost?: number; state?: SkillState; charged?: number; seconds?: number; cooldownSeconds?: number; need?: number; queue?: number; progress?: number; reason?: string }
-export interface OperativeView { id?: string; name: string; code: string; role?: string; roleIcon?: KitIconName; passive?: string; passiveText?: string; passiveFullText?: string; kit: string; portrait?: string | null; hp: number; maxHp: number; barrier?: number; armor?: number; stability?: number; maxStability?: number; effects?: EffectInstance[]; mode?: ControlMode; manualSeconds?: number; skills?: SkillView[] }
+export interface OperativeView { id?: string; name: string; code: string; role?: string; roleIcon?: KitIconName; passive?: string; passiveText?: string; passiveFullText?: string; passiveIcon?: KitIconName; basic?: SkillView | null; lore?: string; canRevive?: boolean; kit: string; portrait?: string | null; hp: number; maxHp: number; barrier?: number; armor?: number; stability?: number; maxStability?: number; effects?: EffectInstance[]; mode?: ControlMode; manualSeconds?: number; skills?: SkillView[] }
 export interface PerkView { id?: string; name: string; category?: string; tag?: string; icon?: KitIconName; effect?: string; now?: string; next?: string; tier?: PerkTier; art?: string | null; stack?: number; max?: number; waves?: number[] }
 export interface QueueView { id?: string; who: string; skill: string; cost: number; eta: string; actor?: number; slot?: number; manual?: boolean; next?: boolean }
 export interface HudView { credits?: number; speed?: number; wave?: number; score?: number; boss?: boolean; auto?: boolean; slow?: boolean; power?: number; maxPower?: number; regen?: string; hint?: string | null; focus?: number; previewFrom?: number; previewTo?: number; queue?: QueueView[]; queueTitle?: string; queueHint?: string }
@@ -560,8 +871,16 @@ export interface VbIconProps { icon: KitIconName; size?: number; title?: string;
 export declare function VbIcon(props: VbIconProps): React.ReactElement;
 export interface VbMarkProps { width?: number; className?: string; style?: React.CSSProperties }
 export declare function VbMark(props: VbMarkProps): React.ReactElement;
-export interface VbButtonProps { title: string; variant?: 'primary' | 'secondary' | 'light' | 'danger' | 'ghost'; sub?: string; icon?: KitIconName; blocked?: string; onClick?: () => void; className?: string; style?: React.CSSProperties }
+export interface VbButtonProps { title: string; variant?: 'primary' | 'secondary' | 'light' | 'danger' | 'ghost'; sub?: string; icon?: KitIconName; blocked?: string; iconOnly?: boolean; lead?: boolean; dimmed?: boolean; compact?: boolean; onClick?: () => void; className?: string; style?: React.CSSProperties }
 export declare function VbButton(props: VbButtonProps): React.ReactElement;
+export interface ActionRowProps { single?: boolean; fixed?: boolean; minItemWidth?: number; className?: string; style?: React.CSSProperties; children?: React.ReactNode }
+export declare function ActionRow(props: ActionRowProps): React.ReactElement;
+export interface PopoverCardProps { title?: string; hint?: string; rows?: { key: string; value: string; good?: boolean }[]; className?: string; style?: React.CSSProperties; children?: React.ReactNode }
+export declare function PopoverCard(props: PopoverCardProps): React.ReactElement;
+export declare function VbClipFill(props: { className?: string; style?: React.CSSProperties }): React.ReactElement;
+export declare function VbClipImage(props: { url?: string; className?: string; style?: React.CSSProperties }): React.ReactElement;
+export declare const VbEdgeFx: { play(element: Element, tone?: number[]): void; damage(element: Element, strength?: number): void; cancel(element: Element): void; active(element: Element): boolean; milliseconds: { activate: number; damage: number; calm: number } };
+export declare const Glitch: { reveal(element: Element, milliseconds?: number): Promise<void>; revealTitles(root: Element, milliseconds?: number): void; scramble(text: string, reveal: number, step: number): string; titleClass: string; milliseconds: number };
 export interface StatReadoutProps { label: string; value: string; unit?: string; bar?: number; delta?: string; up?: boolean; tone?: 'power' | 'text'; className?: string }
 export declare function StatReadout(props: StatReadoutProps): React.ReactElement;
 export interface StatusChipProps { kind: StatusKind; text?: string; detail?: string; time?: string; className?: string }
@@ -582,44 +901,51 @@ export interface FocusMeterProps { focus?: number; slow?: boolean; regenPerSecon
 export declare function FocusMeter(props: FocusMeterProps): React.ReactElement;
 export interface SkillButtonProps { view: SkillView; dragging?: boolean; flash?: boolean; onPointerDown?: (e: React.PointerEvent) => void; className?: string; style?: React.CSSProperties }
 export declare function SkillButton(props: SkillButtonProps): React.ReactElement;
-export interface RoadView { kind?: string; title: string; icon?: KitIconName; hint: string }
+export interface RoadView { kind?: string; title: string; icon?: KitIconName; hint: string; rank?: number; ranks?: number }
 export interface RouteView { wave: number; left: RoadView; right: RoadView }
 export interface MerchantOfferView { id?: string; perk: PerkView; price: number; taken?: boolean; blocked?: string }
 export interface MerchantStackView { perk: PerkView; payout: number }
 export interface MerchantHealthView { actor: number; name: string; hp: number; maxHp: number; cost: number; payout: number; blocked?: string }
 export interface MerchantView { credits: number; offers: MerchantOfferView[]; stacks: MerchantStackView[]; health: MerchantHealthView[] }
-export declare function GlitchText(props: { text: string; effect?: 'in' | 'out' | 'slam'; className?: string; style?: React.CSSProperties }): React.ReactElement;
-export declare function CreditsChip(props: { credits: number; className?: string }): React.ReactElement;
+export interface StatusRowProps { effects?: EffectInstance[]; pinned?: boolean; className?: string; style?: React.CSSProperties }
+export declare function StatusRow(props: StatusRowProps): React.ReactElement;
+export declare function GlitchText(props: { text: string; effect?: 'in' | 'out' | 'slam'; reveal?: boolean | number; className?: string; style?: React.CSSProperties }): React.ReactElement;
 export declare function RouteChoice(props: { view: RouteView; onChoose?: (side: number) => void; className?: string; style?: React.CSSProperties }): React.ReactElement;
 export declare function MerchantScreen(props: { view: MerchantView; onBuy?: (index: number) => void; onSellPerk?: (id: string) => void; onSellHealth?: (actor: number) => void; onLeave?: () => void; className?: string; style?: React.CSSProperties }): React.ReactElement;
-export interface HudTopProps { view: HudView; showFocus?: boolean; queuePinned?: boolean; onAutoClick?: () => void; onSpeedClick?: () => void; onPauseClick?: () => void; onQueueCancel?: (entry: QueueView) => void; className?: string; style?: React.CSSProperties }
+export interface HudTopProps { view: HudView; showFocus?: boolean; showHint?: boolean; queuePinned?: boolean; onAutoClick?: () => void; onSpeedClick?: () => void; onPauseClick?: () => void; onQueueCancel?: (entry: QueueView) => void; className?: string; style?: React.CSSProperties }
 export declare function HudTop(props: HudTopProps): React.ReactElement;
 export interface QueueListProps { queue: QueueView[]; title?: string; hint?: string; onCancel?: (entry: QueueView) => void; className?: string }
 export declare function QueueList(props: QueueListProps): React.ReactElement;
 export interface BossBarProps { view: BossView; className?: string }
 export declare function BossBar(props: BossBarProps): React.ReactElement;
-export interface ScreenHeaderProps { title: string; meta?: string; accent?: boolean; backLabel?: string; onBack?: () => void; className?: string }
+export interface ScreenHeaderProps { title: string; meta?: string; accent?: boolean; backLabel?: string; showBack?: boolean; revealTitles?: boolean; onBack?: () => void; className?: string }
 export declare function ScreenHeader(props: ScreenHeaderProps): React.ReactElement;
 export interface ScoreRowProps { view: ScoreView; className?: string }
 export declare function ScoreRow(props: ScoreRowProps): React.ReactElement;
-export interface OperativeCardProps { view: OperativeView; dragging?: number; onSkillPointerDown?: (index: number, e: React.PointerEvent) => void; className?: string; style?: React.CSSProperties }
-export declare function OperativeCard(props: OperativeCardProps): React.ReactElement;
-export interface OperativeTileProps { view: OperativeView; slot?: number; focused?: boolean; tier?: RarityTier; locked?: string; onPick?: () => void; className?: string }
-export declare function OperativeTile(props: OperativeTileProps): React.ReactElement;
-export interface SquadSlotProps { view: OperativeView | null; slot: number; onPick?: () => void; className?: string }
-export declare function SquadSlot(props: SquadSlotProps): React.ReactElement;
-export interface OperativeDetailsProps { view: OperativeView; slot?: number; squadFull?: boolean; maxHp?: number; maxArmor?: number; maxStability?: number; onClose?: () => void; onToggle?: () => void; className?: string; style?: React.CSSProperties }
-export declare function OperativeDetails(props: OperativeDetailsProps): React.ReactElement;
-export interface OperativeStatsProps { view: ContributionView; className?: string }
-export declare function OperativeStats(props: OperativeStatsProps): React.ReactElement;
-export interface SquadResultProps { view: ContributionView; pinned?: boolean; className?: string }
-export declare function SquadResult(props: SquadResultProps): React.ReactElement;
-export interface PerkCardProps { view: PerkView; selected?: boolean; onPick?: () => void; className?: string; style?: React.CSSProperties }
-export declare function PerkCard(props: PerkCardProps): React.ReactElement;
+export interface UnitCardProps { view: OperativeView; autoDamage?: boolean; dragging?: number; onSkillPointerDown?: (index: number, e: React.PointerEvent) => void; className?: string; style?: React.CSSProperties }
+export declare function UnitCard(props: UnitCardProps): React.ReactElement;
+export interface UnitTileProps { view: OperativeView; slot?: number; focused?: boolean; tier?: RarityTier; locked?: string; onPick?: () => void; className?: string }
+export declare function UnitTile(props: UnitTileProps): React.ReactElement;
+export interface UnitSlotProps { view: OperativeView | null; slot: number; onPick?: () => void; className?: string }
+export declare function UnitSlot(props: UnitSlotProps): React.ReactElement;
+export interface UnitDetailProps { view: OperativeView; slot?: number; squadFull?: boolean; showStability?: boolean; maxHp?: number; maxArmor?: number; maxStability?: number; onClose?: () => void; onToggle?: () => void; className?: string; style?: React.CSSProperties }
+export declare function UnitDetail(props: UnitDetailProps): React.ReactElement;
+export interface UnitStatsProps { view: ContributionView; className?: string }
+export declare function UnitStats(props: UnitStatsProps): React.ReactElement;
+export interface ResultSummaryProps { view: ContributionView; pinned?: boolean; className?: string }
+export declare function ResultSummary(props: ResultSummaryProps): React.ReactElement;
+export type ChoiceSide = 'single' | 'left' | 'right';
+export type ChoiceTone = 'ally' | 'enemy' | 'power';
+export interface ChoiceCardProps { road?: RoadView; perk?: PerkView; action?: string; selected?: boolean; side?: ChoiceSide; tone?: ChoiceTone; tag?: string; icon?: KitIconName; title?: string; text?: string; next?: string; rank?: number; ranks?: number; rankNext?: boolean; rankTone?: 'ally' | 'enemy' | 'power' | 'neutral'; tooltip?: string; motionId?: string | number; onPick?: () => void; onFocus?: () => void; className?: string; style?: React.CSSProperties }
+export declare function ChoiceCard(props: ChoiceCardProps): React.ReactElement;
+export interface StatRowProps { label: string; value?: React.ReactNode; good?: boolean; icon?: KitIconName; stacked?: boolean; dimmed?: boolean; plated?: boolean; tier?: string; bar?: { segments?: number; value?: number; next?: boolean; tone?: string } | null; action?: React.ReactNode; motionId?: string | number; className?: string; style?: React.CSSProperties }
+export declare function StatRow(props: StatRowProps): React.ReactElement;
+export interface ChipRowProps { view?: PerkView; text?: string; icon?: KitIconName; value?: string | number; static?: boolean; alignEnd?: boolean; pinned?: boolean; tooltip?: string; className?: string; style?: React.CSSProperties }
+export declare function ChipRow(props: ChipRowProps): React.ReactElement;
+export interface CarouselProps { selected?: number; onChange?: (index: number) => void; motionId?: string | number; children?: React.ReactNode; className?: string; style?: React.CSSProperties }
+export declare function Carousel(props: CarouselProps): React.ReactElement;
 export interface PerkDetailProps { view: PerkView; draft?: boolean; className?: string; style?: React.CSSProperties }
 export declare function PerkDetail(props: PerkDetailProps): React.ReactElement;
-export interface PerkChipProps { view: PerkView; alignEnd?: boolean; pinned?: boolean; className?: string }
-export declare function PerkChip(props: PerkChipProps): React.ReactElement;
 export interface PerkRowProps { view: PerkView; selected?: boolean; onPick?: () => void; className?: string }
 export declare function PerkRow(props: PerkRowProps): React.ReactElement;
 export interface QueueChipProps { view: QueueView; position?: number; preview?: boolean; onCancel?: (entry: QueueView) => void; className?: string; style?: React.CSSProperties }
@@ -644,7 +970,7 @@ export declare function WorldHealthBar(props: WorldHealthBarProps): React.ReactE
 export type CombatTextKind = 'damage' | 'taken' | 'crit' | 'exposed' | 'heal' | 'barrier' | 'power' | 'miss' | 'execute' | 'break';
 export interface CombatTextProps { kind?: CombatTextKind; amount?: number; className?: string; style?: React.CSSProperties }
 export declare function CombatText(props: CombatTextProps): React.ReactElement;
-export interface WorldLabelProps { kind?: 'aim' | 'name' | 'telegraph' | 'estimate' | 'blocked'; title: string; detail?: string; team?: WorldTeam; showDetail?: boolean; className?: string; style?: React.CSSProperties }
+export interface WorldLabelProps { kind?: 'aim' | 'name' | 'telegraph' | 'estimate' | 'blocked' | 'elite'; title: string; detail?: string; count?: number; team?: WorldTeam; showDetail?: boolean; className?: string; style?: React.CSSProperties }
 export declare function WorldLabel(props: WorldLabelProps): React.ReactElement;
 export interface WorldMarkerProps { kind?: 'ally' | 'enemy' | 'selected' | 'queued' | 'move'; size?: number; className?: string; style?: React.CSSProperties }
 export declare function WorldMarker(props: WorldMarkerProps): React.ReactElement;
@@ -654,20 +980,20 @@ export interface EdgeWarningProps { caption?: string; urgency?: number; top?: bo
 export declare function EdgeWarning(props: EdgeWarningProps): React.ReactElement;
 /* ── 0.3.0: the handbook's atoms, composites, layouts and views ── */
 type Base = { className?: string; style?: React.CSSProperties };
-export type TypeStyle = 'display' | 'title' | 'label' | 'badge' | 'body' | 'caption' | 'num';
+export type TypeStyle = 'display' | 'title' | 'label' | 'badge' | 'body' | 'caption' | 'num' | 'heading' | 'heading-sm' | 'heading-lg' | 'label-sm' | 'label-lg' | 'body-sm';
 export type TextTone = 'default' | 'ally' | 'enemy' | 'power' | 'muted';
 export declare function ProgressBar(props: Base & { segments?: number; value?: number; next?: boolean; tint?: string; tone?: 'ally' | 'power' | 'enemy' | 'neutral' }): React.ReactElement;
 export declare function KeyValueRow(props: Base & { label: string; value: string; good?: boolean }): React.ReactElement;
 export declare function ListRow(props: Base & { icon?: KitIconName; title: string; caption?: string; bar?: { segments?: number; value?: number; next?: boolean; tone?: string } | null; value?: string; action?: React.ReactNode; selected?: boolean; onPick?: () => void }): React.ReactElement;
 export declare function TextComponent(props: Base & { text?: React.ReactNode; typeStyle?: TypeStyle; tone?: TextTone; children?: React.ReactNode }): React.ReactElement;
-export declare function LabelComponent(props: Base & { text: string; size?: 'label' | 'badge'; tone?: TextTone }): React.ReactElement;
+export declare function LabelComponent(props: Base & { text: string; size?: 'label' | 'badge' | 'large'; tone?: TextTone }): React.ReactElement;
 export type BadgeTone = 'neutral' | 'ally' | 'enemy' | 'power' | 'warn' | 'inverted';
 export declare function BadgeComponent(props: Base & { text?: string; icon?: KitIconName; value?: string | number; tone?: BadgeTone; tooltip?: string; children?: React.ReactNode }): React.ReactElement;
 export declare function IconButtonComposite(props: Base & { icon?: KitIconName; text?: string; tooltip: string; active?: boolean; quiet?: boolean; size?: number; textClass?: string; onClick?: () => void }): React.ReactElement;
 export type TileState = 'in' | 'focused' | 'locked' | 'empty';
 export declare function TileComponent(props: Base & { title?: string; caption?: string; captionIcon?: KitIconName; picture?: string | null; glyph?: KitIconName; kit?: string; order?: number; state?: TileState | TileState[]; tier?: RarityTier; emptyLabel?: string; tooltip?: string; block?: string; onPick?: () => void }): React.ReactElement;
 export declare function CardComponent(props: Base & { title?: string; meta?: string; media?: React.ReactNode; actions?: React.ReactNode; selected?: boolean; children?: React.ReactNode }): React.ReactElement;
-export declare function DrawerOverlay(props: Base & { open?: boolean; snap?: 'half' | 'full'; onSnap?: (snap: 'half' | 'full') => void; title?: string; meta?: string; label?: string; backdrop?: boolean; dismissible?: boolean; closeButton?: boolean; actions?: React.ReactNode; onDismiss?: () => void; children?: React.ReactNode }): React.ReactElement;
+export declare function DrawerOverlay(props: Base & { open?: boolean; snap?: 'fit' | 'half' | 'full'; onSnap?: (snap: 'fit' | 'half' | 'full') => void; title?: string; meta?: string; label?: string; backdrop?: boolean; dismissible?: boolean; closeButton?: boolean; actions?: React.ReactNode; onDismiss?: () => void; children?: React.ReactNode }): React.ReactElement;
 export declare function FieldComposite(props: Base & { label?: string; help?: string; children?: React.ReactNode }): React.ReactElement;
 export declare function Fieldset(props: Base & { title: string; children?: React.ReactNode }): React.ReactElement;
 export declare function FormComposite(props: Base & { saved?: string; headed?: boolean; note?: { icon?: KitIconName; text: string } | null; footer?: React.ReactNode; children?: React.ReactNode }): React.ReactElement;
@@ -679,8 +1005,8 @@ export interface CheckpointView { wave: number; score: number; standing?: number
 export interface MainMenuViewModel { status?: string; subtitle?: string; notice?: string; best?: number; bestWave?: number; checkpoint?: CheckpointView | null; squad?: string[]; canExit?: boolean }
 export declare function MainMenuView(props: Base & { view?: MainMenuViewModel; onPlay?: () => void; onResume?: () => void; onScores?: () => void; onSettings?: () => void; onExit?: () => void }): React.ReactElement;
 export declare function MenuActionsSectionView(props: Base & { checkpoint?: CheckpointView | null; squadLine?: string; notice?: string; onPlay?: () => void; onResume?: () => void; onScores?: () => void; onSettings?: () => void }): React.ReactElement;
-export interface SquadViewModel { roster: OperativeView[]; selected?: number[]; focus?: number; locked?: string[]; tiers?: RarityTier[]; seed?: string }
-export declare function SquadView(props: Base & { view: SquadViewModel; onPick?: (index: number) => void; onSlotPick?: (slot: number) => void; onToggle?: (index: number) => void; onClose?: () => void; onStart?: () => void; onBack?: () => void }): React.ReactElement;
+export interface SquadViewModel { roster: OperativeView[]; selected?: number[]; focus?: number; locked?: string[]; tiers?: RarityTier[]; seed?: string; maxHp?: number; maxArmor?: number; maxStability?: number }
+export declare function SquadView(props: Base & { view: SquadViewModel; onPick?: (index: number) => void; onSlotPick?: (slot: number) => void; onSlotMove?: (from: number, to: number) => void; onToggle?: (index: number) => void; onClose?: () => void; onStart?: () => void; onBack?: () => void }): React.ReactElement;
 export interface SettingsViewModel { master?: number; music?: number; effects?: number; sensitivity?: number; haptics?: boolean; reducedMotion?: boolean; camera?: number; quality?: number; saved?: string; note?: string }
 export declare function SettingsView(props: Base & { view?: SettingsViewModel; onChange?: (model: SettingsViewModel) => void; onClearScores?: () => void; onAccessibility?: () => void; onBack?: () => void }): React.ReactElement;
 export interface PauseViewModel { wave: number; score: number; standing: number; squadSize?: number; perks?: PerkView[]; seed?: string; detail?: string }
@@ -689,9 +1015,9 @@ export declare function ConfirmDialogView(props: Base & { title: string; body?: 
 export declare function GuideDialogView(props: Base & { title?: string; steps?: string[]; onReady?: () => void }): React.ReactElement;
 export interface SquadHealthView { code: string; hp: number; maxHp: number; stability?: number }
 export interface PerkDraftViewModel { wave: number; bonus?: number; score?: number; choices: PerkView[]; pick?: number; squad?: SquadHealthView[] }
-export declare function PerkDraftView(props: Base & { view: PerkDraftViewModel; onPick?: (index: number) => void; onTake?: () => void }): React.ReactElement;
+export declare function PerkDraftView(props: Base & { view: PerkDraftViewModel; onPick?: (index: number) => void; onTake?: () => void; onPerks?: () => void }): React.ReactElement;
 export interface ResultsViewModel { cause?: string; score: number; wave: number; bosses?: number; rank?: number; of?: number; ledger?: { label: string; value: string }[]; distance?: string; simTime?: string; squad?: ContributionView[]; perks?: PerkView[] }
-export declare function ResultsView(props: Base & { view: ResultsViewModel; onMenu?: () => void; onAgain?: () => void }): React.ReactElement;
+export declare function ResultsView(props: Base & { view: ResultsViewModel; onMenu?: () => void; onSquad?: () => void; onAgain?: () => void }): React.ReactElement;
 export declare function HighScoresView(props: Base & { ranked: ScoreView[]; historical?: ScoreView[]; caption?: string; onBack?: () => void }): React.ReactElement;
 export declare function RouteChoiceView(props: Base & { view: RouteView; onChoose?: (side: number) => void }): React.ReactElement;
 export declare function MerchantScreenView(props: Base & { view: MerchantView; onBuy?: (index: number) => void; onSellPerk?: (id: string) => void; onSellHealth?: (actor: number) => void; onLeave?: () => void }): React.ReactElement;
@@ -701,7 +1027,7 @@ export declare function BattleHudView(props: Base & { hud?: HudView; shown?: boo
 # reachable at the top level too (window.Veilbreak.MatchHeader === window.Veilbreak.Legacy.MatchHeader).
 legacy = pathlib.Path(sys.argv[2]).read_text().rstrip('\n').replace("import type * as React from 'react';\n", '')
 legacy = '\n'.join(('  ' + line) if line else line for line in legacy.replace('export declare ', 'export ').split('\n'))
-DTS += '''
+DTS += """
 
 export type EffectActivation = 'active' | 'conditional' | 'ready' | 'spent' | 'expired';
 export interface EffectDefinition { id: string; title: string; description: string; icon?: KitIconName; polarity?: 'neutral' | 'benefit' | 'harm'; scope?: 'actor' | 'squad' | 'run' }
@@ -715,7 +1041,7 @@ export declare function ActivePerksView(props: { view: ActivePerksViewModel; onP
 export declare function RevivePickView(props: { perk?: string; fallen: OperativeView[]; onPick?: (index: number) => void; onBack?: () => void; className?: string }): React.ReactElement;
 export interface AccessibilityViewModel { reducedFlashes?: boolean; largerText?: boolean; highContrast?: boolean }
 export declare function AccessibilityView(props: { view?: AccessibilityViewModel; onChange?: (key: string, value: boolean) => void; onBack?: () => void; className?: string }): React.ReactElement;
-'''
+"""
 
 LEGACY = (
     '\n/* ── Legacy web (deprecated): the landscape and online kit, kept for reference; classes are vbl- ── */\n'

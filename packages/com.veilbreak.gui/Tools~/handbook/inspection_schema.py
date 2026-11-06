@@ -33,16 +33,20 @@ def split_top(text, separator):
 
 
 def block_end(text, start):
-    depth, quote, escaped = 0, None, False
+    depth, quote, escaped, comment = 0, None, False, False
     for index in range(start, len(text)):
         char = text[index]
-        if quote:
+        if comment:
+            comment = char != '\n'  # a // comment may hold an apostrophe
+        elif quote:
             if escaped:
                 escaped = False
             elif char == '\\':
                 escaped = True
             elif char == quote:
                 quote = None
+        elif char == '/' and text[index : index + 2] == '//' and text[index - 1] != ':':
+            comment = True
         elif char in '"\'`':
             quote = char
         elif char == '{':
@@ -121,8 +125,9 @@ def build_schema(declarations, kit_source):
     )
     exports = kit_source.split('var api = {', 1)[1].split('};', 1)[0]
     exported = re.findall(r'(\w+): \w+', exports)
+    objects = set(re.findall(r'export declare const (\w+)', text))  # VbEdgeFx, Glitch: helper objects, not components
     for name in exported:
-        if not name[0].isupper():
+        if not name[0].isupper() or name in objects:
             continue
         if name not in components:
             raise ValueError('Missing inspector component declaration: ' + name)

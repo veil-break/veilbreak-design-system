@@ -17,7 +17,7 @@
       "family": "layouts",
       "level": "layout",
       "source": "Runtime/Layouts/Layouts.cs",
-      "web": false
+      "web": true
     },
     {
       "name": "ActivePerksView",
@@ -116,7 +116,7 @@
       "family": "collections",
       "level": "composite",
       "source": "Runtime/Composites/Carousel.cs",
-      "web": false
+      "web": true
     },
     {
       "name": "ChipRow",
@@ -125,7 +125,7 @@
       "family": "badges",
       "level": "atom",
       "source": "Runtime/Controls/ChipRow.cs",
-      "web": false
+      "web": true
     },
     {
       "name": "ChoiceCard",
@@ -134,7 +134,7 @@
       "family": "collections",
       "level": "composite",
       "source": "Runtime/Composites/ChoiceCard.cs",
-      "web": false
+      "web": true
     },
     {
       "name": "CombatText",
@@ -161,7 +161,7 @@
       "family": "badges",
       "level": "composite",
       "source": "Runtime/Composites/RouteMerchant.cs",
-      "web": true
+      "web": false
     },
     {
       "name": "DetailView",
@@ -269,7 +269,7 @@
       "family": "motion",
       "level": "atom",
       "source": "Runtime/Controls/GlitchText.cs",
-      "web": false
+      "web": true
     },
     {
       "name": "GlitchText",
@@ -485,7 +485,7 @@
       "family": "surfaces",
       "level": "composite",
       "source": "Runtime/Composites/Operatives.cs",
-      "web": true
+      "web": false
     },
     {
       "name": "OperativeDetails",
@@ -494,7 +494,7 @@
       "family": "details",
       "level": "composite",
       "source": "Runtime/Composites/Operatives.cs",
-      "web": true
+      "web": false
     },
     {
       "name": "OperativeStats",
@@ -503,7 +503,7 @@
       "family": "details",
       "level": "composite",
       "source": "Runtime/Composites/Operatives.cs",
-      "web": true
+      "web": false
     },
     {
       "name": "OperativeTile",
@@ -512,7 +512,7 @@
       "family": "surfaces",
       "level": "composite",
       "source": "Runtime/Composites/Operatives.cs",
-      "web": true
+      "web": false
     },
     {
       "name": "OverlayHost",
@@ -548,7 +548,7 @@
       "family": "surfaces",
       "level": "composite",
       "source": "Runtime/Composites/Perks.cs",
-      "web": true
+      "web": false
     },
     {
       "name": "PerkChip",
@@ -557,7 +557,7 @@
       "family": "badges",
       "level": "composite",
       "source": "Runtime/Composites/Perks.cs",
-      "web": true
+      "web": false
     },
     {
       "name": "PerkDetail",
@@ -602,7 +602,7 @@
       "family": "overlays",
       "level": "composite",
       "source": "Runtime/Core/Popover.cs",
-      "web": false
+      "web": true
     },
     {
       "name": "PowerStrip",
@@ -665,7 +665,7 @@
       "family": "surfaces",
       "level": "composite",
       "source": "Runtime/Composites/Units.cs",
-      "web": false
+      "web": true
     },
     {
       "name": "ResultsView",
@@ -809,7 +809,7 @@
       "family": "controls",
       "level": "composite",
       "source": "Runtime/Composites/Operatives.cs",
-      "web": true
+      "web": false
     },
     {
       "name": "SquadSlot",
@@ -818,7 +818,7 @@
       "family": "surfaces",
       "level": "composite",
       "source": "Runtime/Composites/Operatives.cs",
-      "web": true
+      "web": false
     },
     {
       "name": "SquadView",
@@ -854,7 +854,7 @@
       "family": "details",
       "level": "atom",
       "source": "Runtime/Controls/StatRow.cs",
-      "web": false
+      "web": true
     },
     {
       "name": "StatusChip",
@@ -917,7 +917,7 @@
       "family": "surfaces",
       "level": "composite",
       "source": "Runtime/Composites/Units.cs",
-      "web": false
+      "web": true
     },
     {
       "name": "UnitDetail",
@@ -926,7 +926,7 @@
       "family": "details",
       "level": "composite",
       "source": "Runtime/Composites/Units.cs",
-      "web": false
+      "web": true
     },
     {
       "name": "UnitSlot",
@@ -935,7 +935,7 @@
       "family": "collections",
       "level": "composite",
       "source": "Runtime/Composites/Units.cs",
-      "web": false
+      "web": true
     },
     {
       "name": "UnitStats",
@@ -944,7 +944,7 @@
       "family": "details",
       "level": "composite",
       "source": "Runtime/Composites/Units.cs",
-      "web": false
+      "web": true
     },
     {
       "name": "UnitTile",
@@ -953,7 +953,7 @@
       "family": "collections",
       "level": "composite",
       "source": "Runtime/Composites/Units.cs",
-      "web": false
+      "web": true
     },
     {
       "name": "VbButton",
@@ -980,7 +980,7 @@
       "family": "controls",
       "level": "atom",
       "source": "Runtime/Core/VbClip.cs",
-      "web": false
+      "web": true
     },
     {
       "name": "VbClipImage",
@@ -989,7 +989,7 @@
       "family": "controls",
       "level": "atom",
       "source": "Runtime/Core/VbClip.cs",
-      "web": false
+      "web": true
     },
     {
       "name": "VbEdgeFx",
@@ -998,7 +998,7 @@
       "family": "motion",
       "level": "atom",
       "source": "Runtime/Core/VbEdgeFx.cs",
-      "web": false
+      "web": true
     },
     {
       "name": "VbFluid",
