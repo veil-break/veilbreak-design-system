@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.9.2 — 2026-11-07
+
+One fix, design-system release 0.19.2 (design-system#18). Arcade can review its own announcer workaround (`ArcadeGui.LaneAttached`) once it pins this release; the workaround is not checked against this release here and still works meanwhile.
+
+- **`Announcer` survives a temporary panel detach.** It disposed itself on `DetachFromPanelEvent`, and `Dispose` is permanent, so a move in the hierarchy, a screen swap or a scene load silenced the lane for good. A detach now parks the lane: the notice on show is retired (an alert plays again on re-attach), its timers stop, the queue is kept, and notices said while detached wait; an attach resumes it. Callbacks are registered once in the constructor, so a re-attach never double-registers. Only an explicit `Dispose()` ends the lane, and it now also unregisters both panel callbacks. The public API is unchanged, and a lane that never attached behaves as before. A non-alert notice on show at the moment of a detach is retired, not replayed; an alert said while away still pre-empts queued notices, as everywhere in `Say` (so does `interrupt: true`, which also drops an alert queued for replay); while parked, a non-alert notice identical to one already queued (same text, alert flag and hold) is not queued twice; and the queue can hold seven notices right after a detach, because the retired alert is put back in front of a full queue, until the next `Say` trims it.
+- Test: `CompositeTests.TheAnnouncerSurvivesATemporaryPanelDetach` (EditMode): queued and waiting notices survive a detach, an alert replays, repeated detaches leave the lane working, and an explicit `Dispose` is final.
+
 ## 0.9.1 — 2026-11-06
 
 The motion pass of the GUI review (arcade#54) and the follow-ups of the polish batch's adoption (arcade#74); one release, design-system 0.19.1. Arcade adopts these in its next pin.
