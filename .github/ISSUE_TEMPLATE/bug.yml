@@ -1,0 +1,84 @@
+# Written by `vb roadmap sync` from veil-break/.github-private tools/roadmap/issue-forms; edit the source there. Dropdown
+# labels are project 1 field names and their options the field's options: the roadmap workflow reads the answers.
+name: Bug
+description: "Something is broken."
+labels: ['type: bug']
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: "What you saw, and what you expected instead."
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: "Commands, scene, editor version, commit."
+    validations:
+      required: false
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Logs or screenshots
+      description: "Paste logs as text; attach screenshots."
+    validations:
+      required: false
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: "What the change touches (project 1 Area). Empty: from labels, else unset."
+      options:
+        - 'tooling'
+        - 'characters'
+        - 'gui / hud'
+        - 'rendering'
+        - 'feedback'
+        - 'environment'
+        - 'gameplay / sim'
+        - 'server / net'
+        - 'ci'
+        - 'docs'
+        - 'progression'
+        - 'encounters'
+    validations:
+      required: false
+  - type: dropdown
+    id: game
+    attributes:
+      label: Game
+      description: "Which game the change reaches (none: producer-only or tooling). Empty: the repository default."
+      options:
+        - 'main'
+        - 'arcade'
+        - 'both'
+        - 'none'
+    validations:
+      required: false
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: "P0 broken main or blocked team · P1 this iteration · P2 next (default) · P3 someday."
+      options:
+        - 'P0'
+        - 'P1'
+        - 'P2'
+        - 'P3'
+    validations:
+      required: false
+  - type: dropdown
+    id: size
+    attributes:
+      label: Size
+      description: "XS < 1 h · S < ½ day (default) · M 1–2 days · L < 1 week · XL split it."
+      options:
+        - 'XS'
+        - 'S'
+        - 'M'
+        - 'L'
+        - 'XL'
+    validations:
+      required: false

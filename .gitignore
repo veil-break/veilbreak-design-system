@@ -12,3 +12,14 @@ work/
 # .NET check runners (packages/*/Tests~)
 bin/
 obj/
+
+# Generated publications (vb docs build writes dist/): build on demand, never commit. Anchored, because
+# packages/com.veilbreak.gui/Web~/dist is a tracked build output.
+/dist/
+
+# Agent context mesh: `vb agents sync` in the hub links these to the hub's copies.
+/.agents
+/.claude/skills
+/.claude/agents
+/SOUL.md
+/.claude/settings.local.json
