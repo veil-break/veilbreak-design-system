@@ -159,6 +159,9 @@ public sealed class CompositeTests {
    text.RemoveFromHierarchy();Assert.IsNull(text.panel);Assert.AreEqual(DisplayStyle.None,text.style.display.value,"A detach retires the notice that was showing");
    lane.Say("WHILE AWAY");Assert.AreNotEqual("WHILE AWAY",text.text,"Off a panel the notice waits rather than stalling the lane");
    host.Add(text);Assert.AreEqual("QUEUED",text.text,"Re-attached, the notices that waited are shown in order");
+   lane.Clear();text.RemoveFromHierarchy();lane.Say("AWAY");lane.Say("AWAY");Assert.AreNotEqual("AWAY",text.text,"Said while away, a notice waits");host.Add(text);Assert.AreEqual("AWAY",text.text,"A notice said while away shows on re-attach");
+   lane.Clear();lane.Say("BREACH",true);Assert.AreEqual("BREACH",text.text);text.RemoveFromHierarchy();host.Add(text);Assert.AreEqual("BREACH",text.text,"An alert on show when the lane was detached plays again");
+   lane.Clear();text.RemoveFromHierarchy();lane.Say("ALARM",true);Assert.AreNotEqual("ALARM",text.text);host.Add(text);Assert.AreEqual("ALARM",text.text,"An alert said while away shows on re-attach");
    lane.Clear();lane.Say("TWO");Assert.AreEqual("TWO",text.text,"The lane answers after the detach");
    text.RemoveFromHierarchy();host.Add(text);text.RemoveFromHierarchy();host.Add(text);lane.Clear();lane.Say("THREE");Assert.AreEqual("THREE",text.text,"Repeated detaches leave it working");
    lane.Dispose();text.text="";text.RemoveFromHierarchy();host.Add(text);lane.Say("FOUR");Assert.AreEqual("",text.text,"An explicit Dispose is final, and a re-attach does not wake it");
