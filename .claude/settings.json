@@ -1,0 +1,37 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun",
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/../veilbreak-readme/tools/cli.ts",
+              "issue",
+              "session"
+            ],
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun",
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/../veilbreak-readme/tools/cli.ts",
+              "issue",
+              "remind"
+            ],
+            "timeout": 15
+          }
+        ]
+      }
+    ]
+  }
+}

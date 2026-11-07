@@ -17,6 +17,8 @@ Shared presentation packages for Veilbreak games. Each Unity package lives in it
 | [`com.veilbreak.ar-hud`](packages/com.veilbreak.ar-hud/README.md) | UI framework that veilbreak-main hosts every screen with, kept as a permanent adapter over `gui`: `HudHost`/`HudView`/`HudNavigation`, `HudStage` boards and visor chrome, the cut-shape kit, HUD themes generated from gui's tokens and the Theme Workshop. Unity 7000.0 baseline; its motion, gauge, shape and press-glow primitives are adapters over `gui` (`VbRebuild`, `VbGauge`, `VbVectorShape`, `VbPressGlow`); `HudNavigation` stays its own keyboard/gamepad focus engine |
 | [`com.veilbreak.presentation`](packages/com.veilbreak.presentation/README.md) | entry package: declares the four packages above at tested versions; no assets, no assembly. Root it in a game spec to get the whole stack |
 
+Guides for tokens, feedback, shaders and the environment are in [`docs/`](docs/README.md); agent rules are in [`CLAUDE.md`](CLAUDE.md).
+
 Dependency graph (acyclic): `gui` ← `feedback`, `gui` ← `branding`; `environment` and `rendering` depend only on URP and Unity modules. `presentation` depends on all four. `ar-hud` depends on `gui` (its design tokens; Input System optional) and is not part of the entry package; neither is `rendering`, which only veilbreak-main consumes so far. Binaries are plain git blobs (no LFS), so a git
 package resolves without git-lfs.
 

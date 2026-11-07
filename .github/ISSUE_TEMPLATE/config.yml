@@ -1,0 +1,7 @@
+# Written by `vb roadmap sync` from veil-break/.github-private tools/roadmap/issue-forms; edit the source there. Dropdown
+# labels are project 1 field names and their options the field's options: the roadmap workflow reads the answers.
+blank_issues_enabled: true
+contact_links:
+  - name: Roadmap (project 1)
+    url: https://github.com/orgs/veil-break/projects/1
+    about: The board every issue lands on; conventions in veil-break/.github-private docs/development/roadmap-project.md.
