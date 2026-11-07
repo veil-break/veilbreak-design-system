@@ -149,5 +149,20 @@ public sealed class CompositeTests {
   foreach(var type in new[]{typeof(OperativeCard),typeof(OperativeTile),typeof(SquadSlot),typeof(OperativeDetails),typeof(OperativeStats),typeof(SquadResult),typeof(PerkCard),typeof(PerkChip),typeof(CreditsChip)})Assert.IsTrue(Attribute.IsDefined(type,typeof(ObsoleteAttribute)),type.Name+" is obsolete");
 #pragma warning restore CS0618
  }
+
+ // design-system#18: the lane outlives a temporary detach (a move in the hierarchy, a screen swap); only an explicit Dispose retires it. Synchronous: Say sets the text at once, whatever the clock does.
+ [Test] public void TheAnnouncerSurvivesATemporaryPanelDetach(){
+  var settings=ScriptableObject.CreateInstance<PanelSettings>();var go=new GameObject("Announcer detach test");
+  try{
+   var document=go.AddComponent<UIDocument>();document.panelSettings=settings;var host=document.rootVisualElement;var text=new GlitchText().Into(host);var lane=new Announcer(text);
+   Assert.IsNotNull(text.panel,"The lane starts on a live panel");lane.Say("ONE");lane.Say("QUEUED");Assert.AreEqual("ONE",text.text);
+   text.RemoveFromHierarchy();Assert.IsNull(text.panel);Assert.AreEqual(DisplayStyle.None,text.style.display.value,"A detach retires the notice that was showing");
+   lane.Say("WHILE AWAY");Assert.AreNotEqual("WHILE AWAY",text.text,"Off a panel the notice waits rather than stalling the lane");
+   host.Add(text);Assert.AreEqual("QUEUED",text.text,"Re-attached, the notices that waited are shown in order");
+   lane.Clear();lane.Say("TWO");Assert.AreEqual("TWO",text.text,"The lane answers after the detach");
+   text.RemoveFromHierarchy();host.Add(text);text.RemoveFromHierarchy();host.Add(text);lane.Clear();lane.Say("THREE");Assert.AreEqual("THREE",text.text,"Repeated detaches leave it working");
+   lane.Dispose();text.text="";text.RemoveFromHierarchy();host.Add(text);lane.Say("FOUR");Assert.AreEqual("",text.text,"An explicit Dispose is final, and a re-attach does not wake it");
+  }finally{UnityEngine.Object.DestroyImmediate(go);UnityEngine.Object.DestroyImmediate(settings);}
+ }
 }
 }
