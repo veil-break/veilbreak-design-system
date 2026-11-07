@@ -1,6 +1,6 @@
 # Environment guide
 
-`com.veilbreak.environment` (version 0.5.1, namespace and assemblies `Veilbreak.Cityscape`, Unity 6000.3, URP 17.3) is the veil
+`com.veilbreak.environment` (version in `package.json`; namespace and assemblies `Veilbreak.Cityscape`, Unity 6000.3, URP 17.3) is the veil
 cityscape for runner streets, built for phones. It streams a wet boulevard on its own bounded `SegmentStreamer` and has no game
 or runner dependency: the host presents a distance every frame, and either a theme (legacy) or a pure per-index plan. The
 namespace is not `Veilbreak.Environment` because that would hide `System.Environment` in every `Veilbreak.*` consumer. Source:

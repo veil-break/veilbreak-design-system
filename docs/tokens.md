@@ -88,7 +88,7 @@ and `VbVectorShape` (the Painter2D sibling).
 ## Checklist for a token change
 
 1. Edit `tokens.json` (and `fluid.json` / `motion.json` if the change reaches them).
-2. Run the generators above, then `--check` for each.
+2. Run the generators above, then every `--check` CI runs: `tokens`, `motion`, `fluid`, `samples`, `metas` and `screen_kit` (the full list is in [CLAUDE.md](../CLAUDE.md#verification)). A new file needs its `.meta` from `Tools~/metas.py`.
 3. Rebuild the web outputs the CI compares: `Tools~/web/package.py` and `Tools~/handbook/build_handbook.py` (the pages
    workflow diffs `Web~/dist`, `Tokens.uss` and `VbTokens.cs` against a rebuild).
 4. `uv run --frozen ruff check .`

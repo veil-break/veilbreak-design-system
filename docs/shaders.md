@@ -2,7 +2,7 @@
 
 `com.veilbreak.rendering` (assembly `Veilbreak.Rendering`, Unity 6000.3, URP 17.3) holds the URP render features, volume
 overrides and shaders both games can use. Every type reads only Unity, URP and its own state. The host owns the renderer
-assets, quality tiers, volume profiles and settings. veilbreak-main consumes the package on 7000.0 with URP 17.7. Source:
+assets, quality tiers, volume profiles and settings. A 7000.0 game with URP 17.7 consumes the package. Source:
 `packages/com.veilbreak.rendering/Runtime`.
 
 The shaders for the other packages are not covered here: `com.veilbreak.feedback` has its own URP effects (see
@@ -68,8 +68,9 @@ off, while `Glitch` is inactive, and whenever `ScreenGlitch.Still` or `ScreenGli
 - The host sets the weight of a volume that holds a `Glitch` override from `Changed`.
 - `Still` (Reduced Motion) holds the amount at 0; `NoFlashes` (Reduced Flashes) makes the feature skip the pass entirely.
 
-Host wiring: add `ScreenGlitchFeature` with a pass material on `SH_VeilGlitch.shader`, injected after post-processing with
-`fetchColorBuffer` on (settings of the URP feature); call `ScreenGlitch.Tick(unscaledDelta)` every frame.
+Host wiring (from the package README): add `ScreenGlitchFeature` with a pass material on `SH_VeilGlitch.shader`, injected after
+post-processing with `fetchColorBuffer` on; those are the URP `FullScreenPassRendererFeature` settings, which the package does not
+enforce. Call `ScreenGlitch.Tick(unscaledDelta)` every frame.
 
 ## VisorLens
 

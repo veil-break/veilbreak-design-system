@@ -2,7 +2,7 @@
 
 `AGENTS.md` is a symlink to this file, so every coding agent reads the same rules. This repository
 (`veil-break/veilbreak-design-system`) is **public**: commit nothing private to it (no private repository contents, no
-personal paths, no Asset Store content, no tokens or secrets). Cross-repository rules (ownership, GUIDs, pins, landing
+owner personal paths, no Asset Store content, no tokens or secrets). Cross-repository rules (ownership, GUIDs, pins, landing
 order) live in the workspace hub's `CLAUDE.md`; `SOUL.md` is the shared agent soul. In a workspace checkout, `vb agents sync`
 (run from the hub) links `SOUL.md`, `.claude/skills` and `.claude/agents` here. They are ignored by `.gitignore`.
 
@@ -39,7 +39,7 @@ identity and kits belong to the characters repository.
   `ISegmentPlan.Resolve(index)` must be pure.
 - **Binaries.** Plain git blobs here (no LFS), so a git package resolves without git-lfs; keep them small.
 - **Releases.** A package change bumps its `package.json` version and CHANGELOG; the hub pins the full commit in the game specs.
-- **Public repository.** No Asset Store content, private repository paths or owner paths in code, docs or comments.
+- **Public repository.** No private repository contents, Asset Store content, owner personal paths or secrets in code, docs or comments. The generated issue forms and `.claude/settings.json` name the workspace hub because the hub's `vb roadmap sync` writes them.
 
 ## Verification
 
@@ -53,8 +53,11 @@ uv run --frozen python packages/com.veilbreak.gui/Tools~/tokens.py --check
 uv run --frozen python packages/com.veilbreak.gui/Tools~/motion.py --check
 uv run --frozen python packages/com.veilbreak.gui/Tools~/fluid.py --check
 uv run --frozen python packages/com.veilbreak.gui/Tools~/screen_kit.py --check
+uv run --frozen python packages/com.veilbreak.gui/Tools~/samples.py --check
+uv run --frozen python packages/com.veilbreak.gui/Tools~/metas.py --check
 uv run --frozen python packages/com.veilbreak.ar-hud/Tools~/themes.py --check
 uv run --frozen python packages/com.veilbreak.branding/Tools~/logo.py --check
+dotnet run --project packages/com.veilbreak.ar-hud/Tests~/InputChecks/Veilbreak.ARHud.InputChecks.csproj
 ```
 
 Unity checks (EditMode and PlayMode in a consumer or a throwaway 6000.3 project) are separate; never report a headless
